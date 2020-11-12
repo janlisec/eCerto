@@ -2,8 +2,11 @@ shinyServer(function(input, output, session) {
   # helper functions (statistics, plotting and report_dummy)
   source("BAMTool_functions.R", local = TRUE)
   
-  # permanent environment to store imported and modified data to allow processing of multiple analytes
+  # permanent environment to store imported and modified data to allow ...
+  # processing of multiple analytes
   env_perm <- new.env()
+  
+  # function checks if object exists in environment and returns it
   getData <- function(x = " ", e = env_perm) {
     if (exists(x, envir = e)) {
       return(get(x, envir = e))
@@ -16,13 +19,15 @@ shinyServer(function(input, output, session) {
   # DATENIMPORT
   # =============================================================
   
-  # $ToDo$ outsource server code for module certification to a separate file
+  # TODO outsource server code for module certification to a separate file ####
   # import all selected files and update/make reactive
   c_Data <- reactive({
     #cat(file=stderr(), "c_Data called\n")
-    # if both input options are NULL remove permanent Certification objects from memory if in backup file no Certification data is found
-    if (is.null(input$c_input_files) &
-        is.null(input$in_file_ecerto_backup)) {
+    
+    # if both input options (.RData and Excel) are NULL ...
+    # remove permanent Certification objects ...
+    # from memory if in backup file no Certification data is found
+    if (is.null(input$c_input_files) & is.null(input$in_file_ecerto_backup)) {
       if (exists("dat", envir = env_perm))
         rm("dat", envir = env_perm)
       if (exists("cert_vals", envir = env_perm))
@@ -53,7 +58,8 @@ shinyServer(function(input, output, session) {
       if (!is.null(res[["Certification"]]))
         cert_data_in_backup_file <- TRUE
     }
-    # if backup RData is present AND contains a previous Certification list than proceed with these data
+    # if backup RData is present AND contains a previous Certification list ...
+    # than proceed with these data
     if (cert_data_in_backup_file) {
       out <- res[["Certification"]][["data_input"]]
       # update GUI elements
@@ -229,7 +235,7 @@ shinyServer(function(input, output, session) {
   })
   
   # renderUI() captures the upload HTML control, which here can be hidden
-  # TODO is this necessary to have on server?
+  # TODO is this necessary to have on server? ####
   output$c_input_files_ui <- renderUI({
     wellPanel(
       # create a file upload control
