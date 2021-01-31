@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_utils.R
 \name{set_listelem}
 \alias{set_listelem}
-\title{set an element in the list}
+\title{setter function for an element in the list}
 \usage{
 set_listelem(c, m, elem)
 }
@@ -17,5 +17,5 @@ set_listelem(c, m, elem)
 
 }
 \description{
-set an element in the list
+setter function for an element in the list
 }

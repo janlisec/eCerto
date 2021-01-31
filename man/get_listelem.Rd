@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_utils.R
 \name{get_listelem}
 \alias{get_listelem}
-\title{get element of the main list}
+\title{getter function for element of the main list}
 \usage{
 get_listelem(c, m)
 }
@@ -15,5 +15,5 @@ get_listelem(c, m)
 
 }
 \description{
-get element of the main list
+getter function for element of the main list
 }
