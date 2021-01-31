@@ -16,4 +16,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     shiny,
-    shinyjs
+    shinyjs,
+    DT,
+    openxlsx,
+    outliers,
+    moments
+Suggests: 
+    plyr

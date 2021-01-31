@@ -15,7 +15,14 @@ xlsxload_ExcelServer = function(id) {
     # when sheet is selected, upload Excel and enable button
     t = shiny::reactive({
       shiny::req(sh())
-      openxlsx::read.xlsx(shiny::isolate(datafile()$datapath[1]), sh())
+      tryCatch({
+        lapply(shiny::isolate(datafile()$datapath), function(x) {
+          openxlsx::read.xlsx(x, sh())
+        })
+      }, error = function(e) {
+        stop(safeError(e))
+      })
+      
     })
   })
 }

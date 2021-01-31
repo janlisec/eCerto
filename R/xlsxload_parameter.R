@@ -45,27 +45,41 @@ xlsxload_parameter_UI = function(id) {
 xlsxload_parametertabsServer = function(id, dat, excelformat) {
   stopifnot(is.reactive(dat))
   shiny::moduleServer(id, function(input, output, session) {
-    shiny::observeEvent(excelformat(), {
-      shiny::updateTabsetPanel(session = session,
-                               inputId = "params",
-                               selected = excelformat())
+    
+    # cd creates a random number everytime data, excel format or rowsliders change
+    # so that reactive gets invalidated even with unchanged
+    cd = reactiveVal() 
+    
+    observeEvent(excelformat(), {
+      updateTabsetPanel(session = session,
+                        inputId = "params",
+                        selected = excelformat())
+      cd(rnorm(1))
       sliderupdate(session, dat)
     })
     
     # update slider when new data set
-    shiny::observeEvent(dat(), {
+    observeEvent(dat(), {
       sliderupdate(session, dat)
+    })
+    
+    observeEvent({
+      input$rowslider
+      input$colslider
+    },{
+      cd(rnorm(1))
     })
     
     # TODO validation part here
     
     # returns list with selected additional parameters (if any)
     list(
-      param_format = shiny::reactive(excelformat()),
-      start_row = shiny::reactive(input$rowslider[1]),
-      end_row = shiny::reactive(input$rowslider[2]),
-      start_col = shiny::reactive(input$colslider[1]),
-      end_col = shiny::reactive(input$colslider[2])
+      change_detector = cd, # generate random number to trigger event even with unchanged inputs
+      param_format = reactive(excelformat()),
+      start_row = reactive(input$rowslider[1]),
+      end_row = reactive(input$rowslider[2]),
+      start_col = reactive(input$colslider[1]),
+      end_col = reactive(input$colslider[2])
     )
   })
 }

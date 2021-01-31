@@ -27,5 +27,8 @@ xlsxload_xlsxinputServer = function(id) {
 #'
 #' @examples
 xlsxload_xlsxinputUI = function(id) {
-  shiny::fileInput(inputId = shiny::NS(id, "file"), label = "Test-Upload (.xlsx format)")
+  shiny::fileInput(
+    inputId = NS(id, "file"),
+    multiple = TRUE, 
+    label = "Test-Upload (.xlsx format)")
 }

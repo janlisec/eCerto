@@ -38,13 +38,17 @@ xlsxload_ImportCntrlServer = function(id, c) {
                              choices =  shiny::isolate(names(c)))
     
     
-    choosen = shiny::eventReactive(input$moduleSelect,{c[[input$moduleSelect]]},ignoreInit = TRUE )
+    choosen = shiny::eventReactive(input$moduleSelect,
+                                   {
+                                     get_listelem(c, input$moduleSelect)
+                                   }, ignoreInit = TRUE)
     
     t = xlsxload_uploadTabsetsServer("test", shiny::reactive({input$moduleSelect}), choosen) 
     
     # must be extra disabled after loading, since is in parent module of upload panel
     shiny::observeEvent(input$moduleSelect, {
-      if(is.null(c[[input$moduleSelect]])){
+      #if(is.null(c[[input$moduleSelect]])){
+      if(is.null(get_listelem(c,input$moduleSelect))){  
         shinyjs::enable("go")
       } else {
         shinyjs::disable("go")
@@ -53,21 +57,12 @@ xlsxload_ImportCntrlServer = function(id, c) {
     
     # update list ater pushing upload button
     shiny::observeEvent(input$go, {
-      #if(is.null(c[[input$moduleSelect]])){
-      c[[input$moduleSelect]] = t()
-      print("go")
+      
+      set_listelem(c, input$moduleSelect,t)
+      #c[[input$moduleSelect]] = isolate(t())
       shinyjs::disable("go")
-      #}
       
-      # --> ... 1) change label to "reload"
-      # updateActionButton(session = session,
-      #                    inputId = "go",
-      #                    label = "Reload")
-      # disable("go")
       # TODO "choice" grün färben
-      
-      # TODO disable panel
-      
     })
     
     # builds a reactive expression that only invalidates

@@ -29,38 +29,61 @@ xlsxload_uploadTabsetsServer = function(id, excelformat, dat) {
   # stopifnot(!is.reactivevalues(dat))
   shiny::moduleServer(id, function(input, output, session) {
     t = xlsxload_ExcelServer("upld") # call module that gives initial table
-    param =  xlsxload_parametertabsServer("pam", t,  excelformat)
+    param =  xlsxload_parametertabsServer("pam", reactive ({t()[[1]]}),  excelformat)
     
     
     shiny::observeEvent(excelformat(),{
       if(is.null(dat())){
-        print("is null")
         shinyjs::enable(id = "leftcol")
       } else if(!is.null(dat())) {
-        print("is not null")
         shinyjs::disable(id = "leftcol")
       } else {
-        print("wat anderes")
         shinyjs::enable(id = "leftcol")
       }
     })
     
+    # if one parameter gets updated, re-subset all data frames by index
+    a = shiny::eventReactive({
+      param$change_detector()
+    },{
+      lapply(shiny::isolate(t()), function(x) {
+        shiny::isolate(x)[as.numeric(param$start_row()):as.numeric(param$end_row()),
+                   as.numeric(param$start_col()):as.numeric(param$end_col())]})
+    }, ignoreInit = TRUE)
+    
+    
+    ex = reactive({
+      b1  = lapply(a(), function(x) {
+        laboratory_dataframe(isolate(x))
+      })
+      c = data.frame(
+        "Lab" = rep(paste0("L", seq_along(b1)), times = sapply(b1, nrow)),
+        as.data.frame(do.call(rbind, b1)),
+        #"File" = rep(input$c_input_files$name, times =sapply(data, nrow)),
+        "S_flt" = FALSE,
+        "L_flt" = FALSE)
+      c <- c[is.finite(c[, "value"]), ] # remove non-finite values
+      # perform minimal validation tests
+      validate(
+        need(is.numeric(c[, "value"]), message = "measurement values seem not to be numeric"),
+        need(length(levels(as.factor(c[, "Lab"]))) >= 2, message = "less than 2 Labs imported")
+      )
+      c <- data.frame("ID" = 1:nrow(c), c)
+      return(c)
+    })
+    
+    
+    
     
     output$preview_out = shiny::renderPrint(
       if(is.null(dat())){
-        list(
-          paste0(excelformat()," has not been uploaded yet"),
-          head(t()[param$start_row():param$end_row(), param$start_col():param$end_col()])
-        )
-        # t()[param$start_row():param$end_row(), param$start_col():param$end_col()]
+        head(a()[[1]])
       } else {
         head(dat())
-      }
-    )
+      })
     
-    shiny::reactive({
-      # t()[param$start_row():param$end_row(),]
-      t()[param$start_row():param$end_row(), param$start_col():param$end_col()]
+    reactive({
+      ex()
     })
   })
 }
