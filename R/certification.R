@@ -15,7 +15,7 @@
                  {
                    
                    if(!is.null(d())){
-                     print(is.null(d()))
+                     #print(is.null(d()))
                      updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
                    } else {
                      updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")

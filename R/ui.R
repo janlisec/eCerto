@@ -19,7 +19,7 @@ ui = function(){
   tagList(
   # tagList to make useShinyjs independent from tabs
   shinyjs::useShinyjs(),
-  navbarPage(
+  navbarPage(id = "navbarpage",
     title = div(
       class = "verticalhorizontal",
       img(
@@ -37,7 +37,8 @@ ui = function(){
         h1("Introducing eCerto"),
         p("Certifications are..."),
         p("Homogeneities are..."),
-        p("Stabilities are...")
+        p("Stabilities are..."),
+        actionLink("link_to_start", "Click here to start"),
       )
       
     ),

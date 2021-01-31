@@ -18,6 +18,24 @@ server = function(input, output, session) {
   )
   rv = do.call("reactiveValues", upld.cntrller)
   xlsxload_ImportCntrlServer("excelfile", rv)
+  
+  
+  observeEvent(input$link_to_start, {
+    updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "Start")
+  })
+  
+  # when certification was uploaded
+  # TODO what to do when RData is uploaded?
+  observeEvent(rv$Certifications,{
+    print("Cert was uploaded")
+    updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "tP_certification")
+  })
 
   .CertificiationServer(id = "certification", d = reactive({rv$Certifications}) )
   
