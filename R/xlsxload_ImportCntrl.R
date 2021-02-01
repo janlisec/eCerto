@@ -59,19 +59,11 @@ xlsxload_ImportCntrlServer = function(id, c) {
     shiny::observeEvent(input$go, {
       
       set_listelem(c, input$moduleSelect,t)
-      #c[[input$moduleSelect]] = isolate(t())
+      set_listUploadsource(c, input$moduleSelect, uploadsource = "Excel")
       shinyjs::disable("go")
       
       # TODO "choice" grün färben
+      
     })
-    
-    # builds a reactive expression that only invalidates
-    # when the value of input$go becomes out of date
-    # (i.e., when the button is pressed)
-    # eventReactive(input$go, {
-    #   # --> ... 3) return the data list
-    #   c
-    # })
-    
   })
 }

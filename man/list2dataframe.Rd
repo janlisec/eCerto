@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_utils.R
 \name{list2dataframe}
 \alias{list2dataframe}
-\title{Title}
+\title{transforms a list to a data frame}
 \usage{
 list2dataframe(l)
 }
@@ -13,5 +13,5 @@ list2dataframe(l)
 
 }
 \description{
-Title
+transforms a list to a data frame
 }

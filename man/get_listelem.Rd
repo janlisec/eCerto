@@ -2,18 +2,18 @@
 % Please edit documentation in R/data_utils.R
 \name{get_listelem}
 \alias{get_listelem}
-\title{getter function for element of the main list}
+\title{getter function for element of the "god list"}
 \usage{
 get_listelem(c, m)
 }
 \arguments{
-\item{c}{}
+\item{c}{"god list}
 
-\item{m}{}
+\item{m}{element to be fetched (e.g. "Certifications")}
 }
 \value{
 
 }
 \description{
-getter function for element of the main list
+getter function for element of the "god list"
 }

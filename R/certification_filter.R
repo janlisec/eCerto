@@ -77,18 +77,17 @@ filterServer = function(id, d) {
       updateSelectInput(
         inputId ="sel_analyt",
         label = "analyte",
-        choices = levels(d()[, "analyte"]),
-        selected = levels(d()[, "analyte"])[1]
+        choices = levels(data_of_godelement(d())[, "analyte"]),
+        selected = levels(data_of_godelement(d())[, "analyte"])[1]
       )
     })
     
     observeEvent(input$sel_analyt,{
-      #output$flt_samples <- renderUI({
-      #req(input$sel_analyt)
-      print(d())
-      choices <- d()[d()[, "analyte"] == input$sel_analyt, "ID"]
+
+      tmp = data_of_godelement(d())
+      choices <- tmp[tmp[, "analyte"] == input$sel_analyt, "ID"]
       selected <-
-        choices[which(d()[d()[, "analyte"] == input$sel_analyt, "S_flt"])]
+        choices[which(tmp[tmp[, "analyte"] == input$sel_analyt, "S_flt"])]
       updateSelectizeInput(
         inputId = "flt_samples",
         label = "Filter Sample IDs",

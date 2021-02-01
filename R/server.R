@@ -12,13 +12,12 @@ server = function(input, output, session) {
 
   # Upload Controller -------------------------------------------------------
   upld.cntrller = list(
-    "Certifications" = NULL,
-    "Homogeneity" = NULL,
-    "Stability" = NULL
+    "Certifications" = list("data" = NULL, "uploadsource" = NULL),
+    "Homogeneity" = list("data" = NULL, "uploadsource" = NULL),
+    "Stability" = list("data" = NULL, "uploadsource" = NULL)
   )
   rv = do.call("reactiveValues", upld.cntrller)
   xlsxload_ImportCntrlServer("excelfile", rv)
-  
   
   observeEvent(input$link_to_start, {
     updateNavbarPage(
@@ -28,14 +27,16 @@ server = function(input, output, session) {
   })
   
   # when certification was uploaded
-  # TODO what to do when RData is uploaded?
   observeEvent(rv$Certifications,{
-    print("Cert was uploaded")
-    updateNavbarPage(
-      session = session,
-      inputId = "navbarpage",
-      selected = "tP_certification")
-  })
+    if(get_listUploadsource(rv, "Certifications")=="Excel"){
+      print("Cert Excel was uploaded")
+      updateNavbarPage(
+        session = session,
+        inputId = "navbarpage",
+        selected = "tP_certification")
+    }
+
+  }, ignoreInit = TRUE)
 
   .CertificiationServer(id = "certification", d = reactive({rv$Certifications}) )
   

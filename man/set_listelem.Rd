@@ -2,20 +2,20 @@
 % Please edit documentation in R/data_utils.R
 \name{set_listelem}
 \alias{set_listelem}
-\title{setter function for an element in the list}
+\title{setter function for an element in the "god list"}
 \usage{
-set_listelem(c, m, elem)
+set_listelem(c, m, dat)
 }
 \arguments{
-\item{c}{}
+\item{c}{"god list}
 
-\item{m}{}
+\item{m}{element to be fed (e.g. "Certifications")}
 
-\item{elem}{}
+\item{dat}{data}
 }
 \value{
 
 }
 \description{
-setter function for an element in the list
+setter function for an element in the "god list"
 }

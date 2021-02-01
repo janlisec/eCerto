@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_utils.R
 \name{laboratory_dataframe}
 \alias{laboratory_dataframe}
-\title{creates long pivot table}
+\title{creates long pivot table in laboratory style}
 \usage{
 laboratory_dataframe(x)
 }
@@ -13,5 +13,5 @@ laboratory_dataframe(x)
 
 }
 \description{
-creates long pivot table
+creates long pivot table in laboratory style
 }
