@@ -209,6 +209,7 @@
     
     output$LTS_plot2 <- shiny::renderPlot({
       c =  commentlist[["df"]]
+      c = c[-c(1:3)]
       input$LTS_ApplyNewValue
       req(LTS_Data())
       tmp <- LTS_Data()[[i()]]
@@ -218,7 +219,9 @@
           plot_lts_data(x = x, type=0) 
         })
         plot(x=tmp[["val"]][-c(1:3),"Date"], y=est, xlab="Measurement Point", ylab="LTS month estimate")
-        if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=24, bg="red")
+        
+        
+        if(sum(!is.na(c))>=1) points(x = tmp[["val"]][!is.na(c),"Date"],y = est[!is.na(c)], pch=24, bg="red")
       }
     })
     
