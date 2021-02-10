@@ -2,12 +2,12 @@
 #'
 #' @param d_start 
 #' @param d_end 
+#' @noRd
 #'
 #' @return
 #' @export
 #'
 #' @examples
-#' @noRd
 mondf <- function(d_start, d_end) { 
   lt <- as.POSIXlt(as.Date(d_start, origin="1900-01-01"))
   d_start <- lt$year*12 + lt$mon 
