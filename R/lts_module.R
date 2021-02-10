@@ -74,7 +74,12 @@
       input$LTS_ApplyNewValue
       LTS_Data()[[i()]][["val"]]
       # getData("LTS_dat")[[i()]][["val"]]
-    }, options = list(paging = TRUE, pageLength = 25, searching = FALSE), rownames=NULL, server = FALSE, selection = 'single')
+    }, options = list(
+      paging = TRUE, 
+      pageLength = 25, 
+      searching = FALSE,
+      stateSave = TRUE # for SelectPage
+      ), rownames=NULL, server = FALSE, selection = 'single')
     
     
     output$LTS_def <- DT::renderDataTable({
@@ -106,8 +111,6 @@
       data.frame(mon, vals)
     })
     
-    previous = reactiveVal(-1)
-    
     # # REPORT LTS
     # output$Report <- downloadHandler(
     #   filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf" ),
@@ -127,19 +130,38 @@
     #   }
     # )
     
-    
+    # when a row in table was selected
     observeEvent(input$LTS_vals_rows_selected, {
       req(LTS_Data(), commentlist)
+      
+      
       if(!is.null(input$LTS_vals_rows_selected)){
+        # when a row is selected
         e = commentlist[["df"]][[input$LTS_vals_rows_selected]]
+        s = input$LTS_vals_rows_selected # selected row
         shinyjs::enable(id = "datacomment")
+        updateTextInput(
+          session = session,
+          inputId = "datacomment",
+          placeholder = paste0(
+            "comment for month ", d()[s,"mon"], " and value ", d()[s,"vals"]
+            ) 
+        )
       } else {
-        # when no row is selected
+        # when row gets deselected/ no row is selected
         e = NA
         shinyjs::disable(id = "datacomment")
+        updateTextInput(
+          session = session,
+          inputId = "datacomment",
+          placeholder = paste0(
+            "select point or row to comment"
+          ) 
+        )
       }
       updateTextInput(session,"datacomment", value = e) # clear textInput when deselected
     }, ignoreNULL = FALSE)
+    
     
     # create list for populating with comments (3 steps)
     d_length = reactive({
@@ -151,7 +173,7 @@
       commentlist$df = d_length()
     })
     
-    
+    # when some comment was entered, save in reactivevalues
     observeEvent(input$datacomment, {
       req(input$LTS_vals_rows_selected)
       if(input$datacomment != "" ){
@@ -171,7 +193,6 @@
       ### select a point in data table and mark in plot -- plot 1 --
       if (length(s)) points(x = d()[s,"mon"],y = d()[s,"vals"], pch = 19, cex = 2)
       ### select a point in data table and mark in plot -- plot 1 -- end
-      
       ### change color of triangle for commented points
       if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=24, bg="red")
     })
@@ -180,32 +201,39 @@
       c =  commentlist[["df"]]
       input$LTS_ApplyNewValue
       req(LTS_Data())
-      # par(mfrow=c(2,1))
       plot_lts_data(x = LTS_Data()[[i()]], type=2)
-      
       if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=24, bg="red")
     })
     
-    # select Rows in data table proxy when clicking on a point in the plot
-    proxy = DT::dataTableProxy("LTS_vals")
+    # proxy for changing the table
+    proxy = DT::dataTableProxy("LTS_vals") 
+    
+    #  when clicking on a point in the plot, select Rows in data table proxy
     observeEvent(input$plot1_click, {
+      # 1/3 nearest point to click location 
       a = nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE)
-      ind = which(d()$mon==a$mon & d()$vals==a$vals)
-      DT::selectRows(proxy, ind)
+      # 2/3 index in table
+      ind = which(d()$mon==a$mon & d()$vals==a$vals) 
+      # 3/3 
+      DT::selectRows(proxy = proxy, selected =  ind)
+      DT::selectPage(
+        proxy = proxy,
+        page = ind %/% input$LTS_vals_state$length + 1)
+      #DT::selectPage(which(input$Table_rows_all == clickId) %/% input$Table_state$length + 1)
     })
     
-    # small information which point was clicked
-    output$click_info <- renderPrint({
-      s = input$LTS_vals_rows_selected
-      if (length(s)){
-        c = commentlist[["df"]][[input$LTS_vals_rows_selected]]
-        #if(!is.na(c)){
-        data.frame(d()[s,],"comment"=c)
-        #  } else {
-        #   data.frame(d()[s,])
-        #  }
-      }
-    })
+    # # small information which point was clicked
+    # output$click_info <- renderPrint({
+    #   s = input$LTS_vals_rows_selected
+    #   if (length(s)){
+    #     c = commentlist[["df"]][[input$LTS_vals_rows_selected]]
+    #     #if(!is.na(c)){
+    #     data.frame(d()[s,],"comment"=c)
+    #     #  } else {
+    #     #   data.frame(d()[s,])
+    #     #  }
+    #   }
+    # })
     
     output$LTS_plot2 <- shiny::renderPlot({
       c =  commentlist[["df"]]
@@ -219,8 +247,6 @@
           plot_lts_data(x = x, type=0) 
         })
         plot(x=tmp[["val"]][-c(1:3),"Date"], y=est, xlab="Measurement Point", ylab="LTS month estimate")
-        
-        
         if(sum(!is.na(c))>=1) points(x = tmp[["val"]][!is.na(c),"Date"],y = est[!is.na(c)], pch=24, bg="red")
       }
     })
@@ -309,12 +335,14 @@
           fluidRow(
             column(
               8,
-              shinyjs::disabled(textInput(
-                inputId = NS(id,"datacomment"), 
-                label = "data comment",
-                value = "",  
-                placeholder = "select point or row to comment"
-              ))
+              shinyjs::disabled(
+                textInput(
+                  inputId = NS(id,"datacomment"), 
+                  label = "data comment",
+                  value = "",  
+                  placeholder = "select point or row to comment"
+                  )
+                )
             ),
             column(
               4,
