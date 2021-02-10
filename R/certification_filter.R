@@ -44,19 +44,7 @@ filterUI = function(id){
       )
     ),
   )
-  # column(
-  #   3,
-  #   selectInput(
-  #     inputId = "opt_show_files",
-  #     label = "Data view",
-  #     choices = c("none", "kompakt", "standard", "boxplot"),
-  #     selected = "none"
-  #   )
-  # )
-  
-  
-  
-  
+ 
   
 }
 
@@ -82,27 +70,26 @@ filterServer = function(id, d) {
       )
     })
     
+    # ID Filter
     observeEvent(input$sel_analyt,{
-
       tmp = data_of_godelement(d())
-      choices <- tmp[tmp[, "analyte"] == input$sel_analyt, "ID"]
-      selected <-
-        choices[which(tmp[tmp[, "analyte"] == input$sel_analyt, "S_flt"])]
+      choices = tmp[tmp[["analyte"]] == input$sel_analyt, "ID"]
+      choices = choices[!is.na(choices)]
+      selected = choices[which(tmp[tmp[["analyte"]] == input$sel_analyt, "S_flt"])]
       updateSelectizeInput(
         inputId = "flt_samples",
         label = "Filter Sample IDs",
         choices = choices,
         selected = selected
       )
-      #})
     }, ignoreInit = TRUE)
     
-    reactive({
-      list(
-        analyte = reactive({input$sel_analyt}),
-        id = reactive({input$flt_samples})
-      )
-    })
+    
+    list(
+      analyte = reactive({input$sel_analyt}),
+      id_filt = reactive({input$flt_samples}),
+      precision = reactive({input$precision})
+    )
     
     
     # precision:
