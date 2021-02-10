@@ -17,7 +17,7 @@ server = function(input, output, session) {
     "Stability" = list("data" = NULL, "uploadsource" = NULL)
   )
   rv = do.call("reactiveValues", upld.cntrller)
-  xlsxload_ImportCntrlServer("excelfile", rv)
+  .ImportCntrlServer("excelfile", rv)
   
   observeEvent(input$link_to_start, {
     updateNavbarPage(
@@ -39,6 +39,8 @@ server = function(input, output, session) {
   }, ignoreInit = TRUE)
 
   .CertificiationServer(id = "certification", d = reactive({rv$Certifications}) )
+  
+  .longtermstabilityServer("lts")
   
   # TODO hier müssen die Ergebnisse aus rv() verteilt werden!
   # observeEvent(rv(),

@@ -4,7 +4,7 @@
 \alias{ui}
 \title{Title}
 \usage{
-ui()
+ui(request)
 }
 \value{
 
