@@ -9,7 +9,7 @@
 .longtermstabilityServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
     
-    datalist = reactiveValues("comment"= NULL)
+    datalist = reactiveValues("lts_data" = NULL, "comment"= NULL)
     
     LTS_Data <- reactive({
       if (!is.null(input$LTS_input_file)) {
@@ -120,11 +120,14 @@
         e = datalist[["comment"]][[input$LTS_vals_rows_selected]]
         s = input$LTS_vals_rows_selected # selected row
         shinyjs::enable(id = "datacomment")
+        # change title when value was selected in table or plot
         updateTextInput(
           session = session,
           inputId = "datacomment",
-          placeholder = paste0(
-            "comment for month ", d()[s,"mon"], " and value ", d()[s,"vals"]
+          label = paste0("data comment for month ", 
+            d()[s,"mon"], 
+            " and value ", 
+            d()[s,"vals"]
             ) 
         )
       } else {
@@ -134,11 +137,12 @@
         updateTextInput(
           session = session,
           inputId = "datacomment",
-          placeholder = paste0(
-            "select point or row to comment"
-          ) # TODO nicht placeholder --> label
+          label  = paste0(
+            "data comment"
+          ) 
         )
       }
+      # when a value was entered before already
       updateTextInput(session,"datacomment", value = e) # clear textInput when deselected
     }, ignoreNULL = FALSE)
     
@@ -180,7 +184,7 @@
     
     output$LTS_plot2 <- shiny::renderPlot({
       c =  datalist[["comment"]]
-      c = c[-c(1:3)]
+      # c = c[-c(1:3)]
       input$LTS_ApplyNewValue
       req(datalist$lts_data)
       tmp <- datalist$lts_data[[i()]]
@@ -242,7 +246,7 @@
         # Set up parameters to pass to Rmd document
         params <- list(
           c = datalist[["comment"]], 
-          dat = datalist$lts_data[[i()]]
+          dat = datalist$lts_datas
           )
         
         if(tinytex::tinytex_root() == "") tinytex::install_tinytex()
