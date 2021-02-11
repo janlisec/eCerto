@@ -9,6 +9,8 @@
 .longtermstabilityServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
     
+    datalist = reactiveValues("comment"= NULL)
+    
     LTS_Data <- reactive({
       if (!is.null(input$LTS_input_file)) {
       file.type <- tools::file_ext(input$LTS_input_file$datapath)
@@ -49,14 +51,18 @@
       }
     })
     
+    observeEvent(LTS_Data(),{
+      datalist$lts_data = LTS_Data()
+    })
+    
     output$LTS_fileUploaded <- reactive({
-      return(!is.null(LTS_Data()))
+      return(!is.null(datalist$lts_data))
     })
     outputOptions(output, 'LTS_fileUploaded', suspendWhenHidden=FALSE)
     
     LTS_KWs <- reactive({
       #req(LTS_Data())
-      sapply(LTS_Data(), function(x) { x[["def"]][,"KW"] })
+      sapply(datalist$lts_data, function(x) { x[["def"]][,"KW"] })
     })
     
     output$LTS_sel_KW <- renderUI({
@@ -77,7 +83,7 @@
     output$LTS_vals <- DT::renderDataTable({
       # req(LTS_Data())
       input$LTS_ApplyNewValue
-      LTS_Data()[[i()]][["val"]]
+      datalist$lts_data[[i()]][["val"]]
       # getData("LTS_dat")[[i()]][["val"]]
     }, options = list(
       paging = TRUE, 
@@ -87,8 +93,8 @@
       ), rownames=NULL, server = FALSE, selection = 'single')
     
     output$LTS_def <- DT::renderDataTable({
-      req(LTS_Data())
-      LTS_Data()[[i()]][["def"]]
+      req(datalist$lts_data)
+      datalist$lts_data[[i()]][["def"]]
     }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL)
     
     output$LTS_NewVal <- DT::renderDataTable({
@@ -96,7 +102,7 @@
     }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL, editable=TRUE)
     
     d = reactive({
-      x = LTS_Data()[[i()]]
+      x = datalist$lts_data[[i()]]
       # x = getData("LTS_dat")[[i()]]
       vals <- x[["val"]][,"Value"]
       rt <- x[["val"]][,"Date"]
@@ -108,10 +114,10 @@
     
     # when a row in table was selected
     observeEvent(input$LTS_vals_rows_selected, {
-      req(LTS_Data(), commentlist)
+      req(datalist$lts_data, datalist)
       if(!is.null(input$LTS_vals_rows_selected)){
         # when a row is selected
-        e = commentlist[["df"]][[input$LTS_vals_rows_selected]]
+        e = datalist[["comment"]][[input$LTS_vals_rows_selected]]
         s = input$LTS_vals_rows_selected # selected row
         shinyjs::enable(id = "datacomment")
         updateTextInput(
@@ -130,34 +136,33 @@
           inputId = "datacomment",
           placeholder = paste0(
             "select point or row to comment"
-          ) 
+          ) # TODO nicht placeholder --> label
         )
       }
       updateTextInput(session,"datacomment", value = e) # clear textInput when deselected
     }, ignoreNULL = FALSE)
     
     
-    # create list for populating with comments (3 steps)
+    # create list for populating with comments (2 steps)
     d_NAvec = reactive({ rep(NA, nrow(d())) })
-    commentlist = reactiveValues("df"= NULL)
-    observe({ commentlist$df = d_NAvec() })
+    observe({ datalist$comment = d_NAvec() })
     
     # when some comment was entered, save in reactivevalues
     observeEvent(input$datacomment, {
       req(input$LTS_vals_rows_selected)
       if(input$datacomment != "" ){
         # for some reason, after switching from commented row to another, shiny gives ""
-        commentlist[["df"]][[input$LTS_vals_rows_selected]] = input$datacomment
+        datalist[["comment"]][[input$LTS_vals_rows_selected]] = input$datacomment
       }
     })
     
     # Data Figures
     output$LTS_plot1_1 <- shiny::renderPlot({ 
       s = input$LTS_vals_rows_selected
-      c =  commentlist[["df"]]
+      c =  datalist[["comment"]]
       input$LTS_ApplyNewValue
-      req(LTS_Data())
-      plot_lts_data(x = LTS_Data()[[i()]], type=1)
+      req(datalist$lts_data)
+      plot_lts_data(x = datalist$lts_data[[i()]], type=1)
       ### select a point in data table and mark in plot -- plot 1 --
       if (length(s)) points(x = d()[s,"mon"],y = d()[s,"vals"], pch = 19, cex = 2)
       ### select a point in data table and mark in plot -- plot 1 -- end
@@ -166,19 +171,19 @@
     })
     
     output$LTS_plot1_2 = shiny::renderPlot({
-      c =  commentlist[["df"]]
+      c =  datalist[["comment"]]
       input$LTS_ApplyNewValue
-      req(LTS_Data())
-      plot_lts_data(x = LTS_Data()[[i()]], type=2)
+      req(datalist$lts_data)
+      plot_lts_data(x = datalist$lts_data[[i()]], type=2)
       if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=24, bg="red")
     })
     
     output$LTS_plot2 <- shiny::renderPlot({
-      c =  commentlist[["df"]]
+      c =  datalist[["comment"]]
       c = c[-c(1:3)]
       input$LTS_ApplyNewValue
-      req(LTS_Data())
-      tmp <- LTS_Data()[[i()]]
+      req(datalist$lts_data)
+      tmp <- datalist$lts_data[[i()]]
       if(nrow(tmp[["val"]])>4) {
         est <- sapply(4:nrow(tmp[["val"]]), function(i) { 
           x <- tmp; x[["val"]] <- x[["val"]][1:i,]
@@ -216,19 +221,11 @@
       LTS_tmp_val(tmp)
     })
     
-    # TODO
+    # add new value
     observeEvent(input$LTS_ApplyNewValue, ignoreNULL = TRUE, ignoreInit = TRUE, {
-      # if (input$LTS_ApplyNewValue>=1) {
-      #   #LTS_Data <- getData("LTS_dat")
-      #   LTS_Data()[[i()]][["val"]] <- rbind(LTS_Data()[[i()]][["val"]], LTS_tmp_val())
-      #   # assign("LTS_dat", value=LTS_dat, envir = env_perm)
-      # }
-      showModal(modalDialog(
-        title = "Somewhat important message",
-        "Curently not implemented",
-        easyClose = TRUE,
-        footer = NULL
-      ))
+      if (input$LTS_ApplyNewValue>=1) {
+        datalist$lts_data[[i()]][["val"]] <- rbind(datalist$lts_data[[i()]][["val"]], LTS_tmp_val())
+      }
     })
     
     # REPORT LTS
@@ -244,8 +241,8 @@
         
         # Set up parameters to pass to Rmd document
         params <- list(
-          c = commentlist[["df"]], 
-          dat = LTS_Data()[[i()]]
+          c = datalist[["comment"]], 
+          dat = datalist$lts_data[[i()]]
           )
         
         if(tinytex::tinytex_root() == "") tinytex::install_tinytex()
@@ -262,10 +259,10 @@
     
     # BACKUP
     output$LTS_Save <- downloadHandler(
-      filename = function() { paste0(LTS_Data()[[i()]][["def"]][,"RM"], '.RData') },
+      filename = function() { paste0(datalist$lts_data[[i()]][["def"]][,"RM"], '.RData') },
       content = function(file) {
        # LTS_dat <- getData("LTS_dat")
-        save(LTS_Data(), file = file)
+        save(datalist$lts_data, file = file)
       },
       contentType = "RData"
     )
