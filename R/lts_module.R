@@ -117,7 +117,7 @@
       req(datalist$lts_data, datalist)
       if(!is.null(input$LTS_vals_rows_selected)){
         # when a row is selected
-        e = datalist[["comment"]][[input$LTS_vals_rows_selected]]
+        e = datalist[["comment"]][[i()]][[input$LTS_vals_rows_selected]]
         s = input$LTS_vals_rows_selected # selected row
         shinyjs::enable(id = "datacomment")
         # change title when value was selected in table or plot
@@ -147,8 +147,15 @@
     }, ignoreNULL = FALSE)
     
     
-    # create list for populating with comments (2 steps)
-    d_NAvec = reactive({ rep(NA, nrow(d())) })
+    # create list for populating each KW with comments (2 steps)
+    d_NAvec = reactive({ 
+      commentlist = list()
+      # of length of list [[]]
+      for (i in 1:length(datalist$lts_data)) {
+        commentlist[[i]] = rep(NA, nrow(d())) 
+      }
+      return(commentlist)
+    })
     observe({ datalist$comment = d_NAvec() })
     
     # when some comment was entered, save in reactivevalues
@@ -156,14 +163,15 @@
       req(input$LTS_vals_rows_selected)
       if(input$datacomment != "" ){
         # for some reason, after switching from commented row to another, shiny gives ""
-        datalist[["comment"]][[input$LTS_vals_rows_selected]] = input$datacomment
+        # therefore this "if" condition is necessary to check
+        datalist[["comment"]][[i()]][[input$LTS_vals_rows_selected]] = input$datacomment
       }
     })
     
     # Data Figures
     output$LTS_plot1_1 <- shiny::renderPlot({ 
       s = input$LTS_vals_rows_selected
-      c =  datalist[["comment"]]
+      c =  datalist[["comment"]][[i()]]
       input$LTS_ApplyNewValue
       req(datalist$lts_data)
       plot_lts_data(x = datalist$lts_data[[i()]], type=1)
@@ -175,7 +183,7 @@
     })
     
     output$LTS_plot1_2 = shiny::renderPlot({
-      c =  datalist[["comment"]]
+      c =  datalist[["comment"]][[i()]]
       input$LTS_ApplyNewValue
       req(datalist$lts_data)
       plot_lts_data(x = datalist$lts_data[[i()]], type=2)
@@ -183,7 +191,7 @@
     })
     
     output$LTS_plot2 <- shiny::renderPlot({
-      c =  datalist[["comment"]]
+      c =  datalist[["comment"]][[i()]]
       # c = c[-c(1:3)]
       input$LTS_ApplyNewValue
       req(datalist$lts_data)
@@ -246,7 +254,7 @@
         # Set up parameters to pass to Rmd document
         params <- list(
           c = datalist[["comment"]], 
-          dat = datalist$lts_datas
+          dat = datalist[["lts_data"]]
           )
         
         if(tinytex::tinytex_root() == "") tinytex::install_tinytex()

@@ -10,33 +10,36 @@ params:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## R Markdown
+## Plots
 
 This is a report about long term stability by Bundesanstalt für Materialforschung.
+The following pages contain plots:
+\newpage
 
-```{r pre-calculation of month-value data frame}
-x = params$dat
-vals <- x[["val"]][,"Value"]
-rt <- x[["val"]][,"Date"]
-mon <- sapply(rt, function(x) { mondf(d_start = rt[1], d_end = x) })
-d = data.frame(mon, vals)
+
+```{r, results='asis'}
+
+for (i in 1:length(params$dat)) {
+  kw_i = params$dat[[i]]
+  com_i = params$c[[i]]
+  
+  # calculate month (2 steps)
+  rt = kw_i[["val"]][["Date"]]
+  mon <- sapply(rt, function(x) { mondf(d_start = rt[1], d_end = x) })
+  
+  plot_lts_data(x = kw_i, type=1)
+  points(x = mon[!is.na(com_i)],y = kw_i[["val"]][!is.na(com_i),"Value"],pch = 24,bg = "red")
+  
+  plot_lts_data(x = kw_i, type=2)
+  points(x = mon[!is.na(com_i)],y = kw_i[["val"]][!is.na(com_i),"Value"],pch = 24,bg = "red")
+   
+  
+  # new page (both 2 lines):
+  cat("\n\n\\pagebreak\n")
+  writeLines("ValueForV")
+}
 ```
 
-
-```{r}
-plot_lts_data(x = params$dat, type=1)
-if(sum(!is.na(params$c))>=1){
-  points(x = d[!is.na(params$c),"mon"],y = d[!is.na(params$c),"vals"], pch=24, bg="red")
-} 
-```
-
-
-```{r}
-plot_lts_data(x = params$dat, type=2)
-if(sum(!is.na(params$c))>=1){
-  points(x = d[!is.na(params$c),"mon"],y = d[!is.na(params$c),"vals"], pch=24, bg="red")
-} 
-```
 
 ## Summary
 
