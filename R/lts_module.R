@@ -104,24 +104,7 @@
       data.frame(mon, vals)
     })
     
-    # # REPORT LTS
-    # output$Report <- downloadHandler(
-    #   filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf" ),
-    #   content = function(file) {
-    #     # temporarily switch to the temp dir, in case you do not have write permission to the current working directory
-    #     owd <- setwd(tempdir(check = TRUE))
-    #     on.exit(setwd(owd))
-    #     writeLines(text = Report_Vorlage_Analyt(), con = 'Report_Vorlage_tmp.Rmd')
-    #     out <- rmarkdown::render(
-    #       input = 'Report_Vorlage_tmp.Rmd',
-    #       output_format = rmarkdown::pdf_document(),
-    #       params = list("res" = c_res()),
-    #       # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
-    #       envir = new.env(parent = globalenv())
-    #     )
-    #     file.rename(out, file)
-    #   }
-    # )
+
     
     # when a row in table was selected
     observeEvent(input$LTS_vals_rows_selected, {
@@ -172,7 +155,6 @@
     output$LTS_plot1_1 <- shiny::renderPlot({ 
       s = input$LTS_vals_rows_selected
       c =  commentlist[["df"]]
-      print(c)
       input$LTS_ApplyNewValue
       req(LTS_Data())
       plot_lts_data(x = LTS_Data()[[i()]], type=1)
@@ -248,6 +230,35 @@
         footer = NULL
       ))
     })
+    
+    # REPORT LTS
+    output$Report <- downloadHandler(
+      filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf" ),
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it, in
+        # case we don't have write permissions to the current working dir (which
+        # can happen when deployed).
+        rmdfile = system.file("rmd","LTSreport.Rmd", package = "ecerto")
+        tempReport <- file.path(tempdir(), "LTSreport.Rmd")
+        file.copy(rmdfile, tempReport, overwrite = TRUE)
+        
+        # Set up parameters to pass to Rmd document
+        params <- list(
+          c = commentlist[["df"]], 
+          dat = LTS_Data()[[i()]]
+          )
+        
+        if(tinytex::tinytex_root() == "") tinytex::install_tinytex()
+        
+        # Knit the document, passing in the `params` list, and eval it in a
+        # child of the global environment (this isolates the code in the document
+        # from the code in this app).
+        rmarkdown::render(tempReport, output_file = file,
+                          params = params,
+                          envir = new.env(parent = globalenv())
+        )
+      }
+    )
     
     # BACKUP
     output$LTS_Save <- downloadHandler(

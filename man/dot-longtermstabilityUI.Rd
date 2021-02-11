@@ -2,7 +2,7 @@
 % Please edit documentation in R/lts_module.R
 \name{.longtermstabilityUI}
 \alias{.longtermstabilityUI}
-\title{Title}
+\title{User Interface of LTS module}
 \usage{
 .longtermstabilityUI(id)
 }
@@ -13,5 +13,5 @@
 
 }
 \description{
-Title
+User Interface of LTS module
 }
