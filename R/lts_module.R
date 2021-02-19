@@ -36,10 +36,23 @@
         check_validity <- TRUE; i <- 0
         while (check_validity & i < length(LTS_dat)) {
           for (i in 1:length(LTS_dat)) {
-            validate(
-              need(c("KW","KW_Def","KW_Unit","CertVal","U","U_Def","Device","Method") %in% colnames(LTS_dat[[i]][["def"]]), "No all required input columns found in input file 'definition' part."),
-              need(c("Value","Date","File") %in% colnames(LTS_dat[[i]][["val"]]), "No all required input columns found in input file 'data' part.")
-            )
+            def_cols <- c("KW","KW_Def","KW_Unit","CertVal","U","U_Def","Device","Method","Coef_of_Var","acc_Datasets")
+            check_def_cols <- def_cols %in% colnames(LTS_dat[[i]][["def"]])
+            val_cols <- c("Value","Date","File")
+            check_val_cols <- val_cols %in% colnames(LTS_dat[[i]][["val"]])
+            # validate(
+            #   need(all(check_def_cols), paste0("Can't find the following columns in input file", i, " 'definition' part:", paste(names(check_def_cols)[!check_def_cols],collapse=", "))),
+            #   need(all(check_val_cols), paste0("Can't find the following columns in input file", i, " 'data' part:", paste(names(check_val_cols)[!check_val_cols],collapse=", ")))
+            # )
+            if (!all(check_def_cols)) {
+              warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(def_cols[!check_def_cols], collapse=", "))
+              shinyalert::shinyalert(title = "Warning", text = warn_txt, type = "warning")
+              LTS_dat[[i]][["def"]] <- cbind(LTS_dat[[i]][["def"]], as.data.frame(matrix(NA, ncol=sum(!check_def_cols), nrow=1, dimnames=list(NULL,def_cols[!check_def_cols]))))
+            }
+            if (!all(check_val_cols)) {
+              warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(val_cols[!check_val_cols], collapse=", "))
+              shinyalert::shinyalert(title = "Warning", text = warn_txt, type = "warning")
+            }
             if (!"Comment" %in% colnames(LTS_dat[[i]][["val"]])) LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Comment"=as.character(rep(NA, nrow(LTS_dat[[i]][["val"]]))))
             if (class(LTS_dat[[i]][["val"]][,"Date"])!="Date") {
               LTS_dat[[i]][["val"]][,"Date"] <- as.Date.character(LTS_dat[[i]][["val"]][,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d"))
@@ -75,7 +88,7 @@
     output$LTS_sel_KW <- renderUI({
       req(LTS_KWs())
       ns <- session$ns
-      selectInput(inputId=ns("LTS_sel_KW"), label="KW", choices=LTS_KWs(), selected=isolate(i()))
+      selectInput(inputId=ns("LTS_sel_KW"), label="Property", choices=LTS_KWs(), selected=isolate(i()))
     })
 
     # i <- reactive({
@@ -106,7 +119,12 @@
 
     output$LTS_def <- DT::renderDataTable({
       req(datalist$lts_data)
-      datalist$lts_data[[i()]][["def"]]
+      out <- datalist$lts_data[[i()]][["def"]]
+      out[,"Coef_of_Var"] <- round(out[,"Coef_of_Var"], 4)
+      # reorder and rename columns according to wish of Carsten Prinz
+      out <- out[,c("RM","KW","KW_Def","KW_Unit","CertVal","U","U_Def","Coef_of_Var","acc_Datasets","Device","Method")]
+      colnames(out) <- c("Reference Material","Property","Name","Unit","Certified value","Uncertainty","Uncertainty unit","Coeff. of Variance","accepted Datasets","Device","Method")
+      return(out)
     }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL)
 
     output$LTS_NewVal <- DT::renderDataTable({
