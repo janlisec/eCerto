@@ -6,15 +6,8 @@
 #'
 #' @examples
 
-
-
-<<<<<<< HEAD:R/app_ui.R
 app_ui = function(request){
   
-=======
-ui = function(request){
-
->>>>>>> abb2edab82555d2d915f167420e7fb3ad61b5def:R/ui.R
   # ui = function() {
   #   shiny::fluidPage(
   #     shinyjs::useShinyjs(),
@@ -89,11 +82,8 @@ ui = function(request){
             #############################
             column(width = 9,
                    wellPanel(
-<<<<<<< HEAD:R/app_ui.R
-                     shiny::wellPanel(ecerto::.ImportCntrlUI("excelfile")) 
-=======
+
                      shiny::wellPanel(.ImportCntrlUI("excelfile"))
->>>>>>> abb2edab82555d2d915f167420e7fb3ad61b5def:R/ui.R
                    )
                    #######################################
             )
