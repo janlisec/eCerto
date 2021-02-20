@@ -1,56 +1,65 @@
 ---
-title: "Report --Long Term Stability--"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+- \usepackage[utf8]{inputenc}
 output: pdf_document
 params:
-  c: NA
   dat: NA
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(kableExtra)
+l_max <- 45
 ```
 
-## Plots
-
-This is a report about long term stability by Bundesanstalt für Materialforschung.
-The following pages contain plots:
-\newpage
-
-
-```{r, results='asis'}
+```{r, echo=FALSE, results='asis'}
+#cat("\n\n\\pagebreak\n")
 
 for (i in 1:length(params$dat)) {
-  kw_i = params$dat[[i]]
-  com_i = params$c[[i]]
+#for (i in 1:2) {
+  # 2 plots as in App version
+  par(mfrow=c(1,2))
+    plot_lts_data(x = params$dat[[i]], type=1)
+    plot_lts_data(x = params$dat[[i]], type=2)
+  par(mfrow=c(1,1))
   
-  # calculate month (2 steps)
-  rt = kw_i[["val"]][["Date"]]
-  mon <- sapply(rt, function(x) { mondf(d_start = rt[1], d_end = x) })
-  
-  plot_lts_data(x = kw_i, type=1)
-  points(x = mon[!is.na(com_i)],y = kw_i[["val"]][!is.na(com_i),"Value"],pch = 24,bg = "red")
-  
-  plot_lts_data(x = kw_i, type=2)
-  points(x = mon[!is.na(com_i)],y = kw_i[["val"]][!is.na(com_i),"Value"],pch = 24,bg = "red")
-   
-  
-  # new page (both 2 lines):
+  # table as imported
+  print(knitr::kable(x=params$dat[[i]][["def"]][,-c(1:4),drop=F], format = "simple", row.names = FALSE, caption = "Caption"))
   cat("\n\n\\pagebreak\n")
-  writeLines("ValueForV")
+  
+  # table of values (potentially modified)
+  com <- params$dat[[i]][["val"]][,"Comment"]
+  out <- params$dat[[i]][["val"]][,1:3]
+  if (any(!is.na(com))) {
+    out$C <- ""
+    out$C[!is.na(com)] <- 1:sum(!is.na(com))
+    com <- com[!is.na(com)]
+  } else {
+    com <- NULL
+  }
+  if (nrow(out)>l_max & nrow(out)<2*l_max) {
+    n_fill <- 2*l_max-nrow(out)
+    dummy <- data.frame(out[1:n_fill,])
+    for (j in 1:ncol(dummy)) dummy[,j] <- rep(NA,n_fill)
+    out <- cbind(out[1:l_max,], rbind(out[(l_max+1):nrow(out),], dummy))
+  }
+  print(knitr::kable(x=out, row.names = FALSE) %>%
+  kable_styling(latex_options = "striped", font_size = 8) %>% kableExtra::footnote(number=com))
+  cat("\n\n\\pagebreak\n")
 }
+
 ```
-
-
-## Summary
-
-```{r}
-knitr::kable(params$dat[["def"]])
-```
-
-## Statistical Information Monitoring:
-
-```{r}
-length(params$dat)
-```
-
-

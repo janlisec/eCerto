@@ -34,4 +34,8 @@ data/
 source/
 inst/extdata/
 inst/doc
+<<<<<<< HEAD
 shiny_bookmarks
+=======
+.Rproj.user
+>>>>>>> abb2edab82555d2d915f167420e7fb3ad61b5def

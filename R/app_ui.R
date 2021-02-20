@@ -8,21 +8,27 @@
 
 
 
+<<<<<<< HEAD:R/app_ui.R
 app_ui = function(request){
   
+=======
+ui = function(request){
+
+>>>>>>> abb2edab82555d2d915f167420e7fb3ad61b5def:R/ui.R
   # ui = function() {
   #   shiny::fluidPage(
   #     shinyjs::useShinyjs(),
   #     shiny::wellPanel(xlsxload_ImportCntrlUI("excelfile")),
   #     shiny::wellPanel(shiny::verbatimTextOutput("out")) )
   # }
-  
+
   shiny::tagList(
     # tagList to make useShinyjs independent from tabs
     shinyjs::useShinyjs(),
+    shinyalert::useShinyalert(),
     shiny::navbarPage(
       id = "navbarpage",
-      
+
       title = div(
         class = "verticalhorizontal",
         img(
@@ -34,10 +40,10 @@ app_ui = function(request){
         em("ecerto"),
         position = "relative"
       ),
-      
+
       shiny::tabPanel(
         "Home",
-        
+
         mainPanel(
           h1("Introducing eCerto"),
           p("Certifications are..."),
@@ -46,17 +52,17 @@ app_ui = function(request){
           actionLink("link_to_start", "Click here to start"),
           bookmarkButton()
         )
-        
+
       ),
       shiny::navbarMenu(
         title = "eCerto",
         icon = icon("angle-right"),
-        
+
         # tabs
         tabPanel(
           id = "start",
           title = "Start",
-          
+
           shiny::fluidRow(
             shiny::column(
               width = 3,
@@ -83,9 +89,13 @@ app_ui = function(request){
             #############################
             column(width = 9,
                    wellPanel(
+<<<<<<< HEAD:R/app_ui.R
                      shiny::wellPanel(ecerto::.ImportCntrlUI("excelfile")) 
+=======
+                     shiny::wellPanel(.ImportCntrlUI("excelfile"))
+>>>>>>> abb2edab82555d2d915f167420e7fb3ad61b5def:R/ui.R
                    )
-                   #######################################       
+                   #######################################
             )
           )
         ),
@@ -101,7 +111,7 @@ app_ui = function(request){
           #   verbose = FALSE
           # )$value
         ),
-        
+
         tabPanel(
           title = "Homogeneity",
           icon = icon("angle-right"),
@@ -125,7 +135,7 @@ app_ui = function(request){
           # )$value
         )
       ),
-      
+
       # Long term stability
       tabPanel(
         title = "LTS",
@@ -138,7 +148,7 @@ app_ui = function(request){
         #   verbose = FALSE
         # )$value
       ),
-      
+
       tabPanel(
         title = "Help",
         icon = icon("angle-right"),

@@ -1,6 +1,6 @@
 #' Title
 #'
-#' @param id 
+#' @param id
 #'
 #' @return
 #' @export
@@ -8,34 +8,52 @@
 #' @examples
 .longtermstabilityServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     datalist = reactiveValues("lts_data" = NULL, "comment"= NULL)
-    
+
     LTS_Data <- reactive({
       if (!is.null(input$LTS_input_file)) {
       file.type <- tools::file_ext(input$LTS_input_file$datapath)
+      if (!tolower(file.type) %in% c("rdata","xls","xlsx")) {
+        shinyalert::shinyalert(title = "Wrong Filetype?", text = "Please select an RData file or an Excel file.", type = "warning")
+        return(NULL)
+      }
       if (tolower(file.type)=="rdata") {
-          # tryCatch({ load(input$LTS_input_file$datapath[1]) }, error = function(e) { stop(safeError(e)) })
-          # if (!exists("LTS_dat")) {
-          #   warning("Did load RData backup but could not find object 'LTS_dat' inside.")
-          #   LTS_dat <- NULL
-          # }
-        showModal(modalDialog(
-          title = "Somewhat important message",
-          "Currently not implemented for RData",
-          easyClose = TRUE,
-          footer = NULL
-        ))
+          tryCatch({ load(input$LTS_input_file$datapath[1]) }, error = function(e) { stop(safeError(e)) })
+          if (!exists("LTS_dat")) {
+            warning("Did load RData backup but could not find object 'LTS_dat' inside.")
+            LTS_dat <- NULL
+          }
+        # showModal(modalDialog(
+        #   title = "Somewhat important message",
+        #   "Currently not implemented for RData",
+        #   easyClose = TRUE,
+        #   footer = NULL
+        # ))
       } else {
         LTS_dat <- read_lts_input(file = input$LTS_input_file$datapath[1])
         # plot(LTS_dat)
         check_validity <- TRUE; i <- 0
         while (check_validity & i < length(LTS_dat)) {
           for (i in 1:length(LTS_dat)) {
-            validate(
-              need(c("KW","KW_Def","KW_Unit","CertVal","U","U_Def","Device","Method") %in% colnames(LTS_dat[[i]][["def"]]), "No all required input columns found in input file 'definition' part."),
-              need(c("Value","Date","File") %in% colnames(LTS_dat[[i]][["val"]]), "No all required input columns found in input file 'data' part.")
-            )
+            def_cols <- c("KW","KW_Def","KW_Unit","CertVal","U","U_Def","Device","Method","Coef_of_Var","acc_Datasets")
+            check_def_cols <- def_cols %in% colnames(LTS_dat[[i]][["def"]])
+            val_cols <- c("Value","Date","File")
+            check_val_cols <- val_cols %in% colnames(LTS_dat[[i]][["val"]])
+            # validate(
+            #   need(all(check_def_cols), paste0("Can't find the following columns in input file", i, " 'definition' part:", paste(names(check_def_cols)[!check_def_cols],collapse=", "))),
+            #   need(all(check_val_cols), paste0("Can't find the following columns in input file", i, " 'data' part:", paste(names(check_val_cols)[!check_val_cols],collapse=", ")))
+            # )
+            if (!all(check_def_cols)) {
+              warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(def_cols[!check_def_cols], collapse=", "))
+              shinyalert::shinyalert(title = "Warning", text = warn_txt, type = "warning")
+              LTS_dat[[i]][["def"]] <- cbind(LTS_dat[[i]][["def"]], as.data.frame(matrix(NA, ncol=sum(!check_def_cols), nrow=1, dimnames=list(NULL,def_cols[!check_def_cols]))))
+            }
+            if (!all(check_val_cols)) {
+              warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(val_cols[!check_val_cols], collapse=", "))
+              shinyalert::shinyalert(title = "Warning", text = warn_txt, type = "warning")
+            }
+            if (!"Comment" %in% colnames(LTS_dat[[i]][["val"]])) LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Comment"=as.character(rep(NA, nrow(LTS_dat[[i]][["val"]]))))
             if (class(LTS_dat[[i]][["val"]][,"Date"])!="Date") {
               LTS_dat[[i]][["val"]][,"Date"] <- as.Date.character(LTS_dat[[i]][["val"]][,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d"))
             }
@@ -44,63 +62,75 @@
         }
        }
       #        assign("LTS_dat", value=LTS_dat, envir = env_perm)
-      
+
       return(LTS_dat)
       #      } else {
       #        return(getData("LTS_dat"))
       }
     })
-    
+
     observeEvent(LTS_Data(),{
-      datalist$lts_data = LTS_Data()
+      datalist[["lts_data"]] <- LTS_Data()
     })
-    
+
     output$LTS_fileUploaded <- reactive({
       return(!is.null(datalist$lts_data))
     })
     outputOptions(output, 'LTS_fileUploaded', suspendWhenHidden=FALSE)
-    
+
     LTS_KWs <- reactive({
       #req(LTS_Data())
-      sapply(datalist$lts_data, function(x) { x[["def"]][,"KW"] })
+      # hier isolate verwendet, damit das input nicht nach Eintrag eines neuen Wertes neu befüllt wird
+      # müsste ok sein, da wir den Tabellen upload sowieso deaktivieren sobald erfolgreich
+      sapply(isolate(datalist$lts_data), function(x) { x[["def"]][,"KW"] })
     })
-    
+
     output$LTS_sel_KW <- renderUI({
       req(LTS_KWs())
       ns <- session$ns
-      selectInput(inputId=ns("LTS_sel_KW"), label="KW", choices=LTS_KWs())
+      selectInput(inputId=ns("LTS_sel_KW"), label="Property", choices=LTS_KWs(), selected=isolate(i()))
     })
-    
-    i <- reactive({
-      req(input$LTS_sel_KW)
-      which(LTS_KWs() %in% input$LTS_sel_KW)
+
+    # i <- reactive({
+    #   req(input$LTS_sel_KW)
+    #   which(LTS_KWs() %in% input$LTS_sel_KW)
+    # })
+
+    i <- reactiveVal(1)
+    observeEvent(input$LTS_sel_KW, {
+      i(which(LTS_KWs() %in% input$LTS_sel_KW))
     })
-    
-    LTS_new_val <- data.frame("Value"=0.0, "Date"=as.Date(format(Sys.time(), "%Y-%m-%d")), "File"=as.character("filename"), stringsAsFactors = FALSE)
+
+    LTS_new_val <- data.frame("Value"=0.0, "Date"=as.Date(format(Sys.time(), "%Y-%m-%d")), "File"=as.character("filename"), "Comment"=as.character(NA), stringsAsFactors = FALSE)
     LTS_tmp_val <- reactiveVal(LTS_new_val)
-    
+
     # Data Tables
+    tab_LTSvals <- reactiveVal(isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
+    observeEvent(i(), {tab_LTSvals(datalist[["lts_data"]][[i()]][["val"]][,1:3])})
+    #observeEvent(input$LTS_ApplyNewValue, {tab_LTSvals(datalist[["lts_data"]][[i()]][["val"]][,1:3])})
     output$LTS_vals <- DT::renderDataTable({
       # req(LTS_Data())
+      req(i())
       input$LTS_ApplyNewValue
-      datalist$lts_data[[i()]][["val"]]
+      tab_LTSvals(isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
+      tab_LTSvals()
       # getData("LTS_dat")[[i()]][["val"]]
-    }, options = list(
-      paging = TRUE, 
-      pageLength = 25, 
-      searching = FALSE,
-      stateSave = TRUE # for SelectPage
-      ), rownames=NULL, server = FALSE, selection = 'single')
-    
+    }, options = list(paging = TRUE, pageLength = 25, searching = FALSE, stateSave = TRUE), rownames=NULL, server = FALSE, selection = 'single')
+
     output$LTS_def <- DT::renderDataTable({
       req(datalist$lts_data)
-      datalist$lts_data[[i()]][["def"]]
+      out <- datalist$lts_data[[i()]][["def"]]
+      out[,"Coef_of_Var"] <- round(out[,"Coef_of_Var"], 4)
+      # reorder and rename columns according to wish of Carsten Prinz
+      out <- out[,c("RM","KW","KW_Def","KW_Unit","CertVal","U","U_Def","Coef_of_Var","acc_Datasets","Device","Method")]
+      colnames(out) <- c("Reference Material","Property","Name","Unit","Certified value","Uncertainty","Uncertainty unit","Coeff. of Variance","accepted Datasets","Device","Method")
+      return(out)
     }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL)
-    
+
     output$LTS_NewVal <- DT::renderDataTable({
       LTS_new_val
     }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL, editable=TRUE)
-    
+
     d = reactive({
       x = datalist$lts_data[[i()]]
       # x = getData("LTS_dat")[[i()]]
@@ -109,26 +139,24 @@
       mon <- sapply(rt, function(x) { mondf(d_start = rt[1], d_end = x) })
       data.frame(mon, vals)
     })
-    
 
-    
     # when a row in table was selected
     observeEvent(input$LTS_vals_rows_selected, {
       req(datalist$lts_data, datalist)
       if(!is.null(input$LTS_vals_rows_selected)){
         # when a row is selected
-        e = datalist[["comment"]][[i()]][[input$LTS_vals_rows_selected]]
+        e = datalist[["lts_data"]][[i()]][["val"]][[input$LTS_vals_rows_selected,"Comment"]]
         s = input$LTS_vals_rows_selected # selected row
         shinyjs::enable(id = "datacomment")
         # change title when value was selected in table or plot
         updateTextInput(
           session = session,
           inputId = "datacomment",
-          label = paste0("data comment for month ", 
-            d()[s,"mon"], 
-            " and value ", 
+          label = paste0("data comment for month ",
+            d()[s,"mon"],
+            " and value ",
             d()[s,"vals"]
-            ) 
+            )
         )
       } else {
         # when row gets deselected/ no row is selected
@@ -139,90 +167,100 @@
           inputId = "datacomment",
           label  = paste0(
             "data comment"
-          ) 
+          )
         )
       }
       # when a value was entered before already
       updateTextInput(session,"datacomment", value = e) # clear textInput when deselected
     }, ignoreNULL = FALSE)
-    
-    
+
+
     # create list for populating each KW with comments (2 steps)
-    d_NAvec = reactive({ 
-      commentlist = list()
-      # of length of list [[]]
-      for (i in 1:length(datalist$lts_data)) {
-        commentlist[[i]] = rep(NA, nrow(d())) 
-      }
-      return(commentlist)
-    })
-    observe({ datalist$comment = d_NAvec() })
-    
+    # d_NAvec = reactive({
+    #   req(datalist$lts_data)
+    #   commentlist = list()
+    #   # of length of list [[]]
+    #   for (i in 1:length(datalist$lts_data)) {
+    #     #if (datalist$lts_data[[i]]["val"])
+    #     commentlist[[i]] = rep(NA, nrow(d()))
+    #   }
+    #   return(commentlist)
+    # })
+    # observe({ datalist$comment = d_NAvec() })
+
     # when some comment was entered, save in reactivevalues
     observeEvent(input$datacomment, {
       req(input$LTS_vals_rows_selected)
       if(input$datacomment != "" ){
         # for some reason, after switching from commented row to another, shiny gives ""
         # therefore this "if" condition is necessary to check
-        datalist[["comment"]][[i()]][[input$LTS_vals_rows_selected]] = input$datacomment
+        datalist[["lts_data"]][[i()]][["val"]][input$LTS_vals_rows_selected,"Comment"] <- input$datacomment
       }
     })
-    
+
     # Data Figures
-    output$LTS_plot1_1 <- shiny::renderPlot({ 
-      s = input$LTS_vals_rows_selected
-      c =  datalist[["comment"]][[i()]]
+    output$LTS_plot1_1 <- shiny::renderPlot({
+      req(datalist[["lts_data"]], i(), d())
       input$LTS_ApplyNewValue
-      req(datalist$lts_data)
+      s <- input$LTS_vals_rows_selected
+      #c <- datalist[["lts_data"]][[i()]][["val"]][,"Comment"]
       plot_lts_data(x = datalist$lts_data[[i()]], type=1)
       ### select a point in data table and mark in plot -- plot 1 --
-      if (length(s)) points(x = d()[s,"mon"],y = d()[s,"vals"], pch = 19, cex = 2)
+      if (length(s)) points(x = d()[s,"mon"], y = d()[s,"vals"], pch = 19, cex = 2)
       ### select a point in data table and mark in plot -- plot 1 -- end
       ### change color of triangle for commented points
-      if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=24, bg="red")
+      #if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=24, bg="red")
     })
-    
+
     output$LTS_plot1_2 = shiny::renderPlot({
-      c =  datalist[["comment"]][[i()]]
+      req(datalist[["lts_data"]], i())
       input$LTS_ApplyNewValue
-      req(datalist$lts_data)
+      #c <- datalist[["lts_data"]][[i()]][["val"]][,"Comment"]
       plot_lts_data(x = datalist$lts_data[[i()]], type=2)
-      if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=24, bg="red")
+      # I outcommented this one because y-data get adjusted in the plotting function such that d() is not correct anymore
+      # $ToDo --> modify plotting functions to react on comments if present
+      # if(sum(!is.na(c))>=1) points(x = d()[!is.na(c),"mon"],y = d()[!is.na(c),"vals"], pch=21, bg="red")
     })
-    
+
     output$LTS_plot2 <- shiny::renderPlot({
-      c =  datalist[["comment"]][[i()]]
+      req(datalist[["lts_data"]], i(),input$LTS_ApplyNewValue)
+      input$LTS_ApplyNewValue
+      #c <- datalist[["lts_data"]][[i()]][["val"]][,"Comment"]
       # c = c[-c(1:3)]
       input$LTS_ApplyNewValue
-      req(datalist$lts_data)
       tmp <- datalist$lts_data[[i()]]
       if(nrow(tmp[["val"]])>4) {
-        est <- sapply(4:nrow(tmp[["val"]]), function(i) { 
+        est <- sapply(4:nrow(tmp[["val"]]), function(i) {
           x <- tmp; x[["val"]] <- x[["val"]][1:i,]
-          plot_lts_data(x = x, type=0) 
+          plot_lts_data(x = x, type=0)
         })
         plot(x=tmp[["val"]][-c(1:3),"Date"], y=est, xlab="Measurement Point", ylab="LTS month estimate")
-        if(sum(!is.na(c))>=1) points(x = tmp[["val"]][!is.na(c),"Date"],y = est[!is.na(c)], pch=24, bg="red")
+        #if(sum(!is.na(c))>=1) points(x = tmp[["val"]][!is.na(c),"Date"],y = est[!is.na(c)], pch=24, bg="red")
       }
     })
-    
+
     # proxy for changing the table
-    proxy = DT::dataTableProxy("LTS_vals") 
-    
+    proxy = DT::dataTableProxy("LTS_vals")
+
     #  when clicking on a point in the plot, select Rows in data table proxy
     observeEvent(input$plot1_click, {
-      # 1/3 nearest point to click location 
+      # 1/3 nearest point to click location
       a = nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE)
       # 2/3 index in table
-      ind = which(d()$mon==a$mon & d()$vals==a$vals) 
-      # 3/3 
+      #print(a)
+      if (nrow(a)>=2) {
+        shinyalert::shinyalert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
+        a <- a[which.min(a[,"dist_"])[1],]
+      }
+      ind = which(d()$mon==a$mon & d()$vals==a$vals)
+      # 3/3
       DT::selectRows(proxy = proxy, selected =  ind)
       DT::selectPage(
         proxy = proxy,
-        page = ind %/% input$LTS_vals_state$length + 1)
+        page = (ind - 1) %/% input$LTS_vals_state$length + 1)
     })
-    
-    
+
+
     #Add/Remove Value
     observeEvent(input[["LTS_NewVal_cell_edit"]], {
       cell <- input[["LTS_NewVal_cell_edit"]]
@@ -232,14 +270,14 @@
       tmp[i, j] <- DT::coerceValue(val = cell$value, old = tmp[i, j])
       LTS_tmp_val(tmp)
     })
-    
+
     # add new value
     observeEvent(input$LTS_ApplyNewValue, ignoreNULL = TRUE, ignoreInit = TRUE, {
       if (input$LTS_ApplyNewValue>=1) {
         datalist$lts_data[[i()]][["val"]] <- rbind(datalist$lts_data[[i()]][["val"]], LTS_tmp_val())
       }
     })
-    
+
     # REPORT LTS
     output$Report <- downloadHandler(
       filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf" ),
@@ -247,18 +285,23 @@
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
-        rmdfile = system.file("rmd","LTSreport.Rmd", package = "ecerto")
+        #browser()
+        rmdfile = system.file("rmd", "LTSreport.Rmd", package = "ecerto")[1]
+        # keep default option for no package/online version
+        if (rmdfile=="") rmdfile <- "R/LTSreport.Rmd"
+        # ToDo Find solution to work in both (app and package)
+        #if (rmdfile=="") rmdfile <- "c:/Users/jlisec/Rpackages/Rpackage_eCerto/ecerto/inst/rmd/LTSreport.Rmd"
         tempReport <- file.path(tempdir(), "LTSreport.Rmd")
         file.copy(rmdfile, tempReport, overwrite = TRUE)
-        
+
         # Set up parameters to pass to Rmd document
-        params <- list(
-          c = datalist[["comment"]], 
-          dat = datalist[["lts_data"]]
-          )
-        
-        if(tinytex::tinytex_root() == "") tinytex::install_tinytex()
-        
+        params <- list(dat = datalist[["lts_data"]])
+
+        # das hat bei mir zum download (und der nicht erfolgreichen Installation) von tinytech geführt
+        # für das online tool brauchen wir das nicht (shiny server kümmert sich)
+        # für die app würde ich der installation eine MsgBox vorschalten ob der Nutzer das möchte (ich habe z.B. bereits ein MikTeX drauf und kann auf tiny verzichten)
+        #if (tinytex::tinytex_root() == "") tinytex::install_tinytex()
+
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).
@@ -268,41 +311,48 @@
         )
       }
     )
-    
+
     # BACKUP
     output$LTS_Save <- downloadHandler(
       filename = function() { paste0(datalist$lts_data[[i()]][["def"]][,"RM"], '.RData') },
       content = function(file) {
        # LTS_dat <- getData("LTS_dat")
-        save(datalist$lts_data, file = file)
+        LTS_dat <- datalist[["lts_data"]]
+        # !! save cant handle reactiveVal object properly. has to be written to local variable first
+        save(LTS_dat, file = file)
       },
       contentType = "RData"
     )
-    
-    
+
+
   })
 }
 
 #' User Interface of LTS module
 #'
-#' @param id 
+#' @param id
 #'
 #' @return
 #' @export
 #'
 #' @examples
 .longtermstabilityUI = function(id) {
-   wellPanel(
+
+  # set up shinyAlert
+  shinyalert::useShinyalert()
+
+  wellPanel(
      conditionalPanel(
        condition="output.LTS_fileUploaded == false",
        ns = NS(id), # namespace of current module
       fileInput(
-        inputId = NS(id,"LTS_input_file"), 
+        inputId = NS(id,"LTS_input_file"),
         label = "Import Excel/RData File",
-        multiple = FALSE, 
+        multiple = FALSE,
         accept = c("xls","xlsx","RData")
         ),
-       helpText("Example Table"), imageOutput(NS(id,"myImage11a"), inline = TRUE),
+       helpText("Example Table"),
+       imageOutput(NS(id,"myImage11a"), inline = TRUE),
      ),
     conditionalPanel(
       condition="output.LTS_fileUploaded == true",
@@ -310,40 +360,34 @@
       fluidRow(
         column(4, DT::dataTableOutput(NS(id,"LTS_vals"))),
         column(
-          8, 
+          8,
           fluidRow(
-            column(12, DT::dataTableOutput(NS(id,"LTS_def"))), 
+            column(12, DT::dataTableOutput(NS(id,"LTS_def"))),
             style = "margin-bottom:15px;"
             ),
           fluidRow(
             column(2, uiOutput(NS(id,"LTS_sel_KW"))),
             column(2, strong("Save LTS Data"), p(),downloadButton(NS(id,"LTS_Save"), label="Backup")),
             tags$style(type="text/css", "#LTS_Save {margin-top:-3%;}"),
-            column(6, DT::dataTableOutput(NS(id,"LTS_NewVal"))),
+            column(2, strong("Download Report"), p(), downloadButton(NS(id,"Report"))),
+            tags$style(type="text/css", "#Report {margin-top:-1%;}"),
+            column(4, DT::dataTableOutput(NS(id,"LTS_NewVal"))),
             tags$style(type="text/css", "#LTS_NewVal {margin-top:-3%;}"),
             column(2, strong("New Entry"), p(), actionButton(inputId = NS(id,"LTS_ApplyNewValue"), label = "Add data")),
             tags$style(type="text/css", "#LTS_ApplyNewValue {margin-top:-1%;}")
-            ),
-          verbatimTextOutput(NS(id,"click_info")),
+          ),
+          #verbatimTextOutput(NS(id,"click_info")),
           fluidRow(
             column(
-              8,
+              6,
               shinyjs::disabled(
                 textInput(
-                  inputId = NS(id,"datacomment"), 
+                  inputId = NS(id,"datacomment"),
                   label = "data comment",
-                  value = "",  
+                  value = "",
                   placeholder = "select point or row to comment"
                   )
                 )
-            ),
-            column(
-              4,
-              wellPanel(
-                fluidRow(strong("Download Report"),align = "center"),
-                br(),
-                fluidRow(downloadButton(NS(id,"Report")),align = "center") 
-              )
             )
           ),
           fluidRow(column(12, plotOutput(NS(id,"LTS_plot1_1"), height = "450px", click = NS(id,"plot1_click")))),
