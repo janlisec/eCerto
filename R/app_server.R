@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-server = function(input, output, session) {
+app_server = function(input, output, session) {
 
   # Upload Controller -------------------------------------------------------
   upld.cntrller = list(
@@ -17,6 +17,7 @@ server = function(input, output, session) {
     "Stability" = list("data" = NULL, "uploadsource" = NULL)
   )
   rv = do.call("reactiveValues", upld.cntrller)
+  
   .ImportCntrlServer("excelfile", rv)
   
   observeEvent(input$link_to_start, {
@@ -28,8 +29,8 @@ server = function(input, output, session) {
   
   # when certification was uploaded
   observeEvent(rv$Certifications,{
+    # when source is Excel
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
-      print("Cert Excel was uploaded")
       updateNavbarPage(
         session = session,
         inputId = "navbarpage",

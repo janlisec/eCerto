@@ -8,7 +8,7 @@
 
 
 
-ui = function(request){
+app_ui = function(request){
   
   # ui = function() {
   #   shiny::fluidPage(
@@ -83,7 +83,7 @@ ui = function(request){
             #############################
             column(width = 9,
                    wellPanel(
-                     shiny::wellPanel(.ImportCntrlUI("excelfile")) 
+                     shiny::wellPanel(ecerto::.ImportCntrlUI("excelfile")) 
                    )
                    #######################################       
             )

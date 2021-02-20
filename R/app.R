@@ -2,11 +2,11 @@
 #'
 #' @return
 #' @export
-#' @import shiny
+
 #'
 #' @examples
 app <- function(){
   
-  shinyApp(ui, server, enableBookmarking = "server")
-
+  shiny::shinyApp(ui = app_ui(), server = app_server, enableBookmarking = "server")
+  
 }
