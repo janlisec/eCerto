@@ -344,6 +344,7 @@
                              choices =  shiny::isolate(names(c)))
     
     
+    # change the reactive if Cert, Homog oder Stab was choosen
     choosen = shiny::eventReactive(input$moduleSelect,
                                    {
                                      get_listelem(c, input$moduleSelect)

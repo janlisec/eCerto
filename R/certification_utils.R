@@ -25,6 +25,7 @@ list2dataframe = function(l) {
 #' @export
 #'
 #' @examples
+#' @noRd
 laboratory_dataframe = function(x) {
   stopifnot(!is.reactive(x))
   x = as.data.frame(x)

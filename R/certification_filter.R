@@ -32,7 +32,6 @@ filterUI = function(id){
                       selected = NULL,
                       multiple = TRUE
                     )
-                    #uiOutput(NS(id,"flt_samples"))
            )
     ),
     column(
