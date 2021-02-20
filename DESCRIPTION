@@ -17,7 +17,8 @@ Imports:
     outliers,
     moments,
     shiny,
-    tinytex
+    tinytex,
+    shinyalert
 Suggests: 
     plyr,
     testthat (>= 3.0.0)
