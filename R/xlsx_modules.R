@@ -6,6 +6,24 @@
 #' @export
 #'
 #' @examples
+.xlsxinputUI = function(id) {
+  shiny::fileInput(
+    inputId = NS(id, "file"),
+    multiple = TRUE, 
+    label = "Test-Upload (.xlsx format)",
+    accept = "xlsx"
+    )
+}
+
+#' XLSX INPUT MODULE SERVER
+#' Returns only the input from fileInput
+#'
+#' @param id 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 .xlsxinputServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
     
@@ -18,7 +36,7 @@
   })
 }
 
-#' Title
+#' SHEET MODULE UI
 #'
 #' @param id 
 #'
@@ -26,14 +44,11 @@
 #' @export
 #'
 #' @examples
-.xlsxinputUI = function(id) {
-  shiny::fileInput(
-    inputId = NS(id, "file"),
-    multiple = TRUE, 
-    label = "Test-Upload (.xlsx format)")
+.sheetUI = function(id) {
+  shiny::selectInput(shiny::NS(id, "sheet"), choices = NULL, label = "Sheet")
 }
 
-#' Title
+#' SHEET MODULE SERVER
 #'
 #' @param id 
 #' @param datafile 
@@ -49,31 +64,18 @@
   shiny::moduleServer(id, function(input, output, session) {
     #excel-file is uploaded --> update selectInput of available sheets
     shiny::observeEvent(datafile(), {
-      # # TODO validate --> lapply through all sheet names of all available
-      # # Excel finds and if different sheet names, throw error
+      # TODO validate --> lapply through all sheet names of all available
+      # Excel finds and if different sheet names, throw error
       # sheetlist = openxlsx::getSheetNames(datafile()$datapath)
       # validate(need(all(sapply(sheetlist[-1], FUN = identical, sheetlist[1]))))
       
-      choices_list = openxlsx::getSheetNames(datafile()$datapath[1])
+      choices_list = load_sheetnames(datafile()$datapath) 
       shiny::updateSelectInput(session = session,
                                inputId = "sheet",
                                choices = choices_list)
     })
-    #eventReactive(datafile(),input$sheet)
     shiny::reactive(input$sheet)
   })
-}
-
-#' Title
-#'
-#' @param id 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-.sheetUI = function(id) {
-  shiny::selectInput(shiny::NS(id, "sheet"), choices = NULL, label = "Sheet")
 }
 
 
@@ -90,18 +92,16 @@
     datafile = .xlsxinputServer("xlsxfile")
     sh = .sheetServer("sheet", datafile)
     
-    
     # when sheet is selected, upload Excel and enable button
     t = shiny::reactive({
       shiny::req(sh())
-      tryCatch({
-        lapply(shiny::isolate(datafile()$datapath), function(x) {
-          openxlsx::read.xlsx(x, sh())
-        })
-      }, error = function(e) {
-        stop(safeError(e))
-      })
       
+      l = load_excelfiles(datafile()$datapath, sh())
+      # add file name to data frame
+      for (i in 1:length(l)) {
+        l[[i]][["File"]] = rep(datafile()$name[i], nrow(l[[i]]))
+      }
+      return(l)
     })
   })
 }
@@ -256,38 +256,40 @@
       }
     })
     
-    # if one parameter gets updated, subset all data frames
-    a = eventReactive({
-      param$change_detector()
-    },{
-      datlist = isolate(t())
-      
-      lapply(datlist, function(x) {
-        x[as.numeric(param$start_row()):as.numeric(param$end_row()),
-          as.numeric(param$start_col()):as.numeric(param$end_col())]})
-    }, ignoreInit = TRUE)
+    # # if one parameter gets updated, subset all data frames
+    # a = eventReactive({
+    #   param$change_detector()
+    # },{
+    #   datlist = isolate(t())
+    #   
+    #   lapply(datlist, function(x) {
+    #     x[as.numeric(param$start_row()):as.numeric(param$end_row()),
+    #       as.numeric(param$start_col()):as.numeric(param$end_col())]})
+    # }, ignoreInit = TRUE)
     
+    # selects chosen rows and columns
+    a = .computation_preview_data("a", param, t)
     
-    
-    ex = reactive({
-      b1  = lapply(a(), function(x) {
-        laboratory_dataframe(isolate(x))
-      })
-      c = data.frame(
-        "Lab" = rep(paste0("L", seq_along(b1)), times = sapply(b1, nrow)),
-        as.data.frame(do.call(rbind, b1)),
-        #"File" = rep(input$c_input_files$name, times =sapply(data, nrow)),
-        "S_flt" = FALSE,
-        "L_flt" = FALSE)
-      c <- c[is.finite(c[, "value"]), ] # remove non-finite values
-      # perform minimal validation tests
-      # validate(
-      #   need(is.numeric(c[, "value"]), message = "measurement values seem not to be numeric"),
-      #   need(length(levels(as.factor(c[, "Lab"]))) >= 2, message = "less than 2 Labs imported")
-      # )
-      c <- data.frame("ID" = 1:nrow(c), c)
-      return(c)
-    })
+    ex = .computation_final_data(id, a)
+    # ex = reactive({
+    #   b1  = lapply(a(), function(x) {
+    #     laboratory_dataframe(isolate(x))
+    #   })
+    #   c = data.frame(
+    #     "Lab" = rep(paste0("L", seq_along(b1)), times = sapply(b1, nrow)),
+    #     as.data.frame(do.call(rbind, b1)),
+    #     #"File" = rep(input$c_input_files$name, times =sapply(data, nrow)),
+    #     "S_flt" = FALSE,
+    #     "L_flt" = FALSE)
+    #   c <- c[is.finite(c[, "value"]), ] # remove non-finite values
+    #   # perform minimal validation tests
+    #   # validate(
+    #   #   need(is.numeric(c[, "value"]), message = "measurement values seem not to be numeric"),
+    #   #   need(length(levels(as.factor(c[, "Lab"]))) >= 2, message = "less than 2 Labs imported")
+    #   # )
+    #   c <- data.frame("ID" = 1:nrow(c), c)
+    #   return(c)
+    # })
     
     
     output$preview_out = renderPrint(
@@ -303,6 +305,50 @@
     })
   })
 }
+
+.computation_preview_data = function(id, param, t){
+  
+  shiny::moduleServer(id, function(input, output, session){
+    # if one parameter gets updated, subset all data frames
+    a = eventReactive({
+      param$change_detector()
+    },{
+      datlist = isolate(t())
+      
+      lapply(datlist, function(x) {
+        a = x[as.numeric(param$start_row()):as.numeric(param$end_row()),
+          as.numeric(param$start_col()):as.numeric(param$end_col())]
+        a$File = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
+        return(a)
+      })
+    }, ignoreInit = TRUE)
+  })
+}
+
+.computation_final_data = function(id, a) {
+  shiny::moduleServer(id, function(input, output, session){
+    
+    ex = reactive({
+      b1  = lapply(a(), function(x) {
+        laboratory_dataframe(isolate(x))
+      })
+      c = data.frame(
+        "Lab" = rep(paste0("L", seq_along(b1)), times = sapply(b1, nrow)),
+        as.data.frame(do.call(rbind, b1)),
+        "S_flt" = FALSE,
+        "L_flt" = FALSE)
+      c <- c[is.finite(c[, "value"]), ] # remove non-finite values
+      # perform minimal validation tests
+      # validate(
+      #   need(is.numeric(c[, "value"]), message = "measurement values seem not to be numeric"),
+      #   need(length(levels(as.factor(c[, "Lab"]))) >= 2, message = "less than 2 Labs imported")
+      # )
+      c <- data.frame("ID" = 1:nrow(c), c)
+      return(c)
+    })
+  })
+}
+
 
 #' Title
 #'
