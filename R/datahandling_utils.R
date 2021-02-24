@@ -35,16 +35,54 @@ laboratory_dataframe = function(x) {
   analyte <- x[,1]
   unit <- x[,2]
   dat <- x[,-c(1:2)]
-  x <- data.frame("analyte"=factor(rep(analyte,times=ncol(dat)), levels=analyte),
-                  "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
-                  "value"=as.numeric(unlist(dat)),
-                  #"value"=unlist(dat),
-                  "unit"=as.character(rep(unit,times=ncol(dat))))
+  x <- data.frame(
+    "analyte"=factor(rep(analyte,times=ncol(dat)), levels=analyte),
+    "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
+    "value"=as.numeric(unlist(dat)),
+    "unit"=as.character(rep(unit,times=ncol(dat)))
+    )
+}
+
+load_sheetnames = function(filepath){
+  a = lapply(shiny::isolate(filepath), function(x) {
+    ext <- tools::file_ext(x)
+    if(tolower(ext)=="xlsx"){
+      openxlsx::getSheetNames(x)
+    } else {
+      shinyalert::shinyalert(title = "Wrong Filetype?", text = "Please select an Excel file.", type = "warning")
+      return(NULL)
+    }
+  })
   
-  
+  if(length(unique(a))!=1) {
+    shinyalert::shinyalert(
+      title = "Different sheetnames", 
+      text = "Sheet names are different", 
+      type = "warning"
+    )
+  } 
+  return(a[[1]])
 }
 
 
+load_excelfiles = function(filepath, sheet) {
+
+  lapply(shiny::isolate(filepath), function(x) {
+    ext <- tools::file_ext(x)
+    if(ext == "xlsx"){
+      tryCatch({
+        a = openxlsx::read.xlsx(x, sheet)
+        # a$File = rep(x,nrow(a))
+      }, error = function(e) {
+        stop(safeError(e))
+      })
+    } else {
+      validate("Invalid file; Please upload a .xlsx file")
+    }
+  })
+  
+
+}
 
 #' Returns the "data" element of the current "god list" element
 #'
