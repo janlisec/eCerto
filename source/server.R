@@ -94,8 +94,7 @@ shinyServer(function(input, output, session) {
       shinyjs::click(id = "show_table")
       return(out)
       # otherwise check if there are excel files available for reading as input
-    } else {
-      if (!is.null(input$c_input_files)) {
+    } else if (!is.null(input$c_input_files)) {
         #read from excel files
         file.type <- tools::file_ext(input$c_input_files$datapath)
         validate(need(
@@ -174,7 +173,7 @@ shinyServer(function(input, output, session) {
         # perform minimal validation tests
         validate(
           need(is.numeric(out[, "value"]), message = "measurement values seem not to be numeric"),
-          need(length(levels(out[, "Lab"])) >= 2, message = "less than 2 Labs imported")
+          need(length(levels(as.factor(out[, "Lab"]))) >= 2, message = "less than 2 Labs imported")
         )
         out <- data.frame("ID" = 1:nrow(out), out)
         updateNumericInput(session,
@@ -231,7 +230,7 @@ shinyServer(function(input, output, session) {
       } else {
         return(NULL)
       }
-    }
+    
   })
   
   # renderUI() captures the upload HTML control, which here can be hidden
@@ -311,19 +310,15 @@ shinyServer(function(input, output, session) {
     }
     validate(need(input$sel_analyt, message = "please select analyte"))
     # filter for specific analyte and remove user defined samples
-    if (!is.null(input$sel_analyt) &&
-        input$sel_analyt %in% out[, "analyte"])
+    if (!is.null(input$sel_analyt) && input$sel_analyt %in% out[, "analyte"])
       out <- out[out[, "analyte"] %in% input$sel_analyt, ]
-    if (!is.null(input$flt_samples) &&
-        any(out[, "ID"] %in% input$flt_samples))
+    if (!is.null(input$flt_samples) &&any(out[, "ID"] %in% input$flt_samples))
       out <-
       out[!(out[, "ID"] %in% input$flt_samples), ]
     else
       out[, "S_flt"] <- FALSE
-    if (!is.null(input$flt_labs) &&
-        any(out[, "Lab"] %in% input$flt_labs))
-      out[, "L_flt"] <-
-      out[, "Lab"] %in% input$flt_labs
+    if (!is.null(input$flt_labs) && any(out[, "Lab"] %in% input$flt_labs))
+      out[, "L_flt"] <- out[, "Lab"] %in% input$flt_labs
     else
       out[, "L_flt"] <- FALSE
     

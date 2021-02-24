@@ -250,7 +250,7 @@ sliderupdate = function(session, dat) {
     # update list ater pushing upload button
     observeEvent(input$go, {
       #if(is.null(c[[input$moduleSelect]])){
-        c[[input$moduleSelect]] = t()
+        c[[input$moduleSelect]] = isolate(t())
         print("go")
         shinyjs::disable("go")
       #}
@@ -301,6 +301,9 @@ server = function(input, output, session) {
   # observeEvent(excelfile(),{
   #   rv() = excelfile()
   # },ignoreInit = TRUE)
+  observeEvent(rv,{
+    print("Testobserve")
+  },ignoreInit = TRUE,ignoreNULL = TRUE)
   output$out = renderPrint(reactiveValuesToList(rv), width = 40)
   # output$out = renderPrint(is.reactivevalues(rv()))
 }

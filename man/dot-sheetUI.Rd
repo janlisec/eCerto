@@ -2,7 +2,7 @@
 % Please edit documentation in R/xlsx_modules.R
 \name{.sheetUI}
 \alias{.sheetUI}
-\title{Title}
+\title{SHEET MODULE UI}
 \usage{
 .sheetUI(id)
 }
@@ -13,5 +13,5 @@
 
 }
 \description{
-Title
+SHEET MODULE UI
 }

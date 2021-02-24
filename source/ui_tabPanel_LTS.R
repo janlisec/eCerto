@@ -18,7 +18,31 @@ wellPanel(
                column(2, strong("New Entry"), p(), actionButton(inputId = "LTS_ApplyNewValue", label = "Add data")),
                tags$style(type="text/css", "#LTS_ApplyNewValue {margin-top:-1%;}")
              ),
-             fluidRow(column(12, plotOutput("LTS_plot", height = "900px"))),
+             # data comment
+             verbatimTextOutput("click_info"),
+             fluidRow(
+               column(
+                 8,
+                 shinyjs::disabled(textInput(
+                   inputId = "datacomment", 
+                   label = "data comment",
+                   value = "",  
+                   placeholder = "select point or row to comment"
+                 ))
+               ),
+               column(
+                 4,
+                  wellPanel(
+                    fluidRow(strong("Download Report"),align = "center"),
+                   br(),
+                 fluidRow(downloadButton("Report"),align = "center") 
+                  )
+               )
+             ),
+           
+             # plots
+             fluidRow(column(12, plotOutput("LTS_plot1_1", height = "450", click = "plot1_click"))),
+             fluidRow(column(12, plotOutput("LTS_plot1_2", height = "450"))),
              fluidRow(column(12, plotOutput("LTS_plot2", height = "450px")))
       )
     )

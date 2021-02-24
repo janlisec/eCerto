@@ -2,7 +2,8 @@
 % Please edit documentation in R/xlsx_modules.R
 \name{.xlsxinputServer}
 \alias{.xlsxinputServer}
-\title{Title}
+\title{XLSX INPUT MODULE SERVER
+Returns only the input from fileInput}
 \usage{
 .xlsxinputServer(id)
 }
@@ -13,5 +14,6 @@
 
 }
 \description{
-Title
+XLSX INPUT MODULE SERVER
+Returns only the input from fileInput
 }

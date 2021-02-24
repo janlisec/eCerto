@@ -2,7 +2,7 @@
 % Please edit documentation in R/xlsx_modules.R
 \name{.sheetServer}
 \alias{.sheetServer}
-\title{Title}
+\title{SHEET MODULE SERVER}
 \usage{
 .sheetServer(id, datafile)
 }
@@ -15,5 +15,5 @@
 
 }
 \description{
-Title
+SHEET MODULE SERVER
 }

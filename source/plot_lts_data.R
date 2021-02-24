@@ -29,7 +29,15 @@ plot_lts_data <- function(x=NULL, type=1) {
   
   if (type==1) {
     # generate 'real time window' plot
-    plot(vals~mon, type="n", ylim=range(c(vals,mn+c(-1,1)*U), na.rm=T), xlab="Month [n]", ylab=ylab, sub=sub, main=main)
+    plot(
+      vals~mon, 
+      type="n", 
+      ylim=range(c(vals,mn+c(-1,1)*U), na.rm=T), 
+      xlab="Month [n]", 
+      ylab=ylab, 
+      sub=sub, 
+      main=main
+      )
     axis(side = 3, at = range(mon), labels = rt[c(1,length(rt))])
     abline(foo.lm, lty=2, col=4) # <-- slope
     abline(h=mn+c(-1,0,1)*U, lty=c(2,1,2), col=c(3,2,3))
@@ -38,7 +46,16 @@ plot_lts_data <- function(x=NULL, type=1) {
   
   if (type==2) {
     # generate 'fake time window' plot
-    plot(c(foo_adj,mn+b*foo_lts)~c(mon,foo_lts), pch=21, bg=rep(c(grey(0.6),2),times=c(length(vals),1)), ylim=range(c(foo_adj,mn+b*foo_lts,mn+c(-1,1)*U)), xlab="Month [n]", ylab=ylab, sub=sub, main=main)
+    plot(
+      c(foo_adj,mn+b*foo_lts)~c(mon,foo_lts),
+      pch=21, 
+      bg=rep(c(grey(0.6),2), times=c(length(vals),1)), 
+      ylim=range(c(foo_adj,mn+b*foo_lts,mn+c(-1,1)*U)), 
+      xlab="Month [n]", 
+      ylab=ylab, 
+      sub=sub, 
+      main=main
+      )
     # $$ToDo$$ end date estimation is only approximate (based on 30d/month)
     axis(side = 3, at = c(0, foo_lts), labels = c(rt[1],rt[1]+foo_lts*30))
     abline(lm(foo_adj~mon), lty=2, col=4)

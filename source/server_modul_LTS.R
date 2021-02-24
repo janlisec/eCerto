@@ -61,7 +61,8 @@ output$LTS_vals <- DT::renderDataTable({
   req(LTS_Data())
   input$LTS_ApplyNewValue
   getData("LTS_dat")[[i()]][["val"]]
-}, options = list(paging = TRUE, pageLength = 25, searching = FALSE), rownames=NULL)
+}, options = list(paging = TRUE, pageLength = 25, searching = FALSE), rownames=NULL, server = FALSE, selection = 'single')
+
 
 output$LTS_def <- DT::renderDataTable({
   req(LTS_Data())
@@ -72,14 +73,117 @@ output$LTS_NewVal <- DT::renderDataTable({
   LTS_new_val
 }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL, editable=TRUE)
 
+# calculation month
+# TODO export to a package function
+mondf <- function(d_start, d_end) { 
+  lt <- as.POSIXlt(as.Date(d_start, origin="1900-01-01"))
+  d_start <- lt$year*12 + lt$mon 
+  lt <- as.POSIXlt(as.Date(d_end, origin="1900-01-01"))
+  d_end <- lt$year*12 + lt$mon 
+  return(d_end - d_start )
+}
+
+
+d = reactive({
+  x = getData("LTS_dat")[[i()]]
+  vals <- x[["val"]][,"Value"]
+  rt <- x[["val"]][,"Date"]
+  mon <- sapply(rt, function(x) { mondf(d_start = rt[1], d_end = x) })
+  data.frame(mon, vals)
+})
+
+previous = reactiveVal(-1)
+
+# # REPORT LTS
+# output$Report <- downloadHandler(
+#   filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf" ),
+#   content = function(file) {
+#     # temporarily switch to the temp dir, in case you do not have write permission to the current working directory
+#     owd <- setwd(tempdir(check = TRUE))
+#     on.exit(setwd(owd))
+#     writeLines(text = Report_Vorlage_Analyt(), con = 'Report_Vorlage_tmp.Rmd')
+#     out <- rmarkdown::render(
+#       input = 'Report_Vorlage_tmp.Rmd',
+#       output_format = rmarkdown::pdf_document(),
+#       params = list("res" = c_res()),
+#       # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
+#       envir = new.env(parent = globalenv())
+#     )
+#     file.rename(out, file)
+#   }
+# )
+
+
+observeEvent(input$LTS_vals_rows_selected, {
+  req(LTS_Data(), commentlist)
+  if(!is.null(input$LTS_vals_rows_selected)){
+    e = commentlist[["df"]][[input$LTS_vals_rows_selected]]
+    shinyjs::enable(id = "datacomment")
+  } else {
+    # when no row is selected
+    e = NA
+    shinyjs::disable(id = "datacomment")
+  }
+  updateTextInput(session,"datacomment", value = e) # clear textInput when deselected
+}, ignoreNULL = FALSE)
+
+# create list for populating with comments (3 steps)
+d_length = reactive({
+  n = nrow(d())
+  rep(NA, n)
+})
+commentlist = reactiveValues("df"= NULL) #  reactive({nrow(d())})
+observe({
+  commentlist$df = d_length()
+})
+
+
+observeEvent(input$datacomment, {
+  req(input$LTS_vals_rows_selected)
+  
+  if(input$datacomment != "" ){
+    # for some reason, after switching from commented row to another, shiny gives ""
+    commentlist[["df"]][[input$LTS_vals_rows_selected]] = input$datacomment
+  }
+})
+
 # Data Figures
-output$LTS_plot <- shiny::renderPlot({
+output$LTS_plot1_1 <- shiny::renderPlot({ 
+  s = input$LTS_vals_rows_selected  
   input$LTS_ApplyNewValue
   req(LTS_Data())
-  par(mfrow=c(2,1))
   plot_lts_data(x = getData("LTS_dat")[[i()]], type=1)
+  ### select a point in data table and mark in plot
+  if (length(s)) points(x = d()[s,"mon"],y = d()[s,"vals"], pch = 19, cex = 2)
+  ### point selection in data table -- plot 1 -- end
+})
+
+output$LTS_plot1_2 = shiny::renderPlot({
+  input$LTS_ApplyNewValue
+  req(LTS_Data())
+  # par(mfrow=c(2,1))
   plot_lts_data(x = getData("LTS_dat")[[i()]], type=2)
-  par(mfrow=c(2,1))
+})
+
+# select Rows in data table proxy when clicking on a point in the plot
+proxy = DT::dataTableProxy("LTS_vals")
+observeEvent(input$plot1_click, {
+  a = nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE)
+  ind = which(d()$mon==a$mon & d()$vals==a$vals)
+  DT::selectRows(proxy, ind)
+})
+
+# small information which point was clicked
+output$click_info <- renderPrint({
+  s = input$LTS_vals_rows_selected
+  if (length(s)){
+    c = commentlist[["df"]][[input$LTS_vals_rows_selected]]
+   #if(!is.na(c)){
+     data.frame(d()[s,],"comment"=c)
+  #  } else {
+ #   data.frame(d()[s,])
+  #  }
+  }
 })
 
 output$LTS_plot2 <- shiny::renderPlot({
