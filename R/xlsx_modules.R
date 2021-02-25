@@ -45,7 +45,7 @@
 #'
 #' @examples
 .sheetUI = function(id) {
-  shiny::selectInput(shiny::NS(id, "sheet"), choices = NULL, label = "Sheet")
+  shiny::selectInput(shiny::NS(id, "sheet_sel"), choices = NULL, label = "Sheet")
 }
 
 #' SHEET MODULE SERVER
@@ -63,18 +63,14 @@
   
   shiny::moduleServer(id, function(input, output, session) {
     #excel-file is uploaded --> update selectInput of available sheets
-    shiny::observeEvent(datafile(), {
-      # TODO validate --> lapply through all sheet names of all available
-      # Excel finds and if different sheet names, throw error
-      # sheetlist = openxlsx::getSheetNames(datafile()$datapath)
-      # validate(need(all(sapply(sheetlist[-1], FUN = identical, sheetlist[1]))))
-      
+    shiny::observeEvent(datafile(), { 
       choices_list = load_sheetnames(datafile()$datapath) 
       shiny::updateSelectInput(session = session,
-                               inputId = "sheet",
-                               choices = choices_list)
+                               inputId = "sheet_sel",
+                               choices = choices_list
+                                )
     })
-    shiny::reactive(input$sheet)
+    shiny::reactive(input$sheet_sel)
   })
 }
 
@@ -184,6 +180,7 @@
     # update slider when new data set
     observeEvent(dat(), {
       sliderupdate(session, dat)
+      cd(rnorm(1)) # this could cause errors
     })
     
     observeEvent({
@@ -269,7 +266,9 @@
     
     # selects chosen rows and columns
     a = .computation_preview_data("a", param, t)
-    
+    # observeEvent(param$change_detector(), {
+    #   print("test in uploadtabset observeevent")
+    # }, ignoreInit = TRUE)
     ex = .computation_final_data(id, a)
     # ex = reactive({
     #   b1  = lapply(a(), function(x) {
@@ -307,12 +306,9 @@
 }
 
 .computation_preview_data = function(id, param, t){
-  
   shiny::moduleServer(id, function(input, output, session){
     # if one parameter gets updated, subset all data frames
-    a = eventReactive({
-      param$change_detector()
-    },{
+    a = eventReactive(param$change_detector(),{
       datlist = isolate(t())
       
       lapply(datlist, function(x) {
