@@ -1,0 +1,63 @@
+{
+  "input": {
+    "._bookmark_": 0,
+    "certification-cert_filter-flt_samples": null,
+    "certification-cert_filter-precision": 4,
+    "certification-cert_filter-sel_analyt": "",
+    "certification-certificationPanel": "standby",
+    "certification-Fig01_height": 400,
+    "certification-Fig01_width": 400,
+    "certification-output_file_format": "PDF",
+    "certification-pooling": false,
+    "certification-precision2": 4,
+    "certification-show_code": false,
+    "excelfile-go": 0,
+    "excelfile-moduleSelect": "Homogeneity",
+    "excelfile-test-pam-colslider": [
+      0,
+      14
+    ],
+    "excelfile-test-pam-params": "Homogeneity",
+    "excelfile-test-pam-rowslider": [
+      0,
+      28
+    ],
+    "excelfile-test-upld-sheet-sheet_sel": "Ergebnisse",
+    "excelfile-test-upld-xlsxfile-file": {
+      "name": [
+        "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+        "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+        "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"
+      ],
+      "size": [
+        27926,
+        27617,
+        27527
+      ],
+      "type": [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ],
+      "datapath": [
+        "0.xlsx",
+        "1.xlsx",
+        "2.xlsx"
+      ]
+    },
+    "in_file_ecerto_backup": null,
+    "link_to_start": 0,
+    "lts-datacomment": "",
+    "lts-LTS_ApplyNewValue": 0,
+    "lts-LTS_input_file": null,
+    "navbarpage": "Start",
+    "sessionstart": 0
+  },
+  "output": {
+    "excelfile-test-preview_out": "  Zertifizierung.BAM-M321                                  X2          X3   X4\n1                   Labor ALERIS Rolled Products Germany GmbH        <NA> <NA>\n2                   Datum                               43550        <NA> <NA>\n3                   Notiz                       Probe-Nr.  B2        <NA> <NA>\n4                 Element                          Richtwerte Einzelwerte <NA>\n5                    <NA>                                <NA>           1    2\n6                    <NA>                                <NA>      w(x)*) w(x)\n    X5   X6   X7   X8   X9        X10  X11  X12     X13\n1 <NA> <NA> <NA> <NA> <NA>       <NA> <NA> <NA>    <NA>\n2 <NA> <NA> <NA> <NA> <NA>       <NA> <NA> <NA>    <NA>\n3 <NA> <NA> <NA> <NA> <NA>       <NA> <NA> <NA>    <NA>\n4 <NA> <NA> <NA> <NA> <NA>  Kenndaten <NA> <NA> Element\n5    3    4    5    6 <NA>       <NA> <NA> <NA>    <NA>\n6 w(x) w(x) w(x) w(x)    N Mittelwert  STD  Vk%    <NA>\n                                          File\n1 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n2 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n3 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n4 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n5 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n6 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+    "lts-LTS_fileUploaded": false
+  },
+  "export": {
+
+  }
+}

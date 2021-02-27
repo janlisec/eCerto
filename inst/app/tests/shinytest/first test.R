@@ -3,7 +3,11 @@ app$snapshotInit("first test")
 
 app$setInputs(navbarpage = "Start")
 app$setInputs(`excelfile-moduleSelect` = "Certifications")
-app$uploadFile(`excelfile-test-upld-xlsxfile-file` = c("../../../extdata/Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx", "../../../extdata/Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx", "../../../extdata/Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")) # <-- This should be the path to the file, relative to the app's tests/shinytest directory
+app$uploadFile(`excelfile-test-upld-xlsxfile-file` = c(
+  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"), 
+  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"), 
+  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
+              )) # <-- This should be the path to the file, relative to the app's tests/shinytest directory
 app$setInputs(`excelfile-test-pam-colslider` = c(1, 13))
 app$setInputs(`excelfile-test-pam-colslider` = c(1, 8))
 app$setInputs(`excelfile-test-pam-rowslider` = c(7, 28))
