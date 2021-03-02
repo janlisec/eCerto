@@ -2,7 +2,28 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{data_of_godelement}
 \alias{data_of_godelement}
-\title{Returns the "data" element of the current "god list" element}
+\title{#' creates or delete unique sheet name appendix,
+#' so that an event is triggered any way even if
+#' the sheet name has not changed.
+#'
+#' @param s
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sheetname = function(s) {
+stopifnot(is.character(s))
+if(grepl("--.", s, fixed = TRUE)) {
+sub("--.*", "", s)
+} else {
+paste(s,
+floor(runif(1, min=1, max=500)),
+sep = "--."
+)
+}
+}
+Returns the "data" element of the current "god list" element}
 \usage{
 data_of_godelement(d)
 }
@@ -13,5 +34,26 @@ data_of_godelement(d)
 
 }
 \description{
+#' creates or delete unique sheet name appendix,
+#' so that an event is triggered any way even if
+#' the sheet name has not changed.
+#'
+#' @param s
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sheetname = function(s) {
+stopifnot(is.character(s))
+if(grepl("--.", s, fixed = TRUE)) {
+sub("--.*", "", s)
+} else {
+paste(s,
+floor(runif(1, min=1, max=500)),
+sep = "--."
+)
+}
+}
 Returns the "data" element of the current "god list" element
 }
