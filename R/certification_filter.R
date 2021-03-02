@@ -61,8 +61,8 @@
   moduleServer(id, function(input, output, session){
     param_template = list(
           "precision" = NULL, 
-          "labfilter" = NULL, # saving which labs where selected for filter
-          "lab_ids" = NULL, # which labs are available
+          "sample_filter" = NULL, # saving which samples where selected for filter
+          "sample_ids" = NULL, # which samples are available
           "analytename" = NULL
           )
     analytes = reactive({levels(data_of_godelement(d())[, "analyte"])})
@@ -73,10 +73,10 @@
       # add analyte name to list
       a_param_list[[i]]$analytename = as.list(analytes())[[i]]
       
-      # add possible id's of laboratories to list
+      # add possible id's of samples to list
       tmp = data_of_godelement(d())
       ids = tmp[tmp[["analyte"]] == as.list(analytes())[[i]], "ID"]
-      a_param_list[[i]]$lab_ids = ids[!is.na(ids)]
+      a_param_list[[i]]$sample_ids = ids[!is.na(ids)]
     }
     a_param_list = setNames(a_param_list, analytes())
     apm = do.call("reactiveValues", a_param_list)
@@ -126,7 +126,7 @@
     analytes = isolate(reactiveValuesToList(analytelist))
     for (a in analytes) {
       a.name = a$analytename
-      # selected = a$labfilter # initially selected value 
+      # selected = a$sample_filter # initially selected value 
       prependTab(
         inputId = "tabs", select = TRUE,
         tabPanel(title = a.name, 
@@ -137,8 +137,8 @@
                      selectizeInput(
                        inputId = NS(id,"flt_samples"),
                        label = "Filter Sample IDs",
-                       choices = a$lab_ids,
-                       selected = a$labfilter,
+                       choices = a$sample_ids,
+                       selected = a$sample_filter,
                        multiple = TRUE
                      )
                    )
@@ -158,7 +158,7 @@
     # # ID Filter
     observeEvent(input$sel_analyt,{
       #selected = choices[which(tmp[tmp[["analyte"]] == input$sel_analyt, "S_flt"])]
-      selected = analytes[analytes$analytename == input$tabs]$labfilter # initially selected value 
+      selected = analytes[analytes$analytename == input$tabs]$sample_filter # initially selected value 
       updateSelectizeInput(
         inputId = "flt_samples",
         label = "Filter Sample IDs",
