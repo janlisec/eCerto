@@ -1,3 +1,4 @@
+# CERTIFICATION MODULE -------------------------
 #' Title
 #'
 #' @param id 
@@ -11,59 +12,57 @@
   #stopifnot(is.reactivevalues(d))
   moduleServer(id, function(input, output, session) {
     
-    observeEvent(d(), 
-      ignoreInit = TRUE, 
-      {
-        #if loaded (successfully)
+    observeEvent(d(), {
+        #if loaded (successfully), male area visible
         if(!is.null(d())){
           updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-          filt = filterServer("cert_filter",d)
+          filt = .filterServer("cert_filter",d)
           
-          dat = reactive({
-            a = ecerto::data_of_godelement(d())
-            a[, "value"] = round(a[, "value"], filt$precision() )
-            a <- a[a[, "analyte"] %in% filt$analyte(), ]
-            a <-a[!(a[, "ID"] %in% filt$id_filt()), ]
-            
-            # Notify User in case that only 1 finite measurement remained within group
-            validate(
-              need(
-                all(sapply(split(a[, "value"], a[, "Lab"]), length) >= 2),
-                message = paste(names(which(
-                  sapply(split(a[, "value"], a[, "Lab"]), length) < 2
-                ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
-              need(
-                is.numeric(filt$precision()) &&
-                  filt$precision() >= 0 &&
-                  filt$precision() <= 6,
-                message = "please check precision value: should be numeric and between 0 and 6"
-              )
-            )
-            # 
-            a
-          }) 
+          # dat = reactive({
+          #   a = ecerto::data_of_godelement(d())
+          #   a[, "value"] = round(a[, "value"], filt$precision() )
+          #   a <- a[a[, "analyte"] %in% filt$analyte(), ]
+          #   a <-a[!(a[, "ID"] %in% filt$id_filt()), ]
+          #   
+          #   # Notify User in case that only 1 finite measurement remained within group
+          #   validate(
+          #     need(
+          #       all(sapply(split(a[, "value"], a[, "Lab"]), length) >= 2),
+          #       message = paste(names(which(
+          #         sapply(split(a[, "value"], a[, "Lab"]), length) < 2
+          #       ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
+          #     need(
+          #       is.numeric(filt$precision()) &&
+          #         filt$precision() >= 0 &&
+          #         filt$precision() <= 6,
+          #       message = "please check precision value: should be numeric and between 0 and 6"
+          #     )
+          #   )
+          #   # 
+          #   a
+          # }) 
+          # # 
+          # # # BOXPLOT
+          # # output$overview_boxplot <- renderPlot({
+          # #   #if (input$opt_show_files == "boxplot") {
+          # #     TestPlot(data = dat())
+          # # })
           # 
-          # # BOXPLOT
-          # output$overview_boxplot <- renderPlot({
-          #   #if (input$opt_show_files == "boxplot") {
-          #     TestPlot(data = dat())
-          # })
+          # # CertVal Plot
+          # output$overview_CertValPlot <- renderPlot({
+          #   CertValPlot(data = dat())
+          # }, height = reactive({
+          #   input$Fig01_height
+          # }), width = reactive({
+          #   input$Fig01_width
+          # }))
           
-          # CertVal Plot
-          output$overview_CertValPlot <- renderPlot({
-            CertValPlot(data = dat())
-          }, height = reactive({
-            input$Fig01_height
-          }), width = reactive({
-            input$Fig01_width
-          }))
-          
-        } else {
+        } else { 
+          # else if nothing is loaded
           updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
         }
         
-      }
-    )
+      },ignoreInit = TRUE)
     
   })
 }
@@ -86,7 +85,7 @@
     tabPanel(
       title = "active-Panel",
       value = "loaded",
-      filterUI(NS(id, "cert_filter")),
+      .filterUI(NS(id, "cert_filter")),
       # CertValPlot and Export section
       fluidRow(
         column(
