@@ -1,9 +1,7 @@
 {
   "input": {
     "._bookmark_": 0,
-    "certification-cert_filter-flt_samples": null,
-    "certification-cert_filter-precision": 4,
-    "certification-cert_filter-sel_analyt": "",
+    "certification-cert_filter-analyte-tabs": null,
     "certification-certificationPanel": "standby",
     "certification-Fig01_height": 400,
     "certification-Fig01_width": 400,
