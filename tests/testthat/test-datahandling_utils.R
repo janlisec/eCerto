@@ -1,7 +1,3 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
-
 test_that("loading functions decline other filetypes as excel", {
   # Create sample data
   df <- tibble::tibble(x = 1, y = 2)

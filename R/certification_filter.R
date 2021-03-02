@@ -117,54 +117,69 @@
 }
 # ANALYTE MODULE --------
 .analyteModuleUI <- function(id) {
-  wellPanel(
-    tabsetPanel(id = NS(id,"tabs")))
+    tabsetPanel(id = NS(id,"tabs"))
 }
 
 .analyteModuleServer <- function(id, analytelist){
   moduleServer(id, function(input, output, session) {
+    ns <- session$ns # to get full namespace here in server function
     analytes = isolate(reactiveValuesToList(analytelist))
     for (a in analytes) {
       a.name = a$analytename
-      # selected = a$sample_filter # initially selected value 
-      prependTab(
-        inputId = "tabs", select = TRUE,
-        tabPanel(title = a.name, 
-          fluidRow(
-            column(6,
-                   tags$div(
-                     title="Filter samples by ID",
-                     selectizeInput(
-                       inputId = NS(id,"flt_samples"),
-                       label = "Filter Sample IDs",
-                       choices = a$sample_ids,
-                       selected = a$sample_filter,
-                       multiple = TRUE
-                     )
-                   )
-            ),
-            column(6,
-              numericInput(
-                inputId = NS(id,"precision"),
-                label = "Precision",
-                value = 4
-              )
-            ),
-          )
-        ),
+      prependTab(inputId = "tabs", select = TRUE,
+            .analyteTabModulUI(ns(a.name),a)
       )
+      .analyteTabModulServer(a.name)
     }
-    
-    # # ID Filter
-    observeEvent(input$sel_analyt,{
-      #selected = choices[which(tmp[tmp[["analyte"]] == input$sel_analyt, "S_flt"])]
-      selected = analytes[analytes$analytename == input$tabs]$sample_filter # initially selected value 
-      updateSelectizeInput(
-        inputId = "flt_samples",
-        label = "Filter Sample IDs",
-        choices = choices,
-        # selected = selected
-      )
-    }, ignoreInit = TRUE)
+  
+    # 
+    # # # ID Filter
+    # observeEvent(input$flt_samples,{
+    #   selected = analytes[analytes$analytename == input$tabs]$sample_filter # initially selected value 
+    #   print(selected)
+    # }, ignoreInit = TRUE)
   }) 
+}
+
+# ANALYTE INSIDE TAB MODULE ----------
+.analyteTabModulUI = function(id, a){
+  
+  tabPanel(a$analytename, 
+           fluidRow(
+             column(6,
+                    tags$div(
+                      title="Filter samples by IDs",
+                      selectizeInput(
+                        inputId = NS(id,"flt_samples"),
+                        label = "Filter Sample IDs",
+                        choices = a$sample_ids,
+                        selected = a$sample_filter,
+                        multiple = TRUE
+                      )
+                    )
+             ),
+             column(3,
+                    numericInput(
+                      inputId = NS(id,"precision"),
+                      label = "Precision",
+                      value = 4
+                    )
+             ),
+             
+           ),
+  )
+}
+
+.analyteTabModulServer = function(id){
+  moduleServer(id, function(input, output, session){
+    output$testoutput = renderText({input$precision})
+    observeEvent(input$precision,{
+      print(paste(id,input$precision,sep = ": "))
+    })
+    
+    observeEvent(input$flt_samples,{
+      print(paste(id,input$flt_samples,sep = ": "))
+    })
+    
+  })
 }
