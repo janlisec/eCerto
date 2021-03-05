@@ -14,48 +14,76 @@
     
     observeEvent(d(), {
         #if loaded (successfully), male area visible
+        # AGAIN: SUCCESSFUL LOADED HERE!
         if(!is.null(d())){
           updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-          filt = .filterServer("cert_filter",d)
+          # param list
+          param_template = list(
+            "precision" = NULL, 
+            "sample_filter" = NULL, # saving which samples where selected for filter
+            "sample_ids" = NULL, # which samples are available
+            "analytename" = NULL
+          )
+          analytes = reactive({levels(data_of_godelement(d())[, "analyte"])})
+          a_param_list = rep(list(param_template),length(analytes()))
+          for (i in 1:length(a_param_list)) {
+            # add analyte name to list
+            a_param_list[[i]]$analytename = as.list(analytes())[[i]]
+            # add available id's of samples to list
+            tmp = data_of_godelement(d())
+            ids = tmp[tmp[["analyte"]] == as.list(analytes())[[i]], "ID"]
+            a_param_list[[i]]$sample_ids = ids[!is.na(ids)]
+          }
+          a_param_list = setNames(a_param_list, analytes())
+          l = list("selected_tab" = NULL)
+          l$analytes = a_param_list
+          apm = do.call("reactiveValues", l)
+          # end param list
           
-          # dat = reactive({
-          #   a = ecerto::data_of_godelement(d())
-          #   a[, "value"] = round(a[, "value"], filt$precision() )
-          #   a <- a[a[, "analyte"] %in% filt$analyte(), ]
-          #   a <-a[!(a[, "ID"] %in% filt$id_filt()), ]
-          #   
-          #   # Notify User in case that only 1 finite measurement remained within group
-          #   validate(
-          #     need(
-          #       all(sapply(split(a[, "value"], a[, "Lab"]), length) >= 2),
-          #       message = paste(names(which(
-          #         sapply(split(a[, "value"], a[, "Lab"]), length) < 2
-          #       ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
-          #     need(
-          #       is.numeric(filt$precision()) &&
-          #         filt$precision() >= 0 &&
-          #         filt$precision() <= 6,
-          #       message = "please check precision value: should be numeric and between 0 and 6"
-          #     )
-          #   )
-          #   # 
-          #   a
-          # }) 
-          # # 
-          # # # BOXPLOT
-          # # output$overview_boxplot <- renderPlot({
-          # #   #if (input$opt_show_files == "boxplot") {
-          # #     TestPlot(data = dat())
-          # # })
-          # 
-          # # CertVal Plot
-          # output$overview_CertValPlot <- renderPlot({
-          #   CertValPlot(data = dat())
-          # }, height = reactive({
-          #   input$Fig01_height
-          # }), width = reactive({
-          #   input$Fig01_width
-          # }))
+          .analyteModuleServer("cert_filter",apm)
+          # output$testoutput_apm = renderPrint(reactiveValuesToList(apm))
+          #observe({print(reactiveValuesToList(apm))})
+          
+          selected_tab = reactive(apm$selected_tab)
+          
+          dat = reactive({
+            a = ecerto::data_of_godelement(d())
+            a[, "value"] = round(a[, "value"], apm$analytes[[selected_tab()]]$precision)
+            a <- a[a[, "analyte"] %in% selected_tab(), ]
+            a <-a[!(a[, "ID"] %in% apm$analytes[[selected_tab()]]$sample_filter), ]
+
+            # Notify User in case that only 1 finite measurement remained within group
+            validate(
+              need(
+                all(sapply(split(a[, "value"], a[, "Lab"]), length) >= 2),
+                message = paste(names(which(
+                  sapply(split(a[, "value"], a[, "Lab"]), length) < 2
+                ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
+              need(
+                is.numeric(apm$analytes[[selected_tab()]]$precision) &&
+                  apm$analytes[[selected_tab()]]$precision >= 0 &&
+                  apm$analytes[[selected_tab()]]$precision <= 6,
+                message = "please check precision value: should be numeric and between 0 and 6"
+              )
+            )
+            #
+            a
+          })
+
+          # BOXPLOT
+          output$overview_boxplot <- renderPlot({
+            #if (input$opt_show_files == "boxplot") {
+              TestPlot(data = dat())
+          })
+
+          # CertVal Plot
+          output$overview_CertValPlot <- renderPlot({
+            CertValPlot(data = dat())
+          }, height = reactive({
+            input$Fig01_height
+          }), width = reactive({
+            input$Fig01_width
+          }))
           
         } else { 
           # else if nothing is loaded
@@ -85,7 +113,7 @@
     tabPanel(
       title = "active-Panel",
       value = "loaded",
-      .filterUI(NS(id, "cert_filter")),
+      .analyteModuleUI(NS(id, "cert_filter")),
       # CertValPlot and Export section
       fluidRow(
         column(
@@ -94,23 +122,27 @@
             fluidRow(
               column(
                 3,
+                # verbatimTextOutput(NS(id,"testoutput_apm")),
                 fluidRow(strong("Certified Value Plot")),
                 fluidRow(uiOutput(NS(id, "flt_labs"))),
-                fluidRow(column(
-                  6,
-                  numericInput(
-                    inputId = NS(id, "Fig01_width"),
-                    label = "width",
-                    value = 400
+                fluidRow(
+                  column(
+                    6,
+                    numericInput(
+                      inputId = NS(id, "Fig01_width"),
+                      label = "width",
+                      value = 400
+                    )
+                  ), 
+                  column(
+                    6,
+                    numericInput(
+                      inputId = NS(id, "Fig01_height"),
+                     label = "height",
+                     value = 400
+                    )
                   )
-                ), column(
-                  6,
-                  numericInput(
-                    inputId = NS(id, "Fig01_height"),
-                    label = "height",
-                    value = 400
-                  )
-                )),
+                ),
                 fluidRow(
                   column(6,
                          numericInput(
