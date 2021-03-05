@@ -312,9 +312,11 @@
       datlist = isolate(t())
       
       lapply(datlist, function(x) {
+        
         a = x[as.numeric(param$start_row()):as.numeric(param$end_row()),
           as.numeric(param$start_col()):as.numeric(param$end_col())]
-        a$File = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
+        filename = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
+        a = cbind(a,File = filename)
         return(a)
       })
     }, ignoreInit = TRUE)
