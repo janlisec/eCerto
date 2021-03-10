@@ -15,35 +15,98 @@ header-includes:
 - \usepackage{makecell}
 - \usepackage{xcolor}
 - \usepackage[utf8]{inputenc}
-output: pdf_document
+- \usepackage[sfdefault]{merriweather}
+# - \usepackage[T1]{fontenc}
+# - \usepackage{fontspec}
+# - \setmainfont{Computer Modern Sans Serif}
+output: 
+  pdf_document:
+    latex_engine: lualatex
+fontfamily: merriweather
+fontfamilyoptions: sfdefault
 params:
   dat: NA
+  logo_file: NA
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(kableExtra)
 l_max <- 45
+i <- 1
+d <- params[["dat"]][[i]][["def"]]
+v <- params[["dat"]][[i]][["val"]]
+l <- params$logo_file
 ```
 
-```{r, echo=FALSE, results='asis'}
-#cat("\n\n\\pagebreak\n")
+```{r logo, echo=FALSE, fig.align='right', fig.height = 0.5}
+# show BAM Logo topright
+if (!(is.null(l) | is.na(l))) {
+  if (any(grep("png$", params$logo_file))) {
+    knitr::include_graphics(path = l)
+  } else {
+    logo_raster <- as.raster(magick::image_read_svg(path = l, width = 300))
+    par(mar=c(0,0,0,0))
+    layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
+    plot(1,1,axes=F,ann=F, type="n")
+    mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)
+    mtext(side = 3, line = -2.25, text = paste("Material:", d[,"RM"]), adj = 0)
+    mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), '%Y-%m-%d')), adj = 0.95)
+    plot(logo_raster)
+  }
+}
+  
+```
 
-for (i in 1:length(params$dat)) {
-#for (i in 1:2) {
+```{r plots, echo=FALSE, results='asis', dev.args = list(pointsize = 9), fig.height = 3.5}
   # 2 plots as in App version
+  par(mar=c(5,4,4,2)+0.1)
   par(mfrow=c(1,2))
     plot_lts_data(x = params$dat[[i]], type=1)
-    plot_lts_data(x = params$dat[[i]], type=2)
+    lts <- plot_lts_data(x = params$dat[[i]], type=2)
   par(mfrow=c(1,1))
-  
-  # table as imported
-  print(knitr::kable(x=params$dat[[i]][["def"]][,-c(1:4),drop=F], format = "simple", row.names = FALSE, caption = "Caption"))
+```
+
+```{r stats}
+U_lts_rel <- sd(v[,"Value"])/median(v[,"Value"])
+s_x <- sd(v[,"Value"])/sqrt(nrow(v))
+s_xrel <- s_x/median(v[,"Value"])
+CI <- sd(v[,"Value"])*qt(0.975, nrow(v)-1)/sqrt(nrow(v)-1)
+U_ilc <- round(100*d[,"U"]/d[,"CertVal"],2)
+U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI/median(v[,"Value"]), "1sx"=s_xrel, "2sx"=2*s_xrel), 2)
+```
+
+**RM Informations**
+
+|                              |                                                                                                         |
+|------------------------------|---------------------------------------------------------------------------------------------------------|
+| Name:                        | **`r d[,"RM"]`**                                                                                        |
+| Property:                    | **`r paste0(d[,"KW_Def"], " (", d[,"KW"],")")`**                                                        |
+| Certified Value:             | **`r paste(d[,"CertVal"], "±",  d[,"U"], "/", 100*d[,"Coef_of_Var"], "rel. [%] (1s)", d[,"KW_Unit"])`** |
+| Number of accepted datasets: | **`r d[,"acc_Datasets"]`**                                                                              |
+
+**Statistical Information monitoring (LTS)**
+
+|                            |                                                             |                                        |                                        |                                                             |
+|----------------------------|-------------------------------------------------------------|----------------------------------------|----------------------------------------|-------------------------------------------------------------|
+| Number of measurements:    | **`r nrow(v)`**                                             |                                        | Median:                                | **`r paste(round(median(v[,"Value"]), 2), d[,"KW_Unit"])`** |
+| Standarddeviation:         | **s=`r round(sd(v[,"Value"]), 2)`**                         | **s~rel~=`r round(100*U_lts_rel,2)`%** | **2s=`r round(2*sd(v[,"Value"]), 2)`** | **2s~rel~=`r round(2*100*U_lts_rel,2)`%**                   |
+| Standarddeviation of mean: | **s~x~=`r round(s_x, 4)`**                                  | **s~x,rel~=`r round(100*s_xrel,2)`%**  | **2s~x~=`r round(2*s_x, 4)`**          | **2s~x,rel~=`r round(2*100*s_xrel,2)`%**                    |
+| Confidence interval:       | CI~0.95~                                                    | **`r round(CI, 4)`**                   | CI~0.95,rel~                           | **`r round(100*CI/median(v[,"Value"]), 2)`%**               |
+
+**Results**
+
+The uncertainty **`r d[,"U_Def"]`~rel~=`r U_ilc`%** determined from an interlaboratory comparison (ILC) is \textcolor{`r ifelse(U_ilc > U_lts, "green", "red")`}{`r ifelse(U_ilc > U_lts, "larger", "smaller")`} than the uncertainty value **`r d[,"U_Def"]`~rel~=`r U_lts`%** determined within the LTS monitoring.
+
+The long-term stability for the reference material **`r d[,"RM"]`** with its property of **`r d[,"KW_Def"]`** was determined as \textcolor{`r ifelse(lts > 60, "green", "red")`}{`r lts`} month (`r attr(lts,"Date")`).
+
+\textcolor{gray}{All measurement data and potential comments are enlisted on the following page.}
+
+```{r datatable, echo=FALSE, results='asis'}
   cat("\n\n\\pagebreak\n")
-  
   # table of values (potentially modified)
-  com <- params$dat[[i]][["val"]][,"Comment"]
-  out <- params$dat[[i]][["val"]][,1:3]
+  com <- v[,"Comment"]
+  out <- v[,1:3]
   if (any(!is.na(com))) {
     out$C <- ""
     out$C[!is.na(com)] <- 1:sum(!is.na(com))
@@ -57,9 +120,5 @@ for (i in 1:length(params$dat)) {
     for (j in 1:ncol(dummy)) dummy[,j] <- rep(NA,n_fill)
     out <- cbind(out[1:l_max,], rbind(out[(l_max+1):nrow(out),], dummy))
   }
-  print(knitr::kable(x=out, row.names = FALSE) %>%
-  kable_styling(latex_options = "striped", font_size = 8) %>% kableExtra::footnote(number=com))
-  cat("\n\n\\pagebreak\n")
-}
-
+  print(knitr::kable(x=out, row.names = FALSE) %>% kableExtra::kable_styling(latex_options = "striped", font_size = 8) %>% kableExtra::footnote(number=com))
 ```

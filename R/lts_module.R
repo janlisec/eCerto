@@ -9,9 +9,9 @@
 .longtermstabilityServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
 
-    datalist = reactiveValues("lts_data" = NULL, "comment"= NULL)
+    datalist <- shiny::reactiveValues("lts_data" = NULL, "comment"= NULL)
 
-    LTS_Data <- reactive({
+    LTS_Data <- shiny::reactive({
       if (!is.null(input$LTS_input_file)) {
       file.type <- tools::file_ext(input$LTS_input_file$datapath)
       if (!tolower(file.type) %in% c("rdata","xls","xlsx")) {
@@ -36,7 +36,7 @@
         check_validity <- TRUE; i <- 0
         while (check_validity & i < length(LTS_dat)) {
           for (i in 1:length(LTS_dat)) {
-            def_cols <- c("KW","KW_Def","KW_Unit","CertVal","U","U_Def","Device","Method","Coef_of_Var","acc_Datasets")
+            def_cols <- c("RM","KW","KW_Def","KW_Unit","CertVal","U","U_Def","Device","Method","Coef_of_Var","acc_Datasets")
             check_def_cols <- def_cols %in% colnames(LTS_dat[[i]][["def"]])
             val_cols <- c("Value","Date","File")
             check_val_cols <- val_cols %in% colnames(LTS_dat[[i]][["val"]])
@@ -58,6 +58,9 @@
               LTS_dat[[i]][["val"]][,"Date"] <- as.Date.character(LTS_dat[[i]][["val"]][,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d"))
             }
             validate(need(class(LTS_dat[[i]][["val"]][,"Date"])=="Date", "Sorry, could not convert column 'Date' into correct format."))
+            validate(need(LTS_dat[[i]][["def"]][,"U_Def"] %in% c("1s","2s","CI","1sx","2sx"), "Sorry, unexpected value in 'U_Def'. Allowed: '1s', '2s', 'CI', '1sx' and '2sx'. Please check."))
+            LTS_dat[[i]][["def"]] <- LTS_dat[[i]][["def"]][,def_cols]
+            LTS_dat[[i]][["val"]] <- LTS_dat[[i]][["val"]][,c(val_cols,"Comment")]
           }
         }
        }
@@ -69,26 +72,26 @@
       }
     })
 
-    observeEvent(LTS_Data(),{
+    shiny::observeEvent(LTS_Data(),{
       datalist[["lts_data"]] <- LTS_Data()
     })
 
-    output$LTS_fileUploaded <- reactive({
+    output$LTS_fileUploaded <- shiny::reactive({
       return(!is.null(datalist$lts_data))
     })
-    outputOptions(output, 'LTS_fileUploaded', suspendWhenHidden=FALSE)
+    shiny::outputOptions(output, 'LTS_fileUploaded', suspendWhenHidden=FALSE)
 
-    LTS_KWs <- reactive({
+    LTS_KWs <- shiny::reactive({
       #req(LTS_Data())
       # hier isolate verwendet, damit das input nicht nach Eintrag eines neuen Wertes neu befüllt wird
       # müsste ok sein, da wir den Tabellen upload sowieso deaktivieren sobald erfolgreich
       sapply(isolate(datalist$lts_data), function(x) { x[["def"]][,"KW"] })
     })
 
-    output$LTS_sel_KW <- renderUI({
-      req(LTS_KWs())
+    output$LTS_sel_KW <- shiny::renderUI({
+      shiny::req(LTS_KWs())
       ns <- session$ns
-      selectInput(inputId=ns("LTS_sel_KW"), label="Property", choices=LTS_KWs(), selected=isolate(i()))
+      shiny::selectInput(inputId=ns("LTS_sel_KW"), label="Property", choices=LTS_KWs(), selected=shiny::isolate(i()))
     })
 
     # i <- reactive({
@@ -96,17 +99,17 @@
     #   which(LTS_KWs() %in% input$LTS_sel_KW)
     # })
 
-    i <- reactiveVal(1)
-    observeEvent(input$LTS_sel_KW, {
+    i <- shiny::reactiveVal(1)
+    shiny::observeEvent(input$LTS_sel_KW, {
       i(which(LTS_KWs() %in% input$LTS_sel_KW))
     })
 
     LTS_new_val <- data.frame("Value"=0.0, "Date"=as.Date(format(Sys.time(), "%Y-%m-%d")), "File"=as.character("filename"), "Comment"=as.character(NA), stringsAsFactors = FALSE)
-    LTS_tmp_val <- reactiveVal(LTS_new_val)
+    LTS_tmp_val <- shiny::reactiveVal(LTS_new_val)
 
     # Data Tables
-    tab_LTSvals <- reactiveVal(isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
-    observeEvent(i(), {tab_LTSvals(datalist[["lts_data"]][[i()]][["val"]][,1:3])})
+    tab_LTSvals <- shiny::reactiveVal(isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
+    shiny::observeEvent(i(), {tab_LTSvals(datalist[["lts_data"]][[i()]][["val"]][,1:3])})
     #observeEvent(input$LTS_ApplyNewValue, {tab_LTSvals(datalist[["lts_data"]][[i()]][["val"]][,1:3])})
     output$LTS_vals <- DT::renderDataTable({
       # req(LTS_Data())
@@ -120,7 +123,7 @@
     output$LTS_def <- DT::renderDataTable({
       req(datalist$lts_data)
       out <- datalist$lts_data[[i()]][["def"]]
-      out[,"Coef_of_Var"] <- round(out[,"Coef_of_Var"], 4)
+      out[,"Coef_of_Var"] <- formatC(round(out[,"Coef_of_Var"], 4), digits=4, format="f")
       # reorder and rename columns according to wish of Carsten Prinz
       out <- out[,c("RM","KW","KW_Def","KW_Unit","CertVal","U","U_Def","Coef_of_Var","acc_Datasets","Device","Method")]
       colnames(out) <- c("Reference Material","Property","Name","Unit","Certified value","Uncertainty","Uncertainty unit","Coeff. of Variance","accepted Datasets","Device","Method")
@@ -131,7 +134,7 @@
       LTS_new_val
     }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL, editable=TRUE)
 
-    d = reactive({
+    d = shiny::reactive({
       x = datalist$lts_data[[i()]]
       # x = getData("LTS_dat")[[i()]]
       vals <- x[["val"]][,"Value"]
@@ -141,15 +144,15 @@
     })
 
     # when a row in table was selected
-    observeEvent(input$LTS_vals_rows_selected, {
-      req(datalist$lts_data, datalist)
+    shiny::observeEvent(input$LTS_vals_rows_selected, {
+      shiny::req(datalist$lts_data, datalist)
       if(!is.null(input$LTS_vals_rows_selected)){
         # when a row is selected
         e = datalist[["lts_data"]][[i()]][["val"]][[input$LTS_vals_rows_selected,"Comment"]]
         s = input$LTS_vals_rows_selected # selected row
         shinyjs::enable(id = "datacomment")
         # change title when value was selected in table or plot
-        updateTextInput(
+        shiny::updateTextInput(
           session = session,
           inputId = "datacomment",
           label = paste0("data comment for month ",
@@ -162,7 +165,7 @@
         # when row gets deselected/ no row is selected
         e = NA
         shinyjs::disable(id = "datacomment")
-        updateTextInput(
+        shiny::updateTextInput(
           session = session,
           inputId = "datacomment",
           label  = paste0(
@@ -171,7 +174,7 @@
         )
       }
       # when a value was entered before already
-      updateTextInput(session,"datacomment", value = e) # clear textInput when deselected
+      shiny::updateTextInput(session,"datacomment", value = e) # clear textInput when deselected
     }, ignoreNULL = FALSE)
 
 
@@ -189,8 +192,8 @@
     # observe({ datalist$comment = d_NAvec() })
 
     # when some comment was entered, save in reactivevalues
-    observeEvent(input$datacomment, {
-      req(input$LTS_vals_rows_selected)
+    shiny::observeEvent(input$datacomment, {
+      shiny::req(input$LTS_vals_rows_selected)
       if(input$datacomment != "" ){
         # for some reason, after switching from commented row to another, shiny gives ""
         # therefore this "if" condition is necessary to check
@@ -200,7 +203,7 @@
 
     # Data Figures
     output$LTS_plot1_1 <- shiny::renderPlot({
-      req(datalist[["lts_data"]], i(), d())
+      shiny::req(datalist[["lts_data"]], i(), d())
       input$LTS_ApplyNewValue
       s <- input$LTS_vals_rows_selected
       #c <- datalist[["lts_data"]][[i()]][["val"]][,"Comment"]
@@ -213,7 +216,7 @@
     })
 
     output$LTS_plot1_2 = shiny::renderPlot({
-      req(datalist[["lts_data"]], i())
+      shiny::req(datalist[["lts_data"]], i())
       input$LTS_ApplyNewValue
       #c <- datalist[["lts_data"]][[i()]][["val"]][,"Comment"]
       plot_lts_data(x = datalist$lts_data[[i()]], type=2)
@@ -223,7 +226,7 @@
     })
 
     output$LTS_plot2 <- shiny::renderPlot({
-      req(datalist[["lts_data"]], i(),input$LTS_ApplyNewValue)
+      shiny::req(datalist[["lts_data"]], i(),input$LTS_ApplyNewValue)
       input$LTS_ApplyNewValue
       #c <- datalist[["lts_data"]][[i()]][["val"]][,"Comment"]
       # c = c[-c(1:3)]
@@ -243,9 +246,9 @@
     proxy = DT::dataTableProxy("LTS_vals")
 
     #  when clicking on a point in the plot, select Rows in data table proxy
-    observeEvent(input$plot1_click, {
+    shiny::observeEvent(input$plot1_click, {
       # 1/3 nearest point to click location
-      a = nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE)
+      a = shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE)
       # 2/3 index in table
       #print(a)
       if (nrow(a)>=2) {
@@ -262,7 +265,7 @@
 
 
     #Add/Remove Value
-    observeEvent(input[["LTS_NewVal_cell_edit"]], {
+    shiny::observeEvent(input[["LTS_NewVal_cell_edit"]], {
       cell <- input[["LTS_NewVal_cell_edit"]]
       i <- cell$row
       j <- 1+cell$col
@@ -272,14 +275,14 @@
     })
 
     # add new value
-    observeEvent(input$LTS_ApplyNewValue, ignoreNULL = TRUE, ignoreInit = TRUE, {
+    shiny::observeEvent(input$LTS_ApplyNewValue, ignoreNULL = TRUE, ignoreInit = TRUE, {
       if (input$LTS_ApplyNewValue>=1) {
         datalist$lts_data[[i()]][["val"]] <- rbind(datalist$lts_data[[i()]][["val"]], LTS_tmp_val())
       }
     })
 
     # REPORT LTS
-    output$Report <- downloadHandler(
+    output$Report <- shiny::downloadHandler(
       filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf" ),
       content = function(file) {
         # Copy the report file to a temporary directory before processing it, in
@@ -289,13 +292,16 @@
         rmdfile = system.file("rmd", "LTSreport.Rmd", package = "ecerto")[1]
         # keep default option for no package/online version
         if (rmdfile=="") rmdfile <- "R/LTSreport.Rmd"
-        # ToDo Find solution to work in both (app and package)
-        #if (rmdfile=="") rmdfile <- "c:/Users/jlisec/Rpackages/Rpackage_eCerto/ecerto/inst/rmd/LTSreport.Rmd"
+        logo_file = system.file("rmd", "BAMLogo2015.svg", package = "ecerto")[1]
+        # keep default option for no package/online version
+        #if (logo_file=="") logo_file <- "R/BAMLogo2015.svg"
+        if (logo_file=="") logo_file <- "C:/Users/jlisec/Rpackages/Rpackage_eCerto/ecerto/inst/rmd/BAMLogo2015.svg"
+
         tempReport <- file.path(tempdir(), "LTSreport.Rmd")
         file.copy(rmdfile, tempReport, overwrite = TRUE)
 
         # Set up parameters to pass to Rmd document
-        params <- list(dat = datalist[["lts_data"]])
+        params <- list("dat" = datalist[["lts_data"]], "logo_file" = logo_file)
 
         # das hat bei mir zum download (und der nicht erfolgreichen Installation) von tinytech geführt
         # für das online tool brauchen wir das nicht (shiny server kümmert sich)
@@ -313,7 +319,7 @@
     )
 
     # BACKUP
-    output$LTS_Save <- downloadHandler(
+    output$LTS_Save <- shiny::downloadHandler(
       filename = function() { paste0(datalist$lts_data[[i()]][["def"]][,"RM"], '.RData') },
       content = function(file) {
        # LTS_dat <- getData("LTS_dat")

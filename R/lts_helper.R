@@ -1,13 +1,11 @@
 #' calculation month
 #'
-#' @param d_start
-#' @param d_end
-#' @noRd
+#' @param d_start A start date
+#' @param d_end An end date
 #'
 #' @return
 #' @export
-#'
-#' @examples
+#' @noRd
 mondf <- function(d_start, d_end) {
   lt <- as.POSIXlt(as.Date(d_start, origin="1900-01-01"))
   d_start <- lt$year*12 + lt$mon
@@ -24,18 +22,16 @@ mondf <- function(d_start, d_end) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 #' @noRd
 plot_lts_data <- function(x=NULL, type=1) {
-  # helper function
-  mondf <- function(d_start, d_end) {
-    lt <- as.POSIXlt(as.Date(d_start, origin="1900-01-01"))
-    d_start <- lt$year*12 + lt$mon
-    lt <- as.POSIXlt(as.Date(d_end, origin="1900-01-01"))
-    d_end <- lt$year*12 + lt$mon
-    return(d_end - d_start )
-  }
+  # # helper function
+  # mondf <- function(d_start, d_end) {
+  #   lt <- as.POSIXlt(as.Date(d_start, origin="1900-01-01"))
+  #   d_start <- lt$year*12 + lt$mon
+  #   lt <- as.POSIXlt(as.Date(d_end, origin="1900-01-01"))
+  #   d_end <- lt$year*12 + lt$mon
+  #   return(d_end - d_start )
+  # }
 
   # get specific data
   vals <- x[["val"]][,"Value"]
@@ -87,25 +83,24 @@ plot_lts_data <- function(x=NULL, type=1) {
       sub=sub,
       main=main
     )
-    # $$ToDo$$ end date estimation is only approximate (based on 30d/month)
-    axis(side = 3, at = c(0, foo_lts), labels = c(rt[1],rt[1]+foo_lts*30))
+    # $$ToDo$$ end date estimation is only approximate (based on ~30d/month or precisely on 365/12=30.42)
+    axis(side = 3, at = c(0, foo_lts), labels = c(rt[1],rt[1]+foo_lts*30.42))
     abline(lm(foo_adj~mon), lty=2, col=4)
     abline(h=mn+c(-1,0,1)*U, lty=c(2,1,2), col=c(3,2,3))
     text(x=foo_lts, y=mn+b*foo_lts, pos=2, labels = paste("n =",foo_lts))
   }
 
+  attr(foo_lts, "Date") <- as.POSIXlt(as.Date(rt[1]+foo_lts*30.42, origin="1900-01-01"))
   invisible(foo_lts)
 }
 
 #' Read Excel for Long term stability
 #'
-#' @param file
-#' @param simplify
+#' @param file Path to Excel File
+#' @param simplify Try to simplify list of imported Excel files into data.frame
 #'
 #' @return
 #' @export
-#'
-#' @examples
 #' @noRd
 read_lts_input <- function(file=NULL, simplify=FALSE) {
   sheets <- openxlsx::getSheetNames(file = file)
