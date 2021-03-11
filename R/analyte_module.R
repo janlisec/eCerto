@@ -30,7 +30,8 @@
     analytes = isolate(reactiveValuesToList(analytelist))$analytes
     # append/prepend a tab for each analyte available
     for (a.name in names(analytes)) {
-      prependTab(inputId = "tabs", select = TRUE,
+      appendTab(inputId = "tabs", 
+          select = FALSE,
           tabPanel(
             title=a.name, 
             fluidRow(
@@ -52,13 +53,18 @@
               ),
             ),
           )
-      )}
+      )
+      
+    }
+    # select only first tab
+    updateTabsetPanel(inputId = "tabs",selected = names(analytes)[1])
     
     # change the "selected tab" reactive in the reactiveValues when another tab
     # is selected
     observeEvent(input$tabs,{
+      print(paste0("no input$tabs: ", length(input$tabs)))
       analytelist$selected_tab = input$tabs
-    })
+    },ignoreInit = TRUE)
     
     # update precision and the selected sample id filter in the reactiveValues
     # when their value change in the selected tab

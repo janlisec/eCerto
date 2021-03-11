@@ -237,6 +237,8 @@
   # stopifnot(!is.reactivevalues(dat))
   moduleServer(id, function(input, output, session) {
     t = .ExcelServer("upld") # call module that gives initial table
+    # take only the first object of the uploaded excel to create the parameter
+    # modules
     param =  .parameterServer("pam", reactive ({t()[[1]]}) ,  excelformat)
     
     # disable upload Panel after upload the corresponding excel file
