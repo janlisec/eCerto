@@ -288,20 +288,45 @@
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
-        #browser()
-        rmdfile = system.file("rmd", "LTSreport.Rmd", package = "ecerto")[1]
-        # keep default option for no package/online version
-        if (rmdfile=="") rmdfile <- "R/LTSreport.Rmd"
-        logo_file = system.file("rmd", "BAMLogo2015.svg", package = "ecerto")[1]
-        # keep default option for no package/online version
-        #if (logo_file=="") logo_file <- "R/BAMLogo2015.svg"
-        if (logo_file=="") logo_file <- "C:/Users/jlisec/Rpackages/Rpackage_eCerto/ecerto/inst/rmd/BAMLogo2015.svg"
-
-        tempReport <- file.path(tempdir(), "LTSreport.Rmd")
+        if ("ecerto" %in% rownames(installed.packages())) {
+          # installed with package
+          rmdfile <- system.file("rmd", "LTSreport.Rmd", package = "ecerto")[1]
+          logofile <- system.file("rmd", "BAMLogo2015.svg", package = "ecerto")[1]
+          font_file1 <- system.file("rmd", "BAMKlavika-Light.ttf", package = "ecerto")[1]
+          font_file2 <- system.file("rmd", "BAMKlavika-Medium.ttf", package = "ecerto")[1]
+          font_file3 <- system.file("rmd", "BAMKlavika-LightItalic.ttf", package = "ecerto")[1]
+          font_file4 <- system.file("rmd", "BAMKlavika-MediumItalic.ttf", package = "ecerto")[1]
+        } else {
+          # as available in ShinyApp
+          rmdfile <- "R/LTSreport.Rmd"
+          logofile <- "www/BAMLogo2015.svg"
+          font_file1 <- "www/BAMKlavika-Light.ttf"
+          font_file2 <- "www/BAMKlavika-Medium.ttf"
+          font_file3 <- "www/BAMKlavika-LightItalic.ttf"
+          font_file4 <- "www/BAMKlavika-MediumItalic.ttf"
+        }
+        # copy rmd to temp directory
+        tempReport <- file.path(tempdir(), basename(rmdfile))
         file.copy(rmdfile, tempReport, overwrite = TRUE)
 
+        # copy logo file to same directory
+        tempLogo <- file.path(tempdir(), basename(logofile))
+        file.copy(logofile, tempLogo, overwrite = TRUE)
+
+        # copy font files to same directory
+        tempFont1 <- file.path(tempdir(), basename(font_file1))
+        file.copy(font_file1, tempFont1, overwrite = TRUE)
+        tempFont2 <- file.path(tempdir(), basename(font_file2))
+        file.copy(font_file2, tempFont2, overwrite = TRUE)
+        tempFont3 <- file.path(tempdir(), basename(font_file3))
+        file.copy(font_file3, tempFont3, overwrite = TRUE)
+        tempFont4 <- file.path(tempdir(), basename(font_file4))
+        file.copy(font_file4, tempFont4, overwrite = TRUE)
+
         # Set up parameters to pass to Rmd document
-        params <- list("dat" = datalist[["lts_data"]], "logo_file" = logo_file)
+        dat <- datalist[["lts_data"]]
+        if (length(dat)>=2 & i()>=2) for (j in rev(1:(i()-1))) dat[j] <- NULL
+        params <- list("dat" = dat, "logo_file" = tempLogo)
 
         # das hat bei mir zum download (und der nicht erfolgreichen Installation) von tinytech geführt
         # für das online tool brauchen wir das nicht (shiny server kümmert sich)

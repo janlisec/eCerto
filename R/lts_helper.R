@@ -90,7 +90,7 @@ plot_lts_data <- function(x=NULL, type=1) {
     text(x=foo_lts, y=mn+b*foo_lts, pos=2, labels = paste("n =",foo_lts))
   }
 
-  attr(foo_lts, "Date") <- as.POSIXlt(as.Date(rt[1]+foo_lts*30.42, origin="1900-01-01"))
+  names(foo_lts) <- as.character(as.POSIXlt(as.Date(rt[1]+foo_lts*30.42, origin="1900-01-01")))
   invisible(foo_lts)
 }
 

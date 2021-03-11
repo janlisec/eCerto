@@ -1,4 +1,9 @@
 ---
+output: 
+  pdf_document:
+    latex_engine: lualatex
+# fontfamily: merriweather
+# fontfamilyoptions: sfdefault
 header-includes:
 - \usepackage{booktabs}
 - \usepackage{longtable}
@@ -14,16 +19,9 @@ header-includes:
 - \usepackage[normalem]{ulem}
 - \usepackage{makecell}
 - \usepackage{xcolor}
-- \usepackage[utf8]{inputenc}
-- \usepackage[sfdefault]{merriweather}
-# - \usepackage[T1]{fontenc}
-# - \usepackage{fontspec}
-# - \setmainfont{Computer Modern Sans Serif}
-output: 
-  pdf_document:
-    latex_engine: lualatex
-fontfamily: merriweather
-fontfamilyoptions: sfdefault
+# - \usepackage[utf8]{inputenc}
+- \usepackage{fontspec}
+- \setmainfont{BAMKlavika-Light.ttf}[BoldFont = BAMKlavika-Medium.ttf, ItalicFont = BAMKlavika-LightItalic.ttf, BoldItalicFont = BAMKlavika-MediumItalic.ttf]
 params:
   dat: NA
   logo_file: NA
@@ -42,18 +40,14 @@ l <- params$logo_file
 ```{r logo, echo=FALSE, fig.align='right', fig.height = 0.5}
 # show BAM Logo topright
 if (!(is.null(l) | is.na(l))) {
-  if (any(grep("png$", params$logo_file))) {
-    knitr::include_graphics(path = l)
-  } else {
     logo_raster <- as.raster(magick::image_read_svg(path = l, width = 300))
     par(mar=c(0,0,0,0))
     layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
     plot(1,1,axes=F,ann=F, type="n")
     mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)
     mtext(side = 3, line = -2.25, text = paste("Material:", d[,"RM"]), adj = 0)
-    mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), '%Y-%m-%d')), adj = 0.95)
+    mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), '%Y-%m-%d')), adj = 0.75)
     plot(logo_raster)
-  }
 }
   
 ```
@@ -98,7 +92,7 @@ U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI
 
 The uncertainty **`r d[,"U_Def"]`~rel~=`r U_ilc`%** determined from an interlaboratory comparison (ILC) is \textcolor{`r ifelse(U_ilc > U_lts, "green", "red")`}{`r ifelse(U_ilc > U_lts, "larger", "smaller")`} than the uncertainty value **`r d[,"U_Def"]`~rel~=`r U_lts`%** determined within the LTS monitoring.
 
-The long-term stability for the reference material **`r d[,"RM"]`** with its property of **`r d[,"KW_Def"]`** was determined as \textcolor{`r ifelse(lts > 60, "green", "red")`}{`r lts`} month (`r attr(lts,"Date")`).
+The long-term stability for the reference material **`r d[,"RM"]`** with its property of **`r d[,"KW_Def"]`** was determined as \textcolor{`r ifelse(lts > 60, "green", "red")`}{`r lts`} month (`r names(lts)`).
 
 \textcolor{gray}{All measurement data and potential comments are enlisted on the following page.}
 
