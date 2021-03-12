@@ -8,7 +8,12 @@
     "certification-cert_filter-flt_samplesMn": null,
     "certification-cert_filter-flt_samplesNi": null,
     "certification-cert_filter-flt_samplesSi": null,
-    "certification-cert_filter-flt_samplesZn": null,
+    "certification-cert_filter-flt_samplesZn": [
+      "24",
+      "16",
+      "32",
+      "8"
+    ],
     "certification-cert_filter-precisionCr": 4,
     "certification-cert_filter-precisionCu": 4,
     "certification-cert_filter-precisionFe": 4,
@@ -16,7 +21,7 @@
     "certification-cert_filter-precisionMn": 4,
     "certification-cert_filter-precisionNi": 4,
     "certification-cert_filter-precisionSi": 4,
-    "certification-cert_filter-precisionZn": 4,
+    "certification-cert_filter-precisionZn": 5,
     "certification-cert_filter-tabs": "Zn",
     "certification-certificationPanel": "loaded",
     "certification-Fig01_height": 400,
@@ -60,7 +65,7 @@
       ]
     },
     "in_file_ecerto_backup": null,
-    "link_to_start": 0,
+    "link_to_start": 1,
     "lts-datacomment": "",
     "lts-LTS_ApplyNewValue": 0,
     "lts-LTS_input_file": null,
@@ -69,7 +74,7 @@
   },
   "output": {
     "certification-overview_CertValPlot": {
-      "src": "[image data sha1: 9d37c102a5a193296a876d21172def3dcb3f5bc2]",
+      "src": "[image data sha1: bd3593b9865e38653cbacf57a32e6093c2663478]",
       "width": 400,
       "height": 400,
       "alt": "Plot object",
@@ -79,14 +84,14 @@
             "domain": {
               "left": 0.38,
               "right": 3.62,
-              "bottom": 0.145031405526666,
-              "top": 0.155717145674535
+              "bottom": 0.145992675636243,
+              "top": 0.155680173747244
             },
             "range": {
               "left": 60.4800151200038,
               "right": 397.11999928,
               "bottom": 324.119981279995,
-              "top": 1.88000072000045
+              "top": 1.88000071999974
             },
             "log": {
               "x": null,

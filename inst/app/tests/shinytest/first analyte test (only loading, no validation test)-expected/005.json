@@ -6,9 +6,16 @@
     "certification-cert_filter-flt_samplesFe": null,
     "certification-cert_filter-flt_samplesMg": null,
     "certification-cert_filter-flt_samplesMn": null,
-    "certification-cert_filter-flt_samplesNi": null,
+    "certification-cert_filter-flt_samplesNi": [
+      "23",
+      "15"
+    ],
     "certification-cert_filter-flt_samplesSi": null,
-    "certification-cert_filter-flt_samplesZn": null,
+    "certification-cert_filter-flt_samplesZn": [
+      "8",
+      "24",
+      "32"
+    ],
     "certification-cert_filter-precisionCr": 4,
     "certification-cert_filter-precisionCu": 4,
     "certification-cert_filter-precisionFe": 4,
@@ -16,7 +23,7 @@
     "certification-cert_filter-precisionMn": 4,
     "certification-cert_filter-precisionNi": 4,
     "certification-cert_filter-precisionSi": 4,
-    "certification-cert_filter-precisionZn": 4,
+    "certification-cert_filter-precisionZn": 5,
     "certification-cert_filter-tabs": "Zn",
     "certification-certificationPanel": "loaded",
     "certification-Fig01_height": 400,
@@ -60,7 +67,7 @@
       ]
     },
     "in_file_ecerto_backup": null,
-    "link_to_start": 0,
+    "link_to_start": 1,
     "lts-datacomment": "",
     "lts-LTS_ApplyNewValue": 0,
     "lts-LTS_input_file": null,
@@ -69,7 +76,7 @@
   },
   "output": {
     "certification-overview_CertValPlot": {
-      "src": "[image data sha1: 9d37c102a5a193296a876d21172def3dcb3f5bc2]",
+      "src": "[image data sha1: b971840324f87bd356045d7ba9bb2a3e5e462ac1]",
       "width": 400,
       "height": 400,
       "alt": "Plot object",
@@ -79,8 +86,8 @@
             "domain": {
               "left": 0.38,
               "right": 3.62,
-              "bottom": 0.145031405526666,
-              "top": 0.155717145674535
+              "bottom": 0.144111169186813,
+              "top": 0.155752539379914
             },
             "range": {
               "left": 60.4800151200038,

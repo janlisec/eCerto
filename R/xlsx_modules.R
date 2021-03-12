@@ -237,12 +237,14 @@
   # stopifnot(!is.reactivevalues(dat))
   moduleServer(id, function(input, output, session) {
     t = .ExcelServer("upld") # call module that gives initial table
+    # take only the first object of the uploaded excel to create the parameter
+    # modules
     param =  .parameterServer("pam", reactive ({t()[[1]]}) ,  excelformat)
     
     # disable upload Panel after upload the corresponding excel file
     observeEvent(excelformat(),{
       if(is.null(dat())){
-        
+       
         shinyjs::enable(id = "leftcol")
       } else if(!is.null(dat())) {
         
@@ -308,13 +310,16 @@
 .computation_preview_data = function(id, param, t){
   shiny::moduleServer(id, function(input, output, session){
     # if one parameter gets updated, subset all data frames
-    a = eventReactive(param$change_detector(),{
+     a = eventReactive(param$change_detector(),{
       datlist = isolate(t())
       
       lapply(datlist, function(x) {
+        
         a = x[as.numeric(param$start_row()):as.numeric(param$end_row()),
           as.numeric(param$start_col()):as.numeric(param$end_col())]
-        a$File = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
+        
+        filename = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
+        a = cbind(a,File = filename)
         return(a)
       })
     }, ignoreInit = TRUE)
@@ -323,7 +328,7 @@
 
 .computation_final_data = function(id, a) {
   shiny::moduleServer(id, function(input, output, session){
-    
+
     ex = reactive({
       b1  = lapply(a(), function(x) {
         laboratory_dataframe(isolate(x))
@@ -396,9 +401,8 @@
     
     # must be extra disabled after loading, since is in parent module of upload panel
     shiny::observeEvent(input$moduleSelect, {
-      #if(is.null(c[[input$moduleSelect]])){
+      
       if(is.null(get_listelem(c,input$moduleSelect))){ 
-        #print("go re-enabled")
         shinyjs::enable("go")
       } else {
         shinyjs::disable("go")
@@ -407,7 +411,6 @@
     
     # update list after pushing upload button
     shiny::observeEvent(input$go, {
-     # print("go press")
       shinyjs::disable("go")
       set_listelem(c, input$moduleSelect, t)
       set_listUploadsource(c, input$moduleSelect, uploadsource = "Excel")

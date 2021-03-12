@@ -681,7 +681,8 @@ shinyServer(function(input, output, session) {
       # update for current analyte
       i <- which(cert_vals[, "analyte"] %in% input$sel_analyt)
       if (length(i) == 1) {
-        # take mean and sd from input boxes and calculate n according to selected pooling option
+        # take mean and sd from input boxes and calculate n according to
+        # selected pooling option
         if (!is.null(cert_mean()))
           cert_vals[i, "mean"] <- cert_mean()
         if (!is.null(cert_sd()))
