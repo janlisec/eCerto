@@ -5,8 +5,7 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
+#' @noRd
 list2dataframe = function(l) {
   if (requireNamespace("plyr", quietly = TRUE)) {
     plyr::ldply(l, function(x) {
@@ -23,8 +22,6 @@ list2dataframe = function(l) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 #' @noRd
 laboratory_dataframe = function(x) {
   stopifnot(!is.reactive(x))
@@ -95,8 +92,6 @@ load_excelfiles = function(filepath, sheet) {
 #' #'
 #' #' @return
 #' #' @export
-#' #'
-#' #' @examples
 #' sheetname = function(s) {
 #'   stopifnot(is.character(s))
 #'   if(grepl("--.", s, fixed = TRUE)) {
@@ -116,8 +111,6 @@ load_excelfiles = function(filepath, sheet) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 data_of_godelement = function(d) {
   d[["data"]]
 }
@@ -129,8 +122,6 @@ data_of_godelement = function(d) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 get_listelem = function(c, m) {
   
   data_of_godelement(c[[m]])
@@ -144,8 +135,6 @@ get_listelem = function(c, m) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 set_listelem = function(c, m, dat) {
   
   # if(!is.null(c[[m]])) 
@@ -178,8 +167,7 @@ set_listelem = function(c, m, dat) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 set_listUploadsource = function(c, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
   stopifnot(uploadsource %in% c("RData","Excel"))
@@ -196,8 +184,7 @@ set_listUploadsource = function(c, m, uploadsource) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 get_listUploadsource = function(c, m) {
   
   uploadsource_of_element(c[[m]])
@@ -210,9 +197,21 @@ get_listUploadsource = function(c, m) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
+#' @noRd
 uploadsource_of_element = function(d) {
   d[["uploadsource"]]
 }
 
+
+#' Rounds material table. 
+#' Currently without
+#'
+#' @param value 
+#' @param precision 
+#'
+#' @return
+#' @export
+roundMT = function(value,precision = NULL) {
+  if(is.null(precision)) return(value)
+  round(value,precision)
+}

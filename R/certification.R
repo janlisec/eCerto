@@ -49,12 +49,12 @@
                   )
                 ),
                 fluidRow(
-                  column(6,
-                         numericInput(
-                           inputId = NS(id, "precision2"),
-                           label = "Precision",
-                           value = 4
-                         )),
+                  # column(6,
+                  #        numericInput(
+                  #          inputId = NS(id, "precision2"),
+                  #          label = "Precision",
+                  #          value = 4
+                  #        )),
                   column(
                     6,
                     strong("Download"),
@@ -209,7 +209,7 @@
           
           # Geht's nicht auch ohne "observeEvent()"?
           observeEvent(dat(),{
-            .tabelleganzuntenServer("mat_cert",dat)
+            .tabelleganzuntenServer("mat_cert", dat)
           }, ignoreNULL = TRUE)
          
         ### LOADED END ###s
@@ -218,7 +218,7 @@
           updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
         }
         
-      },ignoreInit = TRUE)
+      }, ignoreInit = TRUE)
    
   })
 }
@@ -279,28 +279,31 @@
   moduleServer(id, function(input, output, session) {
     #dat = reactive(d()$data)
 
+    precision2 = NULL
+    
     cert_mean <- reactive({
       # req(dat(), input$precision2)
       data <- dat()[!dat()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
       ifelse(input$pooling,
-             round(mean(data[, "value"], na.rm = T), input$precision2),
-             round(mean(sapply(
+             roundMT(mean(data[, "value"], na.rm = T), precision2),
+             roundMT(mean(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
-             )), input$precision2))
+             )), precision2)
+            )
     })
 
     cert_sd <- reactive({
-      req(input$precision2)
+      # req(input$precision2)
       data <- dat()[!dat()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
       ifelse(input$pooling,
-             round(sd(data[, "value"], na.rm = T), input$precision2),
-             round(sd(sapply(
+             roundMT(sd(data[, "value"], na.rm = T), precision2),
+             roundMT(sd(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
-             )), input$precision2))
+             )), precision2))
     })
 
     a = levels(dat()[["analyte"]])
