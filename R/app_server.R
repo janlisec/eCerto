@@ -42,15 +42,4 @@ app_server = function(input, output, session) {
   .CertificiationServer(id = "certification", d = reactive({rv$Certifications}) )
   
   .longtermstabilityServer("lts")
-  
-  # TODO hier müssen die Ergebnisse aus rv() verteilt werden!
-  # observeEvent(rv(),
-  #              switch(xlsxfile()$xlsx_format,
-  #                     Certifications = {
-  #                       output$cert <- renderPrint(xlsxfile()$xlsx, width = 40)
-  #                     }))
-  
-  
-  # output$out = shiny::renderPrint(shiny::reactiveValuesToList(rv), width = 40)
-  # output$out = renderPrint(is.reactivevalues(rv()))
 }

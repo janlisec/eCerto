@@ -10,8 +10,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 sheetname = function(s) {
 stopifnot(is.character(s))
 if(grepl("--.", s, fixed = TRUE)) {
@@ -42,8 +40,6 @@ data_of_godelement(d)
 #'
 #' @return
 #' @export
-#'
-#' @examples
 sheetname = function(s) {
 stopifnot(is.character(s))
 if(grepl("--.", s, fixed = TRUE)) {

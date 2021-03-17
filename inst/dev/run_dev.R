@@ -8,6 +8,3 @@ devtools::document('.') # create NAMESPACE and man
 devtools::load_all('.') # load package
 options(app.prod = FALSE) # TRUE = production mode, FALSE = development mode
 shiny::runApp('inst/app') # run the main app
-
-
-
