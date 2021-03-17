@@ -4,8 +4,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .longtermstabilityServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -365,8 +363,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .longtermstabilityUI = function(id) {
 
   # set up shinyAlert

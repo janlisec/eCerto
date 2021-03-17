@@ -7,8 +7,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 Dixon <- function(lab_means=NULL) {
   out <- data.frame("Dixon_p"=rep(NA,nrow(lab_means)), row.names=row.names(lab_means))
   x <- lab_means[,"mean"]

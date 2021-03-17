@@ -9,8 +9,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 CertValPlot <- function(data=NULL) {
   data.stats <- plyr::ldply(split(data[,"value"], data[,"Lab"]), function(x) {data.frame("MW"=mean(x,na.rm=T), "Median"=median(x,na.rm=T), "SD"=sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
   data.stats <- data.frame(data.stats, "Filter"=sapply(split(data[,"L_flt"], data$Lab), all))

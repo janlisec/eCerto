@@ -6,11 +6,13 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .analyteModuleUI = function(id){
   # empty tabset panel, to be filled by the analytes in the server Module
-  wellPanel(tabsetPanel(id = NS(id,"tabs")))
+  tagList(
+    shinyjs::inlineCSS('.selct  {background: green; color: white;border: 5px solid black;}'),
+    wellPanel(tabsetPanel(id = NS(id,"tabs")))
+  )
+
 }
 
 #' Title
@@ -20,8 +22,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .analyteModuleServer = function(id, analytelist) {
   stopifnot(is.reactivevalues(analytelist))
   moduleServer(id, function(input, output, session){
@@ -62,7 +62,11 @@
     # change the "selected tab" reactive in the reactiveValues when another tab
     # is selected
     observeEvent(input$tabs,{
-      print(paste0("no input$tabs: ", length(input$tabs)))
+      s = paste0("#",ns("tabs")," li a[data-value=",input$tabs,"]")
+      shinyjs::addClass(
+        selector = s,
+        class = "selct")
+      
       analytelist$selected_tab = input$tabs
     },ignoreInit = TRUE)
     

@@ -6,8 +6,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 app_server = function(input, output, session) {
 
   # Upload Controller -------------------------------------------------------
@@ -29,7 +27,7 @@ app_server = function(input, output, session) {
   
   # when certification was uploaded
   observeEvent(rv$Certifications,{
-    # when source is Excel
+    # when source is Excel, switch to Certification Tab automatically
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
       updateNavbarPage(
         session = session,
@@ -39,7 +37,17 @@ app_server = function(input, output, session) {
 
   }, ignoreInit = TRUE)
 
-  .CertificiationServer(id = "certification", d = reactive({rv$Certifications}) )
+  datreturn = reactiveValues(dat = NULL)
+  .CertificiationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
+  
+  # datreturn$dat hoffentlich nur temporär
+  observeEvent(datreturn$dat,{
+    # --- --- --- --- --- --- --- --- --- --- ---
+    .materialtabelleServer("mat_cert", reactive(datreturn$dat))
+    # --- --- --- --- --- --- --- --- --- --- ---
+    # print("dat test")
+  }, ignoreNULL = TRUE)
+  
   
   .longtermstabilityServer("lts")
 }

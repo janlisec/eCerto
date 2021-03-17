@@ -4,6 +4,7 @@
   # ns <- NS(id)
   # tagList(
   fluidRow(
+    column(12, strong("Overview")),
     column(
       2,
       strong("Material Certification"),
@@ -56,9 +57,9 @@
   # req(dat)
   moduleServer(id, function(input, output, session) {
     #dat = reactive(d()$data)
-    
+  
     precision2 = NULL
-    
+    print("materialtabelle, neuer Tab gedrückt?")
     cert_mean <- reactive({
       # req(dat(), input$precision2)
       data <- dat()[!dat()[, "L_flt"], ]

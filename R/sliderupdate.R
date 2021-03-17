@@ -5,8 +5,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 sliderupdate = function(session, dat) {
   # "deletes" all previous settings:
   shiny::updateSliderInput(

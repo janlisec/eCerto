@@ -3,9 +3,6 @@
 #' @return
 #' @export
 #' @import shiny
-#'
-#' @examples
-
 app_ui = function(request){
   
   # ui = function() {
@@ -14,14 +11,14 @@ app_ui = function(request){
   #     shiny::wellPanel(xlsxload_ImportCntrlUI("excelfile")),
   #     shiny::wellPanel(shiny::verbatimTextOutput("out")) )
   # }
-
+  
   shiny::tagList(
     # tagList to make useShinyjs independent from tabs
     shinyjs::useShinyjs(),
     shinyalert::useShinyalert(),
     shiny::navbarPage(
       id = "navbarpage",
-
+      
       title = div(
         class = "verticalhorizontal",
         img(
@@ -33,10 +30,10 @@ app_ui = function(request){
         em("ecerto"),
         position = "relative"
       ),
-
+      
       shiny::tabPanel(
         "Home",
-
+        
         mainPanel(
           h1("Introducing eCerto"),
           p("Certifications are..."),
@@ -45,17 +42,16 @@ app_ui = function(request){
           actionLink("link_to_start", "Click here to start"),
           bookmarkButton()
         )
-
+        
       ),
       shiny::navbarMenu(
         title = "eCerto",
         icon = icon("angle-right"),
-
         # tabs
         tabPanel(
           id = "start",
           title = "Start",
-
+          
           shiny::fluidRow(
             shiny::column(
               width = 3,
@@ -79,13 +75,15 @@ app_ui = function(request){
                 )
               )
             ),
-            #############################
-            column(width = 9,
-                   wellPanel(
-
-                     shiny::wellPanel(.ImportCntrlUI("excelfile"))
-                   )
-                   #######################################
+            column(
+              width = 9,
+              wellPanel(
+                shiny::wellPanel(
+                  # --- --- --- --- ---
+                  .ImportCntrlUI("excelfile")
+                  # --- --- --- --- ---
+                )
+              )
             )
           )
         ),
@@ -95,37 +93,29 @@ app_ui = function(request){
           value = "tP_certification",
           icon = icon("angle-right"),
           .CertificationUI("certification")
-          # source(
-          #   file = "ui_tabPanel_certification.R",
-          #   local = TRUE,
-          #   verbose = FALSE
-          # )$value
         ),
-
         tabPanel(
           title = "Homogeneity",
           icon = icon("angle-right"),
           value = "tP_homogeneity",
           verbatimTextOutput("homog")
-          # source(
-          #   file = "ui_tabPanel_homogeneity.R",
-          #   local = TRUE,
-          #   verbose = FALSE
-          # )$value
         ),
         tabPanel(
           title = "Stability",
           icon = icon("angle-right"),
           value = "tP_Stability",
           verbatimTextOutput("stab")
-          # source(
-          #   file = "ui_tabPanel_stability.R",
-          #   local = TRUE,
-          #   verbose = FALSE
-          # )$value
+        ),
+        tabPanel(
+          title = "Materialtabelle",
+          value = "matTabelle",
+          wellPanel(
+            .materialtabelleUI("mat_cert")
+          )
         )
-      ),
-
+      ), 
+      # eCerto Ende
+      
       # Long term stability
       tabPanel(
         title = "LTS",
@@ -138,7 +128,7 @@ app_ui = function(request){
         #   verbose = FALSE
         # )$value
       ),
-
+      
       tabPanel(
         title = "Help",
         icon = icon("angle-right"),

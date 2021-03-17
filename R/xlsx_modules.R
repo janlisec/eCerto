@@ -4,8 +4,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .xlsxinputUI = function(id) {
   shiny::fileInput(
     inputId = NS(id, "file"),
@@ -22,8 +20,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .xlsxinputServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
     
@@ -42,8 +38,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .sheetUI = function(id) {
   shiny::selectInput(shiny::NS(id, "sheet_sel"), choices = NULL, label = "Sheet")
 }
@@ -55,8 +49,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .sheetServer = function(id, datafile) {
   stopifnot(is.reactive(datafile))
   # TODO check if datafile is really an excel
@@ -81,8 +73,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .ExcelServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
     datafile = .xlsxinputServer("xlsxfile")
@@ -108,8 +98,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .ExcelUI = function(id) {
   shiny::tagList(.xlsxinputUI(id = shiny::NS(id, "xlsxfile")), # upload input
                  .sheetUI(id = shiny::NS(id, "sheet"))) # sheet select
@@ -123,8 +111,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .parameterUI = function(id) {
   shiny::tagList(shiny::tabsetPanel(
     id = shiny::NS(id, "params"),
@@ -159,8 +145,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .parameterServer = function(id, dat, excelformat) {
   stopifnot(is.reactive(dat))
   shiny::moduleServer(id, function(input, output, session) {
@@ -211,8 +195,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .uploadTabsetsUI = function(id) {
   shiny::fluidRow(shiny::column(id = shiny::NS(id,"leftcol"),width = 4,
                                 .ExcelUI(shiny::NS(id, "upld")),
@@ -231,8 +213,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .uploadTabsetsServer = function(id, excelformat, dat) {
   # stopifnot(!is.reactivevalues(dat))
   moduleServer(id, function(input, output, session) {
@@ -357,8 +337,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .ImportCntrlUI = function(id) {
   shiny::tagList(
     shiny::selectInput(
@@ -381,8 +359,6 @@
 #'
 #' @return
 #' @export
-#'
-#' @examples
 .ImportCntrlServer = function(id, c) {
   stopifnot(is.reactivevalues(c))
   shiny::moduleServer(id, function(input, output, session) {
