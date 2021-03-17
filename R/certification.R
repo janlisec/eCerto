@@ -103,7 +103,7 @@
         )), # Ende # CertValPlot and Export section
       # Overall Certification
       wellPanel(
-        .materaltabelleUI(NS(id,"mat_cert"))
+        .materialtabelleUI(NS(id,"mat_cert"))
       )
     )
     
@@ -209,7 +209,7 @@
           
           # Geht's nicht auch ohne "observeEvent()"?
           observeEvent(dat(),{
-            .materaltabelleServer("mat_cert", dat)
+            .materialtabelleServer("mat_cert", dat)
           }, ignoreNULL = TRUE)
          
         ### LOADED END ###s
@@ -227,7 +227,7 @@
 
 # MATERIAL CERTIFICATION MODULE ------
 
-.materaltabelleUI <- function(id) {
+.materialtabelleUI <- function(id) {
   # ns <- NS(id)
   # tagList(
     fluidRow(
@@ -273,7 +273,7 @@
   # )
 }
 
-.materaltabelleServer <- function(id, dat) {
+.materialtabelleServer <- function(id, dat) {
  # stopifnot(is.reactive(dat))
  # req(dat)
   moduleServer(id, function(input, output, session) {
