@@ -80,22 +80,22 @@
     datafile = .xlsxinputServer("xlsxfile")
     sh = .sheetServer("sheet", datafile)
     
-    
+    df = debounce(datafile,1000)
     # when sheet is selected, upload Excel and enable button
-    t_tmp = shiny::reactive({
-      shiny::req(sh())
+    t = shiny::eventReactive(df(),{
+      #shiny::req(sh())
       # shinyjs::delay(50,{
-        l = load_excelfiles(datafile()$datapath, sh())
+        l = load_excelfiles(df()$datapath, sh())
         # add file name to data frame
         
         for (i in 1:length(l)) {
-          l[[i]][["File"]] = rep(isolate(datafile()$name[i]), nrow(l[[i]]))
+          l[[i]][["File"]] = rep(isolate(df()$name[i]), nrow(l[[i]]))
         }
         return(l)
       # })
 
     })
-    t = debounce(t_tmp,50)
+    # t = debounce(t_tmp,50)
     return(t)
     # observe({print(paste0("t: ", t()))})
   })
@@ -230,7 +230,7 @@
     # take only the first object of the uploaded excel to create the parameter
     # modules
     param =  .parameterServer("pam", reactive ({t()[[1]]}) ,  excelformat)
-
+    
     # disable upload Panel after upload the corresponding excel file
     observeEvent(excelformat(),{
       if(is.null(dat())){
