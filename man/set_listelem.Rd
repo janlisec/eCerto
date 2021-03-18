@@ -11,7 +11,7 @@ set_listelem(c, m, dat)
 
 \item{m}{element to be fed (e.g. "Certifications")}
 
-\item{dat}{data}
+\item{dat}{data to be inserted}
 }
 \value{
 

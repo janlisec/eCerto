@@ -2,7 +2,8 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{get_listelem}
 \alias{get_listelem}
-\title{getter function for element of the "god list"}
+\title{getter function for module element of the "god list"
+modules so far are "Certifications, Homogeneity, Stability"}
 \usage{
 get_listelem(c, m)
 }
@@ -15,5 +16,6 @@ get_listelem(c, m)
 
 }
 \description{
-getter function for element of the "god list"
+getter function for module element of the "god list"
+modules so far are "Certifications, Homogeneity, Stability"
 }

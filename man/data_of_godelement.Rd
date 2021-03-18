@@ -26,7 +26,7 @@ Returns the "data" element of the current "god list" element}
 data_of_godelement(d)
 }
 \arguments{
-\item{d}{}
+\item{d}{list, which contains "data", but also e.g. "source"}
 }
 \value{
 

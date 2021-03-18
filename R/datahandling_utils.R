@@ -69,7 +69,7 @@ load_sheetnames = function(filepath){
 
 load_excelfiles = function(filepath, sheet) {
 
-  lapply(shiny::isolate(filepath), function(x) {
+  lapply(filepath, function(x) {
     ext <- tools::file_ext(x)
     if(ext == "xlsx"){
       tryCatch({
@@ -107,15 +107,17 @@ load_excelfiles = function(filepath, sheet) {
 
 #' Returns the "data" element of the current "god list" element
 #'
-#' @param d 
+#' @param d list, which contains "data", but also e.g. "source"
 #'
 #' @return
 #' @export
 data_of_godelement = function(d) {
+  stopifnot(!is.reactive(d)) # d shouldn't be a reactive
   d[["data"]]
 }
 
-#' getter function for element of the "god list"
+#' getter function for module element of the "god list"
+#' modules so far are "Certifications, Homogeneity, Stability"
 #'
 #' @param c "god list
 #' @param m element to be fetched (e.g. "Certifications")
@@ -131,7 +133,7 @@ get_listelem = function(c, m) {
 #'
 #' @param c "god list
 #' @param m element to be fed (e.g. "Certifications")
-#' @param dat data
+#' @param dat data to be inserted 
 #'
 #' @return
 #' @export
