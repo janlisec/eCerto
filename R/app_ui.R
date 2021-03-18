@@ -95,10 +95,12 @@ app_ui = function(request){
           .CertificationUI("certification")
         ),
         tabPanel(
+          id = "homog_tab",
           title = "Homogeneity",
           icon = icon("angle-right"),
           value = "tP_homogeneity",
-          verbatimTextOutput("homog")
+          .HomogeneityUI("Homogeneity")
+          #verbatimTextOutput("homog")
         ),
         tabPanel(
           title = "Stability",
