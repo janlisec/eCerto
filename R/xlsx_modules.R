@@ -81,7 +81,6 @@
     # when sheet is selected, upload Excel and enable button
     t = shiny::reactive({
       shiny::req(sh())
-      
       l = load_excelfiles(datafile()$datapath, sh())
       # add file name to data frame
       for (i in 1:length(l)) {
@@ -224,65 +223,47 @@
     # disable upload Panel after upload the corresponding excel file
     observeEvent(excelformat(),{
       if(is.null(dat())){
-       
         shinyjs::enable(id = "leftcol")
       } else if(!is.null(dat())) {
-        
         shinyjs::disable(id = "leftcol")
       } else {
-        
         shinyjs::enable(id = "leftcol")
       }
     })
     
-    # # if one parameter gets updated, subset all data frames
-    # a = eventReactive({
-    #   param$change_detector()
-    # },{
-    #   datlist = isolate(t())
-    #   
-    #   lapply(datlist, function(x) {
-    #     x[as.numeric(param$start_row()):as.numeric(param$end_row()),
-    #       as.numeric(param$start_col()):as.numeric(param$end_col())]})
-    # }, ignoreInit = TRUE)
-    
     # selects chosen rows and columns
     a = .computation_preview_data("a", param, t)
-    # observeEvent(param$change_detector(), {
-    #   print("test in uploadtabset observeevent")
-    # }, ignoreInit = TRUE)
-    ex = .computation_final_data(id, a)
-    # ex = reactive({
-    #   b1  = lapply(a(), function(x) {
-    #     laboratory_dataframe(isolate(x))
-    #   })
-    #   c = data.frame(
-    #     "Lab" = rep(paste0("L", seq_along(b1)), times = sapply(b1, nrow)),
-    #     as.data.frame(do.call(rbind, b1)),
-    #     #"File" = rep(input$c_input_files$name, times =sapply(data, nrow)),
-    #     "S_flt" = FALSE,
-    #     "L_flt" = FALSE)
-    #   c <- c[is.finite(c[, "value"]), ] # remove non-finite values
-    #   # perform minimal validation tests
-    #   # validate(
-    #   #   need(is.numeric(c[, "value"]), message = "measurement values seem not to be numeric"),
-    #   #   need(length(levels(as.factor(c[, "Lab"]))) >= 2, message = "less than 2 Labs imported")
-    #   # )
-    #   c <- data.frame("ID" = 1:nrow(c), c)
-    #   return(c)
-    # })
     
+    # perform minimal validation checks
+    prevw = reactive({
+      if(excelformat()=="Homogeneity") {
+        validate(
+          need("analyte" %in% colnames(a()[[1]]), "No column 'analyte' found in input file."),
+          need("value" %in% colnames(a()[[1]]), "No column 'value' found in input file.")
+        )
+        validate(need(is.numeric(a()[[1]][,"value"]), "Column 'value' in input file contains non-numeric values."))
+      }
+      a()
+
+    })
     
+
+    ex = .computation_final_data(id, prevw)
+
+    # Preview: when something was uploaded before already, i.e. is in dat(), then 
+    # load. Otherwise show head of first excel file
     output$preview_out = renderPrint(
-      
       if(is.null(dat())){
-        head(a()[[1]])
+        head(prevw()[[1]])
       } else {
         head(dat())
       })
     
     reactive({
-      ex()
+      switch (excelformat(),
+          Certifications = ex(),
+          Homogeneity = prevw()[[1]]
+      )
     })
   })
 }
@@ -292,18 +273,15 @@
     # if one parameter gets updated, subset all data frames
      a = eventReactive(param$change_detector(),{
       datlist = isolate(t())
-      
       lapply(datlist, function(x) {
-        
         a = x[as.numeric(param$start_row()):as.numeric(param$end_row()),
           as.numeric(param$start_col()):as.numeric(param$end_col())]
-        
         filename = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
         a = cbind(a,File = filename)
         return(a)
       })
     }, ignoreInit = TRUE)
-  })
+ })
 }
 
 .computation_final_data = function(id, a) {
