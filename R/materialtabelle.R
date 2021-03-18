@@ -1,8 +1,7 @@
 # MATERIAL CERTIFICATION MODULE ------
 
 .materialtabelleUI <- function(id) {
-  # ns <- NS(id)
-  # tagList(
+
   fluidRow(
     column(12, strong("Overview")),
     column(
@@ -53,15 +52,11 @@
 }
 
 .materialtabelleServer <- function(id, dat) {
-  # stopifnot(is.reactive(dat))
-  # req(dat)
+
   moduleServer(id, function(input, output, session) {
-    #dat = reactive(d()$data)
   
     precision2 = NULL
-    print("materialtabelle, neuer Tab gedrückt?")
     cert_mean <- reactive({
-      # req(dat(), input$precision2)
       data <- dat()[!dat()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])

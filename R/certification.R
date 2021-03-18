@@ -16,8 +16,9 @@
     tabPanel(
       title = "active-Panel",
       value = "loaded",
+      # --- --- --- --- --- --- --- --- ---
       .analyteModuleUI(NS(id, "cert_filter")),
-      
+      # --- --- --- --- --- --- --- --- ---
       fluidRow(
         column(
           10,
@@ -53,11 +54,7 @@
               inputId = NS(id, "show_code"), label = "Show Code in Report"
             ))
           )
-        )), # Ende # CertValPlot and Export section
-      # Overall Certification
-      # wellPanel(
-      #   .materialtabelleUI(NS(id,"mat_cert"))
-      # )
+        )), 
     )
     
   )
@@ -69,7 +66,7 @@
   moduleServer(id, function(input, output, session) {
     
     observeEvent(d(), {
-      #if loaded (successfully), male area visible
+      #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
       if(!is.null(d())){
         updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
@@ -112,13 +109,6 @@
         observe({
           datreturn$dat = dat()
         })
-        
-        # # Geht's nicht auch ohne "observeEvent()"?
-        # observeEvent(dat(),{
-        #   # --- --- --- --- --- --- --- --- --- --- ---
-        #   .materialtabelleServer("mat_cert", dat)
-        #   # --- --- --- --- --- --- --- --- --- --- ---
-        # }, ignoreNULL = TRUE)
 
         ### LOADED END ###s
       } else { 
@@ -129,7 +119,8 @@
 
   })
 }
-
+# LOADED CERTIFICATION MODULE --------------
+# following is processed when a certification was loaded
 .CertLoadedServer = function(id, d, apm) {
   stopifnot(is.reactivevalues(apm))
   moduleServer(id, function(input, output, session) {
@@ -162,7 +153,7 @@
         )
       )
       return(a)
-    }#, ignoreNULL = TRUE,ignoreInit = TRUE
+    }
     )
     
     # BOXPLOT
@@ -209,12 +200,6 @@
         )
       ),
       fluidRow(
-        # column(6,
-        #        numericInput(
-        #          inputId = NS(id, "precision2"),
-        #          label = "Precision",
-        #          value = 4
-        #        )),
         column(
           6,
           strong("Download"),
@@ -224,13 +209,6 @@
       ),
       fluidRow(column(6, strong("mean")), column(6, strong("sd"))),
       fluidRow(column(6, textOutput("cert_mean")), column(6, textOutput("cert_sd"))),
-      # fluidRow(
-      #   checkboxInput(
-      #   inputId = NS(id, "pooling"),
-      #   label = "pooling",
-      #   value = FALSE
-      # )
-      # )
     ),
     column(9, plotOutput(
       NS(id, "overview_CertValPlot"), inline = TRUE
