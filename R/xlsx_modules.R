@@ -80,6 +80,10 @@
     datafile = .xlsxinputServer("xlsxfile")
     sh = .sheetServer("sheet", datafile)
     
+    # debounce should wait some tim before invalidating the data frame reactive
+    # This should be only temporarily, since it slows down the uploading
+    # mechanism. Alternatively, (1) experiment with 'priority' argument of
+    # observe() or (2) extra argument
     df = debounce(datafile,1000)
     # when sheet is selected, upload Excel and enable button
     t = shiny::eventReactive(df(),{
@@ -260,27 +264,28 @@
           need(length(a()) >=2, message = "less than 2 laboratory files uploaded. Upload more!")
         )
       }
-        a()
-      })
-      ex = .computation_final_data(id, prevw)
-      
-      # Preview: when something was uploaded before already, i.e. is in dat(), then 
-      # load. Otherwise show head of first excel file
-      output$preview_out = renderPrint(
-        if(is.null(dat())){
-          head(prevw()[[1]])
-        } else {
-          head(dat())
-        })
-      
-      reactive({
-        switch (excelformat(),
-                Certifications = ex(),
-                Homogeneity = prevw()[[1]]
-        )
-      })
+      a()
     })
-
+    ex = .computation_final_data(id, prevw)
+    
+    # Preview: when something was uploaded by pushing "go" button before
+    # already, i.e. is in dat(), then load. Otherwise show head of first excel
+    # file in the preview state
+    output$preview_out = renderPrint(
+      if(is.null(dat())){
+        head(prevw()[[1]])
+      } else {
+        head(dat())
+      })
+    
+    reactive({
+      switch (excelformat(),
+              Certifications = ex(),
+              Homogeneity = prevw()[[1]]
+      )
+    })
+  })
+  
 }
 
 .computation_preview_data = function(id, param, t){
@@ -301,7 +306,7 @@
 
 .computation_final_data = function(id, a) {
   shiny::moduleServer(id, function(input, output, session){
-
+    
     reactive({
       b1  = lapply(a(), function(x) {
         laboratory_dataframe(isolate(x))
@@ -372,11 +377,10 @@
       # enable upload button when a data frame was uploaded via the Upload menu
       # but only as long c hasn't been filled so far
       # !is.null(data_of_godelement(t())) &&
-      if(is.null(get_listelem(c,input$moduleSelect))){ 
-        print("go enabled")
+      print(paste0("t is null: ",is.null(t())))
+      if(!is.null((t())) && is.null(get_listelem(c,input$moduleSelect))){ 
         shinyjs::enable("go")
       } else {
-        print("go disabled")
         shinyjs::disable("go")
       }
     })
