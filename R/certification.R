@@ -16,15 +16,24 @@
     tabPanel(
       title = "active-Panel",
       value = "loaded",
-      # --- --- --- --- --- --- --- --- ---
-      .analyteModuleUI(NS(id, "cert_filter")),
-      # --- --- --- --- --- --- --- --- ---
+      fluidRow(
+        column(4,wellPanel("selection box")),
+        column(8,
+          wellPanel(
+            # --- --- --- --- --- --- --- --- ---
+            .analyteModuleUI(NS(id, "cert_filter")),
+            # --- --- --- --- --- --- --- --- ---
+          )
+        )
+      ),
       fluidRow(
         column(
           10,
           wellPanel(
             fluidRow(
+              # --- --- --- --- --- --- ---
               .CertLoadedUI(NS(id,"loaded"))
+              # --- --- --- --- --- --- ---
             )
           )),
         
@@ -121,6 +130,49 @@
 }
 # LOADED CERTIFICATION MODULE --------------
 # following is processed when a certification was loaded
+
+.CertLoadedUI = function(id) {
+  tagList(
+    # Cert Value Plot start
+    column(
+      3,
+      fluidRow(strong("Certified Value Plot")),
+      fluidRow(uiOutput(NS(id, "flt_labs"))),
+      fluidRow(
+        column(
+          6,
+          numericInput(
+            inputId = NS(id, "Fig01_width"),
+            label = "width",
+            value = 400
+          )
+        ), 
+        column(
+          6,
+          numericInput(
+            inputId = NS(id, "Fig01_height"),
+            label = "height",
+            value = 400
+          )
+        )
+      ),
+      fluidRow(
+        column(
+          6,
+          strong("Download"),
+          br(),
+          downloadButton(outputId = 'Fig01', label = "Figure")
+        )
+      ),
+      fluidRow(column(6, strong("mean")), column(6, strong("sd"))),
+      fluidRow(column(6, textOutput("cert_mean")), column(6, textOutput("cert_sd"))),
+    ),
+    column(9, plotOutput(
+      NS(id, "overview_CertValPlot"), inline = TRUE
+    ))
+  )
+}
+
 .CertLoadedServer = function(id, d, apm) {
   stopifnot(is.reactivevalues(apm))
   moduleServer(id, function(input, output, session) {
@@ -174,45 +226,5 @@
   })
 }
 
-.CertLoadedUI = function(id) {
-  tagList(
-    # Cert Value Plot start
-    column(
-      3,
-      fluidRow(strong("Certified Value Plot")),
-      fluidRow(uiOutput(NS(id, "flt_labs"))),
-      fluidRow(
-        column(
-          6,
-          numericInput(
-            inputId = NS(id, "Fig01_width"),
-            label = "width",
-            value = 400
-          )
-        ), 
-        column(
-          6,
-          numericInput(
-            inputId = NS(id, "Fig01_height"),
-            label = "height",
-            value = 400
-          )
-        )
-      ),
-      fluidRow(
-        column(
-          6,
-          strong("Download"),
-          br(),
-          downloadButton(outputId = 'Fig01', label = "Figure")
-        )
-      ),
-      fluidRow(column(6, strong("mean")), column(6, strong("sd"))),
-      fluidRow(column(6, textOutput("cert_mean")), column(6, textOutput("cert_sd"))),
-    ),
-    column(9, plotOutput(
-      NS(id, "overview_CertValPlot"), inline = TRUE
-    ))
-  )
-}
+
 

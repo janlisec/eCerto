@@ -10,7 +10,7 @@
   # empty tabset panel, to be filled by the analytes in the server Module
   tagList(
     shinyjs::inlineCSS('.selct  {background: green; color: white;border: 5px solid black;}'),
-    wellPanel(tabsetPanel(id = NS(id,"tabs")))
+    tabsetPanel(id = NS(id,"tabs"))
   )
 
 }
