@@ -57,16 +57,17 @@
       
     }
     # select only first tab
-    updateTabsetPanel(inputId = "tabs",selected = names(analytes)[1])
+    updateTabsetPanel(inputId = "tabs", selected = names(analytes)[1])
     
-    # change the "selected tab" reactive in the reactiveValues when another tab
-    # is selected
+    
     observeEvent(input$tabs,{
+      # change color of tab when selected by changing class 
       s = paste0("#",ns("tabs")," li a[data-value=",input$tabs,"]")
       shinyjs::addClass(
         selector = s,
         class = "selct")
-      
+      # change the "selected tab" reactive in the reactiveValues when another tab
+      # is selected
       analytelist$selected_tab = input$tabs
     },ignoreInit = TRUE)
     

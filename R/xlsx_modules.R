@@ -376,11 +376,12 @@
       req(input$moduleSelect)
       # enable upload button when a data frame was uploaded via the Upload menu
       # but only as long c hasn't been filled so far
-      # !is.null(data_of_godelement(t())) &&
-      print(paste0("t is null: ",is.null(t())))
-      if(!is.null((t())) && is.null(get_listelem(c,input$moduleSelect))){ 
+      # !is.null((t())) && 
+      if(is.null(get_listelem(c,input$moduleSelect))){ 
+        print("go enabled")
         shinyjs::enable("go")
       } else {
+        print("go disabled")
         shinyjs::disable("go")
       }
     })
@@ -388,6 +389,7 @@
     # update list after pushing upload button
     shiny::observeEvent(input$go, {
       shinyjs::disable("go")
+      print("go pressed")
       set_listelem(c, input$moduleSelect, t)
       set_listUploadsource(c, input$moduleSelect, uploadsource = "Excel")
       
