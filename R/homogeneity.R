@@ -57,7 +57,7 @@
   )
 }
 
-.HomogeneityServer = function(id, rv) {
+.HomogeneityServer = function(id, rv, datreturn) {
   moduleServer(id, function(input, output, session) {
     
     d = reactive({rv$Homogeneity})
@@ -94,6 +94,11 @@
             }, .id="H_type")
           }, .id="analyte") 
         }) 
+        
+        observeEvent(h_vals(),{
+          print(".HomogeneityServer - h_vals added")
+          datreturn$h_vals = h_vals()
+        })
         
         output$h_fileUploaded <- reactive({
           return(!is.null(h_Data()))
@@ -193,7 +198,12 @@
         output$h_transfer_ubb <- renderUI({
           validate(need(input$sel_analyt, message = "please upload certification data first"))
           req(getData("cert_vals"))
-          selectInput(inputId=session$ns("h_transfer_ubb"), label="", selectize=TRUE, choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"])
+          selectInput(
+            inputId=session$ns("h_transfer_ubb"), 
+            label="", 
+            selectize=TRUE, 
+            choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"]
+          )
         })
         
         output$h_transfer_H_type <- renderUI({
@@ -207,5 +217,32 @@
         updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
       }
     }, ignoreInit = TRUE)
+  })
+}
+
+# TRANSFER HOMOGENEITY MODULE -------------------------
+.TransferHomogeneityUI = function(id) {
+  shinyjs::disabled(
+    fluidRow(
+      #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
+      column(4,uiOutput(NS(id,"h_transfer_H_type"))), #   selectInput(inputId="h_transfer_H_type", label="", selectize=TRUE, choices=levels(h_vals[,"H_type"]))
+      #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
+      column(4,uiOutput(NS(id,"h_transfer_ubb"))), #  selectInput(inputId="h_transfer_ubb", label="", selectize=TRUE, choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"])
+      column(4, actionButton(inputId = NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"), align="right")
+    )
+  )
+
+}
+.TransferHomogeneityServer = function(id, datreturn) {
+  moduleServer(id, function(input, output, session) {
+    output$h_transfer_H_type <- renderUI({
+      req(datreturn$hvals)
+      selectInput(
+        inputId="h_transfer_H_type", 
+        label="", 
+        selectize=TRUE, 
+        choices=levels(datreturn$hvals[,"H_type"])
+      )
+    })
   })
 }

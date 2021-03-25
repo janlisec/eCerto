@@ -99,8 +99,8 @@ app_ui = function(request){
           title = "Homogeneity",
           icon = icon("angle-right"),
           value = "tP_homogeneity",
+          wellPanel(.TransferHomogeneityUI("trH")),
           .HomogeneityUI("Homogeneity")
-          #verbatimTextOutput("homog")
         ),
         tabPanel(
           title = "Stability",
@@ -124,11 +124,6 @@ app_ui = function(request){
         icon = icon("angle-right"),
         value = "tP_LTS",
         .longtermstabilityUI("lts")
-        # source(
-        #   file = "ui_tabPanel_LTS.R",
-        #   local = TRUE,
-        #   verbose = FALSE
-        # )$value
       ),
       
       tabPanel(
