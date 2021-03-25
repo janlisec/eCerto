@@ -51,13 +51,54 @@
   # )
 }
 
-.materialtabelleServer <- function(id, dat) {
-
+.materialtabelleServer = function(id, datreturn) {
   moduleServer(id, function(input, output, session) {
-  
+   
+    sAnData = reactive({datreturn$selectedAnalyteDataframe}) # data frame of selected analyte
+    lab_statistics = reactive({datreturn$lab_statistics})
+    
     precision2 = NULL
+    cert_vals = reactiveVal(NULL)
+    
+    # observeEvent(lab_statistics(),{
+    #   print(".materialtabelleServer -- lab_statistics:")
+    #   print(lab_statistics())
+    # })
+    
+    # 1) table creation
+    availableAnalytes = reactive({levels(sAnData()[["analyte"]])})
+    # the data table should be created only once, since the levels shouldn't
+    # change after certification upload
+    observeEvent(availableAnalytes(),{
+      message(".materialtabelleServer -- levels of sAnData():")
+      message(availableAnalytes())
+      c <-
+        data.frame(
+          "analyte" =  availableAnalytes(), # a,
+          "mean" = NA,
+          "F1" = 1,
+          "F2" = 1,
+          "F3" = 1,
+          "cert_val" = NA,
+          "sd" = NA,
+          "n" = NA,
+          "char" = 0,
+          "U2" = 0,
+          "U3" = 0,
+          "U4" = 0,
+          "U5" = 0,
+          "U6" = 0,
+          "U7" = 0,
+          "com" = NA,
+          "k" = 2,
+          "U" = NA
+        )
+      cert_vals(c)
+    },ignoreInit = TRUE, once = TRUE)
+    
     cert_mean <- reactive({
-      data <- dat()[!dat()[, "L_flt"], ]
+      req(sAnData())
+      data <- sAnData()[!sAnData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
       ifelse(input$pooling,
@@ -70,7 +111,7 @@
     
     cert_sd <- reactive({
       # req(input$precision2)
-      data <- dat()[!dat()[, "L_flt"], ]
+      data <- sAnData()[!sAnData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
       ifelse(input$pooling,
@@ -80,31 +121,32 @@
              )), precision2))
     })
     
-    a = levels(dat()[["analyte"]])
-    cert_vals <-
-      data.frame(
-        "analyte" = a,
-        "mean" = NA,
-        "F1" = 1,
-        "F2" = 1,
-        "F3" = 1,
-        "cert_val" = NA,
-        "sd" = NA,
-        "n" = NA,
-        "char" = 0,
-        "U2" = 0,
-        "U3" = 0,
-        "U4" = 0,
-        "U5" = 0,
-        "U6" = 0,
-        "U7" = 0,
-        "com" = NA,
-        "k" = 2,
-        "U" = NA
-      )
     
-    tmp_cert_vals = cert_vals
-    output$matreport = DT::renderDT(tmp_cert_vals)
+    
+    
+    observeEvent(sAnData(),{
+      # TODO Check that analyte-column is unique
+      # if(length(unique(sAnData()[["analyte"]]))) warning("selected contains more than one unique analyte")
+      # console log
+      message(paste0("materialTabelle - started/updated for: ", sAnData()[1,"analyte"]))
+
+      #edit row
+      df = cert_vals()
+      newRow = df[df[["analyte"]]==sAnData()[1,"analyte"],]
+      newRow$mean = cert_mean()
+      newRow$sd = cert_sd()
+      newRow$n <-
+        ifelse(input$pooling,
+               sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% input$flt_labs), "n"]),
+               nrow(lab_statistics()) - length(input$flt_labs))
+      df[df[["analyte"]]==sAnData()[1,"analyte"],] = newRow
+      cert_vals(df)
+    })
+    
+    
+    # tmp_cert_vals = cert_vals()
+    # datreturn$cert_vals = cert_vals
+    output$matreport = DT::renderDT(cert_vals())
     # output$matreport <-
     #   DT::renderDT(
     #     DT::datatable(

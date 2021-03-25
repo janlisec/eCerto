@@ -70,7 +70,7 @@
   
 }
 
-.CertificiationServer = function(id, d,datreturn) {
+.CertificiationServer = function(id, d, datreturn) {
   #stopifnot(is.reactivevalues(d))
   moduleServer(id, function(input, output, session) {
     
@@ -78,6 +78,7 @@
       #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
       if(!is.null(d())){
+        message("Certification Module start")
         updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
         #### create the parameter list for the analytes ###
         # it will contain information about he selected analyte tab, and for
@@ -87,18 +88,20 @@
         param_template = list(
           "precision" = NULL, 
           "sample_filter" = NULL, # saving which samples where selected for filter
-          "sample_ids" = NULL, # which samples are available
+          "sample_ids" = NULL, # which samples are available for the filter
+          "lab_filter" = NULL, # filter of laboratories (e.g. L1)
           "analytename" = NULL
         )
         analytes = reactive({levels(data_of_godelement(d())[, "analyte"])})
-        a_param_list = rep(list(param_template),length(analytes()))
+        # create list with lists of all analytes (i.e. a nested list)
+        a_param_list = rep(list(param_template), length(analytes()))
         for (i in 1:length(a_param_list)) {
           # add analyte name to list
           a_param_list[[i]]$analytename = as.list(analytes())[[i]]
           # add available id's of samples to list
           tmp = data_of_godelement(d())
           ids = tmp[tmp[["analyte"]] == as.list(analytes())[[i]], "ID"]
-          a_param_list[[i]]$sample_ids = ids[!is.na(ids)]
+          a_param_list[[i]]$sample_ids = ids[!is.na(ids)] # fill available ids
         }
         # set names of sublists to analyte names
         a_param_list = setNames(a_param_list, analytes())
@@ -115,10 +118,70 @@
         dat = .CertLoadedServer("loaded",d = d, apm = apm)
         # --- --- --- --- --- --- --- --- --- --- ---
         
-        observe({
-          datreturn$dat = dat()
+        # Calculates statistics for all available labs
+        # formerly: lab_means()
+        # Format example: 
+        # Lab       mean           sd n
+        # L1  L1 0.04551667 0.0012560520 6
+        # L2  L2 0.05150000 0.0007563068 6
+        # L3  L3 0.05126667 0.0004926121 6
+        lab_statistics = reactive({
+          # data <- dat()
+          req(dat())
+          out <-
+            plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
+              data.frame(
+                "mean" = mean(x, na.rm = T),
+                "sd" = sd(x, na.rm = T),
+                "n" = sum(is.finite(x))
+              )
+            }, .id = "Lab")
+          rownames(out) <- out$Lab
+          suppressWarnings(KS_p <-
+                             stats::ks.test(
+                               x = out$mean,
+                               y = "pnorm",
+                               mean = mean(out$mean),
+                               sd = sd(out$mean)
+                             )$p.value)
+          
+          # TODO
+          # assign(
+          #   "normality_statement",
+          #   value = paste0(
+          #     "The data is",
+          #     ifelse(KS_p < 0.05, " not ", " "),
+          #     "normally distributed (KS_p=",
+          #     formatC(KS_p, format = "E", digits = 2),
+          #     ")."
+          #   ),
+          #   envir = env_perm
+          # )
+          return(out)
         })
-
+        
+        observe({
+          datreturn$lab_statistics = lab_statistics()
+          message(".CertificationServer -- lab_statistics created")
+          datreturn$selectedAnalyteDataframe = dat()
+          # console log
+          message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
+        })
+        
+        # observeEvent(lab_statistics(),{
+        #   datreturn$lab_statistics = lab_statistics()
+        #   message(".CertificationServer -- lab_statistics created")
+        # }, ignoreInit = TRUE)
+        # 
+        # observeEvent(dat(),{
+        #   datreturn$selectedAnalyteDataframe = dat()
+        # 
+        #   # console log
+        #   message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
+        # })
+        
+        
+      
         ### LOADED END ###s
       } else { 
         # else if nothing is loaded, keep Panel empty
@@ -165,6 +228,7 @@
         )
       ),
       fluidRow(column(6, strong("mean")), column(6, strong("sd"))),
+      # TODO
       fluidRow(column(6, textOutput("cert_mean")), column(6, textOutput("cert_sd"))),
     ),
     column(9, plotOutput(
@@ -214,6 +278,36 @@
       TestPlot(data = dat())
     })
     
+    # Filter laboraties (e.g. "L1")
+    output$flt_labs <- renderUI({
+      req(dat(), selected_tab())
+      # analytelist$analytes[[i]]$lab_filter
+      tmp <- dat()
+      tmp <-
+        tmp[tmp[, "analyte"] == selected_tab() &
+              is.finite(tmp[, "value"]), ]
+      choices <- levels(factor(tmp[, "Lab"]))
+      # selected <- choices[which(sapply(split(tmp[, "L_flt"], factor(tmp[, "Lab"])), all))]
+      selected = apm$analytes[[selected_tab()]]$lab_filter
+      selectizeInput(
+        inputId = session$ns("flt_labs"),
+        label = "Filter Labs",
+        choices = choices,
+        selected = selected,
+        multiple = TRUE
+      )
+    })
+    
+    observeEvent(input$flt_labs,{
+      # message(paste0("selected lab filter: ", input$flt_labs))
+      apm$analytes[[selected_tab()]]$lab_filter = input$flt_labs
+    })
+    
+    # # console log
+    # observeEvent(dat(),{
+    #   message(paste0(".CertLoadedServer -- currently: ", dat()[1,"analyte"]))
+    # })
+    
     # CertVal Plot
     output$overview_CertValPlot <- renderPlot({
       CertValPlot(data = dat())
@@ -222,6 +316,7 @@
     }), width = reactive({
       input$Fig01_width
     }))
+    
     return(dat)
   })
 }

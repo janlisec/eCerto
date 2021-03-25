@@ -30,6 +30,7 @@ app_server = function(input, output, session) {
   # when certification was uploaded
   observeEvent(rv$Certifications,{
     # when source is Excel, switch to Certification Tab automatically
+    print("observer: certification was uploaded")
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
       updateNavbarPage(
         session = session,
@@ -41,6 +42,7 @@ app_server = function(input, output, session) {
   # when Homogeneity was uploaded
   observeEvent(rv$Homogeneity,{
     # when source is Excel, switch to Homogeneity Tab automatically
+    print("observer: Homogeneity was uploaded")
     if(get_listUploadsource(rv, "Homogeneity")=="Excel"){
       updateNavbarPage(
         session = session,
@@ -49,23 +51,31 @@ app_server = function(input, output, session) {
     }
   }, ignoreInit = TRUE)
 
-  # datreturn contains the selected sub-frame for updating the Materialtabelle
-  # when another analyte is selected. Because a reactive from another module
-  # inside .CertificationServer is returned, storing it in reactiveValues()
-  # worked so far.
-  datreturn = reactiveValues(dat = NULL) 
+  # datreturn contains the by an analyte selected sub-frame for updating the
+  # Materialtabelle. Because a reactive from another module inside
+  # CertificationServer is returned, storing it in reactiveValues() worked so
+  # far.
+  datreturn = reactiveValues(
+    selectedAnalyteDataframe = NULL,
+    h_vals = NULL,                      # values from Homogeneity module
+    cert_vals = NULL,                   # materialtabelle,
+    lab_statistics = NULL
+  ) 
   
   # --- --- --- --- --- --- --- --- ---
   .CertificiationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
-  .HomogeneityServer(id = "Homogeneity", rv)
+  .HomogeneityServer(id = "Homogeneity", rv, datreturn)
   # --- --- --- --- --- --- --- --- ---
   
-  # datreturn$dat hoffentlich nur temporär
-  observeEvent(datreturn$dat,{
-    # --- --- --- --- --- --- --- --- --- --- ---
-    .materialtabelleServer("mat_cert", reactive(datreturn$dat))
-    # --- --- --- --- --- --- --- --- --- --- ---
-  }, ignoreNULL = TRUE)
+  # --- --- --- --- --- --- --- --- --- --- ---
+  .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
+  # --- --- --- --- --- --- --- --- --- --- ---
+
+  
+  observeEvent(datreturn$cert_vals, {
+    # print(datreturn$h_vals)
+    .TransferHomogeneityServer("trH", datreturn)
+  })
   
   
   .longtermstabilityServer("lts")
