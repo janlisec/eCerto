@@ -49,10 +49,11 @@
     "lts-LTS_ApplyNewValue": 0,
     "lts-LTS_input_file": null,
     "navbarpage": "Start",
-    "sessionstart": 0
+    "sessionstart": 0,
+    "show_table": 0
   },
   "output": {
-    "excelfile-test-preview_out": "  Zertifizierung.BAM-M321         X2          X3   X4   X5   X6   X7   X8   X9\n1                   Labor   BAM-phot        <NA> <NA> <NA> <NA> <NA> <NA> <NA>\n2                   Datum       <NA>        <NA> <NA> <NA> <NA> <NA> <NA> <NA>\n3                   Notiz       <NA>        <NA> <NA> <NA> <NA> <NA> <NA> <NA>\n4                 Element Richtwerte Einzelwerte <NA> <NA> <NA> <NA> <NA> <NA>\n5                    <NA>       <NA>           1    2    3    4    5    6 <NA>\n6                    <NA>       <NA>      w(x)*) w(x) w(x) w(x) w(x) w(x)    N\n         X10  X11  X12     X13                                File\n1       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n2       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n3       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n4  Kenndaten <NA> <NA> Element Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n5       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n6 Mittelwert  STD  Vk%    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx",
+    "excelfile-test-preview_out": "  Zertifizierung.BAM-M321         X2          X3   X4   X5   X6   X7   X8   X9\n1                   Labor   BAM-phot        <NA> <NA> <NA> <NA> <NA> <NA> <NA>\n2                   Datum       <NA>        <NA> <NA> <NA> <NA> <NA> <NA> <NA>\n3                   Notiz       <NA>        <NA> <NA> <NA> <NA> <NA> <NA> <NA>\n4                 Element Richtwerte Einzelwerte <NA> <NA> <NA> <NA> <NA> <NA>\n5                    <NA>       <NA>           1    2    3    4    5    6 <NA>\n6                    <NA>       <NA>      w(x)*) w(x) w(x) w(x) w(x) w(x)    N\n         X10  X11  X12     X13                                File\n1       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n2       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n3       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n4  Kenndaten <NA> <NA> Element Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n5       <NA> <NA> <NA>    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n6 Mittelwert  STD  Vk%    <NA> Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n                                 File\n1 Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n2 Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n3 Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n4 Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n5 Ergebnisblatt_BAM-M321_BAM-3_m.xlsx\n6 Ergebnisblatt_BAM-M321_BAM-3_m.xlsx",
     "lts-LTS_fileUploaded": false
   },
   "export": {

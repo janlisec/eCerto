@@ -65,7 +65,8 @@
     "lts-LTS_ApplyNewValue": 0,
     "lts-LTS_input_file": null,
     "navbarpage": "tP_certification",
-    "sessionstart": 0
+    "sessionstart": 0,
+    "show_table": 0
   },
   "output": {
     "certification-overview_CertValPlot": {
