@@ -1,0 +1,12 @@
+{
+  "output": {
+    "excelfile-test-preview_out": {
+      "message": "less than 2 laboratory files uploaded. Upload more!",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    }
+  }
+}

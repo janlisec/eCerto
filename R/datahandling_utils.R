@@ -68,7 +68,7 @@ load_sheetnames = function(filepath){
 
 
 load_excelfiles = function(filepath, sheet) {
-
+  
   lapply(filepath, function(x) {
     ext <- tools::file_ext(x)
     if(ext == "xlsx"){
@@ -241,4 +241,50 @@ pn <- function(n=NULL, p=4L) {
   } else {
     return(n)
   }
+}
+
+#' Update single or multiple cells of the final materialtabelle (formerly cert_vals) 
+#' with new values
+#'
+#' @param r the reactive containing the data frame
+#' @param colname name of the column
+#' @param analyterow  name of the analyte-row. If NULL, whole column is updated
+#' @param value value to be updated
+#'
+#' @return
+#' @export
+update_reactivecell = function(r,colname,analyterow = NULL,value) {
+  
+  if(!is.data.frame(r()))
+    stop("r is not a data frame")
+  if(!colname %in% colnames(r())) 
+    stop("reactive data frame does not contain column ", colname)
+  if(!is.null(analyterow) && nrow(merge(analyterow,r()))==0)
+    stop("reactive data frame does not contain row ", analyterow)
+  if(is.data.frame(value)) 
+    stop("value is a dataframe, but should be a scalar")
+  if(!is.null(analyterow) && length(value)>1) {
+    warning("value to be inserted is not scalar, i.e. more than one. Take only first!")
+    value = value[1]
+  }
+  
+  # extract original row to be edit into variable (1/3)
+  df = r()
+  if(is.null(analyterow)){
+    newRow = df
+  } else {
+    newRow = df[df[["analyte"]]==analyterow,]
+  }
+  
+  # edit cell (2/3)
+  newRow[[colname]] = value
+  
+  # update (3/3)
+  if(is.null(analyterow)){
+    df = newRow
+  } else {
+    df[df[["analyte"]]==analyterow,] = newRow
+  }
+  
+  r(df)
 }

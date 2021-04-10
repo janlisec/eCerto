@@ -1,0 +1,5 @@
+{
+  "output": {
+    "excelfile-test-preview_out": "  analyte H_type Flasche     value unit            File            File\n1      Fe radial       3 0.2897693 mM/L Homog_Test.xlsx Homog_Test.xlsx\n2      Fe radial      36 0.2967753 mM/L Homog_Test.xlsx Homog_Test.xlsx\n3      Fe radial      62 0.3075952 mM/L Homog_Test.xlsx Homog_Test.xlsx\n4      Fe radial      78 0.3006643 mM/L Homog_Test.xlsx Homog_Test.xlsx\n5      Fe radial     109 0.2981130 mM/L Homog_Test.xlsx Homog_Test.xlsx\n6      Fe radial     144 0.3018592 mM/L Homog_Test.xlsx Homog_Test.xlsx"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "input": {
+    "excelfile-go": 0,
+    "excelfile-moduleSelect": "Homogeneity",
+    "excelfile-test-pam-colslider": [
+      0,
+      14
+    ],
+    "excelfile-test-pam-rowslider": [
+      0,
+      28
+    ],
+    "excelfile-test-upld-sheet-sheet_sel": "Ergebnisse",
+    "excelfile-test-upld-xlsxfile-file": {
+      "name": [
+        "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+        "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+        "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"
+      ],
+      "size": [
+        27926,
+        27617,
+        27527
+      ],
+      "type": [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ],
+      "datapath": [
+        "0.xlsx",
+        "1.xlsx",
+        "2.xlsx"
+      ]
+    }
+  },
+  "output": {
+    "excelfile-test-preview_out": {
+      "message": "No column 'analyte' found in input file.\nNo column 'value' found in input file.",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    }
+  }
+}

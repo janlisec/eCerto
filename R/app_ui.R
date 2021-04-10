@@ -3,7 +3,7 @@
 #' @return
 #' @export
 #' @import shiny
-app_ui = function(request){
+app_ui = function(){
   
   # ui = function() {
   #   shiny::fluidPage(
@@ -92,7 +92,10 @@ app_ui = function(request){
           title = "Certification",
           value = "tP_certification",
           icon = icon("angle-right"),
-          .CertificationUI("certification")
+          .CertificationUI("certification"),
+          wellPanel(
+            .materialtabelleUI("mat_cert")
+          )
         ),
         tabPanel(
           id = "homog_tab",
@@ -107,13 +110,6 @@ app_ui = function(request){
           icon = icon("angle-right"),
           value = "tP_Stability",
           verbatimTextOutput("stab")
-        ),
-        tabPanel(
-          title = "Materialtabelle",
-          value = "matTabelle",
-          wellPanel(
-            .materialtabelleUI("mat_cert")
-          )
         )
       ), 
       # eCerto Ende

@@ -24,11 +24,12 @@
   shiny::moduleServer(id, function(input, output, session) {
     
     # The selected file, if any
-    shiny::reactive({
+    r = shiny::reactive({
       # If no file is selected, don't do anything
       shiny::req(input$file)
       input$file
     })
+    # debounce(r,1000)
   })
 }
 
@@ -55,6 +56,7 @@
   shiny::moduleServer(id, function(input, output, session) {
     #excel-file is uploaded --> update selectInput of available sheets
     shiny::observeEvent(datafile(), { 
+      
       choices_list = load_sheetnames(datafile()$datapath) 
       shiny::updateSelectInput(session = session,
                                inputId = "sheet_sel",
@@ -63,8 +65,13 @@
                                 )
     })
     s = shiny::reactive(input$sheet_sel)
-    # observeEvent(s(),print(paste0("reactive: ", s())))
-    return(s)
+    
+    # data file should wait until sheetnames are loaded properly
+    # This should be only temporarily, since it slows down the uploading
+    # mechanism. Alternatively, (1) experiment with 'priority' argument of
+    # observe() or (2) extra argument
+    s2 = debounce(s, 500)
+    return(s2)
   })
 }
 
@@ -77,31 +84,34 @@
 #' @export
 .ExcelServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
+    rv <- reactiveValues(v = 0)
+    
     datafile = .xlsxinputServer("xlsxfile")
     sh = .sheetServer("sheet", datafile)
     
-    # debounce should wait some tim before invalidating the data frame reactive
-    # This should be only temporarily, since it slows down the uploading
-    # mechanism. Alternatively, (1) experiment with 'priority' argument of
-    # observe() or (2) extra argument
-    df = debounce(datafile,1000)
+    observeEvent(sh(),{
+      rv$v <- rv$v + 1
+      print(paste0(sh(),": ",rv$v))
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
+
+    df = reactive({
+      req(sh())
+      rv$v
+      isolate(datafile())
+      # 
+    })
     # when sheet is selected, upload Excel and enable button
     t = shiny::eventReactive(df(),{
-      #shiny::req(sh())
-      # shinyjs::delay(50,{
+      message("uploading excel ",df()$name, " and sheet ", isolate(sh()))
         l = load_excelfiles(df()$datapath, sh())
         # add file name to data frame
-        
         for (i in 1:length(l)) {
           l[[i]][["File"]] = rep(isolate(df()$name[i]), nrow(l[[i]]))
         }
         return(l)
-      # })
-
     })
-    # t = debounce(t_tmp,50)
+
     return(t)
-    # observe({print(paste0("t: ", t()))})
   })
 }
 

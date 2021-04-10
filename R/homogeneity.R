@@ -17,15 +17,15 @@
       value = "loaded",
       fluidRow(
         column(10, DT::dataTableOutput(NS(id,"h_vals"))),
-         column(2, 
-        #  conditionalPanel(
-        #   condition="output.c_fileUploaded_message != ''",
-           fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
-           fluidRow(uiOutput("h_transfer_H_type")),
-           fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
-           fluidRow(uiOutput("h_transfer_ubb")),
-           fluidRow(actionButton(inputId = "h_transfer_ubb_button", label = "Transfer Now!"), align="right")
-        )
+        #  column(2, 
+        # #  conditionalPanel(
+        # #   condition="output.c_fileUploaded_message != ''",
+        #    fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
+        #    fluidRow(uiOutput("h_transfer_H_type")),
+        #    fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
+        #    fluidRow(uiOutput("h_transfer_ubb")),
+        #    fluidRow(actionButton(inputId = "h_transfer_ubb_button", label = "Transfer Now!"), align="right")
+        # )
       ),
       hr(),
       fluidRow(
@@ -146,9 +146,9 @@
             h_vals_print[,i] <- pn(h_vals_print[,i], input$h_precision)
           }
           if (!is.null(c_Data())) {
-            cert_vals <- c_Data()
+            mater_table <- c_Data()
             h_vals_print[,"In_Cert_Module"] <- sapply(h_vals_print[,"analyte"], function(x) {
-              ifelse(is.null(cert_vals),"cert table not found", ifelse(x %in% cert_vals[,"analyte"], "Yes", "No"))
+              ifelse(is.null(mater_table),"cert table not found", ifelse(x %in% mater_table[,"analyte"], "Yes", "No"))
             })
           }
           return(h_vals_print)
@@ -195,6 +195,7 @@
         
         
         # Special UI
+        # TODO
         output$h_transfer_ubb <- renderUI({
           validate(need(input$sel_analyt, message = "please upload certification data first"))
           req(getData("cert_vals"))
@@ -223,26 +224,91 @@
 # TRANSFER HOMOGENEITY MODULE -------------------------
 .TransferHomogeneityUI = function(id) {
   shinyjs::disabled(
-    fluidRow(
+    fluidRow(id = NS(id,"transferPanel"),
       #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
-      column(4,uiOutput(NS(id,"h_transfer_H_type"))), #   selectInput(inputId="h_transfer_H_type", label="", selectize=TRUE, choices=levels(h_vals[,"H_type"]))
+      column(4,
+             selectInput(
+               inputId=NS(id,"h_transfer_H_type"), 
+               label="", 
+               selectize=TRUE, 
+               choices=NULL
+             )
+      ),
       #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
-      column(4,uiOutput(NS(id,"h_transfer_ubb"))), #  selectInput(inputId="h_transfer_ubb", label="", selectize=TRUE, choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"])
-      column(4, actionButton(inputId = NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"), align="right")
+      column(4,
+             selectInput(inputId=NS(id,"h_transfer_ubb"), 
+                         label="", 
+                         selectize=TRUE,
+                         choices=NULL
+             )           
+      ),
+      column(4, actionButton(inputId = NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"))
     )
   )
-
 }
+
+# This module is called in lowest server module. It transfers values from the
+# Homogeneity module into the materialtabelle
 .TransferHomogeneityServer = function(id, datreturn) {
   moduleServer(id, function(input, output, session) {
-    output$h_transfer_H_type <- renderUI({
-      req(datreturn$hvals)
-      selectInput(
-        inputId="h_transfer_H_type", 
-        label="", 
-        selectize=TRUE, 
-        choices=levels(datreturn$hvals[,"H_type"])
+    
+    # activate transfer panel only, when (1) materialtabelle was created after 
+    # certification upload and (2) homogeneity data was uploaded
+    observeEvent({
+      datreturn$mater_table
+      datreturn$h_vals
+      }
+      ,{
+      if(!is.null(datreturn$h_vals) && !is.null(datreturn$mater_table)){
+        shinyjs::enable(id = "transferPanel")
+        message("Transfer Homogeneity Panel activated")
+        
+        updateSelectInput(
+          session = session,
+          inputId = "h_transfer_H_type",
+          choices = levels(datreturn$h_vals[,"H_type"]))
+        
+        updateSelectInput(
+          session = session,
+          inputId = "h_transfer_ubb",
+          choices=attr(datreturn$mater_table, "col_code")[substr(attr(datreturn$mater_table, "col_code")[,"ID"],1,1)=="U","Name"]
+        )
+      }
+
+    }) 
+    
+    # TODO
+    observeEvent(input$h_transfer_ubb_button, {
+      req(
+        # h_Data(), 
+        datreturn$h_vals, 
+        datreturn$mater_table, 
+        input$h_transfer_ubb, 
+        input$h_transfer_H_type
       )
+      message("TRANSFER BUTTON clicked")
+      h_vals <- datreturn$h_vals
+      cert_vals <- datreturn$mater_table
+      for (i in 1:nrow(cert_vals)) {
+        # select cell of same analyte and Homogeneity type
+        j <-
+          which(
+            as.character(h_vals[, "analyte"]) ==  as.character(cert_vals[i, "analyte"]) 
+            &
+            as.character(h_vals[, "H_type"]) == isolate(input$h_transfer_H_type)
+          )
+        # if cell exists
+        if (length(j) == 1) {
+          c_name = which(attr(cert_vals, "col_code")[, "Name"] ==
+                           isolate(input$h_transfer_ubb))
+          cert_vals[i, attr(cert_vals, "col_code")[c_name, "ID"]] <-
+            max(h_vals[j, c("s_bb", "s_bb_min")])
+        }
+      }
+      print(cert_vals)
+      datreturn$mater_table <- cert_vals 
+      # assign("cert_vals", value=cert_vals, envir = env_perm)
+      # shinyjs::click(id="show_table")
     })
   })
 }

@@ -56,10 +56,10 @@ app_server = function(input, output, session) {
   # CertificationServer is returned, storing it in reactiveValues() worked so
   # far.
   datreturn = reactiveValues(
-    selectedAnalyteDataframe = NULL,
+    selectedAnalyteDataframe = NULL,    # The selected Analyte-correspondng df for materialtabelle
     h_vals = NULL,                      # values from Homogeneity module
-    cert_vals = NULL,                   # materialtabelle,
-    lab_statistics = NULL
+    mater_table = NULL,                 # materialtabelle, formerly cert_vals
+    lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
   ) 
   
   # --- --- --- --- --- --- --- --- ---
@@ -72,10 +72,10 @@ app_server = function(input, output, session) {
   # --- --- --- --- --- --- --- --- --- --- ---
 
   
-  observeEvent(datreturn$cert_vals, {
+  # observeEvent(datreturn$h_vals, {
     # print(datreturn$h_vals)
     .TransferHomogeneityServer("trH", datreturn)
-  })
+  # })
   
   
   .longtermstabilityServer("lts")

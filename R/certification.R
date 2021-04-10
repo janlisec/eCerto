@@ -21,7 +21,7 @@
         column(8,
           wellPanel(
             # --- --- --- --- --- --- --- --- ---
-            .analyteModuleUI(NS(id, "cert_filter")),
+            .analyteModuleUI(NS(id, "analyteModule")),
             # --- --- --- --- --- --- --- --- ---
           )
         )
@@ -111,7 +111,7 @@
         # end param list
         
         # --- --- --- --- --- --- --- --- --- --- ---
-        .analyteModuleServer("cert_filter", apm)
+        .analyteModuleServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
         
         # --- --- --- --- --- --- --- --- --- --- ---
@@ -168,20 +168,6 @@
           message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
         })
         
-        # observeEvent(lab_statistics(),{
-        #   datreturn$lab_statistics = lab_statistics()
-        #   message(".CertificationServer -- lab_statistics created")
-        # }, ignoreInit = TRUE)
-        # 
-        # observeEvent(dat(),{
-        #   datreturn$selectedAnalyteDataframe = dat()
-        # 
-        #   # console log
-        #   message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
-        # })
-        
-        
-      
         ### LOADED END ###s
       } else { 
         # else if nothing is loaded, keep Panel empty
@@ -229,7 +215,12 @@
       ),
       fluidRow(column(6, strong("mean")), column(6, strong("sd"))),
       # TODO
-      fluidRow(column(6, textOutput("cert_mean")), column(6, textOutput("cert_sd"))),
+      fluidRow(
+        column(6, 
+          textOutput(NS(id,"cert_mean"))), 
+        column(6, 
+          textOutput(NS(id,"cert_sd")))
+      ),
     ),
     column(9, plotOutput(
       NS(id, "overview_CertValPlot"), inline = TRUE
@@ -249,10 +240,12 @@
       # subset data frame for currently selected analyte
       current_analy = apm$analytes[[selected_tab()]]
       
-      a = ecerto::data_of_godelement(d())
+      a = ecerto::data_of_godelement(d()) # take the uploaded certification
+      # round input values
       a[, "value"] = round(a[, "value"], current_analy$precision)
       a <- a[a[, "analyte"] %in% selected_tab(), ]
       a <-a[!(a[, "ID"] %in% current_analy$sample_filter), ]
+      a[, "L_flt"] <- a[, "Lab"] %in% input$flt_labs
       
       # Notify User in case that only 1 finite measurement remained within group
       validate(

@@ -1,0 +1,39 @@
+{
+  "input": {
+    "excelfile-go": 0,
+    "excelfile-moduleSelect": "Certifications",
+    "excelfile-test-pam-colslider": [
+      0,
+      6
+    ],
+    "excelfile-test-pam-rowslider": [
+      0,
+      90
+    ],
+    "excelfile-test-upld-sheet-sheet_sel": "some_name",
+    "excelfile-test-upld-xlsxfile-file": {
+      "name": [
+        "Homog_Test.xlsx"
+      ],
+      "size": [
+        12867
+      ],
+      "type": [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ],
+      "datapath": [
+        "0.xlsx"
+      ]
+    }
+  },
+  "output": {
+    "excelfile-test-preview_out": {
+      "message": "less than 2 laboratory files uploaded. Upload more!",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    }
+  }
+}

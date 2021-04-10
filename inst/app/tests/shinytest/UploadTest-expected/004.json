@@ -1,0 +1,40 @@
+{
+  "input": {
+    "excelfile-go": 0,
+    "excelfile-moduleSelect": "Certifications",
+    "excelfile-test-pam-colslider": [
+      0,
+      7
+    ],
+    "excelfile-test-pam-rowslider": [
+      0,
+      30
+    ],
+    "excelfile-test-upld-sheet-sheet_sel": "nassch. Analysenverfahren",
+    "excelfile-test-upld-xlsxfile-file": {
+      "name": [
+        "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+        "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+        "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"
+      ],
+      "size": [
+        27926,
+        27617,
+        27527
+      ],
+      "type": [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ],
+      "datapath": [
+        "0.xlsx",
+        "1.xlsx",
+        "2.xlsx"
+      ]
+    }
+  },
+  "output": {
+    "excelfile-test-preview_out": "  Zertifizierung.BAM-M321                             X2                     X3\n1                   Labor                           <NA>                   <NA>\n2                   Datum                           <NA>                   <NA>\n3          Akkreditierung                             ja                   <NA>\n4                   Notiz                     Probe-Nr.                    <NA>\n5                 Element Analysenmethode (z.B. ICP-OES) Aufschluss (z.B. NaOH)\n6                      Si                           <NA>                   <NA>\n                 X4             X5                                 X6\n1              <NA>           <NA>                               <NA>\n2              <NA>           <NA>                               <NA>\n3              nein          Norm:                               <NA>\n4              <NA>           <NA>                               <NA>\n5 Kalibriersubstanz Einwaage in mg Bemerkungen (z.B. Matrixanpassung)\n6              <NA>           <NA>                               <NA>\n                                          File\n1 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n2 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n3 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n4 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n5 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n6 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n                                          File\n1 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n2 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n3 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n4 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n5 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx\n6 Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"
+  }
+}
