@@ -58,7 +58,8 @@ app_server = function(input, output, session) {
   datreturn = reactiveValues(
     selectedAnalyteDataframe = NULL,    # The selected Analyte-correspondng df for materialtabelle
     h_vals = NULL,                      # values from Homogeneity module
-    mater_table = NULL,                 # materialtabelle, formerly cert_vals
+    mater_table = NULL,                 # materialtabelle, formerly cert_vals, READ-ONLY
+    t_H = NULL,                         # when Homogeneity is transferred
     lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
   ) 
   

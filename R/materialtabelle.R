@@ -53,17 +53,30 @@
 
 .materialtabelleServer = function(id, datreturn) {
   moduleServer(id, function(input, output, session) {
+    
+    # rv = reactiveValues(v = 0)
    
-    sAnData = reactive({datreturn$selectedAnalyteDataframe}) # data frame of selected analyte
+    # data frame of selected analyte
+    sAnData = reactive({
+      # rv$v
+      datreturn$selectedAnalyteDataframe
+    }) 
+    
     lab_statistics = reactive({datreturn$lab_statistics})
     
-    precision2 = NULL
+    precision2 = 4
+    # export precision2 for testing. Since it hasn't created yet
+    # use try(), see https://github.com/rstudio/shinytest/issues/350
+    exportTestValues(precision2 = { try(precision2) })
+
+    # 1) table creation
+    # define table as reactiveVal to update it at different places
+    # within the module
     mater_table = reactiveVal(NULL)
-    
-    observe({mater_table(datreturn$mater_table)})
+    observe({mater_table(datreturn$t_H)})
   
     
-    # 1) table creation
+   
     # get all availables analytes
     availableAnalytes = reactive({levels(sAnData()[["analyte"]])})
     # the data table should be created only once, since the levels shouldn't
@@ -103,6 +116,7 @@
     
     cert_mean <- reactive({
       req(sAnData())
+
       data <- sAnData()[!sAnData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
@@ -128,7 +142,7 @@
     
     
     
-    # when another Analyte-tab was selected
+    # when another Analyte-tab was selected --> update materialtabelle
     observeEvent(sAnData(),{
       # TODO Check that analyte-column is unique
       # if(length(unique(sAnData()[["analyte"]]))) warning("selected contains more than one unique analyte")
@@ -157,13 +171,52 @@
         analyterow = sAnData()[1,"analyte"],
         value = n
       )
-      
+    
+      # # recalc all cert_mean values including correction factors
+      # cert_val =
+      #     apply(mater_table()[, unlist(sapply(c("mean", paste0("F", 1:3)), function(x) {
+      #       grep(x, colnames(mater_table()))
+      #     }))], 1, prod, na.rm = T)
+      # message("materialtabelle - cert_val: ", cert_val)
+      # update_reactivecell(
+      #   r = mater_table,
+      #   colname = "cert_val",
+      #   value = cert_val
+      # )
+      # 
+      # char = mater_table()[, "sd"] / (sqrt(mater_table()[, "n"]) * mater_table()[, "mean"])
+      # update_reactivecell(mater_table,"char",value = char)
+      # 
+      # com <-
+      #   apply(mater_table()[, unlist(sapply(c("char", paste0("U", 2:7)), function(x) {
+      #     grep(x, colnames(mater_table()))
+      #   }))], 1, function(x) {
+      #     sqrt(sum(x ^ 2, na.rm = T))
+      #   })
+      # message("materialtabelle - com: ", com)
+      # update_reactivecell(r = mater_table,colname = "com",value = com)
+      # 
+      # U <- mater_table()[, "k"] * mater_table()[, "com"]
+      # message("materialtabelle - U: ", U)
+      # update_reactivecell(r = mater_table,colname = "U",value = U)
+      # 
+      # message("materialtabelle - mater_table: ", mater_table())
+    })
+    
+    # observe({datreturn$mater_table = mater_table()})
+    observeEvent(mater_table(),{
+      message("materialtabelle - datreturn updated, recalc")
       # recalc all cert_mean values including correction factors
       cert_val =
-          apply(mater_table()[, unlist(sapply(c("mean", paste0("F", 1:3)), function(x) {
-            grep(x, colnames(mater_table()))
-          }))], 1, prod, na.rm = T)
-      update_reactivecell(mater_table,"cert_val",value = cert_val)
+        apply(mater_table()[, unlist(sapply(c("mean", paste0("F", 1:3)), function(x) {
+          grep(x, colnames(mater_table()))
+        }))], 1, prod, na.rm = T)
+      message("materialtabelle - cert_val: ", cert_val)
+      update_reactivecell(
+        r = mater_table,
+        colname = "cert_val",
+        value = cert_val
+      )
       
       char = mater_table()[, "sd"] / (sqrt(mater_table()[, "n"]) * mater_table()[, "mean"])
       update_reactivecell(mater_table,"char",value = char)
@@ -174,17 +227,15 @@
         }))], 1, function(x) {
           sqrt(sum(x ^ 2, na.rm = T))
         })
+      message("materialtabelle - com: ", com)
       update_reactivecell(r = mater_table,colname = "com",value = com)
       
       U <- mater_table()[, "k"] * mater_table()[, "com"]
+      message("materialtabelle - U: ", U)
       update_reactivecell(r = mater_table,colname = "U",value = U)
       
+      message("materialtabelle - mater_table: ", mater_table())
       
-    })
-    
-    # observe({datreturn$mater_table = mater_table()})
-    observeEvent(mater_table(),{
-      message("datreturn updated")
       datreturn$mater_table = mater_table()
     })
     
