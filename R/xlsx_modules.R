@@ -349,7 +349,7 @@
       label = "module",
       width = "50%"
     ),
-    .uploadTabsetsUI(shiny::NS(id, "test")),
+    .uploadTabsetsUI(shiny::NS(id, "uploadTabset")),
     shinyjs::disabled(
       shiny::actionButton(inputId = shiny::NS(id, "go"),
                           label = "LOAD"
@@ -379,7 +379,7 @@
                                      get_listelem(c, input$moduleSelect)
                                    }, ignoreInit = TRUE)
     
-    t = .uploadTabsetsServer("test", shiny::reactive({input$moduleSelect}), choosen) 
+    t = .uploadTabsetsServer("uploadTabset", shiny::reactive({input$moduleSelect}), choosen) 
     
     # must be extra disabled after loading, since is in parent module of upload panel
     shiny::observe({

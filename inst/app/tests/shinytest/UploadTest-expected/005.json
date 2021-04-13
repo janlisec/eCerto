@@ -2,16 +2,16 @@
   "input": {
     "excelfile-go": 0,
     "excelfile-moduleSelect": "Certifications",
-    "excelfile-test-pam-colslider": [
+    "excelfile-uploadTabset-pam-colslider": [
       0,
       6
     ],
-    "excelfile-test-pam-rowslider": [
+    "excelfile-uploadTabset-pam-rowslider": [
       0,
       90
     ],
-    "excelfile-test-upld-sheet-sheet_sel": "some_name",
-    "excelfile-test-upld-xlsxfile-file": {
+    "excelfile-uploadTabset-upld-sheet-sheet_sel": "some_name",
+    "excelfile-uploadTabset-upld-xlsxfile-file": {
       "name": [
         "Homog_Test.xlsx"
       ],
@@ -27,7 +27,7 @@
     }
   },
   "output": {
-    "excelfile-test-preview_out": {
+    "excelfile-uploadTabset-preview_out": {
       "message": "less than 2 laboratory files uploaded. Upload more!",
       "call": "NULL",
       "type": [
