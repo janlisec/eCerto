@@ -1,6 +1,6 @@
 {
   "export": {
-    "mat_cert-materialtabelle": {
+    "certification-mat_cert-materialtabelle": {
       "analyte": [
         "Si",
         "Fe",
@@ -182,6 +182,6 @@
         0.0309
       ]
     },
-    "mat_cert-precision2": 4
+    "certification-mat_cert-precision2": 4
   }
 }

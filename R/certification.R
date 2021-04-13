@@ -17,53 +17,83 @@
       title = "active-Panel",
       value = "loaded",
       fluidRow(
-        column(4,wellPanel("selection box")),
+        column(4,
+               wellPanel(
+                 checkboxGroupInput(
+                   inputId = NS(id,"certification_view"),
+                   label = "Select View:",
+                   choices = c("boxplot"="boxplot",
+                               "material table" = "mt"),
+                   selected = ("mt")
+                   
+                 )      
+               )
+        ),
         column(8,
-          wellPanel(
-            # --- --- --- --- --- --- --- --- ---
-            .analyteModuleUI(NS(id, "analyteModule")),
-            # --- --- --- --- --- --- --- --- ---
-          )
+               wellPanel(
+                 # --- --- --- --- --- --- --- --- ---
+                 .analyteModuleUI(NS(id, "analyteModule")),
+                 # --- --- --- --- --- --- --- --- ---
+               )
         )
       ),
-      fluidRow(
-        column(
-          10,
-          wellPanel(
-            fluidRow(
-              # --- --- --- --- --- --- ---
-              .CertLoadedUI(NS(id,"loaded"))
-              # --- --- --- --- --- --- ---
+      conditionalPanel(
+        # check if checkBoxes are marked for material table
+        condition = "input.certification_view.indexOf('boxplot') > -1",
+        ns = NS(id), # namespace of current module,
+        fluidRow(
+          column(
+            10,
+            wellPanel(
+              fluidRow(
+                # --- --- --- --- --- --- ---
+                .CertLoadedUI(NS(id,"loaded"))
+                # --- --- --- --- --- --- ---
+              )
+            ) ),
+          
+          ##### Download-Teil
+          column(
+            2,
+            wellPanel(
+              fluidRow(strong("Download Report")),
+              fluidRow(
+                radioButtons(
+                  inputId = NS(id, 'output_file_format'),
+                  label = NULL,
+                  choices = c('PDF', 'HTML', 'Word'),
+                  inline = TRUE
+                )
+              ),
+              fluidRow(
+                column(6, align = "center", downloadButton('FinalReport', label = "Analyte")),
+                column(
+                  6,
+                  align = "center",
+                  downloadButton('MaterialReport', label =
+                                   "Material")
+                )
+              ),
+              fluidRow(
+                checkboxInput(
+                  inputId = NS(id, "show_code"), label = "Show Code in Report"
+                )
+              )
             )
-          )),
-        
-        ##### Download-Teil
-        column(
-          2,
-          wellPanel(
-            fluidRow(strong("Download Report")),
-            fluidRow(
-              radioButtons(
-                inputId = NS(id, 'output_file_format'),
-                label = NULL,
-                choices = c('PDF', 'HTML', 'Word'),
-                inline = TRUE
-              )
-            ),
-            fluidRow(
-              column(6, align = "center", downloadButton('FinalReport', label = "Analyte")),
-              column(
-                6,
-                align = "center",
-                downloadButton('MaterialReport', label =
-                                 "Material")
-              )
-            ),
-            fluidRow(checkboxInput(
-              inputId = NS(id, "show_code"), label = "Show Code in Report"
-            ))
-          )
-        )), 
+          ) )
+      ), 
+      conditionalPanel( 
+        # check if checkBoxes are marked for material table
+        condition = "input.certification_view.indexOf('mt') > -1",
+        ns = NS(id), # namespace of current module
+        # --- --- --- --- --- --- --- --- --- --- ---
+        wellPanel(
+          .materialtabelleUI(NS(id,"mat_cert"))
+        ),
+        # --- --- --- --- --- --- --- --- --- --- ---
+      ),
+      
+      
     )
     
   )
@@ -73,6 +103,11 @@
 .CertificiationServer = function(id, d, datreturn) {
   #stopifnot(is.reactivevalues(d))
   moduleServer(id, function(input, output, session) {
+    
+    observeEvent(input$certification_view,{
+      print(input$certification_view)
+      print('mt' %in% input$certification_view)
+    }, ignoreNULL = FALSE, ignoreInit = FALSE)
     
     observeEvent(d(), {
       #if loaded (successfully), make area visible
@@ -116,6 +151,10 @@
         
         # --- --- --- --- --- --- --- --- --- --- ---
         dat = .CertLoadedServer("loaded",d = d, apm = apm)
+        # --- --- --- --- --- --- --- --- --- --- ---
+        
+        # --- --- --- --- --- --- --- --- --- --- ---
+        .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
         # --- --- --- --- --- --- --- --- --- --- ---
         
         # Calculates statistics for all available labs
@@ -174,7 +213,7 @@
         updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
       }
     }, ignoreInit = TRUE)
-
+    
   })
 }
 # LOADED CERTIFICATION MODULE --------------
@@ -217,9 +256,9 @@
       # TODO
       fluidRow(
         column(6, 
-          textOutput(NS(id,"cert_mean"))), 
+               textOutput(NS(id,"cert_mean"))), 
         column(6, 
-          textOutput(NS(id,"cert_sd")))
+               textOutput(NS(id,"cert_sd")))
       ),
     ),
     column(9, plotOutput(

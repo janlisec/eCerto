@@ -211,7 +211,7 @@
         apply(mater_table()[, unlist(sapply(c("mean", paste0("F", 1:3)), function(x) {
           grep(x, colnames(mater_table()))
         }))], 1, prod, na.rm = T)
-      message("materialtabelle - cert_val: ", cert_val)
+      # message("materialtabelle - cert_val: ", cert_val)
       update_reactivecell(
         r = mater_table,
         colname = "cert_val",
@@ -227,14 +227,14 @@
         }))], 1, function(x) {
           sqrt(sum(x ^ 2, na.rm = T))
         })
-      message("materialtabelle - com: ", com)
+      # message("materialtabelle - com: ", com)
       update_reactivecell(r = mater_table,colname = "com",value = com)
       
       U <- mater_table()[, "k"] * mater_table()[, "com"]
-      message("materialtabelle - U: ", U)
+      # message("materialtabelle - U: ", U)
       update_reactivecell(r = mater_table,colname = "U",value = U)
       
-      message("materialtabelle - mater_table: ", mater_table())
+      # message("materialtabelle - mater_table: ", mater_table())
       
       datreturn$mater_table = mater_table()
     })

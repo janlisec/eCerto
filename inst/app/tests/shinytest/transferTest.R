@@ -1,6 +1,7 @@
 app <- ShinyDriver$new("../../")
 app$snapshotInit("transferTest", screenshot = FALSE)
-
+# this test observe if values from Homogeneity get transfer correctly into
+# the materialtabelle
 app$setInputs(link_to_start = "click")
 app$uploadFile(
   `excelfile-uploadTabset-upld-xlsxfile-file` = system.file(package = "ecerto","extdata","Homog_Test.xlsx")
@@ -29,4 +30,4 @@ hcols_input = grep("Homogeneity+|trH+", names(vals$input), perl=TRUE, value=FALS
 app$snapshot(items = list(
   input = names(vals$input[hcols_input]),
   output = names(vals$output[hcols_output]),
-  export = "mat_cert-materialtabelle"))
+  export = "certification-mat_cert-materialtabelle"))

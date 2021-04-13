@@ -93,9 +93,9 @@ app_ui = function(){
           value = "tP_certification",
           icon = icon("angle-right"),
           .CertificationUI("certification"),
-          wellPanel(
-            .materialtabelleUI("mat_cert")
-          )
+          # wellPanel(
+          #   .materialtabelleUI("mat_cert")
+          # )
         ),
         tabPanel(
           id = "homog_tab",

@@ -68,9 +68,9 @@ app_server = function(input, output, session) {
   .HomogeneityServer(id = "Homogeneity", rv, datreturn)
   # --- --- --- --- --- --- --- --- ---
   
-  # --- --- --- --- --- --- --- --- --- --- ---
-  .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
-  # --- --- --- --- --- --- --- --- --- --- ---
+  # # --- --- --- --- --- --- --- --- --- --- ---
+  # .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
+  # # --- --- --- --- --- --- --- --- --- --- ---
 
   
   # observeEvent(datreturn$h_vals, {
