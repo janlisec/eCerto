@@ -288,3 +288,4 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
   
   r(df)
 }
+

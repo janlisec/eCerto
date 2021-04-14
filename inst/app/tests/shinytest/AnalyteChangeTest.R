@@ -2,7 +2,11 @@ app <- ShinyDriver$new("../../")
 app$snapshotInit("AnalyteChangeTest")
 # this test is for testing if the materialtabelle is updated correctly
 # after different analyte tab was selected
-export_params = c("certification-mat_cert-precision2","certification-mat_cert-materialtabelle")
+export_params = c(
+  "certification-mat_cert-precision2",
+  "certification-mat_cert-materialtabelle",
+  "certification-CertLoadedServer.output"
+  )
 
 app$setInputs(link_to_start = "click")
 app$setInputs(`excelfile-moduleSelect` = "Certifications")

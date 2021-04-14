@@ -23,9 +23,11 @@
                    inputId = NS(id,"certification_view"),
                    label = "Select View:",
                    choices = c("boxplot"="boxplot",
+                               "Statistics 1" = "stats",
+                               "Statistics 2" = "stats2",
+                               "QQ-Plot" = "qqplot",
                                "material table" = "mt"),
-                   selected = ("mt")
-                   
+                   selected = c("boxplot","mt")
                  )      
                )
         ),
@@ -81,15 +83,54 @@
               )
             )
           ) )
-      ), 
+      ),
+      # Stats
+      conditionalPanel(
+        condition = "input.certification_view.indexOf('stats') > -1",
+        ns = NS(id), # namespace of current module
+        wellPanel(
+          fluidRow(
+            column(
+              width = 9,
+              strong(
+                "Statistics regarding lab means, lab variances and outlier detection"
+              )
+            ),
+            DT::dataTableOutput(NS(id,"overview_stats"))
+          ),
+        )
+      ),
+      conditionalPanel(
+        condition = "input.certification_view.indexOf('stats2') > -1",
+        ns = NS(id),
+        DT::dataTableOutput(NS(id, "overview_mstats")),
+        hr(),
+        fluidRow(
+          column(9, textOutput(outputId = NS(id,"normality_statement"))),
+          # column(
+          #   3,
+          #   align = "right",
+          #   checkboxInput(
+          #     inputId = "show_qqplot",
+          #     label = "show qqplot",
+          #     value = FALSE
+          #   )
+          # )
+        ),
+        conditionalPanel(
+          condition = "input.certification_view.indexOf('qqplot') > -1",
+          ns = NS(id),
+          plotOutput("qqplot")
+        )
+      ),
       conditionalPanel( 
         # check if checkBoxes are marked for material table
         condition = "input.certification_view.indexOf('mt') > -1",
         ns = NS(id), # namespace of current module
         # --- --- --- --- --- --- --- --- --- --- ---
-        wellPanel(
+        # wellPanel(
           .materialtabelleUI(NS(id,"mat_cert"))
-        ),
+        # ),
         # --- --- --- --- --- --- --- --- --- --- ---
       ),
       
@@ -103,11 +144,6 @@
 .CertificiationServer = function(id, d, datreturn) {
   #stopifnot(is.reactivevalues(d))
   moduleServer(id, function(input, output, session) {
-    
-    observeEvent(input$certification_view,{
-      print(input$certification_view)
-      print('mt' %in% input$certification_view)
-    }, ignoreNULL = FALSE, ignoreInit = FALSE)
     
     observeEvent(d(), {
       #if loaded (successfully), make area visible
@@ -152,7 +188,7 @@
         # --- --- --- --- --- --- --- --- --- --- ---
         dat = .CertLoadedServer("loaded",d = d, apm = apm)
         # --- --- --- --- --- --- --- --- --- --- ---
-        
+        exportTestValues(CertLoadedServer.output = { try(dat()) })
         # --- --- --- --- --- --- --- --- --- --- ---
         .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
         # --- --- --- --- --- --- --- --- --- --- ---
@@ -176,13 +212,7 @@
               )
             }, .id = "Lab")
           rownames(out) <- out$Lab
-          suppressWarnings(KS_p <-
-                             stats::ks.test(
-                               x = out$mean,
-                               y = "pnorm",
-                               mean = mean(out$mean),
-                               sd = sd(out$mean)
-                             )$p.value)
+
           
           # TODO
           # assign(
@@ -199,6 +229,34 @@
           return(out)
         })
         
+        output$overview_stats <- DT::renderDataTable({
+          Stats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+        }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+        
+        # mStats
+        output$overview_mstats <- DT::renderDataTable({
+          mstats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+        }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+        
+        output$normality_statement <- renderText({
+          l = lab_statistics()
+          suppressWarnings(KS_p <-
+                             stats::ks.test(
+                               x = l$mean,
+                               y = "pnorm",
+                               mean = mean(l$mean),
+                               sd = sd(l$mean)
+                             )$p.value)
+          normality_statement  = paste0(
+            "The data is",
+            ifelse(KS_p < 0.05, " not ", " "),
+            "normally distributed (KS_p=",
+            formatC(KS_p, format = "E", digits = 2),
+            ")."
+          )
+          # getData("normality_statement")
+        })
+        
         observe({
           datreturn$lab_statistics = lab_statistics()
           message(".CertificationServer -- lab_statistics created")
@@ -206,6 +264,13 @@
           # console log
           message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
         })
+        
+        observeEvent(input$certification_view, {
+          shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
+          if("stats2" %in% input$certification_view)
+            shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
+          
+          })
         
         ### LOADED END ###s
       } else { 
@@ -285,6 +350,9 @@
       a <- a[a[, "analyte"] %in% selected_tab(), ]
       a <-a[!(a[, "ID"] %in% current_analy$sample_filter), ]
       a[, "L_flt"] <- a[, "Lab"] %in% input$flt_labs
+      
+      # adjust factor levels
+      a[, "Lab"] <- factor(a[, "Lab"])
       
       # Notify User in case that only 1 finite measurement remained within group
       validate(

@@ -56,7 +56,7 @@ app_server = function(input, output, session) {
   # CertificationServer is returned, storing it in reactiveValues() worked so
   # far.
   datreturn = reactiveValues(
-    selectedAnalyteDataframe = NULL,    # The selected Analyte-correspondng df for materialtabelle
+    selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
     h_vals = NULL,                      # values from Homogeneity module
     mater_table = NULL,                 # materialtabelle, formerly cert_vals, READ-ONLY
     t_H = NULL,                         # when Homogeneity is transferred

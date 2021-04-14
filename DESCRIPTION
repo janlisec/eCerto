@@ -19,7 +19,8 @@ Imports:
     shiny,
     tinytex,
     shinyalert,
-    rmarkdown
+    rmarkdown,
+    agricolae
 Suggests: 
     plyr,
     testthat (>= 3.0.0),
