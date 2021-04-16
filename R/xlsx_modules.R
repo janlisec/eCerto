@@ -341,7 +341,7 @@
 #'
 #' @return
 #' @export
-.ImportCntrlUI = function(id) {
+.ExcelUploadControllUI = function(id) {
   shiny::tagList(
     shiny::selectInput(
       inputId = shiny::NS(id, "moduleSelect"),
@@ -358,26 +358,26 @@
   )
 }
 
-#' Title
+#' .ExcelUploadCntrServer
 #'
 #' @param id 
-#' @param c 
+#' @param c reactiveValues
 #'
 #' @return
 #' @export
-.ImportCntrlServer = function(id, c) {
+.ExcelUploadControllServer = function(id, c) {
   stopifnot(is.reactivevalues(c))
   shiny::moduleServer(id, function(input, output, session) {
-    shiny::updateSelectInput(inputId = "moduleSelect",
+    
+    updateSelectInput(inputId = "moduleSelect",
                              session = session,
                              choices =  shiny::isolate(names(c)))
     
     
     # change the reactive if Cert, Homog oder Stab was choosen
-    choosen = shiny::eventReactive(input$moduleSelect,
-                                   {
-                                     get_listelem(c, input$moduleSelect)
-                                   }, ignoreInit = TRUE)
+    choosen = eventReactive(input$moduleSelect,{
+        get_listelem(c, input$moduleSelect)
+      }, ignoreInit = TRUE)
     
     t = .uploadTabsetsServer("uploadTabset", shiny::reactive({input$moduleSelect}), choosen) 
     

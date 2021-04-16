@@ -9,15 +9,17 @@
 app_server = function(input, output, session) {
 
   # Upload Controller -------------------------------------------------------
-  upld.cntrller = list(
-    "Certifications" = list("data" = NULL, "uploadsource" = NULL),
-    "Homogeneity" = list("data" = NULL, "uploadsource" = NULL),
-    "Stability" = list("data" = NULL, "uploadsource" = NULL)
+
+  rv = do.call("reactiveValues",
+    list(
+      "Certifications" = list("data" = NULL, "uploadsource" = NULL),
+      "Homogeneity" = list("data" = NULL, "uploadsource" = NULL),
+      "Stability" = list("data" = NULL, "uploadsource" = NULL)
+    )
   )
-  rv = do.call("reactiveValues", upld.cntrller)
   
   # --- --- --- --- --- --- --- --- ---
-  .ImportCntrlServer("excelfile", rv)
+  .ExcelUploadControllServer("excelfile", rv)
   # --- --- --- --- --- --- --- --- ---
   
   observeEvent(input$link_to_start, {
@@ -30,7 +32,7 @@ app_server = function(input, output, session) {
   # when certification was uploaded
   observeEvent(rv$Certifications,{
     # when source is Excel, switch to Certification Tab automatically
-    print("observer: certification was uploaded")
+    message("observer: certification was uploaded")
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
       updateNavbarPage(
         session = session,
@@ -52,19 +54,21 @@ app_server = function(input, output, session) {
   }, ignoreInit = TRUE)
 
   # datreturn contains the by an analyte selected sub-frame for updating the
-  # Materialtabelle. Because a reactive from another module inside
+  # material table. Because a reactive from another module inside
   # CertificationServer is returned, storing it in reactiveValues() worked so
   # far.
   datreturn = reactiveValues(
     selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
     h_vals = NULL,                      # values from Homogeneity module
-    mater_table = NULL,                 # materialtabelle, formerly cert_vals, READ-ONLY
+    mater_table = NULL,                 # material table, formerly 'cert_vals', READ-ONLY*
     t_H = NULL,                         # when Homogeneity is transferred
     lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
   ) 
   
+  # * --> All values for material table should be set/written in the designated module
+  
   # --- --- --- --- --- --- --- --- ---
-  .CertificiationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
+  .CertificationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
   .HomogeneityServer(id = "Homogeneity", rv, datreturn)
   # --- --- --- --- --- --- --- --- ---
   

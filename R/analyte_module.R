@@ -18,16 +18,17 @@
 #' Title
 #'
 #' @param id 
-#' @param analytelist 
+#' @param apm 
 #'
 #' @return
 #' @export
-.analyteModuleServer = function(id, analytelist) {
-  stopifnot(is.reactivevalues(analytelist))
+.analyteModuleServer = function(id, apm) {
+  stopifnot(is.reactivevalues(apm))
   moduleServer(id, function(input, output, session){
-   
     ns <- session$ns # to get full namespace here in server function
-    analytes = isolate(reactiveValuesToList(analytelist))$analytes
+    analytes = isolate(reactiveValuesToList(apm))$analytes
+    # message("analyteModule; all analytes: ", analytes)
+    
     # append/prepend a tab for each analyte available
     for (a.name in names(analytes)) {
       appendTab(inputId = "tabs", 
@@ -39,8 +40,8 @@
                selectizeInput(
                  inputId = ns(paste0("flt_samples",a.name)),#NS(id,paste0("flt_samples",a.name)),
                  label = "Filter Sample IDs",
-                 choices = analytelist$analytes[[a.name]]$sample_ids,
-                 selected = analytelist$analytes[[a.name]]$sample_filter,
+                 choices = apm$analytes[[a.name]]$sample_ids,
+                 selected = apm$analytes[[a.name]]$sample_filter,
                  multiple = TRUE
                )
               ),
@@ -68,15 +69,15 @@
         class = "selct")
       # change the "selected tab" reactive in the reactiveValues when another tab
       # is selected
-      analytelist$selected_tab = input$tabs
+      apm$selected_tab = input$tabs
     },ignoreInit = TRUE)
     
     # update precision and the selected sample id filter in the reactiveValues
     # when their value change in the selected tab
     observe({
       lapply(names(analytes), function(i){
-        analytelist$analytes[[i]]$precision = input[[paste0("precision",i)]]
-        analytelist$analytes[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
+        apm$analytes[[i]]$precision = input[[paste0("precision",i)]]
+        apm$analytes[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
       })
     })
     

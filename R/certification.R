@@ -107,15 +107,6 @@
         hr(),
         fluidRow(
           column(9, textOutput(outputId = NS(id,"normality_statement"))),
-          # column(
-          #   3,
-          #   align = "right",
-          #   checkboxInput(
-          #     inputId = "show_qqplot",
-          #     label = "show qqplot",
-          #     value = FALSE
-          #   )
-          # )
         ),
         conditionalPanel(
           condition = "input.certification_view.indexOf('qqplot') > -1",
@@ -133,73 +124,58 @@
         # ),
         # --- --- --- --- --- --- --- --- --- --- ---
       ),
-      
-      
     )
-    
   )
-  
 }
 
-.CertificiationServer = function(id, d, datreturn) {
-  #stopifnot(is.reactivevalues(d))
+#' Certification part
+#'
+#' @param id "namespace"
+#' @param d reactive with uploaded and pre-formatted certification data.
+#'   Contains  $data (ID, Lab, analyte, replicate, value, unit, ...) and
+#'   $uploadsource (Excel, RData, etc.)
+#' @param datreturn for storing the results
+#'
+#' @return nothing
+.CertificationServer = function(id, d, datreturn) {
+  stopifnot(is.reactive(d))
   moduleServer(id, function(input, output, session) {
+    exportTestValues(CertificationServer.d = { try(d()) })
     
-    observeEvent(d(), {
+    d_act = reactiveVal("Haha nope")
+    
+    certification_data = reactive({data_of_godelement(d())})
+    
+    apm = analyte_parameter_list()
+    dat = reactiveVal(NULL)
+    
+    observeEvent(certification_data(), {
       #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
-      if(!is.null(d())){
+      if(!is.null(certification_data())){
+        d_act("TRUE")
         message("Certification Module start")
         updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-        #### create the parameter list for the analytes ###
-        # it will contain information about he selected analyte tab, and for
-        # each analyte the wanted precision, the filtered sample id, which
-        # sample ids are available to be filtered at all and, for completion,
-        # the analyte name in case the list name fails
-        param_template = list(
-          "precision" = NULL, 
-          "sample_filter" = NULL, # saving which samples where selected for filter
-          "sample_ids" = NULL, # which samples are available for the filter
-          "lab_filter" = NULL, # filter of laboratories (e.g. L1)
-          "analytename" = NULL
-        )
-        analytes = reactive({levels(data_of_godelement(d())[, "analyte"])})
-        # create list with lists of all analytes (i.e. a nested list)
-        a_param_list = rep(list(param_template), length(analytes()))
-        for (i in 1:length(a_param_list)) {
-          # add analyte name to list
-          a_param_list[[i]]$analytename = as.list(analytes())[[i]]
-          # add available id's of samples to list
-          tmp = data_of_godelement(d())
-          ids = tmp[tmp[["analyte"]] == as.list(analytes())[[i]], "ID"]
-          a_param_list[[i]]$sample_ids = ids[!is.na(ids)] # fill available ids
-        }
-        # set names of sublists to analyte names
-        a_param_list = setNames(a_param_list, analytes())
-        l = list("selected_tab" = NULL)
-        l$analytes = a_param_list
-        apm = do.call("reactiveValues", l) # finally, create reactiveValues
-        # end param list
+       apm = analyte_parameter_list(certification_data())
         
+        # selected analyte, sample filter, precision
         # --- --- --- --- --- --- --- --- --- --- ---
         .analyteModuleServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
         
         # --- --- --- --- --- --- --- --- --- --- ---
         dat = .CertLoadedServer("loaded",d = d, apm = apm)
+
         # --- --- --- --- --- --- --- --- --- --- ---
         exportTestValues(CertLoadedServer.output = { try(dat()) })
-        # --- --- --- --- --- --- --- --- --- --- ---
-        .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
-        # --- --- --- --- --- --- --- --- --- --- ---
-        
+
         # Calculates statistics for all available labs
         # formerly: lab_means()
-        # Format example: 
-        # Lab       mean           sd n
-        # L1  L1 0.04551667 0.0012560520 6
-        # L2  L2 0.05150000 0.0007563068 6
-        # L3  L3 0.05126667 0.0004926121 6
+        # Format example:
+        # Lab       mean    sd       n
+        # L1 0.04551667 0.0012560520 6
+        # L2 0.05150000 0.0007563068 6
+        # L3 0.05126667 0.0004926121 6
         lab_statistics = reactive({
           # data <- dat()
           req(dat())
@@ -213,31 +189,12 @@
             }, .id = "Lab")
           rownames(out) <- out$Lab
 
-          
-          # TODO
-          # assign(
-          #   "normality_statement",
-          #   value = paste0(
-          #     "The data is",
-          #     ifelse(KS_p < 0.05, " not ", " "),
-          #     "normally distributed (KS_p=",
-          #     formatC(KS_p, format = "E", digits = 2),
-          #     ")."
-          #   ),
-          #   envir = env_perm
-          # )
           return(out)
         })
-        
-        output$overview_stats <- DT::renderDataTable({
-          Stats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
-        }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-        
-        # mStats
-        output$overview_mstats <- DT::renderDataTable({
-          mstats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
-        }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-        
+        message("lab_statistics created")
+        message("apm: ", reactiveValuesToList(apm))
+
+
         output$normality_statement <- renderText({
           l = lab_statistics()
           suppressWarnings(KS_p <-
@@ -256,7 +213,7 @@
           )
           # getData("normality_statement")
         })
-        
+
         observe({
           datreturn$lab_statistics = lab_statistics()
           message(".CertificationServer -- lab_statistics created")
@@ -264,12 +221,13 @@
           # console log
           message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
         })
-        
+
+
         observeEvent(input$certification_view, {
           shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
           if("stats2" %in% input$certification_view)
             shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
-          
+
           })
         
         ### LOADED END ###s
@@ -277,7 +235,22 @@
         # else if nothing is loaded, keep Panel empty
         updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
       }
-    }, ignoreInit = TRUE)
+    # }, ignoreInit = TRUE)
+    })
+
+    
+    # --- --- --- --- --- --- --- --- --- --- ---
+    .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
+    # --- --- --- --- --- --- --- --- --- --- ---
+    
+    output$overview_stats <- DT::renderDataTable({
+      Stats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+    
+    # mStats
+    output$overview_mstats <- DT::renderDataTable({
+      mstats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
     
   })
 }

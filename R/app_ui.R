@@ -80,7 +80,7 @@ app_ui = function(){
               wellPanel(
                 shiny::wellPanel(
                   # --- --- --- --- --- ---
-                  .ImportCntrlUI("excelfile")
+                  .ExcelUploadControllUI("excelfile")
                   # --- --- --- --- --- ---
                 )
               )
