@@ -17,13 +17,15 @@
       value = "loaded",
       fluidRow(
         column(10, DT::dataTableOutput(NS(id,"h_vals"))),
-        # column(2, conditionalPanel(
-        #   condition="output.c_fileUploaded_message != ''",
-        #   fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
-        #   fluidRow(uiOutput("h_transfer_H_type")),
-        #   fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
-        #   fluidRow(uiOutput("h_transfer_ubb")),
-        #   fluidRow(actionButton(inputId = "h_transfer_ubb_button", label = "Transfer Now!"), align="right")))
+        #  column(2, 
+        # #  conditionalPanel(
+        # #   condition="output.c_fileUploaded_message != ''",
+        #    fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
+        #    fluidRow(uiOutput("h_transfer_H_type")),
+        #    fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
+        #    fluidRow(uiOutput("h_transfer_ubb")),
+        #    fluidRow(actionButton(inputId = "h_transfer_ubb_button", label = "Transfer Now!"), align="right")
+        # )
       ),
       hr(),
       fluidRow(
@@ -52,12 +54,10 @@
         )
       )
     )
-    
   )
-  
 }
 
-.HomogeneityServer = function(id, rv) {
+.HomogeneityServer = function(id, rv, datreturn) {
   moduleServer(id, function(input, output, session) {
     
     d = reactive({rv$Homogeneity})
@@ -95,6 +95,11 @@
           }, .id="analyte") 
         }) 
         
+        observeEvent(h_vals(),{
+          print(".HomogeneityServer - h_vals added")
+          datreturn$h_vals = h_vals()
+        })
+        
         output$h_fileUploaded <- reactive({
           return(!is.null(h_Data()))
         })
@@ -102,7 +107,7 @@
         output$h_sel_analyt <- renderUI({
           req(h_Data())
           lev <- levels(interaction(h_Data()[,"analyte"],h_Data()[,"H_type"]))
-          selectInput(inputId="h_sel_analyt", label="analyte", choices=lev)
+          selectInput(inputId=session$ns("h_sel_analyt"), label="analyte", choices=lev)
         })
         
         h_means <- reactive({
@@ -141,9 +146,9 @@
             h_vals_print[,i] <- pn(h_vals_print[,i], input$h_precision)
           }
           if (!is.null(c_Data())) {
-            cert_vals <- c_Data()
+            mater_table <- c_Data()
             h_vals_print[,"In_Cert_Module"] <- sapply(h_vals_print[,"analyte"], function(x) {
-              ifelse(is.null(cert_vals),"cert table not found", ifelse(x %in% cert_vals[,"analyte"], "Yes", "No"))
+              ifelse(is.null(mater_table),"cert table not found", ifelse(x %in% mater_table[,"analyte"], "Yes", "No"))
             })
           }
           return(h_vals_print)
@@ -156,6 +161,7 @@
           h_dat <- h_Data()
           h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
           h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
+          plot(h_dat)
           omn <- round(mean(h_dat[,"value"],na.rm=T),input$h_precision)
           osd <- round(sd(h_dat[,"value"],na.rm=T),input$h_precision)
           anp <- formatC(anova(lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1],digits = 2, format = "e")
@@ -189,15 +195,21 @@
         
         
         # Special UI
+        # TODO
         output$h_transfer_ubb <- renderUI({
           validate(need(input$sel_analyt, message = "please upload certification data first"))
           req(getData("cert_vals"))
-          selectInput(inputId="h_transfer_ubb", label="", selectize=TRUE, choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"])
+          selectInput(
+            inputId=session$ns("h_transfer_ubb"), 
+            label="", 
+            selectize=TRUE, 
+            choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"]
+          )
         })
         
         output$h_transfer_H_type <- renderUI({
           req(h_Data())
-          selectInput(inputId="h_transfer_H_type", label="", selectize=TRUE, choices=levels(h_vals()[,"H_type"]))
+          selectInput(inputId=session$ns("h_transfer_H_type"), label="", selectize=TRUE, choices=levels(h_vals()[,"H_type"]))
         })
         
         
@@ -208,3 +220,4 @@
     }, ignoreInit = TRUE)
   })
 }
+

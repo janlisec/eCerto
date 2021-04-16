@@ -4,12 +4,12 @@
 \alias{.analyteModuleServer}
 \title{Title}
 \usage{
-.analyteModuleServer(id, analytelist)
+.analyteModuleServer(id, apm)
 }
 \arguments{
 \item{id}{}
 
-\item{analytelist}{}
+\item{apm}{}
 }
 \value{
 

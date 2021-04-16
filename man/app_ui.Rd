@@ -4,7 +4,7 @@
 \alias{app_ui}
 \title{Title}
 \usage{
-app_ui(request)
+app_ui()
 }
 \value{
 

@@ -18,8 +18,12 @@ Imports:
     moments,
     shiny,
     tinytex,
-    shinyalert
+    shinyalert,
+    rmarkdown,
+    agricolae
 Suggests: 
     plyr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    shinytest,
+    tibble
 Config/testthat/edition: 3
