@@ -21,9 +21,9 @@ Imports:
     shinyalert,
     rmarkdown,
     agricolae,
-    tidyxl
+    tidyxl,
+    plyr
 Suggests: 
-    plyr,
     testthat (>= 3.0.0),
     shinytest,
     tibble
