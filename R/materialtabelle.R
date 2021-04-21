@@ -15,23 +15,9 @@
         value = FALSE
       ),
       uiOutput(NS(id,"c_fix_col_names")),
-      # validate(need(input$sel_analyt, message = "please select analyte"))
-      # mater_table <- getData("mater_table")
-      # selectInput(
-      #   inputId = "c_fix_col_names",
-      #   label = "select internal column names",
-      #   selectize = TRUE,
-      #   choices = attr(mater_table, "col_code")[, "ID"]
-      # )
       uiOutput(NS(id,"c_displayed_col_name")),
       # validate(need(input$c_fix_col_names, message = "please select col name"))
       # mater_table <- getData("mater_table")
-      # textInput(
-      #   inputId = "c_displayed_col_name",
-      #   label = "modify displayed column name",
-      #   value = attr(mater_table, "col_code")[attr(mater_table, "col_code")[, "ID"] ==
-      #                                         input$c_fix_col_names, "Name"]
-      # )
       helpText(
         "In this interactive table you can:",
         tags$br(),
@@ -69,23 +55,21 @@
     # use try(), see https://github.com/rstudio/shinytest/issues/350
     exportTestValues(precision2 = { try(precision2) })
 
-    # 1) table creation
+    # table creation:
     # define table as reactiveVal to update it at different places
     # within the module
     mater_table = reactiveVal(NULL)
     observe({mater_table(datreturn$t_H)})
-  
-    
    
     # get all availables analytes
     availableAnalytes = reactive({levels(sAnData()[["analyte"]])})
-    # the data table should be created only once, since the levels shouldn't
-    # change after certification upload
-    observeEvent(availableAnalytes(),{
-      # message(".materialtabelleServer -- levels of sAnData():")
-      # message(availableAnalytes())
-      c <-
-        data.frame(
+
+    observeEvent(availableAnalytes(), 
+                once = TRUE, {  # the data table should be created only once, 
+                                # since the levels shouldn't
+                                # change after certification upload
+
+      c = data.frame(
           "analyte" =  availableAnalytes(), # a,
           "mean" = NA,
           "F1" = 1,
@@ -112,7 +96,7 @@
           stringsAsFactors = FALSE
         )
       mater_table(c) # save materialtabelle
-    },ignoreInit = TRUE, once = TRUE)
+    },ignoreInit = TRUE)
     
     cert_mean <- reactive({
       req(sAnData())
@@ -143,7 +127,10 @@
     
     
     # when another Analyte-tab was selected --> update materialtabelle
-    observeEvent(sAnData(),{
+    observeEvent({
+      sAnData()
+      input$pooling
+      },{
       # TODO Check that analyte-column is unique
       # if(length(unique(sAnData()[["analyte"]]))) warning("selected contains more than one unique analyte")
       # console log
@@ -162,56 +149,75 @@
         value = cert_sd()
       )
       
-      n = ifelse(input$pooling,
-        sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% input$flt_labs), "n"]),
-        nrow(lab_statistics()) - length(input$flt_labs))
+      n = ifelse(
+        test = input$pooling,
+        yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% input$flt_labs), "n"]),
+        no= nrow(lab_statistics()) - length(input$flt_labs)
+      )
       update_reactivecell(
         r = mater_table,
         colname = "n",
         analyterow = sAnData()[1,"analyte"],
         value = n
       )
+    }, ignoreInit = TRUE)
     
-      # # recalc all cert_mean values including correction factors
-      # cert_val =
-      #     apply(mater_table()[, unlist(sapply(c("mean", paste0("F", 1:3)), function(x) {
-      #       grep(x, colnames(mater_table()))
-      #     }))], 1, prod, na.rm = T)
-      # message("materialtabelle - cert_val: ", cert_val)
-      # update_reactivecell(
-      #   r = mater_table,
-      #   colname = "cert_val",
-      #   value = cert_val
-      # )
-      # 
-      # char = mater_table()[, "sd"] / (sqrt(mater_table()[, "n"]) * mater_table()[, "mean"])
-      # update_reactivecell(mater_table,"char",value = char)
-      # 
-      # com <-
-      #   apply(mater_table()[, unlist(sapply(c("char", paste0("U", 2:7)), function(x) {
-      #     grep(x, colnames(mater_table()))
-      #   }))], 1, function(x) {
-      #     sqrt(sum(x ^ 2, na.rm = T))
-      #   })
-      # message("materialtabelle - com: ", com)
-      # update_reactivecell(r = mater_table,colname = "com",value = com)
-      # 
-      # U <- mater_table()[, "k"] * mater_table()[, "com"]
-      # message("materialtabelle - U: ", U)
-      # update_reactivecell(r = mater_table,colname = "U",value = U)
-      # 
-      # message("materialtabelle - mater_table: ", mater_table())
+    # manipulate material tabelle
+    output$c_fix_col_names = renderUI({
+      selectInput(
+        inputId = session$ns("c_fix_col_names"),
+        label = "select internal column names",
+        selectize = TRUE,
+        choices = attr(mater_table(), "col_code")[, "ID"]
+      )
     })
+    output$c_displayed_col_name = renderUI({
+      textInput(
+        inputId = session$ns("c_displayed_col_name"),
+        label = "modify displayed column name",
+        value = attr(mater_table(), "col_code")[attr(mater_table(), "col_code")[, "ID"] ==
+                                                  input$c_fix_col_names, "Name"]
+      )
+    })
+    # change or delete column name:
+    observeEvent(input$c_displayed_col_name,{
+      if (!is.null(input$c_displayed_col_name)){
+        # update column name if desired
+        if(input$c_displayed_col_name != "") {
+          tmp = mater_table()
+          new_column_name = input$c_displayed_col_name
+          attr(tmp, "col_code")[attr(tmp, "col_code")[, "ID"] == input$c_fix_col_names, "Name"] <- new_column_name
+          mater_table(tmp)
+        }
+        # delete
+        if (input$c_displayed_col_name == "delete") {
+          k <- which(colnames(mater_table()) == isolate(input$c_fix_col_names))
+          tmp_cert_vals <- mater_table()[, -k]
+          attr(tmp_cert_vals, "disable") <-
+            sapply(attr(mater_table(), "disable"), function(x) {
+              ifelse(x >= k, x - 1, x)
+            })
+          attr(tmp_cert_vals, "col_code") <-
+            attr(mater_table(), "col_code")[!attr(mater_table(), "col_code")[, "Name"] == "delete", ]
+          mater_table(tmp_cert_vals)
+          updateTextInput(session, inputId = "c_displayed_col_name", value = "")
+          updateSelectInput(session,
+                            inputId = "c_fix_col_names",
+                            choices = attr(mater_table(), "col_code")[, "ID"])
+        }
+      }
+    })
+ 
+
     
-    # observe({datreturn$mater_table = mater_table()})
+    # Whenever the reactiveVal gets changed, recalculate...
     observeEvent(mater_table(),{
       message("materialtabelle - datreturn updated, recalc")
-      # recalc all cert_mean values including correction factors
+      # recalculate all cert_mean values including correction factors
       cert_val =
         apply(mater_table()[, unlist(sapply(c("mean", paste0("F", 1:3)), function(x) {
           grep(x, colnames(mater_table()))
         }))], 1, prod, na.rm = T)
-      # message("materialtabelle - cert_val: ", cert_val)
       update_reactivecell(
         r = mater_table,
         colname = "cert_val",
@@ -231,13 +237,10 @@
       update_reactivecell(r = mater_table,colname = "com",value = com)
       
       U <- mater_table()[, "k"] * mater_table()[, "com"]
-      # message("materialtabelle - U: ", U)
       update_reactivecell(r = mater_table,colname = "U",value = U)
       
-      # message("materialtabelle - mater_table: ", mater_table())
-      
       datreturn$mater_table = mater_table()
-    })
+    }, ignoreInit = TRUE)
     
     # monitor table editing and update if necessary
     # rename column header for temporary display
@@ -250,11 +253,12 @@
       }))){
         a[, k] <- roundMT(a[, k], precision2)
       }
+      # Update column names if changed
+      for (k in 1:nrow(attr(mater_table(), "col_code"))) {
+        colnames(a)[colnames(a) == attr(mater_table(), "col_code")[k, "ID"]] <-
+          attr(mater_table(), "col_code")[k, "Name"]
+      }
       a
-      # for (k in 1:nrow(attr(mater_table(), "col_code"))) {
-      #   colnames(tmp_mater_table)[colnames(tmp_mater_table) == attr(mater_table(), "col_code")[k, "ID"]] <-
-      #     attr(mater_table(), "col_code")[k, "Name"]
-      # }
     },ignoreInit = TRUE)
     
     
@@ -262,24 +266,19 @@
     # use try(), see https://github.com/rstudio/shinytest/issues/350
     exportTestValues(materialtabelle = { try(tmp_mater_table()) })
     
-    output$matreport = DT::renderDT({
+    output$matreport = DT::renderDT(
       # # TODO validate not working here
       # validate(
       #   need(tmp_mater_table(), "Certification data hasn't been uploaded yet")
       # )
-      DT::datatable(tmp_mater_table())
-    })
-    # output$matreport <-
-    #   DT::renderDT(
-    #     DT::datatable(
-    #       data = tmp_mater_table,
-    #       editable = list(target = "cell", disable = list(
-    #         columns = attr(tmp_mater_table, "disable")
-    #       )),
-    #       options = list(paging = FALSE, searching = FALSE),
-    #       rownames = NULL
-    #     ),
-    #     server = TRUE
-    #   )
+      DT::datatable(
+        data = tmp_mater_table(),
+        editable = list(target = "cell", disable = list(columns = attr(
+                      tmp_mater_table(), "disable"))),
+        options = list(paging = FALSE, searching = FALSE),
+        rownames = NULL
+        ),
+      server = TRUE
+    )
   })
 }

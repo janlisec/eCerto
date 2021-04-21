@@ -246,7 +246,7 @@ pn <- function(n=NULL, p=4L) {
 #' Update single or multiple cells of the final materialtabelle (formerly cert_vals) 
 #' with new values
 #'
-#' @param r the reactive containing the data frame
+#' @param r the reactive containing the data frame to be updated
 #' @param colname name of the column
 #' @param analyterow  name of the analyte-row. If NULL, whole column is updated
 #' @param value value to be updated

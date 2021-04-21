@@ -8,7 +8,7 @@ with new values}
 update_reactivecell(r, colname, analyterow = NULL, value)
 }
 \arguments{
-\item{r}{the reactive containing the data frame}
+\item{r}{the reactive containing the data frame to be updated}
 
 \item{colname}{name of the column}
 
