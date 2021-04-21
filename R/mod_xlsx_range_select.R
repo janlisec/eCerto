@@ -1,4 +1,4 @@
-library(shiny)
+# library(shiny)
 
 xlsx_range_select_UI <- function(id) {
   ns <- NS(id)
@@ -55,7 +55,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
 }
 
 xlsx_range_select_testing <- function() {
-  source("R/fnc_load_xlsx.R")
+  # source("R/fnc_load_xlsx.R")
   ui <- fluidPage(
     fileInput(inputId = "test_file", label = "test_file (xlsx)", accept = "xlsx"),
     numericInput(inputId = "sheet_number", label = "sheet_number", value = 1),
@@ -73,4 +73,4 @@ xlsx_range_select_testing <- function() {
   }
   shinyApp(ui, server)
 }
-# xlsx_range_select_testing()
+xlsx_range_select_testing()

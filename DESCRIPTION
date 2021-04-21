@@ -20,7 +20,8 @@ Imports:
     tinytex,
     shinyalert,
     rmarkdown,
-    agricolae
+    agricolae,
+    tidyxl
 Suggests: 
     plyr,
     testthat (>= 3.0.0),

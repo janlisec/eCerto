@@ -16,12 +16,21 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
   
   # post process data
   if (method=="tidyxl") {
+
     out <- matrix("", nrow=max(a[,"row"]), ncol=max(a[,"col"]), 
                   dimnames=list(1:max(a[,"row"]), LETTERS[1:max(a[,"col"])]))
+    print(out)
     for (tp in c("numeric","character")) {
       flt <- which(a[,"data_type"]==tp)
-      if (length(flt)>=1) for (i in flt) out[a[i,"row"], a[i,"col"]] <- as.character(a[i,tp])
+      if (length(flt)>=1)  {
+        for (i in flt) {
+          out[as.numeric(a[i,"row"]), as.numeric(a[i,"col"])] <- as.character(a[i,tp])
+        }
+      }
+        
+          
     }
+    print(out)
     out <- as.data.frame(out)
   } else {
     out <- a
