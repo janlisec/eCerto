@@ -3,7 +3,8 @@
 \name{.xlsxinputServer}
 \alias{.xlsxinputServer}
 \title{XLSX INPUT MODULE SERVER
-Returns only the input from fileInput}
+Returns only the input from fileInput, which contains information about
+the file path and their names}
 \usage{
 .xlsxinputServer(id)
 }
@@ -15,5 +16,6 @@ Returns only the input from fileInput}
 }
 \description{
 XLSX INPUT MODULE SERVER
-Returns only the input from fileInput
+Returns only the input from fileInput, which contains information about
+the file path and their names
 }

@@ -2,7 +2,8 @@
 % Please edit documentation in R/xlsx_modules.R
 \name{.ExcelUploadControllServer}
 \alias{.ExcelUploadControllServer}
-\title{.ExcelUploadCntrServer}
+\title{Here you can select the Ecerto-Mode (Certification, Homogeneity, Stability)
+and, until now, contains the Upload button}
 \usage{
 .ExcelUploadControllServer(id, c)
 }
@@ -15,5 +16,6 @@
 
 }
 \description{
-.ExcelUploadCntrServer
+Here you can select the Ecerto-Mode (Certification, Homogeneity, Stability)
+and, until now, contains the Upload button
 }

@@ -1,9 +1,4 @@
-#' Title
-#'
-#' @param id 
-#'
-#' @return
-#' @export
+#' @rdname .xlsxinputServer
 .xlsxinputUI = function(id) {
   shiny::fileInput(
     inputId = NS(id, "file"),
@@ -14,7 +9,8 @@
 }
 
 #' XLSX INPUT MODULE SERVER
-#' Returns only the input from fileInput
+#' Returns only the input from fileInput, which contains information about
+#' the file path and their names
 #'
 #' @param id 
 #'
@@ -33,12 +29,7 @@
   })
 }
 
-#' SHEET MODULE UI
-#'
-#' @param id 
-#'
-#' @return
-#' @export
+#' @rdname .sheetServer
 .sheetUI = function(id) {
   shiny::selectInput(shiny::NS(id, "sheet_sel"), choices = NULL, label = "Sheet")
 }
@@ -75,13 +66,20 @@
   })
 }
 
+#' @rdname .ExcelServer
+.ExcelUI = function(id) {
+  shiny::tagList(.xlsxinputUI(id = shiny::NS(id, "xlsxfile")), # upload input
+                 .sheetUI(id = shiny::NS(id, "sheet"))) # sheet select
+}
 
-#' Title
+#' Excel Module
+#' Receives sheet and path/name of datafiles and finally uploads
+#' the Excel file with load_excelfiles(). Returns only raw uploaded
+#' Excel tables.
 #'
 #' @param id 
 #'
-#' @return
-#' @export
+#' @return the raw and not-yet-cropped preview file
 .ExcelServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
     rv <- reactiveValues(v = 0)
@@ -89,17 +87,18 @@
     datafile = .xlsxinputServer("xlsxfile")
     sh = .sheetServer("sheet", datafile)
     
+    # when sheet gets uploaded
     observeEvent(sh(),{
-      rv$v <- rv$v + 1
+      rv$v <- rv$v + 1 # invalidate 'df' reactive
       print(paste0(sh(),": ",rv$v))
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
     df = reactive({
       req(sh())
-      rv$v
+      rv$v # invalidates 'df' when sheet was uploaded
       isolate(datafile())
-      # 
     })
+    
     # when sheet is selected, upload Excel and enable button
     t = shiny::eventReactive(df(),{
       message("uploading excel ",df()$name, " and sheet ", isolate(sh()))
@@ -115,25 +114,7 @@
   })
 }
 
-#' Title
-#'
-#' @param id 
-#'
-#' @return
-#' @export
-.ExcelUI = function(id) {
-  shiny::tagList(.xlsxinputUI(id = shiny::NS(id, "xlsxfile")), # upload input
-                 .sheetUI(id = shiny::NS(id, "sheet"))) # sheet select
-  
-  
-}
-
-#' Title
-#'
-#' @param id 
-#'
-#' @return
-#' @export
+#' @rdname .parameterServer
 .parameterUI = function(id) {
   shiny::tagList(shiny::tabsetPanel(
     id = shiny::NS(id, "params"),
@@ -160,7 +141,8 @@
   ))
 }
 
-#' Title
+#' PARAMETER MODULE
+#' contains and returns the selected rows and columns
 #'
 #' @param id 
 #' @param dat 
@@ -198,7 +180,7 @@
       cd(rnorm(1))
     })
     
-    # TODO validation part here
+    # TODO validation part here?
     
     # returns list with selected additional parameters (if any)
     list(
@@ -213,12 +195,7 @@
 }
 
 
-#' Title
-#'
-#' @param id 
-#'
-#' @return
-#' @export
+#' @rdname .uploadTabsetsServer
 .uploadTabsetsUI = function(id) {
   shiny::fluidRow(shiny::column(id = shiny::NS(id,"leftcol"),width = 4,
                                 .ExcelUI(shiny::NS(id, "upld")),
@@ -229,7 +206,8 @@
 }
 
 
-#' Title
+#' Module that receives and prints the preview, tests for invalidates and
+#' also computes the final formatted dataset
 #'
 #' @param id 
 #' @param excelformat 
@@ -241,7 +219,7 @@
   # stopifnot(!is.reactivevalues(dat))
   moduleServer(id, function(input, output, session) {
     t = .ExcelServer("upld") # call module that gives initial table
-    # take only the first object of the uploaded excel to create the parameter
+    # take only the first table of the uploaded excel to create the parameter
     # modules
     param =  .parameterServer("pam", reactive ({t()[[1]]}) ,  excelformat)
     
@@ -270,6 +248,7 @@
       }  else if(excelformat() == "Certifications"){
         # perform minimal validation tests
         validate(
+          # TODO
           #need(is.numeric(a()[[1]][, "value"]), message = "measurement values seem not to be numeric"),
           need(length(a()) >=2, message = "less than 2 laboratory files uploaded. Upload more!")
         )
@@ -335,12 +314,7 @@
 }
 
 
-#' Title
-#'
-#' @param id 
-#'
-#' @return
-#' @export
+#' @rdname .ExcelUploadControllServer
 .ExcelUploadControllUI = function(id) {
   shiny::tagList(
     shiny::selectInput(
@@ -358,7 +332,8 @@
   )
 }
 
-#' .ExcelUploadCntrServer
+#' Here you can select the Ecerto-Mode (Certification, Homogeneity, Stability)
+#' and, until now, contains the Upload button
 #'
 #' @param id 
 #' @param c reactiveValues

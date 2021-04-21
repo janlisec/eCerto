@@ -2,7 +2,8 @@
 % Please edit documentation in R/xlsx_modules.R
 \name{.parameterServer}
 \alias{.parameterServer}
-\title{Title}
+\title{PARAMETER MODULE
+contains and returns the selected rows and columns}
 \usage{
 .parameterServer(id, dat, excelformat)
 }
@@ -17,5 +18,6 @@
 
 }
 \description{
-Title
+PARAMETER MODULE
+contains and returns the selected rows and columns
 }

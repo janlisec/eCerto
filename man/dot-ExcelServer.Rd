@@ -2,7 +2,10 @@
 % Please edit documentation in R/xlsx_modules.R
 \name{.ExcelServer}
 \alias{.ExcelServer}
-\title{Title}
+\title{Excel Module
+Receives sheet and path/name of datafiles and finally uploads
+the Excel file with load_excelfiles(). Returns only raw uploaded
+Excel tables.}
 \usage{
 .ExcelServer(id)
 }
@@ -10,8 +13,11 @@
 \item{id}{}
 }
 \value{
-
+the raw and not-yet-cropped preview file
 }
 \description{
-Title
+Excel Module
+Receives sheet and path/name of datafiles and finally uploads
+the Excel file with load_excelfiles(). Returns only raw uploaded
+Excel tables.
 }

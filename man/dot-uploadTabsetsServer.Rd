@@ -2,7 +2,8 @@
 % Please edit documentation in R/xlsx_modules.R
 \name{.uploadTabsetsServer}
 \alias{.uploadTabsetsServer}
-\title{Title}
+\title{Module that receives and prints the preview, tests for invalidates and
+also computes the final formatted dataset}
 \usage{
 .uploadTabsetsServer(id, excelformat, dat)
 }
@@ -17,5 +18,6 @@
 
 }
 \description{
-Title
+Module that receives and prints the preview, tests for invalidates and
+also computes the final formatted dataset
 }
