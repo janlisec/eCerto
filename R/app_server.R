@@ -95,11 +95,16 @@ app_server = function(input, output, session) {
   # # --- --- --- --- --- --- --- --- --- --- ---
 
   
-  # observeEvent(datreturn$h_vals, {
-    # print(datreturn$h_vals)
-    .TransferHomogeneityServer("trH", datreturn)
-  # })
-  
+  .TransferHomogeneityServer("trH", datreturn)
+
+  observeEvent(datreturn$t_H,{
+    # if(get_listUploadsource(rv, "Certifications")=="Excel"){
+      updateNavbarPage(
+        session = session,
+        inputId = "navbarpage",
+        selected = "tP_certification")
+    # }
+  }, ignoreInit = TRUE)
   
   .longtermstabilityServer("lts")
 }
@@ -108,5 +113,6 @@ to_startPage = function(session) {
   updateNavbarPage(
     session = session,
     inputId = "navbarpage",
-    selected = "Start")
+    selected = "Start"
+  )
 }

@@ -165,7 +165,6 @@
         
         # --- --- --- --- --- --- --- --- --- --- ---
         dat = .CertLoadedServer("loaded",d = d, apm = apm)
-
         # --- --- --- --- --- --- --- --- --- --- ---
         exportTestValues(CertLoadedServer.output = { try(dat()) })
 
@@ -192,7 +191,7 @@
           return(out)
         })
         message("lab_statistics created")
-        message("apm: ", reactiveValuesToList(apm))
+        
 
 
         output$normality_statement <- renderText({
