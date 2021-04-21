@@ -5,14 +5,7 @@
 #' @import shiny
 app_ui = function(){
   
-  # ui = function() {
-  #   shiny::fluidPage(
-  #     shinyjs::useShinyjs(),
-  #     shiny::wellPanel(xlsxload_ImportCntrlUI("excelfile")),
-  #     shiny::wellPanel(shiny::verbatimTextOutput("out")) )
-  # }
-  
-  shiny::tagList(
+  shiny::tagList( 
     # tagList to make useShinyjs independent from tabs
     shinyjs::useShinyjs(),
     shinyalert::useShinyalert(),

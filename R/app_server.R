@@ -1,4 +1,4 @@
-#' Title
+#' Main Server
 #'
 #' @param input 
 #' @param output 
@@ -22,11 +22,28 @@ app_server = function(input, output, session) {
   .ExcelUploadControllServer("excelfile", rv)
   # --- --- --- --- --- --- --- --- ---
   
+  observeEvent(input$navbarpage, {
+    # when Homogeneity is clicked but has no been uploaded yet --> change to
+    # Upload page
+    if (input$navbarpage == "tP_homogeneity" &&
+        is.null(get_listUploadsource(rv, "Homogeneity"))) {
+      to_startPage(session)
+    } 
+    # ... same for Certification ...
+    if (input$navbarpage == "tP_certification" &&
+        is.null(get_listUploadsource(rv, "Certifications"))) {
+      to_startPage(session)
+    }
+    # ... and Stability
+    if (input$navbarpage == "tP_Stability" &&
+        is.null(get_listUploadsource(rv, "Stability"))) {
+      to_startPage(session)
+    }
+  })
+  
+  
   observeEvent(input$link_to_start, {
-    updateNavbarPage(
-      session = session,
-      inputId = "navbarpage",
-      selected = "Start")
+    to_startPage(session)
   })
   
   # when certification was uploaded
@@ -73,6 +90,7 @@ app_server = function(input, output, session) {
   # --- --- --- --- --- --- --- --- ---
   
   # # --- --- --- --- --- --- --- --- --- --- ---
+  # # moved to --> CertificationServer
   # .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
   # # --- --- --- --- --- --- --- --- --- --- ---
 
@@ -84,4 +102,11 @@ app_server = function(input, output, session) {
   
   
   .longtermstabilityServer("lts")
+}
+
+to_startPage = function(session) {
+  updateNavbarPage(
+    session = session,
+    inputId = "navbarpage",
+    selected = "Start")
 }
