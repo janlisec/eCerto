@@ -37,7 +37,7 @@ plot_lts_data <- function(x=NULL, type=1) {
   vals <- x[["val"]][,"Value"]
   rt <- x[["val"]][,"Date"]
   mon <- sapply(rt, function(x) { mondf(d_start = rt[1], d_end = x) })
-  com <- x[["val"]][,"Comment"]
+  if ("Comment" %in% colnames(x[["val"]])) com <- x[["val"]][,"Comment"] else com <- rep(NA, nrow(x[["val"]]))
 
   U <- x[["def"]][,"U"]
   mn <- x[["def"]][,"CertVal"]
