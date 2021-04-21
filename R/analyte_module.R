@@ -2,7 +2,7 @@
 
 #' Title
 #'
-#' @param id 
+#' @param id
 #'
 #' @return
 #' @export
@@ -17,8 +17,8 @@
 
 #' Title
 #'
-#' @param id 
-#' @param apm 
+#' @param id
+#' @param apm
 #'
 #' @return
 #' @export
@@ -28,13 +28,13 @@
     ns <- session$ns # to get full namespace here in server function
     analytes = isolate(reactiveValuesToList(apm))$analytes
     # message("analyteModule; all analytes: ", analytes)
-    
+
     # append/prepend a tab for each analyte available
     for (a.name in names(analytes)) {
-      appendTab(inputId = "tabs", 
+      appendTab(inputId = "tabs",
           select = FALSE,
           tabPanel(
-            title=a.name, 
+            title=a.name,
             fluidRow(
               column(6,
                selectizeInput(
@@ -55,14 +55,14 @@
             ),
           )
       )
-      
+
     }
     # select only first tab
-    updateTabsetPanel(inputId = "tabs", selected = names(analytes)[1])
-    
-    
+    updateTabsetPanel(session = session, inputId = "tabs", selected = names(analytes)[1])
+
+
     observeEvent(input$tabs,{
-      # change color of tab when selected by changing class 
+      # change color of tab when selected by changing class
       s = paste0("#",ns("tabs")," li a[data-value=",input$tabs,"]")
       shinyjs::addClass(
         selector = s,
@@ -71,7 +71,7 @@
       # is selected
       apm$selected_tab = input$tabs
     },ignoreInit = TRUE)
-    
+
     # update precision and the selected sample id filter in the reactiveValues
     # when their value change in the selected tab
     observe({
@@ -80,6 +80,6 @@
         apm$analytes[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
       })
     })
-    
+
   })
 }
