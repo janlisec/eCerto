@@ -58,7 +58,7 @@
       
     }
     # select only first tab
-    updateTabsetPanel(inputId = "tabs", selected = names(analytes)[1])
+    updateTabsetPanel(session = session, inputId = "tabs", selected = names(analytes)[1])
     
     
     observeEvent(input$tabs,{
