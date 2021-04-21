@@ -25,7 +25,6 @@
       shiny::req(input$file)
       input$file
     })
-    # debounce(r,1000)
   })
 }
 
@@ -90,7 +89,6 @@
     # when sheet gets uploaded
     observeEvent(sh(),{
       rv$v <- rv$v + 1 # invalidate 'df' reactive
-      print(paste0(sh(),": ",rv$v))
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
     df = reactive({
@@ -261,10 +259,11 @@
     # already, i.e. is in dat(), then load. Otherwise show head of first excel
     # file in the preview state
     output$preview_out = renderPrint(
+      
       if(is.null(dat())){
-        head(prevw()[[1]])
+        subset(head(prevw()[[1]]), select = -File)
       } else {
-        head(dat())
+        subset(head(dat()), select = -File)
       })
     
     reactive({
@@ -285,8 +284,13 @@
       lapply(datlist, function(x) {
         a = x[as.numeric(param$start_row()):as.numeric(param$end_row()),
           as.numeric(param$start_col()):as.numeric(param$end_col())]
-        filename = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
-        a = cbind(a,File = filename)
+        # in case column "File" has been excluded by the row and column
+        # selection add it now again
+        if(!"File" %in% colnames(a)){
+          filename = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
+          a = cbind(a, File = filename)
+        }
+
         return(a)
       })
     }, ignoreInit = TRUE)
