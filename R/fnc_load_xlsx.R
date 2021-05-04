@@ -19,7 +19,7 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
 
     out <- matrix("", nrow=max(a[,"row"]), ncol=max(a[,"col"]), 
                   dimnames=list(1:max(a[,"row"]), LETTERS[1:max(a[,"col"])]))
-    print(out)
+    # print(out)
     for (tp in c("numeric","character")) {
       flt <- which(a[,"data_type"]==tp)
       if (length(flt)>=1)  {
@@ -30,7 +30,7 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
         
           
     }
-    print(out)
+    # print(out)
     out <- as.data.frame(out)
   } else {
     out <- a

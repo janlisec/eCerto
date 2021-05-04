@@ -67,8 +67,10 @@
 
 #' @rdname .ExcelServer
 .ExcelUI = function(id) {
-  shiny::tagList(.xlsxinputUI(id = shiny::NS(id, "xlsxfile")), # upload input
-                 .sheetUI(id = shiny::NS(id, "sheet"))) # sheet select
+  shiny::tagList(
+    .xlsxinputUI(id = shiny::NS(id, "xlsxfile")), # upload input
+                 .sheetUI(id = shiny::NS(id, "sheet"))
+    ) # sheet select
 }
 
 #' Excel Module
@@ -196,12 +198,18 @@
 
 #' @rdname .uploadTabsetsServer
 .uploadTabsetsUI = function(id) {
-  shiny::fluidRow(shiny::column(id = shiny::NS(id,"leftcol"),width = 4,
-                                .ExcelUI(shiny::NS(id, "upld")),
-                                .parameterUI(shiny::NS(id, "pam")), ),
-                  shiny::column(width = 8,
-                                shiny::p("Preview (first 6 lines)"),
-                                shiny::verbatimTextOutput(shiny::NS(id, "preview_out"))))
+  tagList(
+    fileInput(multiple = TRUE, inputId = shiny::NS(id,"test_file"), label = "test_file (xlsx)", accept = "xlsx"),
+    numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1),
+    hr(),
+    xlsx_range_select_UI(shiny::NS(id,"test"))
+  )
+  # shiny::fluidRow(shiny::column(id = shiny::NS(id,"leftcol"),width = 4,
+  #                               .ExcelUI(shiny::NS(id, "upld")),
+  #                               .parameterUI(shiny::NS(id, "pam")), ),
+  #                 shiny::column(width = 8,
+  #                               shiny::p("Preview (first 6 lines)"),
+  #                               shiny::verbatimTextOutput(shiny::NS(id, "preview_out"))))
 }
 
 
@@ -217,10 +225,24 @@
 .uploadTabsetsServer = function(id, excelformat, dat) {
   # stopifnot(!is.reactivevalues(dat))
   moduleServer(id, function(input, output, session) {
-    t = .ExcelServer("upld") # call module that gives initial table
-    # take only the first table of the uploaded excel to create the parameter
-    # modules
-    param =  .parameterServer("pam", reactive ({t()[[1]]}) ,  excelformat)
+    
+    out <- xlsx_range_select_Server(id = "test",
+                                    x = reactive({ input$test_file }),
+                                    sheet = reactive({ input$sheet_number })
+    )
+    
+    a = reactive({out$tab_flt})
+
+    
+    # t = .ExcelServer("upld") # call module that gives initial table
+    # # take only the first table of the uploaded excel to create the parameter
+    # # modules
+    # param =  .parameterServer("pam", reactive ({t()[[1]]}) ,  excelformat)
+    # 
+    # 
+    # 
+    # # selects chosen rows and columns
+    # a = .computation_preview_data("a", param, t)
     
     # disable upload Panel after upload the corresponding excel file
     observeEvent(excelformat(),{
@@ -232,9 +254,6 @@
         shinyjs::enable(id = "leftcol")
       }
     })
-    
-    # selects chosen rows and columns
-    a = .computation_preview_data("a", param, t)
     
     # perform minimal validation checks
     prevw = reactive({
@@ -260,7 +279,7 @@
     # already, i.e. is in dat(), then load. Otherwise show head of first excel
     # file in the preview state
     output$preview_out = renderPrint(
-      
+
       if(is.null(dat())){
         subset(head(prevw()[[1]]), select = -File)
       } else {
@@ -278,23 +297,28 @@
 }
 
 .computation_preview_data = function(id, param, t){
+
   shiny::moduleServer(id, function(input, output, session){
     # if one parameter gets updated, subset all data frames
-     a = eventReactive(param$change_detector(),{
+     # a = eventReactive(param$change_detector(),{
+     # a = reactive({
+      # datlist = isolate(t())
+    if(is.reactive(t)){
       datlist = isolate(t())
+    } else {
+      datlist = t
+    }
+    
       lapply(datlist, function(x) {
-        a = x[as.numeric(param$start_row()):as.numeric(param$end_row()),
-          as.numeric(param$start_col()):as.numeric(param$end_col())]
+        a = x[as.numeric(param$start_row):as.numeric(param$end_row),
+          as.numeric(param$start_col):as.numeric(param$end_col)]
         # in case column "File" has been excluded by the row and column
         # selection add it now again
-        if(!"File" %in% colnames(a)){
-          filename = x$File[as.numeric(param$start_row()):as.numeric(param$end_row())]
-          a = cbind(a, File = filename)
-        }
 
+        
         return(a)
       })
-    }, ignoreInit = TRUE)
+    # })
  })
 }
 
@@ -383,8 +407,8 @@
       req(t())
       shinyjs::disable("go")
       print("go clicked")
-      set_listelem(c, input$moduleSelect, t)
-      set_listUploadsource(c, input$moduleSelect, uploadsource = "Excel")
+      set_listelem(rv, input$moduleSelect, t)
+      set_listUploadsource(rv, input$moduleSelect, uploadsource = "Excel")
       
       
       # TODO "choice" grün färben
