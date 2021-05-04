@@ -42,7 +42,7 @@ app_server = function(input, output, session) {
         "opt" = NULL,
         "mstats" = NULL,
         # materialtabelle
-        "cert_vals" = NULL
+        "materialtabelle" = NULL
         ),
       "Homogeneity" = list(
         # upload
@@ -99,8 +99,16 @@ app_server = function(input, output, session) {
   # when certification was uploaded
   observeEvent(rv$Certifications,{
     # when source is Excel, switch to Certification Tab automatically
-    message("observer: certification was uploaded")
+    
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
+      message("observer: certification was uploaded")
+      updateNavbarPage(
+        session = session,
+        inputId = "navbarpage",
+        selected = "tP_certification")
+    }
+    if(get_listUploadsource(rv, "Certifications")=="RData"){
+      # message("observer: certification was uploaded")
       updateNavbarPage(
         session = session,
         inputId = "navbarpage",
@@ -127,7 +135,7 @@ app_server = function(input, output, session) {
   datreturn = reactiveValues(
     selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
     h_vals = NULL,                      # values from Homogeneity module
-    mater_table = NULL,                 # material table, formerly 'cert_vals', READ-ONLY*
+    mater_table = NULL,                 # material table, formerly 'cert_vals', *READ-ONLY*
     t_H = NULL,                         # when Homogeneity is transferred
     lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
   ) 

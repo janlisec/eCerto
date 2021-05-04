@@ -131,9 +131,7 @@
 #' Certification part
 #'
 #' @param id "namespace"
-#' @param d reactive with uploaded and pre-formatted certification data.
-#'   Contains  $data (ID, Lab, analyte, replicate, value, unit, ...) and
-#'   $uploadsource (Excel, RData, etc.)
+#' @param d d = reactive({rv$Certifications})
 #' @param datreturn for storing the results
 #'
 #' @return nothing
@@ -178,6 +176,7 @@
         lab_statistics = reactive({
           # data <- dat()
           req(dat())
+          message("CertificationServer : lab_statistics created")
           out <-
             plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
               data.frame(
@@ -190,10 +189,7 @@
 
           return(out)
         })
-        message("lab_statistics created")
         
-
-
         output$normality_statement <- renderText({
           l = lab_statistics()
           suppressWarnings(KS_p <-
@@ -215,10 +211,10 @@
 
         observe({
           datreturn$lab_statistics = lab_statistics()
-          message(".CertificationServer -- lab_statistics created")
+          # message(".CertificationServer -- lab_statistics created")
           datreturn$selectedAnalyteDataframe = dat()
           # console log
-          message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
+          # message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
         })
 
 
@@ -228,6 +224,18 @@
             shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
 
           })
+        
+        output$overview_stats <- DT::renderDataTable({
+          
+          message("stats 1")
+          message(dat())
+          Stats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+        }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+        
+        # mStats
+        output$overview_mstats <- DT::renderDataTable({
+          mstats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+        }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
         
         ### LOADED END ###s
       } else { 
@@ -239,17 +247,14 @@
 
     
     # --- --- --- --- --- --- --- --- --- --- ---
-    .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
+    .materialtabelleServer(
+      id = "mat_cert", 
+      rdataUpload = reactive({d()$materialtabelle}), 
+      datreturn = datreturn
+    )
     # --- --- --- --- --- --- --- --- --- --- ---
     
-    output$overview_stats <- DT::renderDataTable({
-      Stats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
-    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-    
-    # mStats
-    output$overview_mstats <- DT::renderDataTable({
-      mstats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
-    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+ 
     
   })
 }

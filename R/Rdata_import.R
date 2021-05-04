@@ -63,10 +63,40 @@
     }, ignoreNULL = TRUE)
     
     observeEvent(rdata(),{
+      rv$Certifications$data = res[["Certification"]][["data_input"]]
+      rv$Certifications$input_files = res[["Certification"]][["input_files"]]
       set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
+      # save
       rv$Certifications$user = res$Certification$user
       rv$Certifications$study_id = res$Certification$study_id
-      
+      # processing
+      rv$Certifications$lab_means = res[["Certification"]][["lab_means"]]
+      rv$Certifications$cert_mean = res[["Certification"]][["cert_mean"]]
+      rv$Certifications$cert_sd = res[["Certification"]][["cert_sd"]]
+      rv$Certifications$normality_statement = res[["Certification"]][["normality_statement"]]
+      rv$Certifications$precision = res[["Certification"]][["precision"]]
+      rv$Certifications$data_kompakt = res[["Certification"]][["data_kompakt"]]
+      rv$Certifications$CertValPlot = res[["Certification"]][["CertValPlot"]]
+      rv$Certifications$stats = res[["Certification"]][["stats"]]
+      rv$Certifications$boxplot = res[["Certification"]][["boxplot"]]
+      rv$Certifications$opt = res[["Certification"]][["opt"]]
+      rv$Certifications$mstats = res[["Certification"]][["mstats"]]
+      # materialtabelle
+      rv$Certifications$materialtabelle = res[["Certification"]][["cert_vals"]]
+
+      rv$Homogeneity$data = res[["Homogeneity"]][["h_dat"]]
+      set_listUploadsource(rv = rv, m = "Homogeneity",uploadsource = "RData")
+      rv$Homogeneity$h_file = res[["Homogeneity"]][["h_file"]]
+      # Processing
+      rv$Homogeneity$h_vals =  res[["Homogeneity"]][["h_vals"]]
+      rv$Homogeneity$h_sel_analyt = res[["Homogeneity"]][["h_sel_analyt"]]
+      rv$Homogeneity$h_precision = res[["Homogeneity"]][["h_precision"]]
+      rv$Homogeneity$h_Fig_width = res[["Homogeneity"]][["h_Fig_width"]]
+ 
+      rv$Stability$s_file = res[["Stability"]][["s_file"]]
+      rv$Stability$data = res[["Stability"]][["s_dat"]]
+      set_listUploadsource(rv = rv, m = "Stability",uploadsource = "RData")
+      rv$Stability$s_vals = res[["Stability"]][["s_vals"]]
     })
     
     observeEvent(rv$Certifications$user,{

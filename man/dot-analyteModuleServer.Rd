@@ -7,8 +7,6 @@
 .analyteModuleServer(id, apm)
 }
 \arguments{
-\item{id}{}
-
 \item{apm}{}
 }
 \value{

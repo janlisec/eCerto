@@ -37,11 +37,10 @@
   # )
 }
 
-.materialtabelleServer = function(id, datreturn) {
+.materialtabelleServer = function(id, rdataUpload, datreturn) {
   moduleServer(id, function(input, output, session) {
     
-    # rv = reactiveValues(v = 0)
-   
+
     # data frame of selected analyte
     sAnData = reactive({
       # rv$v
@@ -61,42 +60,56 @@
     mater_table = reactiveVal(NULL)
     observe({mater_table(datreturn$t_H)})
    
+    observeEvent(rdataUpload(),{
+      message("insert materialtabelle")
+      mater_table(rdataUpload()) # save materialtabelle
+    },ignoreNULL = TRUE)
+    
+    
+    
     # get all availables analytes
     availableAnalytes = reactive({levels(sAnData()[["analyte"]])})
 
-    observeEvent(availableAnalytes(), 
-                once = TRUE, {  # the data table should be created only once, 
-                                # since the levels shouldn't
-                                # change after certification upload
-
-      c = data.frame(
-          "analyte" =  availableAnalytes(), # a,
-          "mean" = NA,
-          "F1" = 1,
-          "F2" = 1,
-          "F3" = 1,
-          "cert_val" = NA,
-          "sd" = NA,
-          "n" = NA,
-          "char" = 0,
-          "U2" = 0,
-          "U3" = 0,
-          "U4" = 0,
-          "U5" = 0,
-          "U6" = 0,
-          "U7" = 0,
-          "com" = NA,
-          "k" = 2,
-          "U" = NA
-        )
-      attr(c, "col_code") <-
-        data.frame(
-          "ID" = c(paste0("F", 1:3), paste0("U", 2:7)),
-          "Name" = c(paste0("F", 1:3), paste0("U", 2:7)),
-          stringsAsFactors = FALSE
-        )
-      mater_table(c) # save materialtabelle
-    },ignoreInit = TRUE)
+    observeEvent(
+      availableAnalytes(), 
+      once = TRUE,   # the data table should be created only once, 
+      # since the levels shouldn't
+      # change after certification upload
+      {
+        # initiate empty materialtabelle only if nothing has yet
+        # been uploaded via RData
+        if(is.null(rdataUpload())) {
+          message(".materialtabelle: initiate empty materialtabelle")
+          c = data.frame(
+            "analyte" =  availableAnalytes(), # a,
+            "mean" = NA,
+            "F1" = 1,
+            "F2" = 1,
+            "F3" = 1,
+            "cert_val" = NA,
+            "sd" = NA,
+            "n" = NA,
+            "char" = 0,
+            "U2" = 0,
+            "U3" = 0,
+            "U4" = 0,
+            "U5" = 0,
+            "U6" = 0,
+            "U7" = 0,
+            "com" = NA,
+            "k" = 2,
+            "U" = NA
+          )
+          attr(c, "col_code") <-
+            data.frame(
+              "ID" = c(paste0("F", 1:3), paste0("U", 2:7)),
+              "Name" = c(paste0("F", 1:3), paste0("U", 2:7)),
+              stringsAsFactors = FALSE
+            )
+          mater_table(c) # save materialtabelle
+        }
+        
+      },ignoreInit = TRUE)
     
     cert_mean <- reactive({
       req(sAnData())
@@ -259,7 +272,7 @@
           attr(mater_table(), "col_code")[k, "Name"]
       }
       a
-    },ignoreInit = TRUE)
+    })
     
     
     # export materialtabelle for testing. Since it hasn't created yet

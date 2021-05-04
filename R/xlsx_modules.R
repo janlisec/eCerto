@@ -88,6 +88,7 @@
     
     # when sheet gets uploaded
     observeEvent(sh(),{
+      print("sheet updated")
       rv$v <- rv$v + 1 # invalidate 'df' reactive
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
@@ -340,33 +341,35 @@
 #' and, until now, contains the Upload button
 #'
 #' @param id 
-#' @param c reactiveValues
+#' @param rv reactiveValues
 #'
 #' @return
 #' @export
-.ExcelUploadControllServer = function(id, c) {
-  stopifnot(is.reactivevalues(c))
+.ExcelUploadControllServer = function(id, rv) {
+  stopifnot(is.reactivevalues(rv))
   shiny::moduleServer(id, function(input, output, session) {
     
     updateSelectInput(inputId = "moduleSelect",
                              session = session,
-                             choices =  shiny::isolate(names(c)))
+                             choices =  shiny::isolate(names(rv)))
     
     
     # change the reactive if Cert, Homog oder Stab was choosen
     choosen = eventReactive(input$moduleSelect,{
-        get_listelem(c, input$moduleSelect)
+        get_listelem(rv, input$moduleSelect)
       }, ignoreInit = TRUE)
     
+    # --- --- --- --- --- --- --- --- ---
     t = .uploadTabsetsServer("uploadTabset", shiny::reactive({input$moduleSelect}), choosen) 
+    # --- --- --- --- --- --- --- --- ---
     
     # must be extra disabled after loading, since is in parent module of upload panel
     shiny::observe({
       req(input$moduleSelect)
       # enable upload button when a data frame was uploaded via the Upload menu
-      # but only as long c hasn't been filled so far
+      # but only as long rv hasn't been filled so far
       # !is.null((t())) && 
-      if(is.null(get_listelem(c,input$moduleSelect))){ 
+      if(is.null(get_listelem(rv,input$moduleSelect))){ 
         print("go enabled")
         shinyjs::enable("go")
       } else {
@@ -377,8 +380,9 @@
     
     # update list after pushing upload button
     shiny::observeEvent(input$go, {
+      req(t())
       shinyjs::disable("go")
-      print("go pressed")
+      print("go clicked")
       set_listelem(c, input$moduleSelect, t)
       set_listUploadsource(c, input$moduleSelect, uploadsource = "Excel")
       

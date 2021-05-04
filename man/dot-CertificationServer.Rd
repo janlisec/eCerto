@@ -9,9 +9,7 @@
 \arguments{
 \item{id}{"namespace"}
 
-\item{d}{reactive with uploaded and pre-formatted certification data.
-Contains  $data (ID, Lab, analyte, replicate, value, unit, ...) and
-$uploadsource (Excel, RData, etc.)}
+\item{d}{d = reactive({rv$Certifications})}
 
 \item{datreturn}{for storing the results}
 }

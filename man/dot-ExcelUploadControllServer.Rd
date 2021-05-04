@@ -5,12 +5,12 @@
 \title{Here you can select the Ecerto-Mode (Certification, Homogeneity, Stability)
 and, until now, contains the Upload button}
 \usage{
-.ExcelUploadControllServer(id, c)
+.ExcelUploadControllServer(id, rv)
 }
 \arguments{
 \item{id}{}
 
-\item{c}{reactiveValues}
+\item{rv}{reactiveValues}
 }
 \value{
 

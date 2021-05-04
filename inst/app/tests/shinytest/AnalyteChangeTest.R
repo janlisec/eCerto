@@ -15,8 +15,10 @@ app$uploadFile(`excelfile-uploadTabset-upld-xlsxfile-file` = c(
   system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"), 
   system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
 ))
+Sys.sleep(2)
 app$setInputs(`excelfile-uploadTabset-pam-rowslider` = c(7, 14))
 app$setInputs(`excelfile-uploadTabset-pam-colslider` = c(1, 8))
+Sys.sleep(2)
 app$setInputs(`excelfile-go` = "click")
 # app$setInputs(`certification-analyteModule-tabs` = "Si", wait_=FALSE, values_=FALSE)
 app$snapshot(

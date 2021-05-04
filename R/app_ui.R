@@ -33,7 +33,7 @@ app_ui = function(){
           p("Homogeneities are..."),
           p("Stabilities are..."),
           actionLink("link_to_start", "Click here to start"),
-          bookmarkButton()
+          # bookmarkButton()
         )
         
       ),
