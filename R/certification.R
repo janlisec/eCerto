@@ -375,15 +375,21 @@
       )
     })
     
+    observeEvent(d(), {
+      if (uploadsource_of_element(d())=="RData" ) {
+        updateNumericInput(inputId = "Fig01_width",value = d()[["CertValPlot"]][["Fig01_width"]])
+        updateNumericInput(inputId = "Fig01_height",value = d()[["CertValPlot"]][["Fig01_height"]])
+        updateSelectizeInput(inputId = "flt_labs",selected = d()[["opt"]][["flt_labs"]])
+        }
+      
+    }, ignoreNULL = TRUE)
+    
     observeEvent(input$flt_labs,{
       # message(paste0("selected lab filter: ", input$flt_labs))
       apm$analytes[[selected_tab()]]$lab_filter = input$flt_labs
     })
     
-    # # console log
-    # observeEvent(dat(),{
-    #   message(paste0(".CertLoadedServer -- currently: ", dat()[1,"analyte"]))
-    # })
+
     
     # CertVal Plot
     output$overview_CertValPlot <- renderPlot({
