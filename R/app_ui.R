@@ -53,20 +53,7 @@ app_ui = function(){
                 br(),
                 actionButton(inputId = "sessionstart", label = "new")
               ),
-              wellPanel(
-                fileInput(
-                  inputId = "in_file_ecerto_backup",
-                  label = "Load Previous Analysis",
-                  multiple = FALSE,
-                  accept = c("RData")
-                )
-              ),
-              shinyjs::disabled(
-                wellPanel(
-                  id = "savepanel",
-                  strong("Save")
-                )
-              )
+              wellPanel(.RDataImport_UI("Rdata")),
             ),
             column(
               width = 9,

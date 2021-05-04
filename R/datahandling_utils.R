@@ -148,8 +148,11 @@ set_listelem = function(c, m, dat) {
   #   c[[m]] = dat
   # }
   
-  if(!is.null(get_listelem(c,m))) 
-    stop(paste0(m, " in list is not null"))
+  if(!is.null(get_listelem(c,m))) {
+    warning(paste0(m, " in list is not null"))
+    return(NULL)
+  }
+    
   
   if(is.reactive(dat)) {
     c[[m]][["data"]] = isolate(dat())
@@ -163,18 +166,18 @@ set_listelem = function(c, m, dat) {
 #' set source of upload for an element
 #' 
 #'
-#' @param c 
+#' @param rv 
 #' @param m 
 #' @param uploadsource 
 #'
 #' @return
 #' @export
 
-set_listUploadsource = function(c, m, uploadsource) {
+set_listUploadsource = function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
   stopifnot(uploadsource %in% c("RData","Excel"))
   
-  c[[m]][["uploadsource"]] = uploadsource
+  rv[[m]][["uploadsource"]] = uploadsource
   
 }
 
