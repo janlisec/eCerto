@@ -77,6 +77,8 @@ load_excelfiles = function(filepath, sheet) {
         # a$File = rep(x,nrow(a))
       }, error = function(e) {
         stop(safeError(e))
+      }, warning = function(w){        # Specifying warning message
+        # message("There was a warning message.")
       })
     } else {
       validate("Invalid file; Please upload a .xlsx file")

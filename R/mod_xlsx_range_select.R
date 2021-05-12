@@ -14,11 +14,31 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
   
   moduleServer(id, function(input, output, session) {
     
+    # observe({
+    #   print("x:")
+    #   print(dput(x()))
+    #   print("sheet")
+    #   print(dput(sheet()))
+    # })
+    
     tab <- reactive({
-      validate(need(x(), "no valid file"), need(sheet(), "no valid sheet"))
+      validate(
+        need(x(), message = FALSE),
+        need(sheet(), message = FALSE),
+        need(all(tools::file_ext(x()$datapath) == "xlsx"), message = "Please upload Excel only")
+      )
      # l = fnc_load_xlsx(filepath = x()$datapath, sheet = sheet())
-      load_excelfiles(filepath = x()$datapath, sheet = sheet())
+      l = load_excelfiles(filepath = x()$datapath, sheet = sheet())
+      validate(
+        # Check if no empty dataframe
+        need(all(!unlist(lapply(l, is.null))), "Excel file must not be empty")
+        # need(all(sapply(l, nrow)) && all(sapply(l, ncol)),  message = "Excel file must not be empty")
+      )
+      
+      return(l)
     })
+    
+    
     
     observeEvent(tab(), {
       rv$tab <- tab()
@@ -55,8 +75,8 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
         
         rv$tab_flt = .computation_preview_data("a", rv, rv$tab)
         if(!"File" %in% colnames(rv$tab_flt) && dim(a)[1] > 1 && dim(a)[2] >1){
-          message("add File column")
           # add file name to each data frame
+          message("add File column")
           for (i in 1:length(rv$tab_flt)) {
             rv$tab_flt[[i]][["File"]] = rep(isolate(x()$name[i]), nrow(rv$tab_flt[[i]]))
           }
@@ -74,6 +94,10 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
     
   })
 }
+
+# testServer(app = xlsx_range_select_Server, expr, args = list(), session = MockShinySession$new()) {
+#   
+# }
 
 
 # ui <- fluidPage(
