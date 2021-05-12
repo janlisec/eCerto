@@ -25,9 +25,12 @@ cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
 test_that("Successful Upload test",code = {
   testServer(xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
-               suppressMessages(
+               # suppressMessages(
                  session$setInputs(uitab_cells_selected = cells_selected)
-               )
+               # )
+               print(reactiveValuesToList(rv))
+               session$flushReact()
+
                expect_snapshot(rv$tab_flt)
                expect_equal(rv$end_col,6)
              }

@@ -5,7 +5,7 @@
 \title{Here you can select the Ecerto-Mode (Certification, Homogeneity, Stability)
 and, until now, contains the Upload button}
 \usage{
-.ExcelUploadControllServer(id, rv)
+.ExcelUploadControllServer(id, excelformat, dat)
 }
 \arguments{
 \item{id}{}

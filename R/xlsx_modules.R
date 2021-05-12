@@ -195,132 +195,105 @@
 #'   })
 #' }
 
+#' 
+#' #' @rdname .uploadTabsetsServer
+#' .uploadTabsetsUI = function(id) {
+#'   tagList(
+#'     fileInput(multiple = TRUE, inputId = shiny::NS(id,"excel_file"), label = "excel_file (xlsx)", accept = "xlsx"),
+#'     numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1),
+#'     hr(),
+#'     xlsx_range_select_UI(shiny::NS(id,"test"))
+#'   )
+#' }
+#' 
+#' 
+#' #' Module that receives and prints the preview, tests for invalidates and
+#' #' also computes the final formatted dataset
+#' #'
+#' #' @param id 
+#' #' @param excelformat 
+#' #' @param dat 
+#' #'
+#' #' @return
+#' #' @export
+#' .uploadTabsetsServer = function(id, excelformat) {
+#'   # stopifnot(!is.reactivevalues(dat))
+#'   moduleServer(id, function(input, output, session) {
+#'     
+#'     out <- xlsx_range_select_Server(id = "test",
+#'                                     x = reactive({ input$excel_file }),
+#'                                     sheet = reactive({ input$sheet_number })
+#'     )
+#'     
+#'     a = reactive({out$tab_flt})
+#' 
+#'     
+#'     # # disable upload Panel after upload the corresponding excel file
+#'     # observeEvent(excelformat(),{
+#'     #   if(is.null(dat())){
+#'     #     shinyjs::enable(id = "leftcol")
+#'     #   } else if(!is.null(dat())) {
+#'     #     shinyjs::disable(id = "leftcol")
+#'     #   } else {
+#'     #     shinyjs::enable(id = "leftcol")
+#'     #   }
+#'     # })
+#'     
+#'     # perform minimal validation checks
+#'     prevw = reactive({
+#'       if(excelformat()=="Homogeneity") {
+#'         validate(
+#'           need("analyte" %in% colnames(a()[[1]]), "No column 'analyte' found in input file."),
+#'           need("value" %in% colnames(a()[[1]]), "No column 'value' found in input file.")
+#'         )
+#'         validate(need(is.numeric(a()[[1]][,"value"]), "Column 'value' in input file contains non-numeric values."))
+#'       }  else if(excelformat() == "Certifications"){
+#'         # perform minimal validation tests
+#'         validate(
+#'           # TODO
+#'           #need(is.numeric(a()[[1]][, "value"]), message = "measurement values seem not to be numeric"),
+#'           need(length(a()) >=2, message = "less than 2 laboratory files uploaded. Upload more!")
+#'         )
+#'       }
+#'       a()
+#'     })
+#'     ex = .computation_final_data(id, prevw)
+#'     
+#'     reactive({
+#'       switch (excelformat(),
+#'               Certifications = ex(),
+#'               Homogeneity = prevw()[[1]]
+#'       )
+#'     })
+#'   })
+#'  
+#' }
 
-#' @rdname .uploadTabsetsServer
-.uploadTabsetsUI = function(id) {
-  tagList(
-    fileInput(multiple = TRUE, inputId = shiny::NS(id,"test_file"), label = "test_file (xlsx)", accept = "xlsx"),
-    numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1),
-    hr(),
-    xlsx_range_select_UI(shiny::NS(id,"test"))
-  )
-  # shiny::fluidRow(shiny::column(id = shiny::NS(id,"leftcol"),width = 4,
-  #                               .ExcelUI(shiny::NS(id, "upld")),
-  #                               .parameterUI(shiny::NS(id, "pam")), ),
-  #                 shiny::column(width = 8,
-  #                               shiny::p("Preview (first 6 lines)"),
-  #                               shiny::verbatimTextOutput(shiny::NS(id, "preview_out"))))
-}
-
-
-#' Module that receives and prints the preview, tests for invalidates and
-#' also computes the final formatted dataset
-#'
-#' @param id 
-#' @param excelformat 
-#' @param dat 
-#'
-#' @return
-#' @export
-.uploadTabsetsServer = function(id, excelformat, dat) {
-  # stopifnot(!is.reactivevalues(dat))
-  moduleServer(id, function(input, output, session) {
-    
-    out <- xlsx_range_select_Server(id = "test",
-                                    x = reactive({ input$test_file }),
-                                    sheet = reactive({ input$sheet_number })
-    )
-    
-    a = reactive({out$tab_flt})
-
-    
-    # t = .ExcelServer("upld") # call module that gives initial table
-    # # take only the first table of the uploaded excel to create the parameter
-    # # modules
-    # param =  .parameterServer("pam", reactive ({t()[[1]]}) ,  excelformat)
-    # 
-    # 
-    # 
-    # # selects chosen rows and columns
-    # a = .computation_preview_data("a", param, t)
-    
-    # disable upload Panel after upload the corresponding excel file
-    observeEvent(excelformat(),{
-      if(is.null(dat())){
-        shinyjs::enable(id = "leftcol")
-      } else if(!is.null(dat())) {
-        shinyjs::disable(id = "leftcol")
-      } else {
-        shinyjs::enable(id = "leftcol")
-      }
-    })
-    
-    # perform minimal validation checks
-    prevw = reactive({
-      if(excelformat()=="Homogeneity") {
-        validate(
-          need("analyte" %in% colnames(a()[[1]]), "No column 'analyte' found in input file."),
-          need("value" %in% colnames(a()[[1]]), "No column 'value' found in input file.")
-        )
-        validate(need(is.numeric(a()[[1]][,"value"]), "Column 'value' in input file contains non-numeric values."))
-      }  else if(excelformat() == "Certifications"){
-        # perform minimal validation tests
-        validate(
-          # TODO
-          #need(is.numeric(a()[[1]][, "value"]), message = "measurement values seem not to be numeric"),
-          need(length(a()) >=2, message = "less than 2 laboratory files uploaded. Upload more!")
-        )
-      }
-      a()
-    })
-    ex = .computation_final_data(id, prevw)
-    
-    # Preview: when something was uploaded by pushing "go" button before
-    # already, i.e. is in dat(), then load. Otherwise show head of first excel
-    # file in the preview state
-    output$preview_out = renderPrint(
-
-      if(is.null(dat())){
-        subset(head(prevw()[[1]]), select = -File)
-      } else {
-        subset(head(dat()), select = -File)
-      })
-    
-    reactive({
-      switch (excelformat(),
-              Certifications = ex(),
-              Homogeneity = prevw()[[1]]
-      )
-    })
-  })
-  
-}
-
-.computation_preview_data = function(id, param, t){
-
-  shiny::moduleServer(id, function(input, output, session){
-    # if one parameter gets updated, subset all data frames
-     # a = eventReactive(param$change_detector(),{
-     # a = reactive({
-      # datlist = isolate(t())
-    if(is.reactive(t)){
-      datlist = isolate(t())
-    } else {
-      datlist = t
-    }
-    
-      lapply(datlist, function(x) {
-        a = x[as.numeric(param$start_row):as.numeric(param$end_row),
-          as.numeric(param$start_col):as.numeric(param$end_col)]
-        # in case column "File" has been excluded by the row and column
-        # selection add it now again
-
-        
-        return(a)
-      })
-    # })
- })
-}
+# .computation_preview_data = function(id, param, t){
+# 
+#   shiny::moduleServer(id, function(input, output, session){
+#     # if one parameter gets updated, subset all data frames
+#      # a = eventReactive(param$change_detector(),{
+#      # a = reactive({
+#       # datlist = isolate(t())
+#     if(is.reactive(t)){
+#       datlist = isolate(t())
+#     } else {
+#       datlist = t
+#     }
+#     
+#       lapply(datlist, function(x) {
+#         a = x[as.numeric(param$start_row):as.numeric(param$end_row),
+#           as.numeric(param$start_col):as.numeric(param$end_col)]
+#         # in case column "File" has been excluded by the row and column
+#         # selection add it now again
+# 
+#         
+#         return(a)
+#       })
+#     # })
+#  })
+# }
 
 .computation_final_data = function(id, a) {
   shiny::moduleServer(id, function(input, output, session){
@@ -346,13 +319,14 @@
 #' @rdname .ExcelUploadControllServer
 .ExcelUploadControllUI = function(id) {
   shiny::tagList(
-    shiny::selectInput(
-      inputId = shiny::NS(id, "moduleSelect"),
-      choices = NULL,
-      label = "module",
-      width = "50%"
-    ),
-    .uploadTabsetsUI(shiny::NS(id, "uploadTabset")),
+    # --- --- --- --- --- --- --- --- ---
+    # .uploadTabsetsUI(shiny::NS(id, "uploadTabset")),
+    fileInput(multiple = TRUE, inputId = shiny::NS(id,"excel_file"), label = "Excel (xlsx)", accept = "xlsx"),
+    numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1),
+    hr(),
+    xlsx_range_select_UI(shiny::NS(id,"test")),
+    
+    # --- --- --- --- --- --- --- --- ---
     shinyjs::disabled(
       shiny::actionButton(inputId = shiny::NS(id, "go"),
                           label = "LOAD"
@@ -369,51 +343,88 @@
 #'
 #' @return
 #' @export
-.ExcelUploadControllServer = function(id, rv) {
-  stopifnot(is.reactivevalues(rv))
+.ExcelUploadControllServer = function(id, excelformat, dat) {
+  # stopifnot(is.reactivevalues(rv))
+  stopifnot(is.reactive(excelformat))
   shiny::moduleServer(id, function(input, output, session) {
     
-    updateSelectInput(inputId = "moduleSelect",
-                             session = session,
-                             choices =  shiny::isolate(names(rv)))
-    
-    
-    # change the reactive if Cert, Homog oder Stab was choosen
-    choosen = eventReactive(input$moduleSelect,{
-        get_listelem(rv, input$moduleSelect)
-      }, ignoreInit = TRUE)
-    
     # --- --- --- --- --- --- --- --- ---
-    t = .uploadTabsetsServer("uploadTabset", shiny::reactive({input$moduleSelect}), choosen) 
+    # t = .uploadTabsetsServer("uploadTabset", excelformat)
+    out <- xlsx_range_select_Server(id = "test",
+                                    x = reactive({ input$excel_file }),
+                                    sheet = reactive({ input$sheet_number })
+    )
+    
+    a = reactive({out$tab_flt})
+    
+    
+    # # disable upload Panel after upload the corresponding excel file
+    # observeEvent(excelformat(),{
+    #   if(is.null(dat())){
+    #     shinyjs::enable(id = "leftcol")
+    #   } else if(!is.null(dat())) {
+    #     shinyjs::disable(id = "leftcol")
+    #   } else {
+    #     shinyjs::enable(id = "leftcol")
+    #   }
+    # })
+
+    # perform minimal validation checks
+    prevw = reactive({
+      if(excelformat()=="Homogeneity") {
+        validate(
+          need("analyte" %in% colnames(a()[[1]]), "No column 'analyte' found in input file."),
+          need("value" %in% colnames(a()[[1]]), "No column 'value' found in input file.")
+        )
+        validate(need(is.numeric(a()[[1]][,"value"]), "Column 'value' in input file contains non-numeric values."))
+      }  else if(excelformat() == "Certifications"){
+        # perform minimal validation tests
+        validate(
+          # TODO
+          #need(is.numeric(a()[[1]][, "value"]), message = "measurement values seem not to be numeric"),
+          need(length(a()) >=2, message = "less than 2 laboratory files uploaded. Upload more!")
+        )
+      }
+      a()
+    })
+    fd = .computation_final_data(id, prevw)
+    
+    t = reactive({
+      switch (excelformat(),
+              Certifications = fd(),
+              Homogeneity = prevw()[[1]]
+      )
+    })
     # --- --- --- --- --- --- --- --- ---
     
     # must be extra disabled after loading, since is in parent module of upload panel
     shiny::observe({
-      req(input$moduleSelect)
+      req(excelformat())
       # enable upload button when a data frame was uploaded via the Upload menu
-      # but only as long rv hasn't been filled so far
-      # !is.null((t())) && 
-      if(is.null(get_listelem(rv,input$moduleSelect))){ 
-        print("go enabled")
+      # but only as long dat hasn't been filled so far !is.null((dat()))
+      # NOTE: In the future, this and dat() parameter could be obsolete, when whole
+      # panel gets deactivated
+      if(is.null(dat())){ 
+        message("go enabled")
         shinyjs::enable("go")
       } else {
-        print("go disabled")
+        message("go disabled")
         shinyjs::disable("go")
       }
     })
     
     # update list after pushing upload button
-    shiny::observeEvent(input$go, {
+    ex = eventReactive(input$go, {
       req(t())
       shinyjs::disable("go")
-      print("go clicked")
-      set_listelem(rv, input$moduleSelect, t)
-      set_listUploadsource(rv, input$moduleSelect, uploadsource = "Excel")
-      
-      
+      message("go clicked")
+
+      t()
       # TODO "choice" grün färben
       
     })
+    
+    return(ex)
   })
 }
 

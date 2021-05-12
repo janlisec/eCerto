@@ -21,6 +21,8 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
     #   print(dput(sheet()))
     # })
     
+    z = reactiveVal(0)
+    
     tab <- reactive({
       validate(
         need(x(), message = FALSE),
@@ -32,64 +34,65 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
       validate(
         # Check if no empty dataframe
         need(all(!unlist(lapply(l, is.null))), "Excel file must not be empty")
-        # need(all(sapply(l, nrow)) && all(sapply(l, ncol)),  message = "Excel file must not be empty")
       )
-      
       return(l)
     })
     
     
+    rv <- reactiveValues("tab"=matrix(1), "start_row"=1, "end_row"=1, "start_col"=1, "end_col"=1, "tab_flt"=matrix(1))
     
     observeEvent(tab(), {
       rv$tab <- tab()
-    })
-    
-    rv <- reactiveValues("tab"=matrix(1), "t"=1, "b"=1, "l"=1, "r"=1, "tab_flt"=matrix(1))
-    
-    output$uitab <- DT::renderDT({
-      req(tab())
-      rv$tab[[1]]
-    }, options=list("dom"="t", pageLength=nrow(rv$tab[[1]])), selection=list(target="cell"))
-    
-    output$uitxt <- renderUI({
-      str1 <- ifelse(is.null(x()), "", paste("You see a preview of File:", x()$name))
-      str2 <- "Please select 2 cells (top left and bottom right) by mouse to specify a range."
-      str3 <- paste("Current selection:", paste0(LETTERS[rv$l], rv$t, ":", LETTERS[rv$r], rv$b))
-      HTML(paste(str1, str2, str3, sep = '<br/>'))
+      rv$end_row = nrow(tab()[[1]])
+      rv$end_col = ncol(tab()[[1]])
+      new_z = z() + 1
+      z(new_z)
     })
     
     observeEvent(input$uitab_cells_selected, {
       a <- input$uitab_cells_selected
-      
       if (prod(dim(a))>=2) {
-        
-        rv$l <- min(a[,2])
         rv$start_col = min(a[,2])
-        rv$r <- max(a[,2])
         rv$end_col = max(a[,2])
-        rv$t <- min(a[,1])
         rv$start_row = min(a[,1])
-        rv$b <- max(a[,1])
         rv$end_row = max(a[,1])
+        new_z = z() + 1
+        z(new_z)
+      }
+    }) 
+    
+    
+    observeEvent(z(),{
+      if(z()>0){
+        message("crop dataframe(s)")
+        rv$tab_flt = lapply(rv$tab, function(y) {
+          y[as.numeric(rv$start_row):as.numeric(rv$end_row),
+            as.numeric(rv$start_col):as.numeric(rv$end_col)]
+        })
         
-        
-        rv$tab_flt = .computation_preview_data("a", rv, rv$tab)
-        if(!"File" %in% colnames(rv$tab_flt) && dim(a)[1] > 1 && dim(a)[2] >1){
+        if(!"File" %in% colnames(rv$tab_flt) && rv$end_row>rv$start_row && rv$end_col>rv$start_col ){
           # add file name to each data frame
           message("add File column")
           for (i in 1:length(rv$tab_flt)) {
             rv$tab_flt[[i]][["File"]] = rep(isolate(x()$name[i]), nrow(rv$tab_flt[[i]]))
           }
-          # filename = x$File[as.numeric(param$start_row):as.numeric(param$end_row)]
-          # a = cbind(a, File = filename)
         }
-        
-        
-        # rv$tab_flt <- rv$tab[rv$t:rv$b,rv$l:rv$r,drop=F]
       }
     })
     
-    # return a reactiveValues List
+
+    output$uitab <- DT::renderDT({
+      req(tab())
+      rv$tab[[1]]
+    }, options=list("dom"="start_row", pageLength=nrow(rv$tab[[1]])), selection=list(target="cell"))
+    
+    output$uitxt <- renderUI({
+      str1 <- ifelse(is.null(x()), "", paste("You see a preview of File:", x()$name))
+      str2 <- "Please select 2 cells (top left and bottom right) by mouse to specify a range."
+      str3 <- paste("Current selection:", paste0(LETTERS[rv$start_col], rv$start_row, ":", LETTERS[rv$end_col], rv$end_row))
+      HTML(paste(str1, str2, str3, sep = '<br/>'))
+    })
+    
     return(rv)
     
   })

@@ -21,6 +21,7 @@ app_server = function(input, output, session) {
   
   rv = do.call("reactiveValues",
     list(
+     
       "Certifications" = list(
         # upload
         "data" = NULL,
@@ -63,10 +64,22 @@ app_server = function(input, output, session) {
         )
     )
   )
+  updateSelectInput(inputId = "moduleSelect",
+                    session = session,
+                    choices =  shiny::isolate(names(rv)))
   
+  excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-  .ExcelUploadControllServer("excelfile", rv)
+  t = .ExcelUploadControllServer("excelfile", excelformat, reactive({get_listelem(rv,excelformat())}))
   # --- --- --- --- --- --- --- --- ---
+  
+  observeEvent(t(),{
+    set_listelem(rv, excelformat(), t)
+    set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
+  })
+
+  
+  
   
   # --- --- --- --- --- --- --- --- ---
   .RDataImport_Server("Rdata", rv)

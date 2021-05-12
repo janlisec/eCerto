@@ -59,6 +59,12 @@ app_ui = function(){
               width = 9,
               wellPanel(
                 shiny::wellPanel(
+                  shiny::selectInput(
+                    inputId = "moduleSelect",
+                    choices = NULL,
+                    label = "module",
+                    width = "50%"
+                  ),
                   # --- --- --- --- --- ---
                   .ExcelUploadControllUI("excelfile")
                   # --- --- --- --- --- ---
