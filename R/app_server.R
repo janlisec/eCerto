@@ -77,9 +77,6 @@ app_server = function(input, output, session) {
     set_listelem(rv, excelformat(), t)
     set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
   })
-
-  
-  
   
   # --- --- --- --- --- --- --- --- ---
   .RDataImport_Server("Rdata", rv)

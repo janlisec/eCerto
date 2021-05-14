@@ -41,14 +41,17 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
     
     rv <- reactiveValues("tab"=matrix(1), "start_row"=1, "end_row"=1, "start_col"=1, "end_col"=1, "tab_flt"=matrix(1))
     
+    # after upload of excel file(s)
     observeEvent(tab(), {
       rv$tab <- tab()
+      rv$tab_flt = rv$tab
       rv$end_row = nrow(tab()[[1]])
       rv$end_col = ncol(tab()[[1]])
       new_z = z() + 1
       z(new_z)
     })
     
+    # if rows and columns in the DT() have been selected
     observeEvent(input$uitab_cells_selected, {
       a <- input$uitab_cells_selected
       if (prod(dim(a))>=2) {
@@ -56,6 +59,11 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
         rv$end_col = max(a[,2])
         rv$start_row = min(a[,1])
         rv$end_row = max(a[,1])
+        message("crop dataframe(s)")
+        rv$tab_flt = lapply(rv$tab, function(y) {
+          y[as.numeric(rv$start_row):as.numeric(rv$end_row),
+            as.numeric(rv$start_col):as.numeric(rv$end_col)]
+        })
         new_z = z() + 1
         z(new_z)
       }
@@ -64,12 +72,6 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
     
     observeEvent(z(),{
       if(z()>0){
-        message("crop dataframe(s)")
-        rv$tab_flt = lapply(rv$tab, function(y) {
-          y[as.numeric(rv$start_row):as.numeric(rv$end_row),
-            as.numeric(rv$start_col):as.numeric(rv$end_col)]
-        })
-        
         if(!"File" %in% colnames(rv$tab_flt) && rv$end_row>rv$start_row && rv$end_col>rv$start_col ){
           # add file name to each data frame
           message("add File column")

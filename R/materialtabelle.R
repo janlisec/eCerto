@@ -38,9 +38,14 @@
 }
 
 .materialtabelleServer = function(id, rdataUpload, datreturn) {
+  stopifnot(is.reactivevalues(datreturn))
   moduleServer(id, function(input, output, session) {
     
 
+    # observeEvent(datreturn$selectedAnalyteDataframe,{
+    #   dput(reactiveValuesToList(datreturn))
+    #   browser()
+    # })
     # data frame of selected analyte
     sAnData = reactive({
       # rv$v
@@ -80,40 +85,14 @@
         # been uploaded via RData
         if(is.null(rdataUpload())) {
           message(".materialtabelle: initiate empty materialtabelle")
-          c = data.frame(
-            "analyte" =  availableAnalytes(), # a,
-            "mean" = NA,
-            "F1" = 1,
-            "F2" = 1,
-            "F3" = 1,
-            "cert_val" = NA,
-            "sd" = NA,
-            "n" = NA,
-            "char" = 0,
-            "U2" = 0,
-            "U3" = 0,
-            "U4" = 0,
-            "U5" = 0,
-            "U6" = 0,
-            "U7" = 0,
-            "com" = NA,
-            "k" = 2,
-            "U" = NA
-          )
-          attr(c, "col_code") <-
-            data.frame(
-              "ID" = c(paste0("F", 1:3), paste0("U", 2:7)),
-              "Name" = c(paste0("F", 1:3), paste0("U", 2:7)),
-              stringsAsFactors = FALSE
-            )
+          c = init_materialTabelle(availableAnalytes())
           mater_table(c) # save materialtabelle
         }
         
-      },ignoreInit = TRUE)
+      })
     
     cert_mean <- reactive({
       req(sAnData())
-
       data <- sAnData()[!sAnData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
@@ -139,41 +118,43 @@
     
     
     
-    # when another Analyte-tab was selected --> update materialtabelle
+    # when a Analyte-tab was selected --> update materialtabelle
+    # TODO Check that analyte-column is unique
     observeEvent({
-      sAnData()
-      input$pooling
+      cert_mean()
       },{
-      # TODO Check that analyte-column is unique
-      # if(length(unique(sAnData()[["analyte"]]))) warning("selected contains more than one unique analyte")
-      # console log
-      message(paste0("materialTabelle - update initiated for: ", sAnData()[1,"analyte"]))
+      # in case mater table has been initiated...
+        if(!is.null(mater_table())) {
+          message(paste0("materialTabelle - update initiated for: ", sAnData()[1,"analyte"]))
+          update_reactivecell(
+            r = mater_table,
+            colname = "mean",
+            analyterow = sAnData()[1,"analyte"],
+            value = cert_mean()
+          )
+          update_reactivecell(
+            r = mater_table,
+            colname = "sd",
+            analyterow = sAnData()[1,"analyte"],
+            value = cert_sd()
+          )
+          
+          n = ifelse(
+            test = input$pooling,
+            yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% input$flt_labs), "n"]),
+            no= nrow(lab_statistics()) - length(input$flt_labs)
+          )
+          
+          update_reactivecell(
+            r = mater_table,
+            colname = "n",
+            analyterow = sAnData()[1,"analyte"],
+            value = n
+          )
+        }
+     
 
-      update_reactivecell(
-        r = mater_table,
-        colname = "mean",
-        analyterow = sAnData()[1,"analyte"],
-        value = cert_mean()
-      )
-      update_reactivecell(
-        r = mater_table,
-        colname = "sd",
-        analyterow = sAnData()[1,"analyte"],
-        value = cert_sd()
-      )
-      
-      n = ifelse(
-        test = input$pooling,
-        yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% input$flt_labs), "n"]),
-        no= nrow(lab_statistics()) - length(input$flt_labs)
-      )
-      update_reactivecell(
-        r = mater_table,
-        colname = "n",
-        analyterow = sAnData()[1,"analyte"],
-        value = n
-      )
-    }, ignoreInit = TRUE)
+    })
     
     # manipulate material tabelle
     output$c_fix_col_names = renderUI({
@@ -294,4 +275,34 @@
       server = TRUE
     )
   })
+}
+
+init_materialTabelle <- function(analytes) {
+  c = data.frame(
+    "analyte" =  analytes, # a,
+    "mean" = NA,
+    "F1" = 1,
+    "F2" = 1,
+    "F3" = 1,
+    "cert_val" = NA,
+    "sd" = NA,
+    "n" = NA,
+    "char" = 0,
+    "U2" = 0,
+    "U3" = 0,
+    "U4" = 0,
+    "U5" = 0,
+    "U6" = 0,
+    "U7" = 0,
+    "com" = NA,
+    "k" = 2,
+    "U" = NA
+  )
+  attr(c, "col_code") <-
+    data.frame(
+      "ID" = c(paste0("F", 1:3), paste0("U", 2:7)),
+      "Name" = c(paste0("F", 1:3), paste0("U", 2:7)),
+      stringsAsFactors = FALSE
+    )
+  return(c)
 }

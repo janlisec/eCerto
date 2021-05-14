@@ -324,7 +324,7 @@
     fileInput(multiple = TRUE, inputId = shiny::NS(id,"excel_file"), label = "Excel (xlsx)", accept = "xlsx"),
     numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1),
     hr(),
-    xlsx_range_select_UI(shiny::NS(id,"test")),
+    xlsx_range_select_UI(shiny::NS(id,"Upload")),
     
     # --- --- --- --- --- --- --- --- ---
     shinyjs::disabled(
@@ -350,7 +350,7 @@
     
     # --- --- --- --- --- --- --- --- ---
     # t = .uploadTabsetsServer("uploadTabset", excelformat)
-    out <- xlsx_range_select_Server(id = "test",
+    out <- xlsx_range_select_Server(id = "Upload",
                                     x = reactive({ input$excel_file }),
                                     sheet = reactive({ input$sheet_number })
     )
@@ -416,6 +416,7 @@
     # update list after pushing upload button
     ex = eventReactive(input$go, {
       req(t())
+      validate(need(!is.null(t()), "Load-Button disabled, data has not been uploaded"))
       shinyjs::disable("go")
       message("go clicked")
 
