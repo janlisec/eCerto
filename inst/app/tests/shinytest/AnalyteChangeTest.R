@@ -9,8 +9,9 @@ export_params = c(
   )
 
 app$setInputs(link_to_start = "click")
-app$setInputs(`excelfile-moduleSelect` = "Certifications")
-app$uploadFile(`excelfile-uploadTabset-upld-xlsxfile-file` = c(
+app$setInputs(`moduleSelect` = "Certifications") 
+# app$uploadFile(`excelfile-uploadTabset-upld-xlsxfile-file` = c(
+app$uploadFile(`excelfile-excel_file` = c(
   system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"), 
   system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"), 
   system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")

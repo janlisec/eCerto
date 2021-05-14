@@ -16,7 +16,7 @@ dat_test = reactiveVal(NULL)
 # Certification Test ------------------------------------------------------
 
 
-# excelformat_test = reactiveVal("Certifications")
+excelformat_test = reactiveVal("Certifications")
 # # test_that("Successful Upload test",code = {
 # shiny::testServer(
 #   app = .ExcelUploadControllServer, 
@@ -30,7 +30,19 @@ dat_test = reactiveVal(NULL)
 # )
 # # })
 
+# Test: Only one Certification Error ------------------------------------------------------------------
 
+test_that("Throws error when only one Certifications get uploaded",code = {
+  testServer(
+    .ExcelUploadControllServer, 
+    args = list(excelformat=excelformat_test, dat = dat_test), {
+      suppressMessages(
+        session$setInputs(excel_file = as.list(sapply(xlsx_test, "[[", 1)) , sheet_number = 1) # without row and column selection
+      )
+      expect_equal(length(a()),1)
+      expect_error(prevw(),"less than 2 laboratory files uploaded. Upload more!")
+    })
+})
 
 # Homogeneity -------------------------------------------------------------
 
@@ -48,14 +60,8 @@ test_that("Successful Upload test",code = {
         session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
       )
       expect_snapshot(out$tab_flt)
-
-      # print(session$returned())
-      # expect_false(exists("ex()")) # ex() does not exist yet
-      # cat("ex() exists?: ", ex(), "\n")
       session$setInputs(go = "click")
-      # expect_true(exists("ex()"))
       expect_message(ex(), "go clicked")
-      # cat("ex() exists?: ", need(ex(),"exists"), "\n")
       expect_snapshot(session$returned())
     }
   )

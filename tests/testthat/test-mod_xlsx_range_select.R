@@ -22,15 +22,18 @@ fn1 = reactiveVal(structure(list(
 sheetNo = reactiveVal(1)
 cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
 
-test_that("Successful Upload test",code = {
+test_that("Successful Certifications Upload test",code = {
   testServer(xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
-               # suppressMessages(
-                 session$setInputs(uitab_cells_selected = cells_selected)
-               # )
-               print(reactiveValuesToList(rv))
                session$flushReact()
-
+               # has File been added correctly after Upload
+               expect_true("File" %in% colnames(rv$tab_flt[[1]]))
+               
+               # set rows and columns selection
+               suppressMessages(
+                 session$setInputs(uitab_cells_selected = cells_selected)
+               )
+               session$flushReact()
                expect_snapshot(rv$tab_flt)
                expect_equal(rv$end_col,6)
              }
@@ -58,7 +61,7 @@ row.names = c(NA,-3L),
 class = "data.frame"
 ))
 
-test_that("Upload RData even though Excel was expected",code = {
+test_that("Throws error because RData was uploaded but Excel was expected",code = {
   testServer(xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
                expect_error(tab(), "Please upload Excel only")
              }
@@ -86,3 +89,6 @@ test_that("Throws error when one file is uploaded which is Empty Excel",code = {
     # expect_warning(tab(), "No data found on worksheet.")
   })
 })
+
+
+
