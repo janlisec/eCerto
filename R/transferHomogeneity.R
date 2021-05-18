@@ -71,8 +71,7 @@
         j <-
           which(
             as.character(h_vals[, "analyte"]) ==  as.character(cert_vals[i, "analyte"]) 
-            &
-              as.character(h_vals[, "H_type"]) == isolate(input$h_transfer_H_type)
+            & as.character(h_vals[, "H_type"]) == isolate(input$h_transfer_H_type)
           )
         # if cell exists
         if (length(j) == 1) {
@@ -82,10 +81,7 @@
             max(h_vals[j, c("s_bb", "s_bb_min")])
         }
       }
-      print(cert_vals)
       datreturn$t_H <- cert_vals 
-      # assign("cert_vals", value=cert_vals, envir = env_perm)
-      # shinyjs::click(id="show_table")
     })
   })
 }

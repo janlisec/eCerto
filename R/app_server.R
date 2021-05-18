@@ -142,28 +142,17 @@ app_server = function(input, output, session) {
   # material table. Because a reactive from another module inside
   # CertificationServer is returned, storing it in reactiveValues() worked so
   # far.
-  datreturn = reactiveValues(
-    selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
-    h_vals = NULL,                      # values from Homogeneity module
-    mater_table = NULL,                 # material table, formerly 'cert_vals', *READ-ONLY*
-    t_H = NULL,                         # when Homogeneity is transferred
-    lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
-  ) 
+  datreturn = init_datreturn()
   
   # * --> All values for material table should be set/written in the designated module
   
-  # --- --- --- --- --- --- --- --- ---
+  # --- --- --- --- --- --- --- --- --- --- ---
   .CertificationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
+  # --- --- --- --- --- --- --- --- --- --- ---
   .HomogeneityServer(id = "Homogeneity", rv, datreturn)
-  # --- --- --- --- --- --- --- --- ---
-  
-  # # --- --- --- --- --- --- --- --- --- --- ---
-  # # moved to --> CertificationServer
-  # .materialtabelleServer(id = "mat_cert", datreturn = datreturn)
-  # # --- --- --- --- --- --- --- --- --- --- ---
-
-  
+  # --- --- --- --- --- --- --- --- --- --- ---
   .TransferHomogeneityServer("trH", datreturn)
+  # --- --- --- --- --- --- --- --- --- --- ---
 
   observeEvent(datreturn$t_H,{
     # if(get_listUploadsource(rv, "Certifications")=="Excel"){
