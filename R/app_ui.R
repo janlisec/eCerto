@@ -4,14 +4,14 @@
 #' @export
 #' @import shiny
 app_ui = function(){
-  
-  shiny::tagList( 
+
+  shiny::tagList(
     # tagList to make useShinyjs independent from tabs
     shinyjs::useShinyjs(),
     shinyalert::useShinyalert(),
     shiny::navbarPage(
       id = "navbarpage",
-      
+
       title = div(
         class = "verticalhorizontal",
         img(
@@ -23,10 +23,10 @@ app_ui = function(){
         em("ecerto"),
         position = "relative"
       ),
-      
+
       shiny::tabPanel(
         "Home",
-        
+
         mainPanel(
           h1("Introducing eCerto"),
           p("Certifications are..."),
@@ -35,7 +35,7 @@ app_ui = function(){
           actionLink("link_to_start", "Click here to start"),
           # bookmarkButton()
         )
-        
+
       ),
       shiny::navbarMenu(
         title = "eCerto",
@@ -44,7 +44,7 @@ app_ui = function(){
         tabPanel(
           id = "start",
           title = "Start",
-          
+
           shiny::fluidRow(
             shiny::column(
               width = 3,
@@ -55,20 +55,16 @@ app_ui = function(){
               ),
               wellPanel(.RDataImport_UI("Rdata")),
             ),
-            column(
+            shiny::column(
               width = 9,
-              wellPanel(
-                shiny::wellPanel(
-                  shiny::selectInput(
-                    inputId = "moduleSelect",
-                    choices = NULL,
-                    label = "module",
-                    width = "50%"
-                  ),
-                  # --- --- --- --- --- ---
-                  .ExcelUploadControllUI("excelfile")
-                  # --- --- --- --- --- ---
-                )
+              shiny::wellPanel(
+                shiny::selectInput(
+                  inputId = "moduleSelect",
+                  choices = NULL,
+                  label = "module",
+                  width = "50%"
+                ),
+                .ExcelUploadControllUI("excelfile")
               )
             )
           )
@@ -97,9 +93,9 @@ app_ui = function(){
           value = "tP_Stability",
           verbatimTextOutput("stab")
         )
-      ), 
+      ),
       # eCerto Ende
-      
+
       # Long term stability
       tabPanel(
         title = "LTS",
@@ -107,7 +103,7 @@ app_ui = function(){
         value = "tP_LTS",
         .longtermstabilityUI("lts")
       ),
-      
+
       tabPanel(
         title = "Help",
         icon = icon("angle-right"),
