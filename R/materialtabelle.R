@@ -261,10 +261,6 @@
     exportTestValues(materialtabelle = { try(tmp_mater_table()) })
     
     output$matreport = DT::renderDT(
-      # # TODO validate not working here
-      # validate(
-      #   need(tmp_mater_table(), "Certification data hasn't been uploaded yet")
-      # )
       DT::datatable(
         data = tmp_mater_table(),
         editable = list(target = "cell", disable = list(columns = attr(

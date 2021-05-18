@@ -1,4 +1,4 @@
-# Certifications uploaded
+# Init of materialtable after Certifications uploaded
 
     Code
       mater_table()
@@ -16,7 +16,7 @@
       10      Sc     NA  1  1  1       NA     NA NA    0  0  0  0  0  0  0  NA 2 NA
       11      Sn     NA  1  1  1       NA     NA NA    0  0  0  0  0  0  0  NA 2 NA
 
-# Another analyte gets selected and materialtable updated
+# materialtable gets updated after another analyte gets selected
 
     Code
       mater_table()

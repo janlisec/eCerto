@@ -14,14 +14,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
   
   moduleServer(id, function(input, output, session) {
     
-    # observe({
-    #   print("x:")
-    #   print(dput(x()))
-    #   print("sheet")
-    #   print(dput(sheet()))
-    # })
-    
-    z = reactiveVal(0)
+    z = reactiveVal(0) # to trigger finalization (add "File" column)
     
     tab <- reactive({
       validate(
@@ -54,16 +47,21 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL) {
     # if rows and columns in the DT() have been selected
     observeEvent(input$uitab_cells_selected, {
       a <- input$uitab_cells_selected
-      if (prod(dim(a))>=2) {
+      if (prod(dim(a))>2) {
         rv$start_col = min(a[,2])
         rv$end_col = max(a[,2])
         rv$start_row = min(a[,1])
         rv$end_row = max(a[,1])
         message("crop dataframe(s)")
-        rv$tab_flt = lapply(rv$tab, function(y) {
-          y[as.numeric(rv$start_row):as.numeric(rv$end_row),
-            as.numeric(rv$start_col):as.numeric(rv$end_col)]
-        })
+        rv$tab_flt = crop_dataframes(
+          dfs = rv$tab,
+          rows = as.numeric(rv$start_row):as.numeric(rv$end_row),
+          cols = as.numeric(rv$start_col):as.numeric(rv$end_col)
+        )
+        # rv$tab_flt = lapply(rv$tab, function(y) {
+        #   y[as.numeric(rv$start_row):as.numeric(rv$end_row),
+        #     as.numeric(rv$start_col):as.numeric(rv$end_col)]
+        # })
         new_z = z() + 1
         z(new_z)
       }

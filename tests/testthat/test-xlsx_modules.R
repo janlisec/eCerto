@@ -32,7 +32,7 @@ excelformat_test = reactiveVal("Certifications")
 
 # Test: Only one Certification Error ------------------------------------------------------------------
 
-test_that("Throws error when only one Certifications get uploaded",code = {
+test_that("Throws error correctly when only one Certifications get uploaded",code = {
   testServer(
     .ExcelUploadControllServer, 
     args = list(excelformat=excelformat_test, dat = dat_test), {

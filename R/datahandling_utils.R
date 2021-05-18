@@ -86,25 +86,39 @@ load_excelfiles = function(filepath, sheet) {
   })
 }
 
-#' #' creates or delete unique sheet name appendix, 
-#' #' so that an event is triggered any way even if
-#' #' the sheet name has not changed.
-#' #'
-#' #' @param s 
-#' #'
-#' #' @return
-#' #' @export
-#' sheetname = function(s) {
-#'   stopifnot(is.character(s))
-#'   if(grepl("--.", s, fixed = TRUE)) {
-#'     sub("--.*", "", s)
-#'   } else {
-#'     paste(s,
-#'       floor(runif(1, min=1, max=500)),
-#'       sep = "--."
-#'     )
-#'   }
-#' }
+#' Crops dataframe(s)
+#'
+#' @param dfs list of dataframe(s)
+#' @param cols columns as array, e.g. 1:3
+#' @param rows rows as array, e.g. 5:8
+#'
+#' @return cropped list of data frames(s)
+#'
+#' @examples crop_dataframes(iris,2:3,5:6)
+crop_dataframes = function(dfs,cols,rows) {
+  if(missing(dfs))
+    stop("list of dataframes missing")
+  if(missing(cols))
+    stop("Need to specify columns")
+  if(missing(rows))
+    stop("Need to specify rows")
+  if(length(cols) == 1 | length(rows) == 1)
+    stop("length of rows and columns is one")
+  if(cols[2]<cols[1] | rows[2] < rows[1])
+    stop("order of elements wrong")
+  if(!is.numeric(cols) | !is.numeric(rows))
+    stop("rows and column index are not numerics")
+
+  if(!inherits(dfs,"list")){
+    warning("data frame is not a list")
+    dfs = list(dfs)
+  }
+    
+  r = lapply(dfs, function(y) {
+    y[rows,cols]
+  })
+  return(r)
+}
   
 
 #' Returns the "data" element of the current "god list" element

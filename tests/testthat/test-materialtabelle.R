@@ -29,7 +29,7 @@ datreturn1 = do.call("reactiveValues",
 )
 
 
-test_that("Certifications uploaded",code = {
+test_that("Init of materialtable after Certifications uploaded",code = {
   suppressMessages(testServer(.materialtabelleServer, 
              args = list(rdataUpload = reactive({NULL}), datreturn=datreturn1), {
                session$setInputs(pooling=FALSE)
@@ -67,7 +67,7 @@ Fe = structure(
   row.names = c(2L, 9L, 16L, 23L, 30L, 37L), class = "data.frame"
 )
 
-test_that("Another analyte gets selected and materialtable updated",code = {
+test_that("materialtable gets updated after another analyte gets selected",code = {
   suppressMessages(
   testServer(.materialtabelleServer, 
              args = list(rdataUpload = reactive({NULL}), datreturn=datreturn1), {
@@ -98,7 +98,10 @@ test_that("Pooling on/off",code = {
 })
 
 
-# Test 4: Certifications Uploaded, but Homogeneity hasn't yet ---------------------
+# Test 4: Homogeneity Transfer ---------------------
+
+
+
 
 
 datreturn2 = list(

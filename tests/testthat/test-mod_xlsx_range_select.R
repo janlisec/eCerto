@@ -1,23 +1,23 @@
 
 # Test 1 ---------------------------------------------------------------
 
-# changed output of dput()
+# fn1: changed output of dput()
 fn1 = reactiveVal(structure(list(
-    name = c(
-      "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx", 
-      "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx", 
-      "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
-    size = c(27926L, 27617L, 27527L),
-    type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-    datapath = c(
-      system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
-      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
-      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"))
-  ),
-  row.names = c(NA,-3L),
-  class = "data.frame"
+  name = c(
+    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx", 
+    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx", 
+    "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
+  size = c(27926L, 27617L, 27527L),
+  type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+  datapath = c(
+    system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
+    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"))
+),
+row.names = c(NA,-3L),
+class = "data.frame"
 ))
 sheetNo = reactiveVal(1)
 cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
@@ -25,7 +25,8 @@ cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
 test_that("Successful Certifications Upload test",code = {
   testServer(xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
-               session$flushReact()
+               expect_message(
+               session$flushReact(), "add File column")
                # has File been added correctly after Upload
                expect_true("File" %in% colnames(rv$tab_flt[[1]]))
                
@@ -63,8 +64,8 @@ class = "data.frame"
 
 test_that("Throws error because RData was uploaded but Excel was expected",code = {
   testServer(xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
-               expect_error(tab(), "Please upload Excel only")
-             }
+    expect_error(tab(), "Please upload Excel only")
+  }
   )
 })
 
@@ -91,4 +92,19 @@ test_that("Throws error when one file is uploaded which is Empty Excel",code = {
 })
 
 
+# no reaction after only one thing selected -------------------------------
 
+cells_selected = matrix(c(7,1),ncol = 2, byrow = TRUE)
+
+test_that("no reaction after only one DataTable element is selected",code = {
+  testServer(xlsx_range_select_Server,
+             args = list(x = fn1,sheet=sheetNo), {
+               suppressMessages(session$flushReact())
+               
+               # # set rows and columns selection
+               expect_silent(
+                 object = session$setInputs(uitab_cells_selected = cells_selected)
+               )
+             }
+  )
+})
