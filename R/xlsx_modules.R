@@ -354,13 +354,15 @@
 
     output$excel_file <- renderUI({
       #browser()
-      #is.null(get_listUploadsource(rv, excelformat()))
-
-      updateNumericInput(session = session, inputId = "sheet_number", value=1)
-      shinyjs::hideElement(id = "sheet_number")
-      shinyjs::hideElement(id = "btn_load")
-      x(NULL)
-      fileInput(multiple = excelformat()=="Certifications", inputId = shiny::NS(id,"excel_file"), label = "Select Excel (xlsx)", accept = "xlsx")
+      if (is.null(dat())) {
+        updateNumericInput(session = session, inputId = "sheet_number", value=1)
+        shinyjs::hideElement(id = "sheet_number")
+        shinyjs::hideElement(id = "btn_load")
+        x(NULL)
+        fileInput(multiple = excelformat()=="Certifications", inputId = shiny::NS(id,"excel_file"), label = "Select Excel (xlsx)", accept = "xlsx")
+      } else {
+        HTML("Already uploaded")
+      }
     })
 
     x <- reactiveVal(NULL)
