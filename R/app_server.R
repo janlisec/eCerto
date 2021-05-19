@@ -1,8 +1,8 @@
 #' Main Server
 #'
-#' @param input
-#' @param output
-#' @param session
+#' @param input input.
+#' @param output output.
+#' @param session session.
 #'
 #' @return
 #' @export
@@ -71,7 +71,7 @@ app_server = function(input, output, session) {
 
   excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-  t = .ExcelUploadControllServer("excelfile", excelformat, reactive({get_listelem(rv,excelformat())}))
+  t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
   # --- --- --- --- --- --- --- --- ---
 
   observeEvent(t(),{

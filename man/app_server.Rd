@@ -7,11 +7,11 @@
 app_server(input, output, session)
 }
 \arguments{
-\item{input}{}
+\item{input}{input.}
 
-\item{output}{}
+\item{output}{output.}
 
-\item{session}{}
+\item{session}{session.}
 }
 \value{
 

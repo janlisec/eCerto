@@ -64,7 +64,7 @@ app_ui = function(){
                   label = "module",
                   width = "50%"
                 ),
-                .ExcelUploadControllUI("excelfile")
+                .ExcelUploadControl_UI("excelfile")
               )
             )
           )
