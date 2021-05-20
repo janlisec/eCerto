@@ -18,52 +18,8 @@ app_server = function(input, output, session) {
   #              )
   # )
   
-  
-  rv = do.call("reactiveValues",
-    list(
-     
-      "Certifications" = list(
-        # upload
-        "data" = NULL,
-        "input_files" = NULL,
-        "uploadsource" = NULL,
-        # save
-        "user" = NULL,
-        "study_id" = NULL,
-        # processing
-        "lab_means" = NULL,
-        "cert_mean" = NULL,
-        "cert_sd" = NULL,
-        "normality_statement" = NULL,
-        "precision" = NULL,
-        "data_kompakt" = NULL,
-        "CertValPlot" = NULL,
-        "stats" = NULL,
-        "boxplot" = NULL,
-        "opt" = NULL,
-        "mstats" = NULL,
-        # materialtabelle
-        "materialtabelle" = NULL
-        ),
-      "Homogeneity" = list(
-        # upload
-        "data" = NULL, # formerly h_dat
-        "uploadsource" = NULL,
-        "h_file" = NULL,
-        # Processing
-        "h_vals" = NULL,
-        "h_sel_analyt" = NULL,
-        "h_precision" = NULL,
-        "h_Fig_width" = NULL
-        ),
-      "Stability" = list(
-        "s_file" = NULL,
-        "data" = NULL,
-        "uploadsource" = NULL,
-        "s_vals" = NULL
-        )
-    )
-  )
+  rv = init_rv()
+ 
   updateSelectInput(inputId = "moduleSelect",
                     session = session,
                     choices =  shiny::isolate(names(rv)))
