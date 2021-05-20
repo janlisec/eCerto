@@ -7,8 +7,6 @@
 get_listUploadsource(c, m)
 }
 \arguments{
-\item{c}{}
-
 \item{m}{}
 }
 \value{

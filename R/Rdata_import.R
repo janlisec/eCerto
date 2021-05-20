@@ -62,7 +62,6 @@
     
     observeEvent(rdata(),{
       message("RData uploaded")
-      browser()
       if("Certification" %in% names(res)){
         message("RData version 26")
         rv$Certifications$data = res[["Certification"]][["data_input"]]

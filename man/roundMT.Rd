@@ -8,8 +8,6 @@ Currently without}
 roundMT(value, precision = NULL)
 }
 \arguments{
-\item{value}{}
-
 \item{precision}{}
 }
 \value{

@@ -7,9 +7,9 @@
 xlsx_range_select_UI(id)
 }
 \arguments{
-\item{id}{Name when called as a module in a shiny app.}
+\item{id}{Module ID when called in a shiny app.}
 
-\item{x}{Shiny inputFile referencing an excel file.}
+\item{x}{Shiny inputFile referencing excel file(s).}
 
 \item{sheet}{Number of the sheet to preview.}
 
