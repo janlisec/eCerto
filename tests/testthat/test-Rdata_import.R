@@ -20,7 +20,7 @@ excel = list(
   name = "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx",
   datapath = system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
 )
-rv_test = init_rv()
+rv_test = ecerto::init_rv()
 
 test_that("Throws error when Excel File is tried to upload",code = {
   testServer(.RDataImport_Server,

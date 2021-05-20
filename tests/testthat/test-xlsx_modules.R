@@ -10,17 +10,17 @@ xlsx_test = list(
     "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
 )
 
-dat_test <- shiny::reactiveVal(NULL)
+dat_test <- shiny::reactiveVal(FALSE)
 
 
 # Certification Test ------------------------------------------------------
 
 
-excelformat_test = reactiveVal("Certifications")
+excelformat_test = shiny::reactiveVal("Certifications")
 # # test_that("Successful Upload test",code = {
 # shiny::testServer(
 #   app = .ExcelUploadControl_Server,
-#   args = list(excelformat=excelformat_test, dat = dat_test),
+#   args = list(excelformat=excelformat_test, check = dat_test),
 #   expr =  {
 #     session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
 #     # expect_snapshot(out$tab)
@@ -30,19 +30,7 @@ excelformat_test = reactiveVal("Certifications")
 # )
 # # })
 
-# Test: Only one Certification Error ------------------------------------------------------------------
 
-test_that("Throws error correctly when only one Certifications get uploaded",code = {
-  testServer(
-    .ExcelUploadControl_Server,
-    args = list(excelformat=excelformat_test, dat = dat_test), {
-      suppressMessages(
-        session$setInputs(excel_file = as.list(sapply(xlsx_test, "[[", 1)) , sheet_number = 1) # without row and column selection
-      )
-      expect_equal(length(a()),1)
-      expect_error(prevw(),"less than 2 laboratory files uploaded. Upload more!")
-    })
-})
 
 # Homogeneity -------------------------------------------------------------
 
@@ -50,18 +38,19 @@ xlsx_test2 = list(
   datapath = system.file(package = "ecerto", "extdata","Homog_test.xlsx"),
   name = "Homog_test.xlsx"
 )
-excelformat_test = reactiveVal("Homogeneity")
+excelformat_test = shiny::reactiveVal("Homogeneity")
 
 test_that("Successful Upload test",code = {
   shiny::testServer(app = .ExcelUploadControl_Server,
-    args = list(excelformat=excelformat_test, dat = dat_test),
+    args = list(excelformat=excelformat_test, check = dat_test),
     expr =  {
-      suppressMessages(
+      # suppressMessages(
         session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
-      )
-      expect_snapshot(out$tab_flt)
+      # )
+
+      expect_snapshot(rv_xlsx_range_select$tab_flt)
       session$setInputs(go = "click")
-      expect_message(ex(), "go clicked")
+      # expect_message(ex(), "go clicked")
       expect_snapshot(session$returned())
     }
   )

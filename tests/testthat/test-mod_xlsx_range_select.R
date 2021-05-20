@@ -25,11 +25,7 @@ cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
 test_that("Successful Certifications Upload test",code = {
   testServer(xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
-               expect_message(
-               session$flushReact(), "add File column")
-               # has File been added correctly after Upload
-               expect_true("File" %in% colnames(rv$tab_flt[[1]]))
-
+               suppressMessages(session$flushReact())
                # set rows and columns selection
                suppressMessages(
                  session$setInputs(uitab_cells_selected = cells_selected)
@@ -41,6 +37,23 @@ test_that("Successful Certifications Upload test",code = {
   )
 })
 
+
+# Test 1.2 File column after cell selection -------------------------------
+
+
+test_that("File column is appended for Certification after cell selection",code = {
+  testServer(xlsx_range_select_Server,
+             args = list(x = fn1,sheet=sheetNo), {
+               suppressMessages(session$flushReact())
+               # set rows and columns selection
+               suppressMessages(
+                 session$setInputs(uitab_cells_selected = cells_selected))
+               session$flushReact()
+               # has File been added correctly after cell selection
+               expect_true("File" %in% colnames(rv$tab_flt[[1]]))
+             }
+  )
+})
 
 # Test 2: Upload RData even though Excel was expected ------------------------------------------------------------------
 
@@ -74,21 +87,39 @@ test_that("Throws error because RData was uploaded but Excel was expected",code 
 
 fn3 = reactiveVal(structure(
   list(
-    name = "EmptyExcel.xlsx",
+    name = c("EmptyExcel.xlsx","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
     size = 10780L,
     type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    datapath = system.file(package = "ecerto", "extdata","EmptyExcel.xlsx")
+    datapath = c(
+      system.file(package = "ecerto", "extdata","EmptyExcel.xlsx"),
+      system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx")
+    )
   ),
   class = "data.frame",
   row.names = c(NA,-1L)
 ))
 
 test_that("Throws error when one file is uploaded which is Empty Excel",code = {
-  testServer(xlsx_range_select_Server, args = list(x = fn3,sheet=sheetNo), {
+  suppressMessages(
+    testServer(xlsx_range_select_Server, args = list(x = fn3,sheet=sheetNo), {
 
     expect_error(tab(), "Excel file must not be empty")
     # expect_warning(tab(), "No data found on worksheet.")
-  })
+    })
+  )
+})
+
+# Test: Only one Certification Error ------------------------------------------------------------------
+
+fn1_2 = reactiveVal(as.list(sapply(isolate(fn1()), "[[", 1)))
+
+test_that("Throws error correctly when only one Certifications get uploaded",code = {
+  suppressMessages(testServer(
+      xlsx_range_select_Server,
+      args = list(x = fn1_2,sheet=sheetNo), {
+        expect_error(tab(),"less than 2 laboratory files uploaded. Upload more!")
+      })
+     )
 })
 
 
@@ -107,4 +138,36 @@ test_that("no reaction after only one DataTable element is selected",code = {
                )
              }
   )
+})
+
+
+# Homogeneity -------------------------------------------------------------
+
+
+
+fnHomog = reactiveVal(structure(
+  list(
+    name = "Homog_test.xlsx",
+    # size = c(27926L, 27617L, 9944L),
+    type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    datapath = system.file(package = "ecerto", "extdata", "Homog_test.xlsx"),
+    # row.names = c(NA,-3L),
+    class = "data.frame"
+  )
+))
+
+test_that("File column is appended for Homogeneity",code = {
+  testServer(xlsx_range_select_Server,
+             args = list(x = fnHomog,sheet=sheetNo,excelformat=shiny::reactiveVal({"Homogeneity"})), {
+               suppressMessages(session$flushReact())
+  # has File been added correctly after Upload
+  expect_true("File" %in% colnames(rv$tab_flt[[1]]))
+  # set rows and columns selection
+  # suppressMessages(
+  #   session$setInputs(uitab_cells_selected = cells_selected))
+  # session$flushReact()
+  # # has File been added correctly after cell selection
+  # expect_true("File" %in% colnames(rv$tab_flt[[1]]))
+}
+)
 })
