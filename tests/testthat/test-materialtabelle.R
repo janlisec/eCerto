@@ -1,7 +1,4 @@
-
-
 # Test 1: Certifications Uploaded, but Homogeneity hasn't yet ---------------------
-
 
 datreturn1 = do.call("reactiveValues",
   list(
