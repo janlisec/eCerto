@@ -41,12 +41,16 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
       "openxlsx"=openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = TRUE, ...)
   )
 
+  
+  
   # post process data
   if (method=="tidyxl") {
-
+    # in case, uploaded excel is empty
+    if(nrow(a[,"row"]) == 0) return(NULL)
     out <- matrix("", nrow=max(a[,"row"]), ncol=max(a[,"col"]),
                   dimnames=list(1:max(a[,"row"]), LETTERS[1:max(a[,"col"])]))
     # print(out)
+    
     for (tp in c("numeric","character")) {
       flt <- which(a[,"data_type"]==tp)
       if (length(flt)>=1)  {
