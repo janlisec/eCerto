@@ -1,8 +1,8 @@
 #' Main Server
 #'
-#' @param input 
-#' @param output 
-#' @param session 
+#' @param input input.
+#' @param output output.
+#' @param session session.
 #'
 #' @return
 #' @export
@@ -20,52 +20,54 @@ app_server = function(input, output, session) {
   
   rv = init_rv()
  
+
   updateSelectInput(inputId = "moduleSelect",
                     session = session,
-                    choices =  shiny::isolate(names(rv)))
-  
+                    choices =  shiny::isolate(names(rv)),
+                    selected = shiny::isolate(names(rv))[1])
+
   excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-  t = .ExcelUploadControllServer("excelfile", excelformat, reactive({get_listelem(rv,excelformat())}))
+  t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
   # --- --- --- --- --- --- --- --- ---
-  
+
   observeEvent(t(),{
     set_listelem(rv, excelformat(), t)
     set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
   })
-  
+
   # --- --- --- --- --- --- --- --- ---
   .RDataImport_Server("Rdata", rv)
   # --- --- --- --- --- --- --- --- ---
-  
+
   observeEvent(input$navbarpage, {
     # when Homogeneity is clicked but has no been uploaded yet --> change to
     # Upload page
     if (input$navbarpage == "tP_homogeneity" &&
         is.null(get_listUploadsource(rv, "Homogeneity"))) {
-      to_startPage(session)
-    } 
+      to_startPage(session, value="Homogeneity")
+    }
     # ... same for Certification ...
     if (input$navbarpage == "tP_certification" &&
         is.null(get_listUploadsource(rv, "Certifications"))) {
-      to_startPage(session)
+      to_startPage(session, value="Certifications")
     }
     # ... and Stability
     if (input$navbarpage == "tP_Stability" &&
         is.null(get_listUploadsource(rv, "Stability"))) {
-      to_startPage(session)
+      to_startPage(session, value="Stability")
     }
   })
-  
-  
+
+
   observeEvent(input$link_to_start, {
-    to_startPage(session)
+    to_startPage(session, value="Certifications")
   })
-  
+
   # when certification was uploaded
   observeEvent(rv$Certifications,{
     # when source is Excel, switch to Certification Tab automatically
-    
+
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
       message("observer: certification was uploaded")
       updateNavbarPage(
@@ -81,7 +83,7 @@ app_server = function(input, output, session) {
         selected = "tP_certification")
     }
   }, ignoreInit = TRUE)
-  
+
   # when Homogeneity was uploaded
   observeEvent(rv$Homogeneity,{
     # when source is Excel, switch to Homogeneity Tab automatically
@@ -100,13 +102,18 @@ app_server = function(input, output, session) {
   # far.
   datreturn = init_datreturn()
   
+
   # * --> All values for material table should be set/written in the designated module
+
   
   # --- --- --- --- --- --- --- --- --- --- ---
+
   .CertificationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
   .HomogeneityServer(id = "Homogeneity", rv, datreturn)
+
   # --- --- --- --- --- --- --- --- --- --- ---
+
   .TransferHomogeneityServer("trH", datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
 
@@ -118,14 +125,19 @@ app_server = function(input, output, session) {
         selected = "tP_certification")
     # }
   }, ignoreInit = TRUE)
-  
+
   .longtermstabilityServer("lts")
 }
 
-to_startPage = function(session) {
+to_startPage = function(session, value="Certification") {
   updateNavbarPage(
     session = session,
     inputId = "navbarpage",
     selected = "Start"
+  )
+  updateSelectInput(
+    session = session,
+    inputId = "moduleSelect",
+    selected = value
   )
 }

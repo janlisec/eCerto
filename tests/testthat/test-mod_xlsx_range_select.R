@@ -2,10 +2,10 @@
 # Test 1 ---------------------------------------------------------------
 
 # fn1: changed output of dput()
-fn1 = reactiveVal(structure(list(
+fn1 = shiny::reactiveVal(structure(list(
   name = c(
-    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx", 
-    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx", 
+    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
     "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
   size = c(27926L, 27617L, 27527L),
   type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -29,7 +29,7 @@ test_that("Successful Certifications Upload test",code = {
                session$flushReact(), "add File column")
                # has File been added correctly after Upload
                expect_true("File" %in% colnames(rv$tab_flt[[1]]))
-               
+
                # set rows and columns selection
                suppressMessages(
                  session$setInputs(uitab_cells_selected = cells_selected)
@@ -46,8 +46,8 @@ test_that("Successful Certifications Upload test",code = {
 
 fn2 = reactiveVal(structure(list(
   name = c(
-    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx", 
-    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx", 
+    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
     "SR3_Fe_v26chs.RData"),
   size = c(27926L, 27617L, 9944L),
   type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -85,7 +85,7 @@ fn3 = reactiveVal(structure(
 
 test_that("Throws error when one file is uploaded which is Empty Excel",code = {
   testServer(xlsx_range_select_Server, args = list(x = fn3,sheet=sheetNo), {
-    
+
     expect_error(tab(), "Excel file must not be empty")
     # expect_warning(tab(), "No data found on worksheet.")
   })
@@ -100,7 +100,7 @@ test_that("no reaction after only one DataTable element is selected",code = {
   testServer(xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
                suppressMessages(session$flushReact())
-               
+
                # # set rows and columns selection
                expect_silent(
                  object = session$setInputs(uitab_cells_selected = cells_selected)

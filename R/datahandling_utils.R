@@ -1,7 +1,7 @@
 
 #' transforms a list to a data frame
 #'
-#' @param l 
+#' @param l
 #'
 #' @return
 #' @export
@@ -18,7 +18,7 @@ list2dataframe = function(l) {
 
 #' creates long pivot table in laboratory style
 #'
-#' @param x 
+#' @param x
 #'
 #' @return
 #' @export
@@ -55,36 +55,36 @@ load_sheetnames = function(filepath){
       return(NULL)
     }
   })
-  
+
   if(length(unique(a))!=1) {
     shinyalert::shinyalert(
-      title = "Different sheetnames", 
-      text = "Sheet names are different", 
+      title = "Different sheetnames",
+      text = "Sheet names are different",
       type = "warning"
     )
-  } 
+  }
   return(a[[1]])
 }
 
 
-load_excelfiles = function(filepath, sheet) {
-  
-  lapply(filepath, function(x) {
-    ext <- tools::file_ext(x)
-    if(ext == "xlsx"){
-      tryCatch({
-        a = openxlsx::read.xlsx(x, sheet)
-        # a$File = rep(x,nrow(a))
-      }, error = function(e) {
-        stop(safeError(e))
-      }, warning = function(w){        # Specifying warning message
-        # message("There was a warning message.")
-      })
-    } else {
-      validate("Invalid file; Please upload a .xlsx file")
-    }
-  })
-}
+# load_excelfiles = function(filepath, sheet) {
+#
+#   lapply(filepath, function(x) {
+#     ext <- tools::file_ext(x)
+#     if(ext == "xlsx"){
+#       tryCatch({
+#         a = openxlsx::read.xlsx(x, sheet)
+#         # a$File = rep(x,nrow(a))
+#       }, error = function(e) {
+#         stop(safeError(e))
+#       }, warning = function(w){        # Specifying warning message
+#         # message("There was a warning message.")
+#       })
+#     } else {
+#       validate("Invalid file; Please upload a .xlsx file")
+#     }
+#   })
+# }
 
 #' Crops dataframe(s)
 #'
@@ -113,13 +113,13 @@ crop_dataframes = function(dfs,cols,rows) {
     warning("data frame is not a list")
     dfs = list(dfs)
   }
-    
+
   r = lapply(dfs, function(y) {
     y[rows,cols]
   })
   return(r)
 }
-  
+
 
 #' Returns the "data" element of the current "god list" element
 #'
@@ -141,7 +141,7 @@ data_of_godelement = function(d) {
 #' @return
 #' @export
 get_listelem = function(c, m) {
-  
+
   data_of_godelement(c[[m]])
 }
 
@@ -149,42 +149,42 @@ get_listelem = function(c, m) {
 #'
 #' @param c "god list
 #' @param m element to be fed (e.g. "Certifications")
-#' @param dat data to be inserted 
+#' @param dat data to be inserted
 #'
 #' @return
 #' @export
 set_listelem = function(c, m, dat) {
-  
-  # if(!is.null(c[[m]])) 
+
+  # if(!is.null(c[[m]]))
   #   stop(paste0(m, " in list is not null"))
-  # 
+  #
   # if(is.reactive(dat)) {
   #   c[[m]] = isolate(dat())
   # } else {
   #   c[[m]] = dat
   # }
-  
+
   if(!is.null(get_listelem(c,m))) {
     warning(paste0(m, " in list is not null"))
     return(NULL)
   }
-    
-  
+
+
   if(is.reactive(dat)) {
     c[[m]][["data"]] = isolate(dat())
   } else {
     c[[m]][["data"]] = dat
   }
-  
+
 }
 
 
 #' set source of upload for an element
-#' 
 #'
-#' @param rv 
-#' @param m 
-#' @param uploadsource 
+#'
+#' @param rv
+#' @param m
+#' @param uploadsource
 #'
 #' @return
 #' @export
@@ -192,29 +192,29 @@ set_listelem = function(c, m, dat) {
 set_listUploadsource = function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
   stopifnot(uploadsource %in% c("RData","Excel"))
-  
+
   rv[[m]][["uploadsource"]] = uploadsource
-  
+
 }
 
 
 #' get source of upload for an element
 #'
-#' @param c 
-#' @param m 
+#' @param c
+#' @param m
 #'
 #' @return
 #' @export
 
 get_listUploadsource = function(c, m) {
-  
+
   uploadsource_of_element(c[[m]])
-  
+
 }
 
 #' Returns source of upload for an element
 #'
-#' @param d 
+#' @param d
 #'
 #' @return
 #' @export
@@ -224,11 +224,11 @@ uploadsource_of_element = function(d) {
 }
 
 
-#' Rounds material table. 
+#' Rounds material table.
 #' Currently without
 #'
-#' @param value 
-#' @param precision 
+#' @param value
+#' @param precision
 #'
 #' @return
 #' @export
@@ -262,7 +262,7 @@ pn <- function(n=NULL, p=4L) {
   }
 }
 
-#' Update single or multiple cells of the final materialtabelle (formerly cert_vals) 
+#' Update single or multiple cells of the final materialtabelle (formerly cert_vals)
 #' with new values
 #'
 #' @param r the reactive containing the data frame to be updated
@@ -273,20 +273,20 @@ pn <- function(n=NULL, p=4L) {
 #' @return
 #' @export
 update_reactivecell = function(r,colname,analyterow = NULL,value) {
-  
+
   if(!is.data.frame(r()))
     stop("r is not a data frame")
-  if(!colname %in% colnames(r())) 
+  if(!colname %in% colnames(r()))
     stop("reactive data frame does not contain column ", colname)
   if(!is.null(analyterow) && nrow(merge(analyterow,r()))==0)
     stop("reactive data frame does not contain row ", analyterow)
-  if(is.data.frame(value)) 
+  if(is.data.frame(value))
     stop("value is a dataframe, but should be a scalar")
   if(!is.null(analyterow) && length(value)>1) {
     warning("value to be inserted is not scalar, i.e. more than one. Take only first!")
     value = value[1]
   }
-  
+
   # extract original row to be edit into variable (1/3)
   df = r()
   if(is.null(analyterow)){
@@ -294,17 +294,17 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
   } else {
     newRow = df[df[["analyte"]]==analyterow,]
   }
-  
+
   # edit cell (2/3)
   newRow[[colname]] = value
-  
+
   # update (3/3)
   if(is.null(analyterow)){
     df = newRow
   } else {
     df[df[["analyte"]]==analyterow,] = newRow
   }
-  
+
   r(df)
 }
 

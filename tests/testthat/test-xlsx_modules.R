@@ -10,7 +10,7 @@ xlsx_test = list(
     "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
 )
 
-dat_test = reactiveVal(NULL)
+dat_test <- shiny::reactiveVal(NULL)
 
 
 # Certification Test ------------------------------------------------------
@@ -19,13 +19,13 @@ dat_test = reactiveVal(NULL)
 excelformat_test = reactiveVal("Certifications")
 # # test_that("Successful Upload test",code = {
 # shiny::testServer(
-#   app = .ExcelUploadControllServer, 
+#   app = .ExcelUploadControl_Server,
 #   args = list(excelformat=excelformat_test, dat = dat_test),
 #   expr =  {
 #     session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
 #     # expect_snapshot(out$tab)
 #     print(reactiveValuesToList(out))
-#     
+#
 #   }
 # )
 # # })
@@ -34,7 +34,7 @@ excelformat_test = reactiveVal("Certifications")
 
 test_that("Throws error correctly when only one Certifications get uploaded",code = {
   testServer(
-    .ExcelUploadControllServer, 
+    .ExcelUploadControl_Server,
     args = list(excelformat=excelformat_test, dat = dat_test), {
       suppressMessages(
         session$setInputs(excel_file = as.list(sapply(xlsx_test, "[[", 1)) , sheet_number = 1) # without row and column selection
@@ -49,11 +49,11 @@ test_that("Throws error correctly when only one Certifications get uploaded",cod
 xlsx_test2 = list(
   datapath = system.file(package = "ecerto", "extdata","Homog_test.xlsx"),
   name = "Homog_test.xlsx"
-)  
+)
 excelformat_test = reactiveVal("Homogeneity")
 
 test_that("Successful Upload test",code = {
-  shiny::testServer(app = .ExcelUploadControllServer, 
+  shiny::testServer(app = .ExcelUploadControl_Server,
     args = list(excelformat=excelformat_test, dat = dat_test),
     expr =  {
       suppressMessages(
