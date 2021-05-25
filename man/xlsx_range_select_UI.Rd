@@ -19,7 +19,8 @@ xlsx_range_select_UI(id)
 A reactiveValues list.
 }
 \description{
-\code{xlsx_range_select} will provide a preview for an excel data file and allow the user to specify a range by mouse click.
+\code{xlsx_range_select} will provide a preview for an excel data
+file and allow the user to specify a range by mouse click.
 }
 \details{
 not yet

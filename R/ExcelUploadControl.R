@@ -35,7 +35,7 @@
   stopifnot(is.reactive(excelformat))
 
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     output$btn_load <- renderUI({
       fluidRow(
         strong("Click to load"),
@@ -77,6 +77,7 @@
     out <- reactiveVal()
     observeEvent(input$go, {
       dat <- rv_xlsx_range_select$tab_flt
+      
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {
         dat <- dat[[1]]

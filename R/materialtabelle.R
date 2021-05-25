@@ -63,14 +63,35 @@
     # define table as reactiveVal to update it at different places
     # within the module
     mater_table = reactiveVal(NULL)
-    observe({mater_table(datreturn$t_H)})
+    
+    # Homogeneity transfer
+    # TODO Werden bereits gefüllte Zellen,z.B. "means", beim Transfer gelöscht?
+    observeEvent(datreturn$t_H,{
+      # if(!is.null(mater_table())){
+        
+        transferred_array = datreturn$t_H
+        mergeby = names(transferred_array)
+        mater_table_tmp = mater_table()
+        mater_table_tmp[,mergeby] = transferred_array
+        mater_table(mater_table_tmp)
+        if(length(mergeby)>1) stop("transferred columns should be 1")
+        # merged = merge(mater_table(), transferedDF, by=mergeby)
+      #   # mater_table(merged)
+      # } else {
+      #   stop(
+      #     "There is an error here! Before the materialtable is initiated, 
+      #     it should not be possible to transfer Homogeneity data."
+      #   )
+      # }
+      
+    }, ignoreNULL = TRUE)
+    # observe({mater_table(datreturn$t_H)})
    
+    # in case backup data
     observeEvent(rdataUpload(),{
       message("insert materialtabelle")
       mater_table(rdataUpload()) # save materialtabelle
     },ignoreNULL = TRUE)
-    
-    
     
     # get all availables analytes
     availableAnalytes = reactive({levels(sAnData()[["analyte"]])})
