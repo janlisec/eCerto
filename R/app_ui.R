@@ -84,7 +84,7 @@ app_ui = function(){
           title = "Homogeneity",
           icon = icon("angle-right"),
           value = "tP_homogeneity",
-          wellPanel(.TransferHomogeneityUI("trH")),
+          wellPanel(m_TransferHomogeneityUI("trH")),
           .HomogeneityUI("Homogeneity")
         ),
         tabPanel(

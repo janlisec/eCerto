@@ -28,7 +28,7 @@ app_server = function(input, output, session) {
 
   excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-  t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
+   t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
   # --- --- --- --- --- --- --- --- ---
 
   observeEvent(t(),{
@@ -114,17 +114,23 @@ app_server = function(input, output, session) {
 
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  .TransferHomogeneityServer("trH", datreturn)
+  trh = m_TransferHomogeneityServer(
+    id = "trH",
+    homogData = reactive({datreturn$h_vals}),
+    matTab_col_code = reactive({attr(datreturn$mater_table, "col_code")}),
+    matTab_analytes = reactive({as.character(datreturn$mater_table[, "analyte"])})
+  )
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  observeEvent(datreturn$t_H,{
-    # if(get_listUploadsource(rv, "Certifications")=="Excel"){
+  # get to Certification page after Transfer of Homogeneity Data
+  observeEvent(trh(),{
+    browser()
+    datreturn$t_H = trh()
       updateNavbarPage(
         session = session,
         inputId = "navbarpage",
         selected = "tP_certification")
-    # }
-  }, ignoreInit = TRUE)
+  })
 
   .longtermstabilityServer("lts")
 }
