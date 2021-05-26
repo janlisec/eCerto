@@ -14,8 +14,13 @@
 #'@return
 #'A reactive dataframe.
 #'
-#'@export
+#'@examples
+#' shiny::shinyApp(
+#'  ui = shiny::fluidPage(.ExcelUploadControl_UI(id = "test")),
+#'  server = function(input, output, session) { out <- .ExcelUploadControl_Server(id = "test");  observeEvent(out(), {print(out())}) }
+#' )
 #'
+#'@export
 .ExcelUploadControl_UI = function(id) {
   shiny::tagList(
     # control elements
@@ -30,7 +35,7 @@
 }
 
 #'@export
-.ExcelUploadControl_Server = function(id, excelformat, check, silent=FALSE) {
+.ExcelUploadControl_Server = function(id, excelformat=reactive({"Certifications"}), check=reactive({FALSE}), silent=FALSE) {
 
   stopifnot(is.reactive(excelformat))
 
@@ -60,7 +65,7 @@
     observeEvent(input$excel_file, {
       sheetnames <- load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
-        updateNumericInput(session = session, inputId = "sheet_number", value=1, min=1, max=length(sheetnames), step=1)
+        updateNumericInput(session = session, inputId = "sheet_number", value = 1, min = 1, max = length(sheetnames), step = 1)
         shinyjs::showElement(id = "sheet_number")
       }
       shinyjs::showElement(id = "btn_load")
@@ -99,5 +104,3 @@
     return(out)
   })
 }
-
-
