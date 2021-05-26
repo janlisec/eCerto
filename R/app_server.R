@@ -17,9 +17,9 @@ app_server = function(input, output, session) {
   #                "Stability" = list("data" = NULL, "uploadsource" = NULL)
   #              )
   # )
-  
-  rv = init_rv()
- 
+
+  rv <- init_rv()
+
 
   updateSelectInput(inputId = "moduleSelect",
                     session = session,
@@ -28,7 +28,7 @@ app_server = function(input, output, session) {
 
   excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-   t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
+  t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
   # --- --- --- --- --- --- --- --- ---
 
   observeEvent(t(),{
@@ -38,7 +38,14 @@ app_server = function(input, output, session) {
 
   # --- --- --- --- --- --- --- --- ---
   .RDataImport_Server("Rdata", rv)
-  # --- --- --- --- --- --- --- --- ---
+  # @Frederick : ich programmiere sonst so, dass die Module zwar reactives als input erhalten können, diese aber intern nicht direkt
+  # modifizieren, sondern auf einer Kopie arbeiten und ein reactive zurückgeben. Dieses überprüfe ich mit observeEvent auf Modifikationen
+  # die Variante 'rv' direkt im Modul zu ändern scheint aber auch zu funktionieren, daher habe ich es dabei belassen und die andere Lösung auskommentiert
+  # tmp <- .RDataImport_Server("Rdata", rv)
+  # observeEvent(tmp$Certifications$time_stamp, {
+  #   browser()
+  # }, ignoreInit = TRUE)
+  # # --- --- --- --- --- --- --- --- ---
 
   observeEvent(input$navbarpage, {
     # when Homogeneity is clicked but has no been uploaded yet --> change to
@@ -87,8 +94,8 @@ app_server = function(input, output, session) {
   # when Homogeneity was uploaded
   observeEvent(rv$Homogeneity,{
     # when source is Excel, switch to Homogeneity Tab automatically
-    print("observer: Homogeneity was uploaded")
-    if(get_listUploadsource(rv, "Homogeneity")=="Excel"){
+    message("app_server: observeEvent(rv$Homogeneity): Homogeneity was uploaded")
+    if (get_listUploadsource(rv, "Homogeneity")=="Excel") {
       updateNavbarPage(
         session = session,
         inputId = "navbarpage",
@@ -101,11 +108,11 @@ app_server = function(input, output, session) {
   # CertificationServer is returned, storing it in reactiveValues() worked so
   # far.
   datreturn = init_datreturn()
-  
+
 
   # * --> All values for material table should be set/written in the designated module
 
-  
+
   # --- --- --- --- --- --- --- --- --- --- ---
 
   .CertificationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
