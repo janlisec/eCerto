@@ -9,7 +9,7 @@
 #'@param id Name when called as a module in a shiny app.
 #'@param apm reactiveValues object, which gives available analytes, holds parameter, etc.
 #'
-#'@return nothing directly, works over apm parameter
+#'@return the currently selected tab. Other parameter via apm reactiveValues()
 #'@export
 #'
 m_analyteModuleUI = function(id){
@@ -69,9 +69,12 @@ m_analyteServer = function(id, apm) {
         class = "selct")
       # change the "selected tab" reactive in the reactiveValues when another tab
       # is selected
-      apm$selected_tab = input$tabs
+      # apm$selected_tab = input$tabs
     },ignoreInit = TRUE)
 
+    selected_tab = eventReactive(input$tabs,{
+      input$tabs
+    })
     # update precision and the selected sample id filter in the reactiveValues
     # when their value change in the selected tab
     observe({
@@ -81,5 +84,6 @@ m_analyteServer = function(id, apm) {
       })
     })
 
+    return(selected_tab)
   })
 }

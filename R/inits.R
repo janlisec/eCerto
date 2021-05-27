@@ -76,6 +76,7 @@ init_rv = function() {
                    "user" = NULL,
                    "study_id" = NULL,
                    "time_stamp" = NULL,
+                   "dataformat_version" = NULL,
                    # processing
                    "lab_means" = NULL,
                    "cert_mean" = NULL,

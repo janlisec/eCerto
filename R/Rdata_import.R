@@ -31,41 +31,41 @@
         accept = c("RData")
       ),
     ),
-
+    
     #shinyjs::disabled(
-      wellPanel(
-        id = NS(id,"savepanel"),
-        strong("Save"),
-        fluidRow(
-          column(6, textInput(
-            inputId = NS(id,"user"),
-            label = "User",
-            value = "FK"
-          )),
-          column(
-            6,
-            textInput(
-              inputId = NS(id,"study_id"),
-              label = "Study ID",
-              value = "TEST"
-            )
-          ),
-          column(
-            3,
-            downloadButton(outputId = NS(id,'ecerto_backup'), label = "Backup")
-          ),
-        )
+    wellPanel(
+      id = NS(id,"savepanel"),
+      strong("Save"),
+      fluidRow(
+        column(6, textInput(
+          inputId = NS(id,"user"),
+          label = "User",
+          value = "FK"
+        )),
+        column(
+          6,
+          textInput(
+            inputId = NS(id,"study_id"),
+            label = "Study ID",
+            value = "TEST"
+          )
+        ),
+        column(
+          3,
+          downloadButton(outputId = NS(id,'ecerto_backup'), label = "Backup")
+        ),
       )
+    )
     #)
   )
 }
 
 .RDataImport_Server = function(id, rv=init_rv()) {
-
+  
   stopifnot(is.reactivevalues(rv))
-
+  
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     # observeEvent(input$in_file_ecerto_backup,{
     rdata <- eventReactive(input$in_file_ecerto_backup, {
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
@@ -81,11 +81,11 @@
       })
       return(res)
     }, ignoreNULL = TRUE)
-
+    
     observeEvent(rdata(),{
       message("RDataImport_Server: RData uploaded")
       res <- rdata()
-      #browser()
+      browser()
       shiny::reactiveValuesToList(rv)
       if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes
@@ -102,7 +102,7 @@
             # $$ToDo$$ one might provide a warning to the user in case he will overwrite non empty fields
             # i.e. he did load Stab data and now reads an RData backup which already contains Stab data
             for (i in names(res)) {
-                rv[[i]] <- res[[i]]
+              rv[[i]] <- res[[i]]
             }
             rv$Certifications$time_stamp <- Sys.time()
           } else {
@@ -134,9 +134,10 @@
           rv$Certifications$mstats = res[["Certification"]][["mstats"]]
           # materialtabelle
           rv$Certifications$materialtabelle = res[["Certification"]][["cert_vals"]]
+          
         }
         if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
-          message("RDataImport_Server: Homo data transfered")
+          message("RDataImport_Server: Homog data transfered")
           rv$Homogeneity$data = res[["Homogeneity"]][["h_dat"]]
           set_listUploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
           rv$Homogeneity$h_file = res[["Homogeneity"]][["h_file"]]
@@ -155,9 +156,9 @@
         }
         rv$Certifications$time_stamp <- Sys.time()
       }
-
+      
     })
-
+    
     observeEvent(rv$Certifications$time_stamp, {
       #message("observeEvent(rv$Certifications$time_stamp")
       updateTextInput(
@@ -171,27 +172,29 @@
         value = rv$Certifications$study_id
       )
     })
-
+    
     observeEvent(input$study_id, {
       rv$Certifications$study_id <- input$study_id
     })
-
+    
     observeEvent(input$user, {
       rv$Certifications$user <- input$user
     })
-
+    
     output$ecerto_backup <- downloadHandler(
       filename = function() { paste0(ifelse(is.null(rv$Certifications$study_id), "TEST", rv$Certifications$study_id), '.RData') },
       content = function(file) {
         res <- shiny::reactiveValuesToList(rv)
+        browser()
+        res$Certifications$dataformat_version = "2021-05-27"
         save(res, file = file)
       },
       contentType = "RData"
     )
-
+    
     return(rv)
-
+    
   })
-
+  
 }
 

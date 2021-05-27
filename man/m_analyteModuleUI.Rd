@@ -12,7 +12,7 @@ m_analyteModuleUI(id)
 \item{apm}{reactiveValues object, which gives available analytes, holds parameter, etc.}
 }
 \value{
-nothing directly, works over apm parameter
+the currently selected tab. Other parameter via apm reactiveValues()
 }
 \description{
 \code{m_analyte} Module for organizing the analyte panel, which

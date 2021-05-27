@@ -66,7 +66,6 @@ app_server = function(input, output, session) {
   # when certification was uploaded
   observeEvent(rv$Certifications,{
     # when source is Excel, switch to Certification Tab automatically
-
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
       message("observer: certification was uploaded")
       updateNavbarPage(
@@ -87,12 +86,14 @@ app_server = function(input, output, session) {
   observeEvent(rv$Homogeneity,{
     # when source is Excel, switch to Homogeneity Tab automatically
     message("app_server: observeEvent(rv$Homogeneity): Homogeneity was uploaded")
+    
     if (get_listUploadsource(rv, "Homogeneity")=="Excel") {
       updateNavbarPage(
         session = session,
         inputId = "navbarpage",
         selected = "tP_homogeneity")
     }
+    
   }, ignoreInit = TRUE)
 
   # datreturn contains the by an analyte selected sub-frame for updating the

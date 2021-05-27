@@ -7,6 +7,7 @@
 #'
 #'@param certification = reactive({rv$Certifications})
 #'@param apm reactiveValues with analyte parameter
+#'@param selected_tab currently selected tab
 #'
 #'@return nothing directly, works over apm parameter
 #'@export
@@ -58,10 +59,10 @@ m_CertLoadedUI = function(id) {
   )
 }
 
-m_CertLoadedServer = function(id, certification, apm) {
-  stopifnot(is.reactivevalues(apm))
+m_CertLoadedServer = function(id, certification, apm, selected_tab) {
+  
   moduleServer(id, function(input, output, session) {
-    selected_tab = reactive(apm$selected_tab)
+    
     
     # this data.frame contains the following columns for each analyte: 
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
@@ -70,22 +71,22 @@ m_CertLoadedServer = function(id, certification, apm) {
       # subset data frame for currently selected analyte
       current_analy = apm$analytes[[selected_tab()]]
       
-      a = ecerto::data_of_godelement(certification()) # take the uploaded certification
+      cert.data = ecerto::data_of_godelement(certification()) # take the uploaded certification
       # round input values
-      a[, "value"] = round(a[, "value"], current_analy$precision)
-      a <- a[a[, "analyte"] %in% selected_tab(), ]
-      a <-a[!(a[, "ID"] %in% current_analy$sample_filter), ]
-      a[, "L_flt"] <- a[, "Lab"] %in% input$flt_labs
+      cert.data[, "value"] = round(cert.data[, "value"], current_analy$precision)
+      cert.data <- cert.data[cert.data[, "analyte"] %in% selected_tab(), ]
+      cert.data <-cert.data[!(cert.data[, "ID"] %in% current_analy$sample_filter), ]
+      cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% input$flt_labs
       
       # adjust factor levels
-      a[, "Lab"] <- factor(a[, "Lab"])
+      cert.data[, "Lab"] <- factor(cert.data[, "Lab"])
       
       # Notify User in case that only 1 finite measurement remained within group
       validate(
         need(
-          all(sapply(split(a[, "value"], a[, "Lab"]), length) >= 2),
+          all(sapply(split(cert.data[, "value"], cert.data[, "Lab"]), length) >= 2),
           message = paste(names(which(
-            sapply(split(a[, "value"], a[, "Lab"]), length) < 2
+            sapply(split(cert.data[, "value"], cert.data[, "Lab"]), length) < 2
           ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
         need(
           is.numeric(current_analy$precision) &&
@@ -94,7 +95,7 @@ m_CertLoadedServer = function(id, certification, apm) {
           message = "please check precision value: should be numeric and between 0 and 6"
         )
       )
-      return(a)
+      return(cert.data)
     }
     )
     

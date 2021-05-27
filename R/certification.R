@@ -153,15 +153,20 @@ m_CertificationServer = function(id, certification, datreturn) {
         d_act("TRUE")
         message("Certification Module start")
         updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-       apm = analyte_parameter_list(certification_data())
+        apm = analyte_parameter_list(certification_data())
         
         # selected analyte, sample filter, precision
         # --- --- --- --- --- --- --- --- --- --- ---
-        m_analyteServer("analyteModule", apm)
+        selected_tab = m_analyteServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
         
         # --- --- --- --- --- --- --- --- --- --- ---
-        dat = m_CertLoadedServer("loaded",certification = certification, apm = apm)
+        dat = m_CertLoadedServer(
+          id = "loaded",
+          certification = certification,
+          apm = apm,
+          selected_tab =  selected_tab
+        )
         # --- --- --- --- --- --- --- --- --- --- ---
         exportTestValues(CertLoadedServer.output = { try(dat()) })
 
@@ -228,12 +233,12 @@ m_CertificationServer = function(id, certification, datreturn) {
           
           message("stats 1")
           message(dat())
-          Stats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+          Stats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
         
         # mStats
         output$overview_mstats <- DT::renderDataTable({
-          mstats(data = dat(), precision = apm$analytes[[apm$selected_tab]]$precision)
+          mstats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
         
         ### LOADED END ###s
