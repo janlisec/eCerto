@@ -10,7 +10,7 @@ init_datreturn = function() {
     mater_table = NULL,                 # *READ-ONLY* material table, formerly 'cert_vals'
     t_H = NULL,                         # when Homogeneity is transferred
     lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
-  ) 
+  )
 }
 
 #' Initializes material table for materialtabelle module
@@ -75,6 +75,7 @@ init_rv = function() {
                    # save
                    "user" = NULL,
                    "study_id" = NULL,
+                   "time_stamp" = NULL,
                    # processing
                    "lab_means" = NULL,
                    "cert_mean" = NULL,
@@ -108,6 +109,7 @@ init_rv = function() {
                    "s_vals" = NULL
                  )
                )
+
   )
 }
 
@@ -158,3 +160,4 @@ analyte_parameter_list = function(certification = NULL) {
   apm = do.call("reactiveValues", l) # finally, create reactiveValues
   # end param list
 }
+
