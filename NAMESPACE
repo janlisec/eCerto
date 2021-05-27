@@ -3,6 +3,7 @@
 export(.CertificationUI)
 export(.ExcelUploadControl_Server)
 export(.ExcelUploadControl_UI)
+export(.RDataImport_UI)
 export(.analyteModuleServer)
 export(.analyteModuleUI)
 export(.longtermstabilityServer)

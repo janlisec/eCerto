@@ -6,6 +6,9 @@ Authors@R: c(
     person("Frederik", "Kreß", email = "frederik.kress@bam.de", role = "aut"))
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
+Depends:
+  R(>= 3.5.0)
+biocViews:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

@@ -56,7 +56,7 @@ init_rv = function() {
         # save
         "user" = NULL,
         "study_id" = NULL,
-        "time_stamp" = Sys.time(),
+        "time_stamp" = as.Date.POSIXct(0),
         "dataformat_version" = "2021-05-27",
         # processing
         "lab_means" = NULL,

@@ -1,63 +1,68 @@
-
-# Test 1 ---------------------------------------------------------------
-
-# fn1: changed output of dput()
-fn1 = shiny::reactiveVal(structure(list(
-  name = c(
-    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
-    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
-    "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
-  size = c(27926L, 27617L, 27527L),
-  type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-  datapath = c(
-    system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
-    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
-    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"))
-),
-row.names = c(NA,-3L),
-class = "data.frame"
-))
-sheetNo = reactiveVal(1)
-cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
-
-test_that("Successful Certifications Upload test",code = {
-  testServer(xlsx_range_select_Server,
-             args = list(x = fn1,sheet=sheetNo), {
-               suppressMessages(session$flushReact())
-               # set rows and columns selection
-               suppressMessages(
-                 session$setInputs(uitab_cells_selected = cells_selected)
-               )
-               session$flushReact()
-               expect_snapshot(rv$tab_flt)
-               expect_equal(rv$end_col,6)
-             }
-  )
-})
+# Test 1.0 changed output of dput()
+test_that(
+  desc = "Successful Certifications Upload test",
+  code = {
+    shiny::testServer(xlsx_range_select_Server,
+               args = list(x = fn1, sheet = sheetNo), {
+                 suppressMessages(session$flushReact())
+                 # set rows and columns selection
+                 suppressMessages(
+                   session$setInputs(uitab_cells_selected = cells_selected)
+                 )
+                 session$flushReact()
+                 expect_snapshot(rv$tab_flt)
+                 expect_equal(rv$end_col,6)
+               }
+    )
+  }
+)
 
 
-# Test 1.2 File column after cell selection -------------------------------
-
-
-test_that("File column is appended for Certification after cell selection",code = {
-  testServer(xlsx_range_select_Server,
-             args = list(x = fn1,sheet=sheetNo), {
-               suppressMessages(session$flushReact())
-               # set rows and columns selection
-               suppressMessages(
-                 session$setInputs(uitab_cells_selected = cells_selected))
-               session$flushReact()
-               # has File been added correctly after cell selection
-               expect_true("File" %in% colnames(rv$tab_flt[[1]]))
-             }
-  )
-})
+# Test 1.2 File column after cell selection
+test_that(
+  desc = "File column is appended for Certification after cell selection",
+  code = {
+    fn1 = shiny::reactiveVal(
+      structure(
+        list(
+          name = c(
+            "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
+            "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+            "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
+          size = c(27926L, 27617L, 27527L),
+          type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+          datapath = c(
+            system.file(package = "ecerto", "extdata", "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
+            system.file(package = "ecerto", "extdata", "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+            system.file(package = "ecerto", "extdata", "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
+          )
+        ),
+        row.names = c(NA,-3L),
+        class = "data.frame"
+      )
+    )
+    sheetNo <- shiny::reactiveVal(1)
+    cells_selected <- matrix(c(7,1,16,6), ncol = 2, byrow = TRUE)
+    shiny::testServer(
+      app = xlsx_range_select_Server,
+      args = list(x = fn1, sheet = sheetNo), {
+        suppressMessages(session$flushReact())
+        # set rows and columns selection
+        suppressMessages(
+          session$setInputs(uitab_cells_selected = cells_selected))
+        session$flushReact()
+        # has File been added correctly after cell selection
+        expect_true("File" %in% colnames(rv$tab_flt[[1]]))
+      }
+    )
+  }
+)
 
 # Test 2: Upload RData even though Excel was expected ------------------------------------------------------------------
 
-fn2 = reactiveVal(structure(list(
+fn2 <- shiny::reactiveVal(structure(list(
   name = c(
     "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
     "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
@@ -76,7 +81,7 @@ class = "data.frame"
 ))
 
 test_that("Throws error because RData was uploaded but Excel was expected",code = {
-  testServer(xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
+  shiny::testServer(xlsx_range_select_Server,args =  list(x = fn2, sheet = sheetNo), {
     expect_error(tab(), "Please upload Excel only")
   }
   )
@@ -85,7 +90,7 @@ test_that("Throws error because RData was uploaded but Excel was expected",code 
 
 # Test 3: One empty Excel -----------------------------------------------------
 
-fn3 = reactiveVal(structure(
+fn3 <- shiny::reactiveVal(structure(
   list(
     name = c("EmptyExcel.xlsx","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
     size = 10780L,
@@ -101,7 +106,7 @@ fn3 = reactiveVal(structure(
 
 test_that("Throws error when one file is uploaded which is Empty Excel",code = {
   suppressMessages(
-    testServer(xlsx_range_select_Server, args = list(x = fn3,sheet=sheetNo), {
+    shiny::testServer(xlsx_range_select_Server, args = list(x = fn3,sheet=sheetNo), {
 
     expect_error(tab(), "Excel file must not be empty")
     # expect_warning(tab(), "No data found on worksheet.")
@@ -111,10 +116,10 @@ test_that("Throws error when one file is uploaded which is Empty Excel",code = {
 
 # Test: Only one Certification Error ------------------------------------------------------------------
 
-fn1_2 = reactiveVal(as.list(sapply(isolate(fn1()), "[[", 1)))
+fn1_2 = shiny::reactiveVal(as.list(sapply(isolate(fn1()), "[[", 1)))
 
 test_that("Throws error correctly when only one Certifications get uploaded",code = {
-  suppressMessages(testServer(
+  suppressMessages(shiny::testServer(
       xlsx_range_select_Server,
       args = list(x = fn1_2,sheet=sheetNo), {
         expect_error(tab(),"less than 2 laboratory files uploaded. Upload more!")
@@ -128,7 +133,7 @@ test_that("Throws error correctly when only one Certifications get uploaded",cod
 cells_selected = matrix(c(7,1),ncol = 2, byrow = TRUE)
 
 test_that("no reaction after only one DataTable element is selected",code = {
-  testServer(xlsx_range_select_Server,
+  shiny::testServer(xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
                suppressMessages(session$flushReact())
 
@@ -143,9 +148,7 @@ test_that("no reaction after only one DataTable element is selected",code = {
 
 # Homogeneity -------------------------------------------------------------
 
-
-
-fnHomog = reactiveVal(structure(
+fnHomog = shiny::reactiveVal(structure(
   list(
     name = "Homog_test.xlsx",
     # size = c(27926L, 27617L, 9944L),
@@ -157,7 +160,7 @@ fnHomog = reactiveVal(structure(
 ))
 
 test_that("File column is appended for Homogeneity",code = {
-  testServer(xlsx_range_select_Server,
+  shiny::testServer(xlsx_range_select_Server,
              args = list(x = fnHomog,sheet=sheetNo,excelformat=shiny::reactiveVal({"Homogeneity"})), {
                suppressMessages(session$flushReact())
   # has File been added correctly after Upload
