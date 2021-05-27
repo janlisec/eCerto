@@ -4,7 +4,7 @@
 #' @return datreturn
 #'
 init_datreturn = function() {
-  reactiveValues(
+  shiny::reactiveValues(
     selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
     h_vals = NULL,                      # values from Homogeneity-module for .TransferHomogeneity
     mater_table = NULL,                 # *READ-ONLY* material table, formerly 'cert_vals'
@@ -139,6 +139,7 @@ analyte_parameter_list = function(certification = NULL) {
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "analytename" = NULL
   )
+  l = list("selected_tab" = NULL)
   
   analytes = levels(certification[, "analyte"])
   # create list with lists of all analytes (i.e. a nested list)
@@ -155,7 +156,7 @@ analyte_parameter_list = function(certification = NULL) {
   }
   # set names of sublists to analyte names
   a_param_list = setNames(a_param_list, analytes)
-  l = list("selected_tab" = NULL)
+  
   l$analytes = a_param_list
   apm = do.call("reactiveValues", l) # finally, create reactiveValues
   # end param list

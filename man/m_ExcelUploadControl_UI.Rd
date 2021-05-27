@@ -27,8 +27,8 @@ not yet
 }
 \examples{
 shiny::shinyApp(
-  ui = function() {shiny::tagList(.ExcelUploadControl_UI(id = "test"))},
-  server = function(input, output, session) {out <- .ExcelUploadControl_Server(id = "test")}
+ ui = shiny::fluidPage(.ExcelUploadControl_UI(id = "test")),
+ server = function(input, output, session) { out <- .ExcelUploadControl_Server(id = "test");  observeEvent(out(), {print(out())}) }
 )
 
 }
