@@ -8,12 +8,17 @@ Currently without}
 roundMT(value, precision = NULL)
 }
 \arguments{
-\item{precision}{}
+\item{value}{the value to be rounded}
+
+\item{precision}{precision value}
 }
 \value{
-
+the rounded value
 }
 \description{
 Rounds material table.
 Currently without
+}
+\examples{
+roundMT(34.3434,3)
 }

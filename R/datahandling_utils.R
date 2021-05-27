@@ -1,28 +1,10 @@
 
-#' transforms a list to a data frame
-#'
-#' @param l
-#'
-#' @return
-#' @export
-#' @noRd
-list2dataframe = function(l) {
-  if (requireNamespace("plyr", quietly = TRUE)) {
-    plyr::ldply(l, function(x) {
-      x[param$start_row():param$end_row(), param$start_col():param$end_col()]
-    })
-  } else {
-    as.data.frame(do.call(cbind, l))
-  }
-}
-
 #' creates long pivot table in laboratory style
 #'
-#' @param x
+#' @param x data frame with uploaded excel table
 #'
-#' @return
+#' @return another data frame with extracted laboratory parameters
 #' @export
-#' @noRd
 laboratory_dataframe = function(x) {
   stopifnot(!is.reactive(x))
   x = as.data.frame(x)
@@ -45,6 +27,12 @@ laboratory_dataframe = function(x) {
   return(x)
 }
 
+#' Loads names of Excel sheets
+#'
+#' @param filepath the path to a single or multiple excel file(s)
+#'
+#' @return the names of sheets
+#' @export
 load_sheetnames = function(filepath){
   a = lapply(shiny::isolate(filepath), function(x) {
     ext <- tools::file_ext(x)
@@ -123,13 +111,13 @@ crop_dataframes = function(dfs,cols,rows) {
 
 #' Returns the "data" element of the current "god list" element
 #'
-#' @param d list, which contains "data", but also e.g. "source"
+#' @param l list, which contains "data", but also e.g. "source"
 #'
 #' @return
 #' @export
-data_of_godelement = function(d) {
-  stopifnot(!is.reactive(d)) # d shouldn't be a reactive
-  d[["data"]]
+data_of_godelement = function(l) {
+  stopifnot(!is.reactive(l)) # d shouldn't be a reactive
+  l[["data"]]
 }
 
 #' getter function for module element of the "god list"
@@ -147,28 +135,17 @@ get_listelem = function(c, m) {
 
 #' setter function for an element in the "god list"
 #'
-#' @param c "god list
+#' @param c "god list"
 #' @param m element to be fed (e.g. "Certifications")
 #' @param dat data to be inserted
 #'
 #' @return
 #' @export
 set_listelem = function(c, m, dat) {
-
-  # if(!is.null(c[[m]]))
-  #   stop(paste0(m, " in list is not null"))
-  #
-  # if(is.reactive(dat)) {
-  #   c[[m]] = isolate(dat())
-  # } else {
-  #   c[[m]] = dat
-  # }
-
   if(!is.null(get_listelem(c,m))) {
     warning(paste0(m, " in list is not null"))
     return(NULL)
   }
-
 
   if(is.reactive(dat)) {
     c[[m]][["data"]] = isolate(dat())
@@ -181,13 +158,17 @@ set_listelem = function(c, m, dat) {
 
 #' set source of upload for an element
 #'
+#' @param rv the list
+#' @param m one of "Certification","Homogeneity", "Stability"
+#' @param uploadsource the source of upload
 #'
-#' @param rv
-#' @param m
-#' @param uploadsource
-#'
-#' @return
+#' @return nothing directly, but via rv
 #' @export
+#' @examples
+#' ## Not run: 
+#  # From within a reactive context, you can access values with:
+#' rv = init_rv()
+#' set_listUploadsource(rv,"Certification","Excel")
 
 set_listUploadsource = function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
@@ -200,8 +181,8 @@ set_listUploadsource = function(rv, m, uploadsource) {
 
 #' get source of upload for an element
 #'
-#' @param c
-#' @param m
+#' @param c the list
+#' @param m "Certification", etc.
 #'
 #' @return
 #' @export
@@ -212,12 +193,11 @@ get_listUploadsource = function(c, m) {
 
 }
 
-#' Returns source of upload for an element
+#' Returns source of upload for an element, is internally used by \code{get_listUploadsource}
 #'
 #' @param d
 #'
 #' @return
-#' @export
 #' @noRd
 uploadsource_of_element = function(d) {
   d[["uploadsource"]]
@@ -227,11 +207,12 @@ uploadsource_of_element = function(d) {
 #' Rounds material table.
 #' Currently without
 #'
-#' @param value
-#' @param precision
+#' @param value the value to be rounded
+#' @param precision precision value
 #'
-#' @return
+#' @return the rounded value
 #' @export
+#' @examples roundMT(34.3434,3)
 roundMT = function(value,precision = NULL) {
   if(is.null(precision)) return(value)
   round(value,precision)
@@ -270,7 +251,7 @@ pn <- function(n=NULL, p=4L) {
 #' @param analyterow  name of the analyte-row. If NULL, whole column is updated
 #' @param value value to be updated
 #'
-#' @return
+#' @return nothing directly
 #' @export
 update_reactivecell = function(r,colname,analyterow = NULL,value) {
 
@@ -307,4 +288,3 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
 
   r(df)
 }
-

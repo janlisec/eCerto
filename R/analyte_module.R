@@ -1,12 +1,18 @@
-# ANALYTE MODULE----------------------------------------------------
-
-#' Title
+#'@title Analyte-module
 #'
-#' @param id
+#'@description \code{m_analyte} Module for organizing the analyte panel, which
+#'  fill automatically after analytes are available and gives the user the
+#'  opportunity to select analytes as well as precision and filter samples.
 #'
-#' @return
-#' @export
-.analyteModuleUI = function(id){
+#'@details not yet
+#'
+#'@param id Name when called as a module in a shiny app.
+#'@param apm reactiveValues object, which gives available analytes, holds parameter, etc.
+#'
+#'@return the currently selected tab. Other parameter via apm reactiveValues()
+#'@export
+#'
+m_analyteModuleUI = function(id){
   # empty tabset panel, to be filled by the analytes in the server Module
   tagList(
     shinyjs::inlineCSS('.selct  {background: green; color: white;border: 5px solid black;}'),
@@ -15,14 +21,8 @@
 
 }
 
-#' Title
-#'
-#' @param id
-#' @param apm
-#'
-#' @return
 #' @export
-.analyteModuleServer = function(id, apm) {
+m_analyteServer = function(id, apm) {
   stopifnot(is.reactivevalues(apm))
   moduleServer(id, function(input, output, session){
     ns <- session$ns # to get full namespace here in server function
@@ -69,9 +69,12 @@
         class = "selct")
       # change the "selected tab" reactive in the reactiveValues when another tab
       # is selected
-      apm$selected_tab = input$tabs
+      # apm$selected_tab = input$tabs
     },ignoreInit = TRUE)
 
+    selected_tab = eventReactive(input$tabs,{
+      input$tabs
+    })
     # update precision and the selected sample id filter in the reactiveValues
     # when their value change in the selected tab
     observe({
@@ -81,5 +84,6 @@
       })
     })
 
+    return(selected_tab)
   })
 }

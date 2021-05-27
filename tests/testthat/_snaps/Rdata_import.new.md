@@ -1358,10 +1358,14 @@
       [1] "TEST"
       
       $Certifications$time_stamp
+<<<<<<< HEAD
       [1] "2021-05-27 12:59:59 CEST"
       
       $Certifications$dataformat_version
       [1] "2021-05-27"
+=======
+      [1] "2021-05-27 11:50:29 CEST"
+>>>>>>> 1bd7d40a0dc1141c7de1b69bb3d2b034c837bcb4
       
       $Certifications$lab_means
           Lab       mean           sd n

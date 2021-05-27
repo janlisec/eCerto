@@ -10,16 +10,8 @@ app_server = function(input, output, session) {
 
   # Upload Controller -------------------------------------------------------
 
-  # rv = do.call("reactiveValues",
-  #              list(
-  #                "Certifications" = list("data" = NULL, "uploadsource" = NULL),
-  #                "Homogeneity" = list("data" = NULL, "uploadsource" = NULL),
-  #                "Stability" = list("data" = NULL, "uploadsource" = NULL)
-  #              )
-  # )
-
-  rv <- init_rv()
-
+  
+  rv = init_rv()
 
   updateSelectInput(inputId = "moduleSelect",
                     session = session,
@@ -28,8 +20,8 @@ app_server = function(input, output, session) {
 
   excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-  t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
-  # --- --- --- --- --- --- --- --- ---
+   t = m_ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
+ # --- --- --- --- --- --- --- --- ---
 
   observeEvent(t(),{
     set_listelem(rv, excelformat(), t)
@@ -74,7 +66,6 @@ app_server = function(input, output, session) {
   # when certification was uploaded
   observeEvent(rv$Certifications,{
     # when source is Excel, switch to Certification Tab automatically
-
     if(get_listUploadsource(rv, "Certifications")=="Excel"){
       message("observer: certification was uploaded")
       updateNavbarPage(
@@ -95,12 +86,14 @@ app_server = function(input, output, session) {
   observeEvent(rv$Homogeneity,{
     # when source is Excel, switch to Homogeneity Tab automatically
     message("app_server: observeEvent(rv$Homogeneity): Homogeneity was uploaded")
+    
     if (get_listUploadsource(rv, "Homogeneity")=="Excel") {
       updateNavbarPage(
         session = session,
         inputId = "navbarpage",
         selected = "tP_homogeneity")
     }
+    
   }, ignoreInit = TRUE)
 
   # datreturn contains the by an analyte selected sub-frame for updating the
@@ -115,7 +108,7 @@ app_server = function(input, output, session) {
 
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  .CertificationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
+  m_CertificationServer(id = "certification", certification = reactive({rv$Certifications}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
   .HomogeneityServer(id = "Homogeneity", rv, datreturn)
 

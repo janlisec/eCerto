@@ -7,7 +7,7 @@
 set_listelem(c, m, dat)
 }
 \arguments{
-\item{c}{"god list}
+\item{c}{"god list"}
 
 \item{m}{element to be fed (e.g. "Certifications")}
 

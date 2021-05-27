@@ -1,6 +1,20 @@
-# MATERIAL CERTIFICATION MODULE ------
-
-.materialtabelleUI <- function(id) {
+#'@title Modul "Materialtabelle"
+#'
+#'@description
+#'\code{m_materialtabelle} 
+#'
+#
+#'
+#'@details
+#'not yet
+#'
+#' @param id Name when called as a module in a shiny app.
+#' @param rDtataUpload if uploaded via RData - reactive({rv$Certifications$materialtabelle})
+#' @param datreturn the session data object
+#'
+#'@return nothing
+#'@export
+m_materialtabelleUI <- function(id) {
 
   fluidRow(
     column(12, strong("Overview")),
@@ -37,7 +51,8 @@
   # )
 }
 
-.materialtabelleServer = function(id, rdataUpload, datreturn) {
+#'@export
+m_materialtabelleServer = function(id, rdataUpload, datreturn) {
   stopifnot(is.reactivevalues(datreturn))
   moduleServer(id, function(input, output, session) {
     

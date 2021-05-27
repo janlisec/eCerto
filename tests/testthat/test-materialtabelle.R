@@ -1,6 +1,6 @@
 # Test 1: Certifications Uploaded, but Homogeneity hasn't yet ---------------------
 
-datreturnList =   list(
+datreturnList = list(
   lab_statistics = structure(
     list(
       Lab = structure(1:3, .Label = c("L1", "L2", "L3"), class = "factor"),
@@ -23,12 +23,12 @@ datreturnList =   list(
   t_H = NULL
 )
 
-datreturn1 = do.call("reactiveValues", datreturnList)
+datreturn1 = do.call(shiny::reactiveValues, datreturnList)
 
 
 test_that("Init of materialtable after Certifications uploaded",code = {
-  suppressMessages(testServer(.materialtabelleServer,
-             args = list(rdataUpload = reactive({NULL}), datreturn=datreturn1), {
+  suppressMessages(shiny::testServer(m_materialtabelleServer,
+             args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
                session$setInputs(pooling=FALSE)
                # session$flushReact()
                aTest = c("Si","Fe","Cu","Mn","Mg","Cr","Ni","Zn","Ti","Sc","Sn")
@@ -66,8 +66,8 @@ Fe = structure(
 
 test_that("materialtable gets updated after another analyte gets selected",code = {
   suppressMessages(
-  testServer(.materialtabelleServer,
-             args = list(rdataUpload = reactive({NULL}), datreturn=datreturn1), {
+  shiny::testServer(m_materialtabelleServer,
+             args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
                # session$flushReact()
                # expect_message('.',"materialTabelle - update initiated for: Si")
                expect_null(mater_table()["mean","Fe"])
@@ -85,8 +85,8 @@ test_that("materialtable gets updated after another analyte gets selected",code 
 
 test_that("Pooling on/off",code = {
 
-  suppressMessages(testServer(.materialtabelleServer,
-             args = list(rdataUpload = reactive({NULL}), datreturn=datreturn1), {
+  suppressMessages(shiny::testServer(m_materialtabelleServer,
+             args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
                session$setInputs(pooling=FALSE)
                expect_snapshot(mater_table())
                session$setInputs(pooling=TRUE)
@@ -97,7 +97,7 @@ test_that("Pooling on/off",code = {
 
 # Test 4: Homogeneity Transfer ---------------------
 transfer = structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
-datreturn1 = do.call("reactiveValues", datreturnList)
+datreturn1 = do.call(shiny::reactiveValues, datreturnList)
 com_check = c(0.0398172599441121, 0.015535927030583, 0, 0, 0.015535927030583, 
               0, 0, 0, 0, 0, 0)
 U3_check = c(0, 0.015535927030583, 0, 0, 0.015535927030583, 0, 0, 0, 0, 
@@ -105,8 +105,8 @@ U3_check = c(0, 0.015535927030583, 0, 0, 0.015535927030583, 0, 0, 0, 0,
 U_check = c(0.0796345198882242, 0.031071854061166, 0, 0, 0.031071854061166, 
             0, 0, 0, 0, 0, 0)
 test_that("Transfer into column 'U3' successful",code = {
-  testServer(.materialtabelleServer,
-                              args = list(rdataUpload = reactive({NULL}), datreturn=datreturn1), {
+  shiny::testServer(m_materialtabelleServer,
+                              args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
                                 
                                 session$setInputs(pooling=FALSE)
                                 datreturn$t_H = transfer

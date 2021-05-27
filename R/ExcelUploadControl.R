@@ -1,18 +1,16 @@
 #'@title ExcelUploadControl.
 #'
-#'@description
-#'\code{ExcelUploadControl} will provide a module to upload excel data files.
+#'@description \code{ExcelUploadControl} will provide a module to upload excel
+#'  data files.
 #'
-#'@details
-#'not yet
+#'@details not yet
 #'
-#' @param id Name when called as a module in a shiny app.
-#' @param excelformat Selector for dataset type (reactive).
-#' @param check Is current dataset slot empty (TRUE) or NULL (FALSE).
-#' @param silent Option to print or omit status messages.
+#'@param id Name when called as a module in a shiny app.
+#'@param excelformat Selector for dataset type (reactive).
+#'@param check Is current dataset slot empty (TRUE) or NULL (FALSE).
+#'@param silent Option to print or omit status messages.
 #'
-#'@return
-#'A reactive dataframe.
+#'@return A reactive dataframe.
 #'
 #'@examples
 #' shiny::shinyApp(
@@ -20,8 +18,8 @@
 #'  server = function(input, output, session) { out <- .ExcelUploadControl_Server(id = "test");  observeEvent(out(), {print(out())}) }
 #' )
 #'
-#'@export
-.ExcelUploadControl_UI = function(id) {
+m_ExcelUploadControl_UI = function(id) {
+
   shiny::tagList(
     # control elements
     fluidRow(
@@ -35,7 +33,8 @@
 }
 
 #'@export
-.ExcelUploadControl_Server = function(id, excelformat=reactive({"Certifications"}), check=reactive({FALSE}), silent=FALSE) {
+m_ExcelUploadControl_Server = function(id, excelformat, check, silent=FALSE) {
+
 
   stopifnot(is.reactive(excelformat))
 
@@ -86,14 +85,14 @@
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {
         dat <- dat[[1]]
-        if (!"analyte" %in% colnames(dat)) message(".ExcelUploadControl_Server: observeEvent(input$go): No column 'analyte' found in input file.")
-        if (!"value" %in% colnames(dat)) message(".ExcelUploadControl_Server: observeEvent(input$go): No column 'value' found in input file.")
-        if (!is.numeric(dat[,"value"])) message(".ExcelUploadControl_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
+        if (!"analyte" %in% colnames(dat)) message("m_ExcelUploadControl_Server: observeEvent(input$go): No column 'analyte' found in input file.")
+        if (!"value" %in% colnames(dat)) message("m_ExcelUploadControl_Server: observeEvent(input$go): No column 'value' found in input file.")
+        if (!is.numeric(dat[,"value"])) message("m_ExcelUploadControl_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
         out(dat)
       }
       if(excelformat() == "Certifications") {
         # perform minimal validation tests
-        if (!length(dat)>=2) message(".ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
+        if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
         out(combine_cert_data(df_list = dat))
       }
       if(excelformat() == "Stability") {

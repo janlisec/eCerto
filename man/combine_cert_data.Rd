@@ -7,9 +7,9 @@
 combine_cert_data(df_list = NULL, silent = FALSE)
 }
 \arguments{
-\item{silent}{Option to print or omit status messages.}
+\item{df_list}{list of imported Excel tables.}
 
-\item{a}{A list of imported Excel tables.}
+\item{silent}{Option to print or omit status messages.}
 }
 \value{
 A dataframe.

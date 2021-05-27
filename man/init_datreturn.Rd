@@ -2,8 +2,8 @@
 % Please edit documentation in R/inits.R
 \name{init_datreturn}
 \alias{init_datreturn}
-\title{Initiate 'datreturn', which holds data returned from other modules meant for
-temporary use}
+\title{Initiates a reactiveValues object used for session-only and
+module-overarching content}
 \usage{
 init_datreturn()
 }
@@ -11,6 +11,6 @@ init_datreturn()
 datreturn
 }
 \description{
-Initiate 'datreturn', which holds data returned from other modules meant for
-temporary use
+Initiates a reactiveValues object used for session-only and
+module-overarching content
 }

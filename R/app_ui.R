@@ -1,8 +1,7 @@
-#' Title
+#' Main User Interface
 #'
 #' @return
 #' @export
-#' @import shiny
 app_ui = function(){
 
   shiny::tagList(
@@ -64,7 +63,7 @@ app_ui = function(){
                   label = "module",
                   width = "50%"
                 ),
-                .ExcelUploadControl_UI("excelfile")
+                m_ExcelUploadControl_UI("excelfile")
               )
             )
           )
@@ -74,7 +73,7 @@ app_ui = function(){
           title = "Certification",
           value = "tP_certification",
           icon = icon("angle-right"),
-          .CertificationUI("certification"),
+          m_CertificationUI("certification"),
           # wellPanel(
           #   .materialtabelleUI("mat_cert")
           # )

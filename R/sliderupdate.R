@@ -1,4 +1,4 @@
-#' updates slider in excel tabset
+#' updates slider in excel tabset (not in use anymore)
 #'
 #' @param session 
 #' @param dat 

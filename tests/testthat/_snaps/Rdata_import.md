@@ -1357,6 +1357,9 @@
       $Certifications$study_id
       [1] "TEST"
       
+      $Certifications$time_stamp
+      [1] "2021-05-27 11:34:04 CEST"
+      
       $Certifications$lab_means
           Lab       mean           sd n
       L01 L01 0.04551667 0.0012560520 6

@@ -6,7 +6,7 @@
 # dr = init_datreturn()
 #
 # test_that("Button not able to click before init of materialtable",code = {
-#   testServer(.TransferHomogeneityServer,
+#   shiny::testServer(.TransferHomogeneityServer,
 #              args = list(datreturn=dr), {
 #                print(input$h_transfer_ubb_button)
 #                # expect_message(
@@ -128,7 +128,7 @@ matTab = structure(
 )
 
 test_that("Transfer successful", code = {
-  testServer(
+  shiny::testServer(
     m_TransferHomogeneityServer,
     args = list(
       matTab_col_code = reactiveVal(attr(matTab, "col_code")),
@@ -162,7 +162,7 @@ test_that("Transfer successful", code = {
 # Error test --------------------------------------------------------------
 
 test_that("Transfer not possible with values not set", code = {
-  testServer(
+  shiny::testServer(
     m_TransferHomogeneityServer,
     args = list(
       matTab_col_code = reactiveVal(attr(matTab, "col_code")),
