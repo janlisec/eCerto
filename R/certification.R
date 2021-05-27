@@ -1,12 +1,18 @@
-# CERTIFICATION MODULE -------------------------
-
-#' Title
+#'@title CERTIFICATION MODULE
 #'
-#' @param id 
+#'@description \code{m_CertificationServer} is the module for handling the
+#'  Certification part but also contains the materialtabelle (until further
+#'  changes).
 #'
-#' @return
-#' @export
-.CertificationUI = function(id) {
+#'@details not yet
+#'
+#'@param certification = reactive({rv$Certifications})
+#'@param datreturn the session data object
+#'
+#'@return nothing directly, works over apm parameter
+#'@export
+#'
+m_CertificationUI = function(id) {
   tabsetPanel(
     id = NS(id, "certificationPanel"),
     type = "hidden",
@@ -34,7 +40,7 @@
         column(8,
                wellPanel(
                  # --- --- --- --- --- --- --- --- ---
-                 .analyteModuleUI(NS(id, "analyteModule")),
+                 m_analyteModuleUI(NS(id, "analyteModule")),
                  # --- --- --- --- --- --- --- --- ---
                )
         )
@@ -120,7 +126,7 @@
         ns = NS(id), # namespace of current module
         # --- --- --- --- --- --- --- --- --- --- ---
         # wellPanel(
-          .materialtabelleUI(NS(id,"mat_cert"))
+          m_materialtabelleUI(NS(id,"mat_cert"))
         # ),
         # --- --- --- --- --- --- --- --- --- --- ---
       ),
@@ -128,21 +134,15 @@
   )
 }
 
-#' Certification part
-#'
-#' @param id "namespace"
-#' @param d d = reactive({rv$Certifications})
-#' @param datreturn for storing the results
-#'
-#' @return nothing
-.CertificationServer = function(id, d, datreturn) {
-  stopifnot(is.reactive(d))
+#' @export
+m_CertificationServer = function(id, certification, datreturn) {
+  stopifnot(is.reactive(certification))
   moduleServer(id, function(input, output, session) {
-    exportTestValues(CertificationServer.d = { try(d()) })
+    exportTestValues(CertificationServer.d = { try(certification()) })
     
     d_act = reactiveVal("Haha nope")
     
-    certification_data = reactive({data_of_godelement(d())})
+    certification_data = reactive({data_of_godelement(certification())})
     
     apm = analyte_parameter_list()
     dat = reactiveVal(NULL)
@@ -158,11 +158,11 @@
         
         # selected analyte, sample filter, precision
         # --- --- --- --- --- --- --- --- --- --- ---
-        .analyteModuleServer("analyteModule", apm)
+       m_analyteServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
         
         # --- --- --- --- --- --- --- --- --- --- ---
-        dat = .CertLoadedServer("loaded",d = d, apm = apm)
+        dat = .CertLoadedServer("loaded",certification = certification, apm = apm)
         # --- --- --- --- --- --- --- --- --- --- ---
         exportTestValues(CertLoadedServer.output = { try(dat()) })
 
@@ -211,7 +211,7 @@
 
         observe({
           datreturn$lab_statistics = lab_statistics()
-          # message(".CertificationServer -- lab_statistics created")
+          # message("m_CertificationServer -- lab_statistics created")
           datreturn$selectedAnalyteDataframe = dat()
           # console log
           # message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
@@ -247,9 +247,9 @@
 
     
     # --- --- --- --- --- --- --- --- --- --- ---
-    .materialtabelleServer(
+    m_materialtabelleServer(
       id = "mat_cert", 
-      rdataUpload = reactive({d()$materialtabelle}), 
+      rdataUpload = reactive({certification()$materialtabelle}), 
       datreturn = datreturn
     )
     # --- --- --- --- --- --- --- --- --- --- ---
@@ -309,7 +309,7 @@
   )
 }
 
-.CertLoadedServer = function(id, d, apm) {
+.CertLoadedServer = function(id, certification, apm) {
   stopifnot(is.reactivevalues(apm))
   moduleServer(id, function(input, output, session) {
     selected_tab = reactive(apm$selected_tab)
@@ -321,7 +321,7 @@
       # subset data frame for currently selected analyte
       current_analy = apm$analytes[[selected_tab()]]
       
-      a = ecerto::data_of_godelement(d()) # take the uploaded certification
+      a = ecerto::data_of_godelement(certification()) # take the uploaded certification
       # round input values
       a[, "value"] = round(a[, "value"], current_analy$precision)
       a <- a[a[, "analyte"] %in% selected_tab(), ]
@@ -375,11 +375,11 @@
       )
     })
     
-    observeEvent(d(), {
-      if (uploadsource_of_element(d())=="RData" ) {
-        updateNumericInput(inputId = "Fig01_width",value = d()[["CertValPlot"]][["Fig01_width"]])
-        updateNumericInput(inputId = "Fig01_height",value = d()[["CertValPlot"]][["Fig01_height"]])
-        updateSelectizeInput(inputId = "flt_labs",selected = d()[["opt"]][["flt_labs"]])
+    observeEvent(certification(), {
+      if (uploadsource_of_element(certification())=="RData" ) {
+        updateNumericInput(inputId = "Fig01_width",value = certification()[["CertValPlot"]][["Fig01_width"]])
+        updateNumericInput(inputId = "Fig01_height",value = certification()[["CertValPlot"]][["Fig01_height"]])
+        updateSelectizeInput(inputId = "flt_labs",selected = certification()[["opt"]][["flt_labs"]])
         }
       
     }, ignoreNULL = TRUE)

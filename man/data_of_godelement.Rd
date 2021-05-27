@@ -4,10 +4,10 @@
 \alias{data_of_godelement}
 \title{Returns the "data" element of the current "god list" element}
 \usage{
-data_of_godelement(d)
+data_of_godelement(l)
 }
 \arguments{
-\item{d}{list, which contains "data", but also e.g. "source"}
+\item{l}{list, which contains "data", but also e.g. "source"}
 }
 \value{
 

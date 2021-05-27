@@ -6,7 +6,7 @@
 #'@details
 #'not yet
 #'
-#'@param a A list of imported Excel tables.
+#'@param df_list list of imported Excel tables.
 #'@param silent Option to print or omit status messages.
 #'
 #'@return

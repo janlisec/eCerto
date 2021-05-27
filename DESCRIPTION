@@ -1,5 +1,5 @@
 Package: ecerto
-Title: What the Package Does (One Line, Title Case)
+Title: The Ecerto package for Bundesanstalt für Materialforschung (BAM)
 Version: 0.0.0.9000
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),

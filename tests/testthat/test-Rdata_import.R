@@ -5,7 +5,7 @@ rdat = list(
 rv_test = init_rv()
 
 test_that("Successful RData (version 26) Upload",code = {
-  testServer(.RDataImport_Server,
+  shiny::testServer(.RDataImport_Server,
              args = list(rv = rv_test), {
                session$setInputs(in_file_ecerto_backup = rdat)
                expect_equal(rv$Certifications$user,"JL")
@@ -23,7 +23,7 @@ excel = list(
 rv_test = ecerto::init_rv()
 
 test_that("Throws error when Excel File is tried to upload",code = {
-  testServer(.RDataImport_Server,
+  shiny::testServer(.RDataImport_Server,
              args = list(rv = rv_test), {
                
                session$setInputs(in_file_ecerto_backup = excel)

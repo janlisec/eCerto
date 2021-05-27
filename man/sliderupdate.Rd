@@ -2,7 +2,7 @@
 % Please edit documentation in R/sliderupdate.R
 \name{sliderupdate}
 \alias{sliderupdate}
-\title{updates slider in excel tabset}
+\title{updates slider in excel tabset (not in use anymore)}
 \usage{
 sliderupdate(session, dat)
 }
@@ -15,5 +15,5 @@ sliderupdate(session, dat)
 
 }
 \description{
-updates slider in excel tabset
+updates slider in excel tabset (not in use anymore)
 }

@@ -1,9 +1,8 @@
-#' Initiate 'datreturn', which holds data returned from other modules meant for
-#' temporary use
+#' Initiates a reactiveValues object used for session-only and
+#' module-overarching content
 #'
 #' @return datreturn
 #'
-#' @examples
 init_datreturn = function() {
   reactiveValues(
     selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
@@ -14,9 +13,19 @@ init_datreturn = function() {
   ) 
 }
 
+#' Initializes material table for materialtabelle module
+#'
+#' @param analytes the available analytes
+#'
+#' @return a data frame
+#' @export
+#'
+#' @examples
+#' analytes = c("Si","Ar")
+#' matTab = init_materialTabelle(analytes)
 init_materialTabelle <- function(analytes) {
   c = data.frame(
-    "analyte" =  analytes, # a,
+    "analyte" =  analytes,
     "mean" = NA,
     "F1" = 1,
     "F2" = 1,
@@ -44,10 +53,20 @@ init_materialTabelle <- function(analytes) {
   return(c)
 }
 
+#' Initialize permanent reactive values
+#'
+#' @description \code{init_rv} initializes the main reactive value (rv) to store
+#'   the results from all modules. It therefore gets handed over multiple times.
+#'   In further programming, it should be considered to be replaced by a class
+#'   in OOP style.
+#'
+#' @return a reactiveValues
+#' @export
+#'
+#' @examples rv = init_rv()
 init_rv = function() {
-  rv = do.call("reactiveValues",
+  rv = do.call(shiny::reactiveValues,
                list(
-                 
                  "Certifications" = list(
                    # upload
                    "data" = NULL,
@@ -90,4 +109,52 @@ init_rv = function() {
                  )
                )
   )
+}
+
+#' Analyte Parameter List (apm)
+#'
+#' @description \code{analyte_parameter_list} creates for each analyte the
+#'   parameter list. Each sublist contains information about he selected analyte
+#'   tab, and for each analyte the wanted precision, the filtered sample id,
+#'   which sample ids are available to be filtered at all and, for completion,
+#'   the analyte name in case the list name fails
+#'
+#' @param certification data frame of certification data
+#'
+#' @return reactiveValues 
+#' @export
+#'
+#' @examples apm = analyte_parameter_list(data_of_godelement(rv$Certifications)) 
+analyte_parameter_list = function(certification = NULL) {
+  if(!is.null(certification)){
+    stopifnot(is.factor(certification[, "analyte"]))
+  }
+
+  param_template = list(
+    "precision" = NULL, 
+    "sample_filter" = NULL, # saving which samples where selected for filter
+    "sample_ids" = NULL, # which samples are available for the filter
+    "lab_filter" = NULL, # filter of laboratories (e.g. L1)
+    "analytename" = NULL
+  )
+  
+  analytes = levels(certification[, "analyte"])
+  # create list with lists of all analytes (i.e. a nested list)
+  a_param_list = rep(list(param_template), length(analytes))
+  if(!is.null(certification)){
+    for (i in 1:length(a_param_list)) {
+      # add analyte name to list
+      a_param_list[[i]]$analytename = as.list(analytes)[[i]]
+      # add available id's of samples to list
+      tmp = certification
+      ids = tmp[tmp[["analyte"]] == as.list(analytes)[[i]], "ID"]
+      a_param_list[[i]]$sample_ids = ids[!is.na(ids)] # fill available ids
+    }
+  }
+  # set names of sublists to analyte names
+  a_param_list = setNames(a_param_list, analytes)
+  l = list("selected_tab" = NULL)
+  l$analytes = a_param_list
+  apm = do.call("reactiveValues", l) # finally, create reactiveValues
+  # end param list
 }

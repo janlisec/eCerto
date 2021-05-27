@@ -19,7 +19,7 @@ dat_test <- shiny::reactiveVal(FALSE)
 excelformat_test = shiny::reactiveVal("Certifications")
 # # test_that("Successful Upload test",code = {
 # shiny::testServer(
-#   app = .ExcelUploadControl_Server,
+#   app = m_ExcelUploadControl_Server,
 #   args = list(excelformat=excelformat_test, check = dat_test),
 #   expr =  {
 #     session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
@@ -41,7 +41,7 @@ xlsx_test2 = list(
 excelformat_test = shiny::reactiveVal("Homogeneity")
 
 test_that("Successful Upload test",code = {
-  shiny::testServer(app = .ExcelUploadControl_Server,
+  shiny::testServer(app = m_ExcelUploadControl_Server,
     args = list(excelformat=excelformat_test, check = dat_test),
     expr =  {
       # suppressMessages(

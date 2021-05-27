@@ -17,7 +17,7 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 \item{value}{value to be updated}
 }
 \value{
-
+nothing directly
 }
 \description{
 Update single or multiple cells of the final materialtabelle (formerly cert_vals)

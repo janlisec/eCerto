@@ -7,11 +7,20 @@
 set_listUploadsource(rv, m, uploadsource)
 }
 \arguments{
-\item{uploadsource}{}
+\item{rv}{the list}
+
+\item{m}{one of "Certification","Homogeneity", "Stability"}
+
+\item{uploadsource}{the source of upload}
 }
 \value{
-
+nothing directly, but via rv
 }
 \description{
 set source of upload for an element
+}
+\examples{
+## Not run: 
+rv = init_rv()
+set_listUploadsource(rv,"Certification","Excel")
 }

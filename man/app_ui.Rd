@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_ui.R
 \name{app_ui}
 \alias{app_ui}
-\title{Title}
+\title{Main User Interface}
 \usage{
 app_ui()
 }
@@ -10,5 +10,5 @@ app_ui()
 
 }
 \description{
-Title
+Main User Interface
 }

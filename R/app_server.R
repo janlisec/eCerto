@@ -9,18 +9,8 @@
 app_server = function(input, output, session) {
 
   # Upload Controller -------------------------------------------------------
-
-  # rv = do.call("reactiveValues",
-  #              list(
-  #                "Certifications" = list("data" = NULL, "uploadsource" = NULL),
-  #                "Homogeneity" = list("data" = NULL, "uploadsource" = NULL),
-  #                "Stability" = list("data" = NULL, "uploadsource" = NULL)
-  #              )
-  # )
   
   rv = init_rv()
- 
-
   updateSelectInput(inputId = "moduleSelect",
                     session = session,
                     choices =  shiny::isolate(names(rv)),
@@ -28,7 +18,7 @@ app_server = function(input, output, session) {
 
   excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-   t = .ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
+   t = m_ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null(get_listelem(rv,excelformat()))}))
   # --- --- --- --- --- --- --- --- ---
 
   observeEvent(t(),{
@@ -108,7 +98,7 @@ app_server = function(input, output, session) {
   
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  .CertificationServer(id = "certification", d = reactive({rv$Certifications}), datreturn)
+  m_CertificationServer(id = "certification", certification = reactive({rv$Certifications}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
   .HomogeneityServer(id = "Homogeneity", rv, datreturn)
 
