@@ -24,13 +24,13 @@ xlsx_range_select_UI <- function(id) {
 }
 
 xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::reactive({"Certifications"}), silent=FALSE) {
-  
+
   ns <- shiny::NS(id)
-  
+
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     tab <- shiny::reactive({
-      # req(x(),sheet())
+      req(x(),sheet())
       validate(
         need(x(), message = FALSE),
         need(sheet(), message = FALSE),
@@ -51,13 +51,13 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       } else {
         l <- list(fnc_load_xlsx(filepath = x()$datapath[1], sheet = sheet(), method="openxlsx"))
       }
-      
+
       return(l)
     })
-    
-    
+
+
     rv <- shiny::reactiveValues("tab"=NULL, "start_row"=1, "end_row"=1, "start_col"=1, "end_col"=1, "tab_flt"=matrix(1))
-    
+
     # after upload of excel file(s)
     shiny::observeEvent(tab(), {
       rv$tab <- tab()
@@ -65,9 +65,9 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       rv$start_col <- 1
       rv$end_row <- nrow(tab()[[1]])
       rv$end_col <- ncol(tab()[[1]])
-      
+
     })
-    
+
     # if rows and columns in the DT() have been selected
     shiny::observeEvent(input$uitab_cells_selected, {
       cs <- input$uitab_cells_selected
@@ -84,15 +84,15 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
           rows = as.numeric(rv$start_row):as.numeric(rv$end_row),
           cols = as.numeric(rv$start_col):as.numeric(rv$end_col)
         )
-        
-        
+
+
       }
-      
-      
-      
-      
-      
-      
+
+
+
+
+
+
       # )
       #   message("xlsx_range_select_Server: observeEvent(input$uitab_cells_selected): add File column")
       #   for (i in 1:length(rv$tab_flt)) {
@@ -101,7 +101,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       # }
       # }
     })
-    
+
     shiny::observeEvent(rv$tab,{
       if(!is.null(rv$tab)){
         rv$tab_flt = rv$tab
@@ -111,8 +111,8 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         }
       }
     })
-    
-    
+
+
     # output$uitab <- DT::renderDT({
     #   shiny::req(tab())
     #   out <- tab()[[1]]
@@ -136,15 +136,15 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         out <- apply(out, 2, substr, start=1, stop=10)
       }
       return(out)
-    }, 
-    options=list("dom"="start_row", pageLength=nrow(tab()[[1]]),ordering=FALSE), 
+    },
+    options=list("dom"="start_row", pageLength=nrow(tab()[[1]]),ordering=FALSE),
     selection=list(
       target="cell",
       selectable=matrix(-1*c(1:nrow(tab()[[1]]), rep(0,nrow(tab()[[1]]))), ncol=2)
     )
     )
-    
-    
+
+
     output$uitxt <- shiny::renderUI({
       shiny::req(tab())
       str1 <- ifelse(is.null(x()), "", paste("You see a preview of File:", x()$name[1]))
@@ -152,8 +152,8 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       str3 <- paste("Currently selected range:", paste0(LETTERS[rv$start_col], rv$start_row, ":", LETTERS[rv$end_col], rv$end_row))
       shiny::HTML(paste(str1, str2, str3, sep = '<br/>'))
     })
-    
+
     return(rv)
-    
+
   })
 }

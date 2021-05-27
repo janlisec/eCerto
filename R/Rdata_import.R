@@ -87,7 +87,7 @@
       res <- rdata()
       #browser()
       shiny::reactiveValuesToList(rv)
-      if ("dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
+      if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes
         if (res$Certifications$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
@@ -159,6 +159,7 @@
     })
 
     observeEvent(rv$Certifications$time_stamp, {
+      #message("observeEvent(rv$Certifications$time_stamp")
       updateTextInput(
         session = session,
         inputId = "user",
