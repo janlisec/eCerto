@@ -60,9 +60,9 @@
   )
 }
 
-.RDataImport_Server = function(id, rv=init_rv()) {
-  
-  stopifnot(is.reactivevalues(rv))
+.RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
+  stopifnot(R6::is.R6(rv))
+  stopifnot(is.reactivevalues(rv$get()))
   
   shiny::moduleServer(id, function(input, output, session) {
     
@@ -85,26 +85,30 @@
     observeEvent(rdata(),{
       message("RDataImport_Server: RData uploaded")
       res <- rdata()
-      browser()
-      shiny::reactiveValuesToList(rv)
+ 
+      shiny::reactiveValuesToList(rv$get())
       if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes
-        if (res$Certifications$dataformat_version=="2021-05-27") {
+        if ( res$Certifications$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
           resnames <- names(unlist(res, recursive = FALSE))
-          rvnames <- names(unlist(reactiveValuesToList(rv), recursive = FALSE))
+          rvnames <- names(unlist(reactiveValuesToList(rv$get()), recursive = FALSE))
           if (all(resnames %in% rvnames)) {
             # browser()
             #list12 <- Map(c, reactiveValuesToList(rv), res)
             #rv_tmp <- do.call("reactiveValues", res)
             #rv <- rv_tmp
             # Transfer list elements
-            # $$ToDo$$ one might provide a warning to the user in case he will overwrite non empty fields
-            # i.e. he did load Stab data and now reads an RData backup which already contains Stab data
+            # $$ToDo$$ one might provide a warning to the user in case he will
+            # overwrite non empty fields i.e. he did load Stab data and now
+            # reads an RData backup which already contains Stab data
             for (i in names(res)) {
-              rv[[i]] <- res[[i]]
+              # könnte schieflaufen hier
+              browser()
+              setValue(rv,i,res[[i]])
             }
-            rv$Certifications$time_stamp <- Sys.time()
+            setValue(rv,c("Certifications","time_stamp"),Sys.time())
+            # rv$Certifications$time_stamp <- Sys.time()
           } else {
             err <- c(paste0("file_", resnames), paste0("expected_", rvnames))[c(resnames, rvnames) %in% names(which(table(c(resnames, rvnames))==1))]
             shinyalert::shinyalert(title = ".RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:", paste(err, collapse=", ")), type = "warning")
@@ -114,77 +118,85 @@
         # import functions for legacy data_format schemes
         if ("Certification" %in% names(res) && !is.null(res$Certification)) {
           message("RDataImport_Server: Cert data transfered")
-          rv$Certifications$data = res[["Certification"]][["data_input"]]
-          rv$Certifications$input_files = res[["Certification"]][["input_files"]]
+          setValue(rv,c("Certifications","data"),res[["Certification"]][["data_input"]])
+          setValue(rv,c("Certifications","input_files"),res[["Certification"]][["input_files"]])
           set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
           # save
-          rv$Certifications$user = res$Certification$user
-          rv$Certifications$study_id = res$Certification$study_id
+          setValue(rv,c("Certifications","user"),res$Certification$user)
+          setValue(rv,c("Certifications","study_id"),res$Certification$study_id)
           # processing
-          rv$Certifications$lab_means = res[["Certification"]][["lab_means"]]
-          rv$Certifications$cert_mean = res[["Certification"]][["cert_mean"]]
-          rv$Certifications$cert_sd = res[["Certification"]][["cert_sd"]]
-          rv$Certifications$normality_statement = res[["Certification"]][["normality_statement"]]
-          rv$Certifications$precision = res[["Certification"]][["precision"]]
-          rv$Certifications$data_kompakt = res[["Certification"]][["data_kompakt"]]
-          rv$Certifications$CertValPlot = res[["Certification"]][["CertValPlot"]]
-          rv$Certifications$stats = res[["Certification"]][["stats"]]
-          rv$Certifications$boxplot = res[["Certification"]][["boxplot"]]
-          rv$Certifications$opt = res[["Certification"]][["opt"]]
-          rv$Certifications$mstats = res[["Certification"]][["mstats"]]
-          # materialtabelle
-          rv$Certifications$materialtabelle = res[["Certification"]][["cert_vals"]]
+          setValue(rv,c("Certifications","lab_means"), res[["Certification"]][["lab_means"]])
+          setValue(rv,c("Certifications","cert_mean"),res[["Certification"]][["cert_mean"]])
+          setValue(rv,c("Certifications","cert_sd"),res[["Certification"]][["cert_sd"]])
+          setValue(rv,c("Certifications","normality_statement"),res[["Certification"]][["normality_statement"]])
+          setValue(rv,c("Certifications","precision"),res[["Certification"]][["precision"]])
           
+          setValue(rv,c("Certifications","data_kompakt"),res[["Certification"]][["data_kompakt"]])
+          setValue(rv,c("Certifications","CertValPlot"),res[["Certification"]][["CertValPlot"]])
+          setValue(rv,c("Certifications","stats"),res[["Certification"]][["stats"]])
+          setValue(rv,c("Certifications","boxplot"),res[["Certification"]][["boxplot"]])
+          setValue(rv,c("Certifications","opt"),res[["Certification"]][["opt"]])
+          setValue(rv,c("Certifications","mstats"),res[["Certification"]][["mstats"]])
+          
+          setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
+          
+          # materialtabelle
+          setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
         }
         if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
           message("RDataImport_Server: Homog data transfered")
-          rv$Homogeneity$data = res[["Homogeneity"]][["h_dat"]]
+          setValue(rv,c("Homogeneity","data"),res[["Homogeneity"]][["h_dat"]])
           set_listUploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
-          rv$Homogeneity$h_file = res[["Homogeneity"]][["h_file"]]
+          setValue(rv,c("Homogeneity","h_file"),res[["Homogeneity"]][["h_file"]])
           # Processing
-          rv$Homogeneity$h_vals =  res[["Homogeneity"]][["h_vals"]]
-          rv$Homogeneity$h_sel_analyt = res[["Homogeneity"]][["h_sel_analyt"]]
-          rv$Homogeneity$h_precision = res[["Homogeneity"]][["h_precision"]]
-          rv$Homogeneity$h_Fig_width = res[["Homogeneity"]][["h_Fig_width"]]
+          setValue(rv,c("Homogeneity","h_vals"),res[["Homogeneity"]][["h_vals"]])
+          setValue(rv,c("Homogeneity","h_sel_analyt"),res[["Homogeneity"]][["h_sel_analyt"]])
+          setValue(rv,c("Homogeneity","h_precision"),res[["Homogeneity"]][["h_precision"]])
+          setValue(rv,c("Homogeneity","h_Fig_width"),res[["Homogeneity"]][["h_Fig_width"]])
         }
         if ("Stability" %in% names(res) && !is.null(res$Stability)) {
           message("RDataImport_Server: Stab data transfered")
-          rv$Stability$s_file = res[["Stability"]][["s_file"]]
-          rv$Stability$data = res[["Stability"]][["s_dat"]]
+          setValue(rv,c("Stability","file"),res[["Stability"]][["s_file"]])
+          setValue(rv,c("Stability","data"),res[["Stability"]][["s_dat"]])
           set_listUploadsource(rv = rv, m = "Stability", uploadsource = "RData")
-          rv$Stability$s_vals = res[["Stability"]][["s_vals"]]
+          setValue(rv,c("Stability","s_vals"),res[["Stability"]][["s_vals"]])
         }
-        rv$Certifications$time_stamp <- Sys.time()
+        setValue(rv,c("Certifications","time_stamp"),Sys.time())
+        # rv$Certifications$time_stamp <- Sys.time()
       }
       
     })
     
-    observeEvent(rv$Certifications$time_stamp, {
+    observeEvent(getValue(rv,"Certifications")$time_stamp , {
       #message("observeEvent(rv$Certifications$time_stamp")
       updateTextInput(
         session = session,
         inputId = "user",
-        value = rv$Certifications$user
+        value = getValue(rv,c("Certifications","user"))
       )
       updateTextInput(
         session = session,
         inputId = "study_id",
-        value = rv$Certifications$study_id
+        value =  getValue(rv,c("Certifications","study_id"))
       )
     })
     
     observeEvent(input$study_id, {
-      rv$Certifications$study_id <- input$study_id
+      setValue(rv,c("Certifications","study_id"),input$study_id)
+      # rv$Certifications$study_id <- input$study_id
     })
     
     observeEvent(input$user, {
-      rv$Certifications$user <- input$user
+      setValue(rv,c("Certifications","user"),input$user)
+      # rv$Certifications$user <- input$user
     })
     
     output$ecerto_backup <- downloadHandler(
-      filename = function() { paste0(ifelse(is.null(rv$Certifications$study_id), "TEST", rv$Certifications$study_id), '.RData') },
+      filename = function() { 
+        paste0(ifelse(is.null(getValue(rv,c("Certifications","study_id"))), "TEST", getValue(rv,c("Certifications","study_id"))), '.RData') 
+      },
       content = function(file) {
-        res <- shiny::reactiveValuesToList(rv)
+        res <- shiny::reactiveValuesToList(getValue(rv))
         browser()
         res$Certifications$dataformat_version = "2021-05-27"
         save(res, file = file)
@@ -192,7 +204,7 @@
       contentType = "RData"
     )
     
-    return(rv)
+    # return(rv)
     
   })
   

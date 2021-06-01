@@ -2,8 +2,7 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{roundMT}
 \alias{roundMT}
-\title{Rounds material table.
-Currently without}
+\title{Rounds material table.}
 \usage{
 roundMT(value, precision = NULL)
 }
@@ -17,7 +16,6 @@ the rounded value
 }
 \description{
 Rounds material table.
-Currently without
 }
 \examples{
 roundMT(34.3434,3)

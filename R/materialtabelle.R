@@ -10,7 +10,7 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rDtataUpload if uploaded via RData - reactive({rv$Certifications$materialtabelle})
-#' @param datreturn the session data object
+#' @param datreturn the session data (R6) object 
 #'
 #'@return nothing
 #'@export
@@ -53,7 +53,8 @@ m_materialtabelleUI <- function(id) {
 
 #'@export
 m_materialtabelleServer = function(id, rdataUpload, datreturn) {
-  stopifnot(is.reactivevalues(datreturn))
+  stopifnot(R6::is.R6(datreturn))
+  stopifnot(shiny::is.reactivevalues(getValue(datreturn,NULL)))
   moduleServer(id, function(input, output, session) {
     
 
@@ -64,10 +65,15 @@ m_materialtabelleServer = function(id, rdataUpload, datreturn) {
     # data frame of selected analyte
     sAnData = reactive({
       # rv$v
-      datreturn$selectedAnalyteDataframe
+      getValue(datreturn)$selectedAnalyteDataframe
+      # datreturn$get("selectedAnalyteDataframe")
+      # datreturn$selectedAnalyteDataframe
     }) 
     
-    lab_statistics = reactive({datreturn$lab_statistics})
+    lab_statistics = reactive({
+      getValue(datreturn)$lab_statistics
+      # datreturn$get("lab_statistics")
+      })
     
     precision2 = 4
     # export precision2 for testing. Since it hasn't created yet
@@ -80,11 +86,10 @@ m_materialtabelleServer = function(id, rdataUpload, datreturn) {
     mater_table = reactiveVal(NULL)
     
     # Homogeneity transfer
-    # TODO Werden bereits gefüllte Zellen,z.B. "means", beim Transfer gelöscht?
-    observeEvent(datreturn$t_H,{
+     observeEvent(getValue(datreturn)$t_H ,{
       # if(!is.null(mater_table())){
         
-        transferred_array = datreturn$t_H
+        transferred_array = getValue(datreturn)$t_H
         mergeby = names(transferred_array)
         mater_table_tmp = mater_table()
         mater_table_tmp[,mergeby] = transferred_array
@@ -268,8 +273,8 @@ m_materialtabelleServer = function(id, rdataUpload, datreturn) {
       
       U <- mater_table()[, "k"] * mater_table()[, "com"]
       update_reactivecell(r = mater_table,colname = "U",value = U)
-      
-      datreturn$mater_table = mater_table()
+      setValue(datreturn,"mater_table",mater_table())
+      # datreturn$mater_table = mater_table()
     }, ignoreInit = TRUE)
     
     # monitor table editing and update if necessary
@@ -308,5 +313,3 @@ m_materialtabelleServer = function(id, rdataUpload, datreturn) {
     )
   })
 }
-
-

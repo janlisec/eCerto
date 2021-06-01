@@ -104,7 +104,7 @@ init_rv = function() {
                    "h_Fig_width" = NULL
                  ),
                  "Stability" = list(
-                   "s_file" = NULL,
+                   "file" = NULL,
                    "data" = NULL,
                    "uploadsource" = NULL,
                    "s_vals" = NULL

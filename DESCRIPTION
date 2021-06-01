@@ -25,7 +25,9 @@ Imports:
     rmarkdown,
     agricolae,
     tidyxl,
-    plyr
+    plyr,
+    R6,
+    purrr
 Suggests: 
     testthat (>= 3.0.0),
     shinytest,

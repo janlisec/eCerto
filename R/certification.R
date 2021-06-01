@@ -213,12 +213,24 @@ m_CertificationServer = function(id, certification, datreturn) {
           # getData("normality_statement")
         })
 
-        observe({
-          datreturn$lab_statistics = lab_statistics()
-          # message("m_CertificationServer -- lab_statistics created")
-          datreturn$selectedAnalyteDataframe = dat()
-          # console log
-          # message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
+        # observe({
+        #   setValue(datreturn,"lab_statistics",lab_statistics())
+        #   # datreturn$set("lab_statistics",lab_statistics())
+        #   # datreturn$lab_statistics = lab_statistics()
+        #   # message("m_CertificationServer -- lab_statistics created")
+        #   # datreturn$set("selectedAnalyteDataframe",dat())
+        #   setValue(datreturn,"selectedAnalyteDataframe",dat())
+        #   # datreturn$selectedAnalyteDataframe = dat()
+        #   # console log
+        #   # message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
+        # })
+        
+        observeEvent(dat(),{
+          setValue(datreturn,"selectedAnalyteDataframe",dat())
+        })
+        
+        observeEvent(lab_statistics(),{
+          setValue(datreturn,"lab_statistics",lab_statistics())
         })
 
 

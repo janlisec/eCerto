@@ -1,7 +1,7 @@
 # Successful RData (version 26) Upload
 
     Code
-      reactiveValuesToList(rv)
+      reactiveValuesToList(ecerto::getValue(rv))
     Output
       $Homogeneity
       $Homogeneity$data
@@ -126,7 +126,7 @@
       
       
       $Stability
-      $Stability$s_file
+      $Stability$file
       [1] "Stability_Testdata.xlsx"
       
       $Stability$data
@@ -1358,7 +1358,10 @@
       [1] "TEST"
       
       $Certifications$time_stamp
-      [1] "2021-05-27 11:34:04 CEST"
+      [1] "2021-06-04 10:32:15 CEST"
+      
+      $Certifications$dataformat_version
+      [1] "2021-05-27"
       
       $Certifications$lab_means
           Lab       mean           sd n
