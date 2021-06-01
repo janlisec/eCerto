@@ -1,4 +1,47 @@
 
+
+#' General access to data object (so data object can maybe get changed without that much code edit)
+#'
+#' @param df the data frame (e.g. a R6 object)
+#' @param key key(s)
+#' @param value value to set
+#'
+#' @return nothing
+#' @export
+#'
+#' @examples
+setValue = function(df,key,value){
+  if(R6::is.R6(df)){
+    df$set(key,value)
+  } else {
+    stop("object of class ", class(df), " can't get set currently.")
+  }
+}
+
+
+#' Returns element. If 'key' is used, reactivity not working correctly.
+#' Preferable way for calling `getValue(df)$key`, see example
+#'
+#' @param df 
+#' @param key key, see notes
+#' @param react should
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' datreturn = test_datreturn()
+#' isolate(getValue(datreturn)$t_H)
+getValue = function(df, key=NULL) {
+  
+  if(R6::is.R6(df)){
+    return(df$get(key))
+  } else {
+    stop("object of class ", class(df), " can't get set currently.")
+  }
+}
+
+
 #' creates long pivot table in laboratory style
 #'
 #' @param x data frame with uploaded excel table
@@ -25,6 +68,46 @@ laboratory_dataframe = function(x) {
     )
 
   return(x)
+}
+
+#' Extracts values from nested list
+#'
+#' @param l the list object
+#' @param keys a vector of keys
+#'
+#' @return the extracted value
+#' @export
+#'
+#' @examples
+#' lz = list(a1=list(b1 = "Streusalz",b2 = "Andreas Scheuer"), a2 = "Wurst")
+#' lz = do.call(shiny::reactiveValues,lz)
+#' access_nested_list(lz, c("a1","b2")) # should be "Andreas Scheuer"
+access_nested_list = function(l,keys) {
+  if(!is.null(keys)){
+    if(is.reactivevalues(l)) {
+      isolate(purrr::chuck(l, !!!keys))
+    } else {
+      purrr::chuck(l, !!!keys)
+    }
+  } else {
+    l
+  }
+}
+
+#' [similar to access_nested_list()]][ecerto::access_nested_list]
+set_nested_list = function(l,keys,value) {
+  
+  if(!is.null(keys)){
+    if(is.reactivevalues(l)) {
+      access_nested_list(l, keys)
+      isolate(purrr::pluck(l, !!!keys) <- value)
+    } else {
+      purrr::pluck(l, !!!keys) <- value
+    }
+  } else {
+    l
+  }
+  
 }
 
 #' Loads names of Excel sheets
@@ -129,28 +212,31 @@ data_of_godelement = function(l) {
 #' @return
 #' @export
 get_listelem = function(c, m) {
-
+  .Deprecated("getValue")
   data_of_godelement(c[[m]])
 }
 
 #' setter function for an element in the "god list"
 #'
-#' @param c "god list"
+#' @param rv "god list"
 #' @param m element to be fed (e.g. "Certifications")
 #' @param dat data to be inserted
 #'
 #' @return
 #' @export
-set_listelem = function(c, m, dat) {
-  if(!is.null(get_listelem(c,m))) {
-    warning(paste0(m, " in list is not null"))
-    return(NULL)
-  }
+set_listelem = function(rv, m, dat) {
+  # if(!is.null(get_listelem(c,m))) {
+  #   warning(paste0(m, " in list is not null"))
+  #   return(NULL)
+  # }
+  .Deprecated("setValue")
 
   if(is.reactive(dat)) {
-    c[[m]][["data"]] = isolate(dat())
+    rv$set(c(m,"data"),isolate(dat()))
+    # c[[m]][["data"]] = isolate(dat())
   } else {
-    c[[m]][["data"]] = dat
+    rv$set(c(m,"data"),dat)
+    # c[[m]][["data"]] = dat
   }
 
 }
@@ -173,28 +259,30 @@ set_listelem = function(c, m, dat) {
 set_listUploadsource = function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
   stopifnot(uploadsource %in% c("RData","Excel"))
-
-  rv[[m]][["uploadsource"]] = uploadsource
+  setValue(rv,c(m,"uploadsource"),uploadsource)
+  # rv$set(c(m,"uploadsource"),uploadsource)
+  # rv[[m]][["uploadsource"]] = uploadsource
 
 }
 
 
 #' get source of upload for an element
 #'
-#' @param c the list
+#' @param rv the list
 #' @param m "Certification", etc.
 #'
 #' @return
 #' @export
 
-get_listUploadsource = function(c, m) {
-
-  uploadsource_of_element(c[[m]])
+get_listUploadsource = function(rv, m) {
+  getValue(rv,c(m,"uploadsource"))
+  # rv$get(c(m,"uploadsource"))
+  # uploadsource_of_element(c[[m]])
 
 }
 
 #' Returns source of upload for an element, is internally used by \code{get_listUploadsource}
-#'
+#' (outdated)
 #' @param d
 #'
 #' @return
@@ -205,7 +293,7 @@ uploadsource_of_element = function(d) {
 
 
 #' Rounds material table.
-#' Currently without
+#' 
 #'
 #' @param value the value to be rounded
 #' @param precision precision value

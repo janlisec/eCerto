@@ -4,10 +4,10 @@
 \alias{set_listelem}
 \title{setter function for an element in the "god list"}
 \usage{
-set_listelem(c, m, dat)
+set_listelem(rv, m, dat)
 }
 \arguments{
-\item{c}{"god list"}
+\item{rv}{"god list"}
 
 \item{m}{element to be fed (e.g. "Certifications")}
 
