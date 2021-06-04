@@ -91,13 +91,6 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
     observeEvent(rdata(),{
       message("RDataImport_Server: RData uploaded")
       res <- rdata()
-<<<<<<< HEAD
- 
-||||||| parent of f821b2d (global variable adapted)
-      browser()
-=======
-      # browser()
->>>>>>> f821b2d (global variable adapted)
       shiny::reactiveValuesToList(rv$get())
       if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes

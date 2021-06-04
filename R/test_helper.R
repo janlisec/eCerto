@@ -27,3 +27,24 @@ test_datreturn = function() {
   datreturn1 = reactiveClass$new(datreturn1)
   return(datreturn1)
 }
+
+#' @keywords internal
+test_mod_xlsx_range = function() {
+  fn1 = shiny::reactiveVal(structure(list(
+    name = c(
+      "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+      "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+      "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
+    size = c(27926L, 27617L, 27527L),
+    type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    datapath = c(
+      system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
+      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"))
+  ),
+  row.names = c(NA,-3L),
+  class = "data.frame"
+  ))
+}
