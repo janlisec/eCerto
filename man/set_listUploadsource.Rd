@@ -2,7 +2,29 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{set_listUploadsource}
 \alias{set_listUploadsource}
-\title{set source of upload for an element}
+\title{#' getter function for module element of the "god list"
+#' modules so far are "Certifications, Homogeneity, Stability"
+#'
+#' @param c "god list
+#' @param m element to be fetched (e.g. "Certifications")
+#'
+#' @return
+#' @export
+get_listelem = function(c, m) {
+.Deprecated("getValue")
+data_of_godelement(c[\link{m}])
+}
+#' setter function for an element in the "god list"
+#'
+#' @param rv "god list"
+#' @param m element to be fed (e.g. "Certifications")
+#' @param dat data to be inserted
+#'
+#' @return
+#' @export
+set_listelem = function(rv, m, dat) {if(!is.null(get_listelem(c,m))) {warning(paste0(m, " in list is not null"))return(NULL)}
+
+.Deprecated("setValue")}
 \usage{
 set_listUploadsource(rv, m, uploadsource)
 }
@@ -17,7 +39,16 @@ set_listUploadsource(rv, m, uploadsource)
 nothing directly, but via rv
 }
 \description{
-set source of upload for an element
+if(is.reactive(dat)) {
+rv$set(c(m,"data"),isolate(dat()))
+# c[\link{m}][\link{"data"}] = isolate(dat())
+} else {
+rv$set(c(m,"data"),dat)
+# c[\link{m}][\link{"data"}] = dat
+}
+}
+\details{
+
 }
 \examples{
 ## Not run: 

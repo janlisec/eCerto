@@ -1,252 +1,9 @@
 # Successful RData (version 26) Upload
 
     Code
-      reactiveValuesToList(rv)
+      bbb[!names(bbb) %in% "time_stamp"]
     Output
-      $Homogeneity
-      $Homogeneity$data
-         analyte H_type Flasche     value  unit
-      1       Fe radial       3 0.2897693  mM/L
-      2       Fe radial      36 0.2967753  mM/L
-      3       Fe radial      62 0.3075952  mM/L
-      4       Fe radial      78 0.3006643  mM/L
-      5       Fe radial     109 0.2981130  mM/L
-      6       Fe radial     144 0.3018592  mM/L
-      7       Fe radial     162 0.3051646  mM/L
-      8       Fe  axial     200 0.2934924  mM/L
-      9       Fe  axial     225 0.2369928  mM/L
-      10      Fe  axial     239 0.2990771  mM/L
-      11      Fe  axial     256 0.2916479  mM/L
-      12      Fe  axial     295 0.2981732  mM/L
-      13      Fe  axial     325 0.3033135  mM/L
-      14      Fe  axial     351 0.3084570  mM/L
-      15      Fe  axial     397 0.2988461  mM/L
-      16      Fe radial       3 0.2938025  mM/L
-      17      Fe radial      36 0.2913924  mM/L
-      18      Fe radial      62 0.2910948  mM/L
-      19      Fe radial      78 0.2835857  mM/L
-      20      Fe radial     109 0.2985147  mM/L
-      21      Fe radial     144 0.2884778  mM/L
-      22      Fe radial     162 0.2940975  mM/L
-      23      Fe  axial     200 0.2865534  mM/L
-      24      Fe  axial     225 0.2940975  mM/L
-      25      Fe  axial     239 0.2965681  mM/L
-      26      Fe  axial     256 0.2907160  mM/L
-      27      Fe  axial     295 0.2911270  mM/L
-      28      Fe  axial     325 0.2884299  mM/L
-      29      Fe  axial     351 0.2839751  mM/L
-      30      Fe  axial     397 0.2967776  mM/L
-      31      Fe radial       3 0.2777090  mM/L
-      32      Fe radial      36 0.2886654  mM/L
-      33      Fe radial      62 0.2948648  mM/L
-      34      Fe radial      78 0.2924766  mM/L
-      35      Fe radial     109 0.2794004  mM/L
-      36      Fe radial     144 0.2918912  mM/L
-      37      Fe radial     162 0.2875026  mM/L
-      38      Fe  axial     200 0.2895977  mM/L
-      39      Fe  axial     225 0.2874214  mM/L
-      40      Fe  axial     239 0.2900750  mM/L
-      41      Fe  axial     256 0.2998802  mM/L
-      42      Fe  axial     295 0.2839409  mM/L
-      43      Fe  axial     325 0.2866047  mM/L
-      44      Fe  axial     351 0.2902880  mM/L
-      45      Fe  axial     397 0.2854040  mM/L
-      46      Mg radial       3 0.2897693 mg/mL
-      47      Mg radial      36 0.2967753 mg/mL
-      48      Mg radial      62 0.3075952 mg/mL
-      49      Mg radial      78 0.3006643 mg/mL
-      50      Mg radial     109 0.2981130 mg/mL
-      51      Mg radial     144 0.3018592 mg/mL
-      52      Mg radial     162 0.3051646 mg/mL
-      53      Mg  axial     200 0.2934924 mg/mL
-      54      Mg  axial     225 0.2369928 mg/mL
-      55      Mg  axial     239 0.2990771 mg/mL
-      56      Mg  axial     256 0.2916479 mg/mL
-      57      Mg  axial     295 0.2981732 mg/mL
-      58      Mg  axial     325 0.3033135 mg/mL
-      59      Mg  axial     351 0.3084570 mg/mL
-      60      Mg  axial     397 0.2988461 mg/mL
-      61      Mg radial       3 0.2938025 mg/mL
-      62      Mg radial      36 0.2913924 mg/mL
-      63      Mg radial      62 0.2910948 mg/mL
-      64      Mg radial      78 0.2835857 mg/mL
-      65      Mg radial     109 0.2985147 mg/mL
-      66      Mg radial     144 0.2884778 mg/mL
-      67      Mg radial     162 0.3040194 mg/mL
-      68      Mg  axial     200 0.2865534 mg/mL
-      69      Mg  axial     225 0.2940975 mg/mL
-      70      Mg  axial     239 0.2965681 mg/mL
-      71      Mg  axial     256 0.2907160 mg/mL
-      72      Mg  axial     295 0.2911270 mg/mL
-      73      Mg  axial     325 0.2884299 mg/mL
-      74      Mg  axial     351 0.2839751 mg/mL
-      75      Mg  axial     397 0.2967776 mg/mL
-      76      Mg radial       3 0.2777090 mg/mL
-      77      Mg radial      36 0.2886654 mg/mL
-      78      Mg radial      62 0.2948648 mg/mL
-      79      Mg radial      78 0.2924766 mg/mL
-      80      Mg radial     109 0.2794004 mg/mL
-      81      Mg radial     144 0.2918912 mg/mL
-      82      Mg radial     162 0.2875026 mg/mL
-      83      Mg  axial     200 0.2895977 mg/mL
-      84      Mg  axial     225 0.2874214 mg/mL
-      85      Mg  axial     239 0.2900750 mg/mL
-      86      Mg  axial     256 0.2998802 mg/mL
-      87      Mg  axial     295 0.2839409 mg/mL
-      88      Mg  axial     325 0.2866047 mg/mL
-      89      Mg  axial     351 0.2902880 mg/mL
-      90      Mg  axial     397 0.2854040 mg/mL
-      
-      $Homogeneity$uploadsource
-      [1] "RData"
-      
-      $Homogeneity$h_file
-      [1] "Homogenität_Test.xlsx"
-      
-      $Homogeneity$h_vals
-        analyte H_type      mean n N      MSamong     MSwithin         P s_bb
-      1      Fe  axial 0.2904774 3 8 1.616865e-04 1.728085e-04 0.5065152    0
-      2      Fe radial 0.2930198 3 7 3.417746e-05 6.887791e-05 0.8009367    0
-      3      Mg  axial 0.2904774 3 8 1.616865e-04 1.728085e-04 0.5065152    0
-      4      Mg radial 0.2934923 3 7 4.735980e-05 7.145272e-05 0.6808551    0
-          s_bb_min
-      1 0.01553593
-      2 0.01005328
-      3 0.01553593
-      4 0.01022298
-      
-      $Homogeneity$h_sel_analyt
-      [1] "Fe.axial"
-      
-      $Homogeneity$h_precision
-      [1] 4
-      
-      $Homogeneity$h_Fig_width
-      [1] 850
-      
-      
-      $Stability
-      $Stability$s_file
-      [1] "Stability_Testdata.xlsx"
-      
-      $Stability$data
-          analyte   Value       Date
-      1        Si  0.2340 2011-04-05
-      2        Si  0.2350 2011-04-06
-      3        Si  0.2340 2011-04-27
-      4        Si  0.2341 2011-10-10
-      5        Si  0.2338 2011-10-12
-      6        Si  0.2344 2011-10-13
-      7        Si  0.2338 2011-10-14
-      8        Si  0.2348 2011-11-25
-      9        Si  0.2337 2011-12-09
-      10       Si  0.2334 2012-01-13
-      11       Si  0.2344 2012-04-12
-      12       Si  0.2351 2012-06-22
-      13       Si  0.2347 2012-08-23
-      14       Si  0.2346 2012-10-29
-      15       Si  0.2344 2012-12-14
-      16       Si  0.2319 2013-02-05
-      17       Si  0.2337 2013-06-11
-      18       Si  0.2340 2013-06-13
-      19       Si  0.2340 2013-07-19
-      20       Si  0.2338 2013-09-26
-      21       Si  0.2340 2013-10-15
-      22       Si  0.2340 2013-11-01
-      23       Si  0.2340 2014-01-07
-      24       Si  0.2340 2014-01-31
-      25       Si  0.2349 2014-04-29
-      26       Si  0.2342 2014-05-12
-      27       Si  0.2338 2014-07-23
-      28       Si  0.2342 2014-09-03
-      29       Si  0.2327 2014-11-11
-      30       Si  0.2343 2014-11-21
-      31       Si  0.2336 2015-03-17
-      32       Si  0.2330 2015-05-13
-      33       Si  0.2328 2015-06-04
-      34       Si  0.2341 2015-06-24
-      35       Si  0.2360 2015-09-21
-      36       Si  0.2342 2016-01-05
-      37       Si  0.2337 2016-03-10
-      38       Si  0.2335 2016-04-04
-      39       Si  0.2348 2016-07-04
-      40       Si  0.2333 2016-09-21
-      41       Si  0.2334 2016-11-07
-      42       Si  0.2324 2016-11-15
-      43       Si  0.2347 2017-01-03
-      44       Si  0.2326 2017-02-14
-      45       Si  0.2358 2017-08-03
-      46       Si  0.2320 2017-08-25
-      47       Si  0.2321 2017-12-01
-      48       Si  0.2319 2018-02-13
-      49       Si  0.2319 2018-03-13
-      50       Si  0.2321 2018-05-02
-      51       Si  0.2311 2018-07-09
-      52       Si  0.2324 2018-08-13
-      53       Mn 97.0400 2011-04-05
-      54       Mn 97.3500 2011-04-06
-      55       Mn 97.0000 2011-04-27
-      56       Mn 97.6200 2011-10-10
-      57       Mn 97.4500 2011-10-12
-      58       Mn 97.4900 2011-10-13
-      59       Mn 96.7800 2011-10-14
-      60       Mn 97.6500 2011-11-25
-      61       Mn 98.0600 2011-12-09
-      62       Mn 97.1141 2012-01-13
-      63       Mn 97.5300 2012-04-12
-      64       Mn 97.1100 2012-06-22
-      65       Mn 98.2050 2012-08-23
-      66       Mn 97.8000 2012-10-29
-      67       Mn 97.6900 2012-12-14
-      68       Mn 97.4600 2013-02-05
-      69       Mn 96.1100 2013-06-11
-      70       Mn 97.5400 2013-06-13
-      71       Mn 96.9778 2013-07-19
-      72       Mn 95.7900 2013-09-26
-      73       Mn 97.7400 2013-10-15
-      74       Mn 97.4500 2013-11-01
-      75       Mn 97.4600 2014-01-07
-      76       Mn 97.2300 2014-01-31
-      77       Mn 98.3800 2014-04-29
-      78       Mn 98.2800 2014-05-12
-      79       Mn 96.6000 2014-07-23
-      80       Mn 97.7900 2014-09-03
-      81       Mn 96.7800 2014-11-11
-      82       Mn 97.7000 2014-11-21
-      83       Mn 97.7800 2015-03-17
-      84       Mn 96.7000 2015-05-13
-      85       Mn 97.9000 2015-06-04
-      86       Mn 96.7000 2015-06-24
-      87       Mn 98.3300 2015-09-21
-      88       Mn 98.4700 2016-01-05
-      89       Mn 98.1300 2016-03-10
-      90       Mn 98.2000 2016-04-04
-      91       Mn 98.0600 2016-07-04
-      92       Mn 98.2000 2016-09-21
-      93       Mn 98.3700 2016-11-07
-      94       Mn 98.0800 2016-11-15
-      95       Mn 97.9300 2017-01-03
-      96       Mn 96.9300 2017-02-14
-      97       Mn 98.4300 2017-08-03
-      98       Mn 96.6000 2017-08-25
-      99       Mn 97.3000 2017-12-01
-      100      Mn 95.9000 2018-02-13
-      101      Mn 97.3000 2018-03-13
-      102      Mn 96.1300 2018-05-02
-      103      Mn 96.0400 2018-07-09
-      104      Mn 97.5300 2018-08-13
-      
-      $Stability$uploadsource
-      [1] "RData"
-      
-      $Stability$s_vals
-        analyte mon_diff         slope     SE_slope        U_Stab
-      1      Si       88 -6.435271e-07 1.556686e-07 -1.001770e-13
-      2      Mn       88 -2.212710e-05 1.207297e-04 -2.671399e-09
-      
-      
-      $Certifications
-      $Certifications$data
+      $data
            ID Lab analyte replicate      value unit
       1     1 L01      Si         1 0.04520000 0.05
       2     2 L01      Fe         1 0.05290000 0.05
@@ -1330,7 +1087,7 @@
       581          Ergebnisblatt_BAM-M321_Trimet_m.xlsx FALSE FALSE
       582          Ergebnisblatt_BAM-M321_Trimet_m.xlsx FALSE FALSE
       
-      $Certifications$input_files
+      $input_files
        [1] "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx" 
        [2] "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"  
        [3] "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"
@@ -1348,19 +1105,19 @@
       [15] "Ergebnisblatt_BAM-M321_OFuchs-sauer_m.xlsx"   
       [16] "Ergebnisblatt_BAM-M321_Trimet_m.xlsx"         
       
-      $Certifications$uploadsource
+      $uploadsource
       [1] "RData"
       
-      $Certifications$user
+      $user
       [1] "JL"
       
-      $Certifications$study_id
+      $study_id
       [1] "TEST"
       
-      $Certifications$time_stamp
-      [1] "2021-05-27 11:34:04 CEST"
+      $dataformat_version
+      NULL
       
-      $Certifications$lab_means
+      $lab_means
           Lab       mean           sd n
       L01 L01 0.04551667 0.0012560520 6
       L02 L02 0.05150000 0.0007563068 6
@@ -1373,19 +1130,19 @@
       L15 L15 0.05053333 0.0004412105 6
       L16 L16 0.05000000 0.0009143304 6
       
-      $Certifications$cert_mean
+      $cert_mean
       [1] 0.0493
       
-      $Certifications$cert_sd
+      $cert_sd
       [1] 0.0024
       
-      $Certifications$normality_statement
+      $normality_statement
       [1] "The data is normally distributed (KS_p=9.66E-01)."
       
-      $Certifications$precision
+      $precision
       [1] 4
       
-      $Certifications$data_kompakt
+      $data_kompakt
          Lab     R1     R2     R3     R4     R5     R6   mean     sd
       1  L01 0.0452 0.0435 0.0472 0.0456 0.0464 0.0452 0.0455 0.0013
       2  L02 0.0504 0.0512 0.0524 0.0520 0.0520 0.0510 0.0515 0.0008
@@ -1398,11 +1155,11 @@
       9  L15 0.0508 0.0497 0.0505 0.0505 0.0509 0.0508 0.0505 0.0004
       10 L16 0.0515 0.0498 0.0505 0.0492 0.0500 0.0490 0.0500 0.0009
       
-      $Certifications$CertValPlot
-      $Certifications$CertValPlot$show
+      $CertValPlot
+      $CertValPlot$show
       [1] FALSE
       
-      $Certifications$CertValPlot$fnc
+      $CertValPlot$fnc
        [1] "function (data = NULL) "                                                       
        [2] "{"                                                                             
        [3] "    data.stats <- plyr::ldply(split(data[, \"value\"], data[, \"Lab\"]), "     
@@ -1441,21 +1198,21 @@
       [36] "    box()"                                                                     
       [37] "}"                                                                             
       
-      $Certifications$CertValPlot$call
+      $CertValPlot$call
       CertValPlot(data = data)
       
-      $Certifications$CertValPlot$Fig01_width
+      $CertValPlot$Fig01_width
       [1] 790
       
-      $Certifications$CertValPlot$Fig01_height
+      $CertValPlot$Fig01_height
       [1] 400
       
       
-      $Certifications$stats
-      $Certifications$stats$show
+      $stats
+      $stats$show
       [1] TRUE
       
-      $Certifications$stats$fnc
+      $stats$fnc
        [1] "function (data = NULL, precision = 4) "                                               
        [2] "{"                                                                                    
        [3] "    lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {"              
@@ -1470,15 +1227,15 @@
       [12] "    return(out[order(out[, \"mean\"]), ])"                                            
       [13] "}"                                                                                    
       
-      $Certifications$stats$call
+      $stats$call
       Stats(data = data, precision = precision)
       
       
-      $Certifications$boxplot
-      $Certifications$boxplot$show
+      $boxplot
+      $boxplot$show
       [1] FALSE
       
-      $Certifications$boxplot$fnc
+      $boxplot$fnc
       [1] "function (data = NULL) "                                                                
       [2] "{"                                                                                      
       [3] "    data[, \"Lab\"] <- factor(data[, \"Lab\"], levels = names(sort(sapply(split(data[, "
@@ -1489,35 +1246,35 @@
       [8] "        labels = data[, \"ID\"], col = 4)"                                              
       [9] "}"                                                                                      
       
-      $Certifications$boxplot$call
+      $boxplot$call
       TestPlot(data = data)
       
       
-      $Certifications$opt
-      $Certifications$opt$data_style
+      $opt
+      $opt$data_style
       [1] "none"
       
-      $Certifications$opt$show_code
+      $opt$show_code
       [1] FALSE
       
-      $Certifications$opt$pooling
+      $opt$pooling
       [1] FALSE
       
-      $Certifications$opt$flt_samples
+      $opt$flt_samples
       NULL
       
-      $Certifications$opt$flt_labs
+      $opt$flt_labs
       NULL
       
-      $Certifications$opt$sel_analyt
+      $opt$sel_analyt
       [1] "Si"
       
       
-      $Certifications$mstats
-      $Certifications$mstats$show
+      $mstats
+      $mstats$show
       [1] TRUE
       
-      $Certifications$mstats$fnc
+      $mstats$fnc
        [1] "function (data = NULL, precision = 4) "                                                                      
        [2] "{"                                                                                                           
        [3] "    lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {"                                     
@@ -1547,11 +1304,11 @@
       [27] "    return(out)"                                                                                             
       [28] "}"                                                                                                           
       
-      $Certifications$mstats$call
+      $mstats$call
       mstats(data = data, precision = precision)
       
       
-      $Certifications$materialtabelle
+      $materialtabelle
         analyte   mean F1 F2 cert_val     sd  n       char         U2 U3 U4 U5 U6 U7
       1      Si 0.0493  1  1   0.0493 0.0024 10 0.01539446 0.00000000  0  0  0  0  0
       2      Fe     NA  1  1   1.0000     NA NA         NA 0.01553593  0  0  0  0  0
@@ -1569,5 +1326,254 @@
       6 0.00000000 2 0.00000000
       7 0.00000000 2 0.00000000
       
+
+---
+
+    Code
+      getValue(rv, "Homogeneity")
+    Output
+      $data
+         analyte H_type Flasche     value  unit
+      1       Fe radial       3 0.2897693  mM/L
+      2       Fe radial      36 0.2967753  mM/L
+      3       Fe radial      62 0.3075952  mM/L
+      4       Fe radial      78 0.3006643  mM/L
+      5       Fe radial     109 0.2981130  mM/L
+      6       Fe radial     144 0.3018592  mM/L
+      7       Fe radial     162 0.3051646  mM/L
+      8       Fe  axial     200 0.2934924  mM/L
+      9       Fe  axial     225 0.2369928  mM/L
+      10      Fe  axial     239 0.2990771  mM/L
+      11      Fe  axial     256 0.2916479  mM/L
+      12      Fe  axial     295 0.2981732  mM/L
+      13      Fe  axial     325 0.3033135  mM/L
+      14      Fe  axial     351 0.3084570  mM/L
+      15      Fe  axial     397 0.2988461  mM/L
+      16      Fe radial       3 0.2938025  mM/L
+      17      Fe radial      36 0.2913924  mM/L
+      18      Fe radial      62 0.2910948  mM/L
+      19      Fe radial      78 0.2835857  mM/L
+      20      Fe radial     109 0.2985147  mM/L
+      21      Fe radial     144 0.2884778  mM/L
+      22      Fe radial     162 0.2940975  mM/L
+      23      Fe  axial     200 0.2865534  mM/L
+      24      Fe  axial     225 0.2940975  mM/L
+      25      Fe  axial     239 0.2965681  mM/L
+      26      Fe  axial     256 0.2907160  mM/L
+      27      Fe  axial     295 0.2911270  mM/L
+      28      Fe  axial     325 0.2884299  mM/L
+      29      Fe  axial     351 0.2839751  mM/L
+      30      Fe  axial     397 0.2967776  mM/L
+      31      Fe radial       3 0.2777090  mM/L
+      32      Fe radial      36 0.2886654  mM/L
+      33      Fe radial      62 0.2948648  mM/L
+      34      Fe radial      78 0.2924766  mM/L
+      35      Fe radial     109 0.2794004  mM/L
+      36      Fe radial     144 0.2918912  mM/L
+      37      Fe radial     162 0.2875026  mM/L
+      38      Fe  axial     200 0.2895977  mM/L
+      39      Fe  axial     225 0.2874214  mM/L
+      40      Fe  axial     239 0.2900750  mM/L
+      41      Fe  axial     256 0.2998802  mM/L
+      42      Fe  axial     295 0.2839409  mM/L
+      43      Fe  axial     325 0.2866047  mM/L
+      44      Fe  axial     351 0.2902880  mM/L
+      45      Fe  axial     397 0.2854040  mM/L
+      46      Mg radial       3 0.2897693 mg/mL
+      47      Mg radial      36 0.2967753 mg/mL
+      48      Mg radial      62 0.3075952 mg/mL
+      49      Mg radial      78 0.3006643 mg/mL
+      50      Mg radial     109 0.2981130 mg/mL
+      51      Mg radial     144 0.3018592 mg/mL
+      52      Mg radial     162 0.3051646 mg/mL
+      53      Mg  axial     200 0.2934924 mg/mL
+      54      Mg  axial     225 0.2369928 mg/mL
+      55      Mg  axial     239 0.2990771 mg/mL
+      56      Mg  axial     256 0.2916479 mg/mL
+      57      Mg  axial     295 0.2981732 mg/mL
+      58      Mg  axial     325 0.3033135 mg/mL
+      59      Mg  axial     351 0.3084570 mg/mL
+      60      Mg  axial     397 0.2988461 mg/mL
+      61      Mg radial       3 0.2938025 mg/mL
+      62      Mg radial      36 0.2913924 mg/mL
+      63      Mg radial      62 0.2910948 mg/mL
+      64      Mg radial      78 0.2835857 mg/mL
+      65      Mg radial     109 0.2985147 mg/mL
+      66      Mg radial     144 0.2884778 mg/mL
+      67      Mg radial     162 0.3040194 mg/mL
+      68      Mg  axial     200 0.2865534 mg/mL
+      69      Mg  axial     225 0.2940975 mg/mL
+      70      Mg  axial     239 0.2965681 mg/mL
+      71      Mg  axial     256 0.2907160 mg/mL
+      72      Mg  axial     295 0.2911270 mg/mL
+      73      Mg  axial     325 0.2884299 mg/mL
+      74      Mg  axial     351 0.2839751 mg/mL
+      75      Mg  axial     397 0.2967776 mg/mL
+      76      Mg radial       3 0.2777090 mg/mL
+      77      Mg radial      36 0.2886654 mg/mL
+      78      Mg radial      62 0.2948648 mg/mL
+      79      Mg radial      78 0.2924766 mg/mL
+      80      Mg radial     109 0.2794004 mg/mL
+      81      Mg radial     144 0.2918912 mg/mL
+      82      Mg radial     162 0.2875026 mg/mL
+      83      Mg  axial     200 0.2895977 mg/mL
+      84      Mg  axial     225 0.2874214 mg/mL
+      85      Mg  axial     239 0.2900750 mg/mL
+      86      Mg  axial     256 0.2998802 mg/mL
+      87      Mg  axial     295 0.2839409 mg/mL
+      88      Mg  axial     325 0.2866047 mg/mL
+      89      Mg  axial     351 0.2902880 mg/mL
+      90      Mg  axial     397 0.2854040 mg/mL
+      
+      $uploadsource
+      [1] "RData"
+      
+      $h_file
+      [1] "Homogenität_Test.xlsx"
+      
+      $h_vals
+        analyte H_type      mean n N      MSamong     MSwithin         P s_bb
+      1      Fe  axial 0.2904774 3 8 1.616865e-04 1.728085e-04 0.5065152    0
+      2      Fe radial 0.2930198 3 7 3.417746e-05 6.887791e-05 0.8009367    0
+      3      Mg  axial 0.2904774 3 8 1.616865e-04 1.728085e-04 0.5065152    0
+      4      Mg radial 0.2934923 3 7 4.735980e-05 7.145272e-05 0.6808551    0
+          s_bb_min
+      1 0.01553593
+      2 0.01005328
+      3 0.01553593
+      4 0.01022298
+      
+      $h_sel_analyt
+      [1] "Fe.axial"
+      
+      $h_precision
+      [1] 4
+      
+      $h_Fig_width
+      [1] 850
+      
+
+---
+
+    Code
+      getValue(rv, "Stability")
+    Output
+      $file
+      [1] "Stability_Testdata.xlsx"
+      
+      $data
+          analyte   Value       Date
+      1        Si  0.2340 2011-04-05
+      2        Si  0.2350 2011-04-06
+      3        Si  0.2340 2011-04-27
+      4        Si  0.2341 2011-10-10
+      5        Si  0.2338 2011-10-12
+      6        Si  0.2344 2011-10-13
+      7        Si  0.2338 2011-10-14
+      8        Si  0.2348 2011-11-25
+      9        Si  0.2337 2011-12-09
+      10       Si  0.2334 2012-01-13
+      11       Si  0.2344 2012-04-12
+      12       Si  0.2351 2012-06-22
+      13       Si  0.2347 2012-08-23
+      14       Si  0.2346 2012-10-29
+      15       Si  0.2344 2012-12-14
+      16       Si  0.2319 2013-02-05
+      17       Si  0.2337 2013-06-11
+      18       Si  0.2340 2013-06-13
+      19       Si  0.2340 2013-07-19
+      20       Si  0.2338 2013-09-26
+      21       Si  0.2340 2013-10-15
+      22       Si  0.2340 2013-11-01
+      23       Si  0.2340 2014-01-07
+      24       Si  0.2340 2014-01-31
+      25       Si  0.2349 2014-04-29
+      26       Si  0.2342 2014-05-12
+      27       Si  0.2338 2014-07-23
+      28       Si  0.2342 2014-09-03
+      29       Si  0.2327 2014-11-11
+      30       Si  0.2343 2014-11-21
+      31       Si  0.2336 2015-03-17
+      32       Si  0.2330 2015-05-13
+      33       Si  0.2328 2015-06-04
+      34       Si  0.2341 2015-06-24
+      35       Si  0.2360 2015-09-21
+      36       Si  0.2342 2016-01-05
+      37       Si  0.2337 2016-03-10
+      38       Si  0.2335 2016-04-04
+      39       Si  0.2348 2016-07-04
+      40       Si  0.2333 2016-09-21
+      41       Si  0.2334 2016-11-07
+      42       Si  0.2324 2016-11-15
+      43       Si  0.2347 2017-01-03
+      44       Si  0.2326 2017-02-14
+      45       Si  0.2358 2017-08-03
+      46       Si  0.2320 2017-08-25
+      47       Si  0.2321 2017-12-01
+      48       Si  0.2319 2018-02-13
+      49       Si  0.2319 2018-03-13
+      50       Si  0.2321 2018-05-02
+      51       Si  0.2311 2018-07-09
+      52       Si  0.2324 2018-08-13
+      53       Mn 97.0400 2011-04-05
+      54       Mn 97.3500 2011-04-06
+      55       Mn 97.0000 2011-04-27
+      56       Mn 97.6200 2011-10-10
+      57       Mn 97.4500 2011-10-12
+      58       Mn 97.4900 2011-10-13
+      59       Mn 96.7800 2011-10-14
+      60       Mn 97.6500 2011-11-25
+      61       Mn 98.0600 2011-12-09
+      62       Mn 97.1141 2012-01-13
+      63       Mn 97.5300 2012-04-12
+      64       Mn 97.1100 2012-06-22
+      65       Mn 98.2050 2012-08-23
+      66       Mn 97.8000 2012-10-29
+      67       Mn 97.6900 2012-12-14
+      68       Mn 97.4600 2013-02-05
+      69       Mn 96.1100 2013-06-11
+      70       Mn 97.5400 2013-06-13
+      71       Mn 96.9778 2013-07-19
+      72       Mn 95.7900 2013-09-26
+      73       Mn 97.7400 2013-10-15
+      74       Mn 97.4500 2013-11-01
+      75       Mn 97.4600 2014-01-07
+      76       Mn 97.2300 2014-01-31
+      77       Mn 98.3800 2014-04-29
+      78       Mn 98.2800 2014-05-12
+      79       Mn 96.6000 2014-07-23
+      80       Mn 97.7900 2014-09-03
+      81       Mn 96.7800 2014-11-11
+      82       Mn 97.7000 2014-11-21
+      83       Mn 97.7800 2015-03-17
+      84       Mn 96.7000 2015-05-13
+      85       Mn 97.9000 2015-06-04
+      86       Mn 96.7000 2015-06-24
+      87       Mn 98.3300 2015-09-21
+      88       Mn 98.4700 2016-01-05
+      89       Mn 98.1300 2016-03-10
+      90       Mn 98.2000 2016-04-04
+      91       Mn 98.0600 2016-07-04
+      92       Mn 98.2000 2016-09-21
+      93       Mn 98.3700 2016-11-07
+      94       Mn 98.0800 2016-11-15
+      95       Mn 97.9300 2017-01-03
+      96       Mn 96.9300 2017-02-14
+      97       Mn 98.4300 2017-08-03
+      98       Mn 96.6000 2017-08-25
+      99       Mn 97.3000 2017-12-01
+      100      Mn 95.9000 2018-02-13
+      101      Mn 97.3000 2018-03-13
+      102      Mn 96.1300 2018-05-02
+      103      Mn 96.0400 2018-07-09
+      104      Mn 97.5300 2018-08-13
+      
+      $uploadsource
+      [1] "RData"
+      
+      $s_vals
+        analyte mon_diff         slope     SE_slope        U_Stab
+      1      Si       88 -6.435271e-07 1.556686e-07 -1.001770e-13
+      2      Mn       88 -2.212710e-05 1.207297e-04 -2.671399e-09
       
 

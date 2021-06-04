@@ -1,9 +1,13 @@
-# builds a class, which allows only restricted access to the contained
-# reactiveValues. 
-# elements should be accessed via [getValue()]
-# 1) structure of reactiveValues is clear from the beginning (no
-#   function like "addVariable" should exist!) 
-# 2) functions to calculate, e.g., the mean can be implemented
+#' reactive class
+#' 
+#'builds a class, which allows only restricted access to the contained
+#'reactiveValues. elements should be accessed via [getValue()]. 
+#'1) structure of #'reactiveValues is clear from the beginning (no function like "addVariable"
+#'should exist!) 
+#'2) functions to calculate, e.g., the mean can be implemented
+#'
+#'@name reactiveClass
+#'@export
 reactiveClass = R6::R6Class(
   classname = "reactiveValuesClass",
   private = list(
@@ -11,7 +15,7 @@ reactiveClass = R6::R6Class(
   ),
   public = list(
     initialize = function(rv){
-      message("Initiate R6 object")
+      # message("Initiate R6 object")
       stopifnot(shiny::is.reactivevalues(rv))
       private$reactive_data = rv
     },

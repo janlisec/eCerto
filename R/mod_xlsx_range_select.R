@@ -23,6 +23,7 @@ xlsx_range_select_UI <- function(id) {
   )
 }
 
+#' @export
 xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::reactive({"Certifications"}), silent=FALSE) {
 
   ns <- shiny::NS(id)

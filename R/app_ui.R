@@ -52,7 +52,7 @@ app_ui = function(){
                 br(),
                 actionButton(inputId = "sessionstart", label = "new")
               ),
-              wellPanel(.RDataImport_UI("Rdata")),
+              wellPanel(m_RDataImport_UI("Rdata")),
             ),
             shiny::column(
               width = 9,

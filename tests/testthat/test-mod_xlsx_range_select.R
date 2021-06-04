@@ -23,7 +23,8 @@ sheetNo = shiny::reactiveVal(1)
 cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
 
 test_that("Successful Certifications Upload test",code = {
-  shiny::testServer(xlsx_range_select_Server,
+  local_edition(3)
+  shiny::testServer(ecerto::xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
                suppressMessages(session$flushReact())
                # set rows and columns selection
@@ -42,7 +43,7 @@ test_that("Successful Certifications Upload test",code = {
 
 
 test_that("File column is appended for Certification after cell selection",code = {
-  shiny::testServer(xlsx_range_select_Server,
+  shiny::testServer(ecerto::xlsx_range_select_Server,
              args = list(x = fn1,sheet=sheetNo), {
                suppressMessages(session$flushReact())
                # set rows and columns selection
@@ -76,7 +77,7 @@ class = "data.frame"
 ))
 
 test_that("Throws error because RData was uploaded but Excel was expected",code = {
-  shiny::testServer(xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
+  shiny::testServer(ecerto::xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
     expect_error(tab(), "Please upload Excel only")
   }
   )
