@@ -1,82 +1,64 @@
 # Test 1: Certifications Uploaded, but Homogeneity hasn't yet ---------------------
 
-datreturnList = list(
-  lab_statistics = structure(
-    list(
-      Lab = structure(1:3, .Label = c("L1", "L2", "L3"), class = "factor"),
-      mean = c(0.0453, 0.0513333333333333, 0.0511333333333333),
-      sd = c(0.00185202591774521, 0.00100664459136943,0.000351188458428424),
-      n = c(3L, 3L, 3L)),
-    class = "data.frame", row.names = c("L1","L2", "L3")
-  ),
-  selectedAnalyteDataframe = structure(
-    list(
-      ID = c(1L,12L, 23L, 34L, 44L, 54L, 64L, 75L, 86L),
-      Lab = structure(c(1L,1L, 1L, 2L, 2L, 2L, 3L, 3L, 3L), .Label = c("L1", "L2", "L3"), class = "factor"),
-      analyte = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), .Label = c("Si",  "Fe", "Cu", "Mn", "Mg", "Cr", "Ni", "Zn", "Ti", "Sc", "Sn"), class = "factor"),
-      replicate = structure(c(1L, 2L, 3L,1L, 2L, 3L, 1L, 2L, 3L), .Label = c("1", "2", "3"), class = "factor"), value = c(0.0452, 0.0435, 0.0472, 0.0504, 0.0512, 0.0524,  0.0511, 0.0508, 0.0515),
-      unit = c("0.05", "0.05", "0.05", "0.05", "0.05", "0.05", "0.05", "0.05", "0.05"),
-      S_flt = c(FALSE,FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-      L_flt = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,  FALSE, FALSE)), row.names = c(1L, 12L, 23L, 34L, 44L, 54L, 64L, 75L, 86L), class = "data.frame"),
-  mater_table = NULL,
-  h_vals = NULL,
-  t_H = NULL
-)
-
-datreturn1 = do.call(shiny::reactiveValues, datreturnList)
-
-
 test_that("Init of materialtable after Certifications uploaded",code = {
-  suppressMessages(shiny::testServer(m_materialtabelleServer,
-             args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
-               session$setInputs(pooling=FALSE)
-               # session$flushReact()
-               aTest = c("Si","Fe","Cu","Mn","Mg","Cr","Ni","Zn","Ti","Sc","Sn")
-               expect_equal(availableAnalytes(),aTest)
-               # session$flushReact()
-               # # c = init_materialTabelle(availableAnalytes())
-               # # mater_table(c) # save materialtabelle
-               expect_equal(nrow(mater_table()),11)
-               m_cols = c("analyte", "mean", "F1", "F2", "F3", "cert_val", "sd", "n",
-                          "char", "U2", "U3", "U4", "U5", "U6", "U7", "com", "k", "U")
-               expect_equal(colnames(mater_table()),m_cols)
-               expect_equal(cert_sd(),0.0034)
-               expect_equal(cert_mean(),0.0493)
-               expect_snapshot(mater_table())
-               # session$setInputs(pooling=FALSE)
-               # expect_snapshot(mater_table())
-             }))
+  datreturn1 = ecerto:::test_datreturn()
+  suppressMessages(
+    shiny::testServer(
+      ecerto::m_materialtabelleServer,
+      args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
+        session$setInputs(pooling=FALSE)
+        # session$flushReact()
+        aTest = c("Si","Fe","Cu","Mn","Mg","Cr","Ni","Zn","Ti","Sc","Sn")
+        expect_equal(availableAnalytes(),aTest)
+        # session$flushReact()
+        # # c = init_materialTabelle(availableAnalytes())
+        # # mater_table(c) # save materialtabelle
+        expect_equal(nrow(mater_table()),11)
+        m_cols = c("analyte", "mean", "F1", "F2", "F3", "cert_val", "sd", "n",
+                   "char", "U2", "U3", "U4", "U5", "U6", "U7", "com", "k", "U")
+        expect_equal(colnames(mater_table()),m_cols)
+        expect_equal(cert_sd(),0.0034)
+        expect_equal(cert_mean(),0.0493)
+        expect_snapshot(mater_table())
+        # session$setInputs(pooling=FALSE)
+        # expect_snapshot(mater_table())
+      }))
 })
 
 
 # Test 2: another Analyte gets selected ------------------------------------
 
-Fe = structure(
-  list(
-    ID = c(2L, 9L, 16L, 23L, 30L, 37L),
-    Lab = structure(c(1L, 1L, 2L, 2L, 3L, 3L), .Label = c("L1", "L2", "L3"), class = "factor"),
-    analyte = structure(c(2L, 2L, 2L, 2L, 2L, 2L), .Label = c("Si", "Fe", "Cu", "Mn", "Mg", "Cr", "Ni"), class = "factor"),
-    replicate = structure(c(1L, 2L, 1L, 2L, 1L, 2L), .Label = c("1", "2"), class = "factor"),
-    value = c(0.0529, 0.0527, 0.049, 0.0563, 0.0495, 0.0489),
-    unit = c("0.05", "0.05", "0.05", "0.05", "0.05", "0.05"),
-    S_flt = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-    L_flt = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)),
-  row.names = c(2L, 9L, 16L, 23L, 30L, 37L), class = "data.frame"
-)
+
 
 test_that("materialtable gets updated after another analyte gets selected",code = {
+  datreturn1 = ecerto:::test_datreturn()
+  Fe = structure(
+    list(
+      ID = c(2L, 9L, 16L, 23L, 30L, 37L),
+      Lab = structure(c(1L, 1L, 2L, 2L, 3L, 3L), .Label = c("L1", "L2", "L3"), class = "factor"),
+      analyte = structure(c(2L, 2L, 2L, 2L, 2L, 2L), .Label = c("Si", "Fe", "Cu", "Mn", "Mg", "Cr", "Ni"), class = "factor"),
+      replicate = structure(c(1L, 2L, 1L, 2L, 1L, 2L), .Label = c("1", "2"), class = "factor"),
+      value = c(0.0529, 0.0527, 0.049, 0.0563, 0.0495, 0.0489),
+      unit = c("0.05", "0.05", "0.05", "0.05", "0.05", "0.05"),
+      S_flt = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
+      L_flt = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)),
+    row.names = c(2L, 9L, 16L, 23L, 30L, 37L), class = "data.frame"
+  )
+  
   suppressMessages(
-  shiny::testServer(m_materialtabelleServer,
-             args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
-               # session$flushReact()
-               # expect_message('.',"materialTabelle - update initiated for: Si")
-               expect_null(mater_table()["mean","Fe"])
-               session$setInputs(pooling=FALSE)
-               expect_snapshot(mater_table())
-               datreturn$selectedAnalyteDataframe = Fe
-               session$flushReact()
-               expect_snapshot(mater_table())
-             })
+    shiny::testServer(
+      ecerto::m_materialtabelleServer,
+      args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
+        # session$flushReact()
+        # expect_message('.',"materialTabelle - update initiated for: Si")
+        expect_null(mater_table()["mean","Fe"])
+        session$setInputs(pooling=FALSE)
+        expect_snapshot(mater_table())
+        datreturn$set("selectedAnalyteDataframe",Fe)
+        # datreturn$selectedAnalyteDataframe = Fe
+        session$flushReact()
+        expect_snapshot(mater_table())
+      })
   )
 })
 
@@ -84,37 +66,42 @@ test_that("materialtable gets updated after another analyte gets selected",code 
 # Test 3: Pooling on/off --------------------------------------------------
 
 test_that("Pooling on/off",code = {
-
-  suppressMessages(shiny::testServer(m_materialtabelleServer,
-             args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
-               session$setInputs(pooling=FALSE)
-               expect_snapshot(mater_table())
-               session$setInputs(pooling=TRUE)
-               expect_snapshot(mater_table())
-             }))
+  datreturn1 = ecerto:::test_datreturn()
+  
+  suppressMessages(
+    shiny::testServer(
+      ecerto::m_materialtabelleServer,
+                                     args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
+                                       session$setInputs(pooling=FALSE)
+                                       expect_snapshot(mater_table())
+                                       session$setInputs(pooling=TRUE)
+                                       expect_snapshot(mater_table())
+                                     }))
 })
 
 
 # Test 4: Homogeneity Transfer ---------------------
-transfer = structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
-datreturn1 = do.call(shiny::reactiveValues, datreturnList)
-com_check = c(0.0398172599441121, 0.015535927030583, 0, 0, 0.015535927030583, 
-              0, 0, 0, 0, 0, 0)
-U3_check = c(0, 0.015535927030583, 0, 0, 0.015535927030583, 0, 0, 0, 0, 
-             0, 0)
-U_check = c(0.0796345198882242, 0.031071854061166, 0, 0, 0.031071854061166, 
-            0, 0, 0, 0, 0, 0)
+
 test_that("Transfer into column 'U3' successful",code = {
-  shiny::testServer(m_materialtabelleServer,
-                              args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
-                                
-                                session$setInputs(pooling=FALSE)
-                                datreturn$t_H = transfer
-                                session$flushReact()
-                                
-                                expect_equal(mater_table()[,"com"],com_check)
-                                expect_equal(mater_table()[,"U3"],U3_check)
-                                expect_equal(mater_table()[,"U"],U_check)
-                              })
+  datreturn1 = ecerto:::test_datreturn()
+  
+  transfer = structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
+  
+  com_check = c(0.0398172599441121, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)
+  U3_check = c(0, 0.015535927030583, 0, 0, 0.015535927030583, 0, 0, 0, 0,0, 0)
+  U_check = c(0.0796345198882242, 0.031071854061166, 0, 0, 0.031071854061166,0, 0, 0, 0, 0, 0)
+  suppressMessages(
+    shiny::testServer(
+      ecerto::m_materialtabelleServer,
+      args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
+        
+        session$setInputs(pooling=FALSE)
+        setValue(datreturn,"t_H",transfer)
+        session$flushReact()
+        expect_equal(mater_table()[,"com"],com_check)
+        expect_equal(mater_table()[,"U3"],U3_check)
+        expect_equal(mater_table()[,"U"],U_check)
+      })
+  )
 })
 

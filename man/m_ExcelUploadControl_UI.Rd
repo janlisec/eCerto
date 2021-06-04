@@ -11,7 +11,7 @@ m_ExcelUploadControl_UI(id)
 
 \item{excelformat}{Selector for dataset type (reactive).}
 
-\item{check}{Is current dataset slot empty (TRUE) or NULL (FALSE).}
+\item{check}{Check, nothing been uploaded (TRUE) or uploaded(FALSE).}
 
 \item{silent}{Option to print or omit status messages.}
 }
@@ -28,7 +28,10 @@ not yet
 \examples{
 shiny::shinyApp(
  ui = shiny::fluidPage(.ExcelUploadControl_UI(id = "test")),
- server = function(input, output, session) { out <- .ExcelUploadControl_Server(id = "test");  observeEvent(out(), {print(out())}) }
+ server = function(input, output, session) {
+  out <- .ExcelUploadControl_Server(id = "test");  
+  observeEvent(out(), {print(out())}) 
+ }
 )
 
 }

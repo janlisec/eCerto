@@ -46,8 +46,7 @@ m_TransferHomogeneityUI = function(id) {
   )
 }
 
-# This module is called in lowest server module. It transfers values from the
-# Homogeneity module into the materialtabelle
+#' @export
 m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_analytes) {
   moduleServer(id, function(input, output, session) {
     

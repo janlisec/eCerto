@@ -4,10 +4,10 @@
 \alias{get_listUploadsource}
 \title{get source of upload for an element}
 \usage{
-get_listUploadsource(c, m)
+get_listUploadsource(rv, m)
 }
 \arguments{
-\item{c}{the list}
+\item{rv}{the list}
 
 \item{m}{"Certification", etc.}
 }

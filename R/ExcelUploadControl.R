@@ -7,7 +7,7 @@
 #'
 #'@param id Name when called as a module in a shiny app.
 #'@param excelformat Selector for dataset type (reactive).
-#'@param check Is current dataset slot empty (TRUE) or NULL (FALSE).
+#'@param check Check, nothing been uploaded (TRUE) or uploaded(FALSE).
 #'@param silent Option to print or omit status messages.
 #'
 #'@return A reactive dataframe.
@@ -15,7 +15,10 @@
 #'@examples
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(.ExcelUploadControl_UI(id = "test")),
-#'  server = function(input, output, session) { out <- .ExcelUploadControl_Server(id = "test");  observeEvent(out(), {print(out())}) }
+#'  server = function(input, output, session) {
+#'   out <- .ExcelUploadControl_Server(id = "test");  
+#'   observeEvent(out(), {print(out())}) 
+#'  }
 #' )
 #'
 m_ExcelUploadControl_UI = function(id) {

@@ -17,7 +17,6 @@ test_that(
   }
 )
 
-
 # Test 1.2 File column after cell selection
 test_that(
   desc = "File column is appended for Certification after cell selection",
@@ -60,6 +59,7 @@ test_that(
   }
 )
 
+
 # Test 2: Upload RData even though Excel was expected ------------------------------------------------------------------
 
 fn2 <- shiny::reactiveVal(structure(list(
@@ -81,7 +81,8 @@ class = "data.frame"
 ))
 
 test_that("Throws error because RData was uploaded but Excel was expected",code = {
-  shiny::testServer(xlsx_range_select_Server,args =  list(x = fn2, sheet = sheetNo), {
+
+  shiny::testServer(ecerto::xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
     expect_error(tab(), "Please upload Excel only")
   }
   )

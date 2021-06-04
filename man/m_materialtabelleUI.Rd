@@ -11,7 +11,7 @@ m_materialtabelleUI(id)
 
 \item{rDtataUpload}{if uploaded via RData - reactive({rv$Certifications$materialtabelle})}
 
-\item{datreturn}{the session data object}
+\item{datreturn}{the session data (R6) object}
 }
 \value{
 nothing

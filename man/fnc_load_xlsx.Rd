@@ -25,7 +25,7 @@ A dataframe.
 Function can handle reactive and non reactive parameters to be used in shiny apps.
 }
 \examples{
-test function with
+# test function with
 x <- tempfile(fileext = ".xlsx")
 openxlsx::write.xlsx(x=matrix(rnorm(9),ncol=3,dimnames=list(1:3,paste0("Header",1:3))), file=x)
 fnc_load_xlsx(filepath=x, sheet=1)
