@@ -129,11 +129,11 @@ matTab = structure(
 
 test_that("Transfer successful", code = {
   shiny::testServer(
-    m_TransferHomogeneityServer,
+    ecerto::m_TransferHomogeneityServer,
     args = list(
-      matTab_col_code = reactiveVal(attr(matTab, "col_code")),
-      matTab_analytes = reactiveVal(as.character(matTab[, "analyte"])),
-      homogData = reactiveVal(homogData)
+      matTab_col_code = shiny::reactiveVal(attr(matTab, "col_code")),
+      matTab_analytes = shiny::reactiveVal(as.character(matTab[, "analyte"])),
+      homogData = shiny::reactiveVal(homogData)
     ),
     {
       expect_equal(levels(homogData()[, "H_type"]), c("axial", "radial"))
@@ -163,11 +163,11 @@ test_that("Transfer successful", code = {
 
 test_that("Transfer not possible with values not set", code = {
   shiny::testServer(
-    m_TransferHomogeneityServer,
+    ecerto::m_TransferHomogeneityServer,
     args = list(
-      matTab_col_code = reactiveVal(attr(matTab, "col_code")),
-      matTab_analytes = reactiveVal(as.character(matTab[, "analyte"])),
-      homogData = reactiveVal(homogData)
+      matTab_col_code = shiny::reactiveVal(attr(matTab, "col_code")),
+      matTab_analytes = shiny::reactiveVal(as.character(matTab[, "analyte"])),
+      homogData = shiny::reactiveVal(homogData)
     ),
     {
       expect_equal(levels(homogData()[, "H_type"]), c("axial", "radial"))

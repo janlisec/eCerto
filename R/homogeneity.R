@@ -1,22 +1,22 @@
 # HOMOGENEITY MODULE -------------------------
 
 .HomogeneityUI = function(id) {
-  tabsetPanel(
+  shiny::tabsetPanel(
     id = NS(id, "HomogeneityPanel"),
     type = "hidden",
     # when nothing is loaded
-    tabPanel(
+    shiny::tabPanel(
       title = "standby-Panel", 
       value  = "standby", 
       "emtpy channel here, nix los"
       #helpText("Example Table"), imageOutput("myImage08a", inline = TRUE)
     ),
     # when something is loaded
-    tabPanel(
+    shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      fluidRow(
-        column(10, DT::dataTableOutput(NS(id,"h_vals"))),
+      shiny::fluidRow(
+        shiny::column(10, DT::dataTableOutput(NS(id,"h_vals"))),
         #  column(2, 
         # #  conditionalPanel(
         # #   condition="output.c_fileUploaded_message != ''",
@@ -28,27 +28,27 @@
         # )
       ),
       hr(),
-      fluidRow(
-        column(3, DT::dataTableOutput(NS(id,"h_overview_stats"))),
-        column(9,
-               fluidRow(
-                 column(2, uiOutput(NS(id,"h_sel_analyt"))),
-                 column(2, numericInput(inputId=NS(id,"h_Fig_width"), label="Figure Width", value=850)),
-                 column(2, numericInput(inputId=NS(id,"h_precision"), label="Precision", value=4)),
-                 column(6,
-                        fluidRow(HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>")),
-                        fluidRow(downloadButton('h_Report', label="Download")), align = "right"
+      shiny::fluidRow(
+        shiny::column(3, DT::dataTableOutput(shiny::NS(id,"h_overview_stats"))),
+        shiny::column(9,
+               shiny::fluidRow(
+                 shiny::column(2, shiny::uiOutput(shiny::NS(id,"h_sel_analyt"))),
+                 shiny::column(2, shiny::numericInput(inputId=shiny::NS(id,"h_Fig_width"), label="Figure Width", value=850)),
+                 shiny::column(2,shiny::numericInput(inputId=shiny::NS(id,"h_precision"), label="Precision", value=4)),
+                 shiny::column(6,
+                        shiny::fluidRow(shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>")),
+                        shiny::fluidRow(shiny::downloadButton('h_Report', label="Download")), align = "right"
                  )
                ),
-               fluidRow(
-                 column(12, plotOutput(NS(id,"h_boxplot"), inline=TRUE), offset = 0.1)
+               shiny::fluidRow(
+                 shiny::column(12, shiny::plotOutput(NS(id,"h_boxplot"), inline=TRUE), offset = 0.1)
                ),
-               fluidRow(
-                 column(12, textOutput(NS(id,"h_statement")), offset = 0.1),
+               shiny::fluidRow(
+                 shiny::column(12, shiny::textOutput(NS(id,"h_statement")), offset = 0.1),
                  tags$style(type="text/css", "#h_statement {margin-top:2%;}")
                ),
-               fluidRow(
-                 column(12, verbatimTextOutput(NS(id,"h_anova")), offset = 0.1),
+               shiny::fluidRow(
+                 shiny::column(12, shiny::verbatimTextOutput(NS(id,"h_anova")), offset = 0.1),
                  tags$style(type="text/css", "#h_anova {margin-top:2%;}")
                )
         )
@@ -57,18 +57,18 @@
   )
 }
 
-.HomogeneityServer = function(id, rv, datreturn) {
-  moduleServer(id, function(input, output, session) {
+m_HomogeneityServer = function(id, rv, datreturn) {
+  shiny::moduleServer(id, function(input, output, session) {
     
-    d = reactive({rv$Homogeneity})
+    d = shiny::reactive({rv$Homogeneity})
     
-    observeEvent(d(), {
+    shiny::observeEvent(d(), {
       #if loaded (successfully), male area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
       if(!is.null(d())){
         # print(ecerto::data_of_godelement(d()))
-        updateTabsetPanel(session = session,"HomogeneityPanel", selected = "loaded")
-        h_Data = reactive({
+        shiny::updateTabsetPanel(session = session,"HomogeneityPanel", selected = "loaded")
+        h_Data = shiny::reactive({
           h_dat = ecerto::data_of_godelement(d())
           h_dat[,"analyte"] <- factor(h_dat[,"analyte"])
           validate(need("Flasche" %in% colnames(h_dat), "No column 'Flasche' found in input file."))
@@ -79,7 +79,7 @@
         })
        
         
-        h_vals =  reactive({
+        h_vals =  shiny::reactive({
           plyr::ldply(split(h_Data(), h_Data()[,"analyte"]), function(y) {
             plyr::ldply(split(y, y[,"H_type"]), function(x) {
               anm <- anova(lm(value ~ Flasche, data=x))
@@ -95,23 +95,23 @@
           }, .id="analyte") 
         }) 
         
-        observeEvent(h_vals(),{
-          print(".HomogeneityServer - h_vals added")
-          datreturn$h_vals = h_vals()
+        shiny::observeEvent(h_vals(),{
+          print("m_HomogeneityServer - h_vals added")
+          setValue(datreturn, "h_vals", h_vals())
         })
         
-        output$h_fileUploaded <- reactive({
+        output$h_fileUploaded <- shiny::reactive({
           return(!is.null(h_Data()))
         })
         
-        output$h_sel_analyt <- renderUI({
-          req(h_Data())
+        output$h_sel_analyt <- shiny::renderUI({
+          shiny::req(h_Data())
           lev <- levels(interaction(h_Data()[,"analyte"],h_Data()[,"H_type"]))
-          selectInput(inputId=session$ns("h_sel_analyt"), label="analyte", choices=lev)
+          shiny::selectInput(inputId=session$ns("h_sel_analyt"), label="analyte", choices=lev)
         })
         
-        h_means <- reactive({
-          req(h_Data(), input$h_sel_analyt)
+        h_means <- shiny::reactive({
+          shiny::req(h_Data(), input$h_sel_analyt)
           h_dat <- h_Data()
           h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
           h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
@@ -123,27 +123,27 @@
         })
         
         # Error checks
-        h_errors <- reactive({
-          req(input$h_precision)
-          validate(need(is.numeric(input$h_precision) && input$h_precision>=0 && input$h_precision<=12, message="please check precision value"))
+        h_errors <- shiny::reactive({
+          shiny::req(input$h_precision)
+          shiny::validate(shiny::need(is.numeric(input$h_precision) && input$h_precision>=0 && input$h_precision<=12, message="please check precision value"))
           return("")
         })
-        output$h_error_message <- renderText(h_errors())
+        output$h_error_message <- shiny::renderText(h_errors())
         
         # Tables
         output$h_overview_stats <- DT::renderDataTable({
-          req(h_means(), input$h_precision)
+          shiny::req(h_means(), input$h_precision)
           tab <- h_means()
           for (i in c("mean","sd")) { tab[,i] <- pn(tab[,i], input$h_precision) }
           return(tab)
         }, options = list(paging = FALSE, searching = FALSE), rownames=NULL)
         
         output$h_vals <- DT::renderDataTable({
-          req(h_Data())
-          c_Data = reactive({ecerto::data_of_godelement(rv$Certifications)})
+          shiny::req(h_Data())
+          c_Data = shiny::reactive({ecerto::data_of_godelement(rv$Certifications)})
           h_vals_print <- h_vals()
           for (i in c("mean","MSamong","MSwithin","P","s_bb","s_bb_min")) {
-            h_vals_print[,i] <- pn(h_vals_print[,i], input$h_precision)
+            h_vals_print[,i] <- ecerto::pn(h_vals_print[,i], input$h_precision)
           }
           if (!is.null(c_Data())) {
             mater_table <- c_Data()
@@ -157,7 +157,7 @@
         
         # Plots & Print
         output$h_boxplot <- shiny::renderPlot({
-          req(h_Data(), input$h_sel_analyt, input$h_precision, input$h_Fig_width)
+          shiny::req(h_Data(), input$h_sel_analyt, input$h_precision, input$h_Fig_width)
           h_dat <- h_Data()
           h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
           h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
@@ -176,7 +176,7 @@
         }, height=500, width=reactive({input$h_Fig_width}))
         
         output$h_statement <- shiny::renderText({
-          req(h_Data(), input$h_sel_analyt)
+          shiny::req(h_Data(), input$h_sel_analyt)
           ansd <- max(h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,c("s_bb","s_bb_min")])
           anp <- h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,"P"]
           if (anp<0.05) {
@@ -187,7 +187,7 @@
         })
         
         output$h_anova <- shiny::renderPrint({
-          req(h_Data(), input$h_sel_analyt)
+          shiny::req(h_Data(), input$h_sel_analyt)
           h_dat <- h_Data()
           h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
           anova(lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))
@@ -196,10 +196,10 @@
         
         # Special UI
         # TODO
-        output$h_transfer_ubb <- renderUI({
-          validate(need(input$sel_analyt, message = "please upload certification data first"))
-          req(getData("cert_vals"))
-          selectInput(
+        output$h_transfer_ubb <- shiny::renderUI({
+          shiny::validate(shiny::need(input$sel_analyt, message = "please upload certification data first"))
+          shiny::req(getData("cert_vals"))
+          shiny::selectInput(
             inputId=session$ns("h_transfer_ubb"), 
             label="", 
             selectize=TRUE, 
@@ -207,15 +207,15 @@
           )
         })
         
-        output$h_transfer_H_type <- renderUI({
-          req(h_Data())
-          selectInput(inputId=session$ns("h_transfer_H_type"), label="", selectize=TRUE, choices=levels(h_vals()[,"H_type"]))
+        output$h_transfer_H_type <- shiny::renderUI({
+          shiny::req(h_Data())
+          shiny::selectInput(inputId=session$ns("h_transfer_H_type"), label="", selectize=TRUE, choices=levels(h_vals()[,"H_type"]))
         })
         
         
       } else { 
         # else if nothing is loaded, keep Panel empty
-        updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
+        shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
       }
     }, ignoreInit = TRUE)
   })

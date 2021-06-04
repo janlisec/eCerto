@@ -84,8 +84,8 @@ laboratory_dataframe = function(x) {
 #' access_nested_list(lz, c("a1","b2")) # should be "Andreas Scheuer"
 access_nested_list = function(l,keys) {
   if(!is.null(keys)){
-    if(is.reactivevalues(l)) {
-      isolate(purrr::chuck(l, !!!keys))
+    if(shiny::is.reactivevalues(l)) {
+      shiny::isolate(purrr::chuck(l, !!!keys))
     } else {
       purrr::chuck(l, !!!keys)
     }
@@ -95,12 +95,13 @@ access_nested_list = function(l,keys) {
 }
 
 #' [similar to access_nested_list()]][ecerto::access_nested_list]
+#' @export
 set_nested_list = function(l,keys,value) {
   
   if(!is.null(keys)){
-    if(is.reactivevalues(l)) {
+    if(shiny::is.reactivevalues(l)) {
       access_nested_list(l, keys)
-      isolate(purrr::pluck(l, !!!keys) <- value)
+      shiny::isolate(purrr::pluck(l, !!!keys) <- value)
     } else {
       purrr::pluck(l, !!!keys) <- value
     }
@@ -203,43 +204,43 @@ data_of_godelement = function(l) {
   l[["data"]]
 }
 
-#' getter function for module element of the "god list"
-#' modules so far are "Certifications, Homogeneity, Stability"
-#'
-#' @param c "god list
-#' @param m element to be fetched (e.g. "Certifications")
-#'
-#' @return
-#' @export
-get_listelem = function(c, m) {
-  .Deprecated("getValue")
-  data_of_godelement(c[[m]])
-}
+#' #' getter function for module element of the "god list"
+#' #' modules so far are "Certifications, Homogeneity, Stability"
+#' #'
+#' #' @param c "god list
+#' #' @param m element to be fetched (e.g. "Certifications")
+#' #'
+#' #' @return
+#' #' @export
+#' get_listelem = function(c, m) {
+#'   .Deprecated("getValue")
+#'   data_of_godelement(c[[m]])
+#' }
 
-#' setter function for an element in the "god list"
-#'
-#' @param rv "god list"
-#' @param m element to be fed (e.g. "Certifications")
-#' @param dat data to be inserted
-#'
-#' @return
-#' @export
-set_listelem = function(rv, m, dat) {
-  # if(!is.null(get_listelem(c,m))) {
-  #   warning(paste0(m, " in list is not null"))
-  #   return(NULL)
-  # }
-  .Deprecated("setValue")
-
-  if(is.reactive(dat)) {
-    rv$set(c(m,"data"),isolate(dat()))
-    # c[[m]][["data"]] = isolate(dat())
-  } else {
-    rv$set(c(m,"data"),dat)
-    # c[[m]][["data"]] = dat
-  }
-
-}
+#' #' setter function for an element in the "god list"
+#' #'
+#' #' @param rv "god list"
+#' #' @param m element to be fed (e.g. "Certifications")
+#' #' @param dat data to be inserted
+#' #'
+#' #' @return
+#' #' @export
+#' set_listelem = function(rv, m, dat) {
+#'   # if(!is.null(get_listelem(c,m))) {
+#'   #   warning(paste0(m, " in list is not null"))
+#'   #   return(NULL)
+#'   # }
+#'   .Deprecated("setValue")
+#' 
+#'   if(is.reactive(dat)) {
+#'     rv$set(c(m,"data"),isolate(dat()))
+#'     # c[[m]][["data"]] = isolate(dat())
+#'   } else {
+#'     rv$set(c(m,"data"),dat)
+#'     # c[[m]][["data"]] = dat
+#'   }
+#' 
+#' }
 
 
 #' set source of upload for an element

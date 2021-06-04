@@ -28,7 +28,10 @@ not yet
 \examples{
 shiny::shinyApp(
  ui = shiny::fluidPage(.ExcelUploadControl_UI(id = "test")),
- server = function(input, output, session) { out <- .ExcelUploadControl_Server(id = "test");  observeEvent(out(), {print(out())}) }
+ server = function(input, output, session) {
+  out <- .ExcelUploadControl_Server(id = "test");  
+  observeEvent(out(), {print(out())}) 
+ }
 )
 
 }

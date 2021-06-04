@@ -12,7 +12,7 @@
 #'@param ... Further parameters to the read functions specified by method.
 #'
 #'@examples
-#' test function with
+#' # test function with
 #' x <- tempfile(fileext = ".xlsx")
 #' openxlsx::write.xlsx(x=matrix(rnorm(9),ncol=3,dimnames=list(1:3,paste0("Header",1:3))), file=x)
 #' fnc_load_xlsx(filepath=x, sheet=1)

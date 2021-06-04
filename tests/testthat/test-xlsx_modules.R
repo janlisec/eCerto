@@ -1,3 +1,4 @@
+local_edition(3)
 xlsx_test = list(
   datapath = c(
     system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),

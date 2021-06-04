@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Test 1.0 changed output of dput()
 test_that(
   desc = "Successful Certifications Upload test",
@@ -16,8 +17,95 @@ test_that(
     )
   }
 )
+||||||| parent of f821b2d (global variable adapted)
+
+# Test 1 ---------------------------------------------------------------
+
+# fn1: changed output of dput()
+fn1 = shiny::reactiveVal(structure(list(
+  name = c(
+    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+    "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
+  size = c(27926L, 27617L, 27527L),
+  type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+  datapath = c(
+    system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
+    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"))
+),
+row.names = c(NA,-3L),
+class = "data.frame"
+))
+sheetNo = shiny::reactiveVal(1)
+cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
+
+test_that("Successful Certifications Upload test",code = {
+  shiny::testServer(xlsx_range_select_Server,
+             args = list(x = fn1,sheet=sheetNo), {
+               suppressMessages(session$flushReact())
+               # set rows and columns selection
+               suppressMessages(
+                 session$setInputs(uitab_cells_selected = cells_selected)
+               )
+               session$flushReact()
+               expect_snapshot(rv$tab_flt)
+               expect_equal(rv$end_col,6)
+             }
+  )
+})
 
 
+# Test 1.2 File column after cell selection -------------------------------
+=======
+
+# Test 1 ---------------------------------------------------------------
+
+# fn1: changed output of dput()
+fn1 = shiny::reactiveVal(structure(list(
+  name = c(
+    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+    "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
+  size = c(27926L, 27617L, 27527L),
+  type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+  datapath = c(
+    system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
+    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"))
+),
+row.names = c(NA,-3L),
+class = "data.frame"
+))
+sheetNo = shiny::reactiveVal(1)
+cells_selected = matrix(c(7,1,16,6),ncol = 2, byrow = TRUE)
+
+test_that("Successful Certifications Upload test",code = {
+  local_edition(3)
+  shiny::testServer(ecerto::xlsx_range_select_Server,
+             args = list(x = fn1,sheet=sheetNo), {
+               suppressMessages(session$flushReact())
+               # set rows and columns selection
+               suppressMessages(
+                 session$setInputs(uitab_cells_selected = cells_selected)
+               )
+               session$flushReact()
+               expect_snapshot(rv$tab_flt)
+               expect_equal(rv$end_col,6)
+             }
+  )
+})
+
+
+# Test 1.2 File column after cell selection -------------------------------
+>>>>>>> f821b2d (global variable adapted)
+
+
+<<<<<<< HEAD
 # Test 1.2 File column after cell selection
 test_that(
   desc = "File column is appended for Certification after cell selection",
@@ -59,6 +147,35 @@ test_that(
     )
   }
 )
+||||||| parent of f821b2d (global variable adapted)
+test_that("File column is appended for Certification after cell selection",code = {
+  shiny::testServer(xlsx_range_select_Server,
+             args = list(x = fn1,sheet=sheetNo), {
+               suppressMessages(session$flushReact())
+               # set rows and columns selection
+               suppressMessages(
+                 session$setInputs(uitab_cells_selected = cells_selected))
+               session$flushReact()
+               # has File been added correctly after cell selection
+               expect_true("File" %in% colnames(rv$tab_flt[[1]]))
+             }
+  )
+})
+=======
+test_that("File column is appended for Certification after cell selection",code = {
+  shiny::testServer(ecerto::xlsx_range_select_Server,
+             args = list(x = fn1,sheet=sheetNo), {
+               suppressMessages(session$flushReact())
+               # set rows and columns selection
+               suppressMessages(
+                 session$setInputs(uitab_cells_selected = cells_selected))
+               session$flushReact()
+               # has File been added correctly after cell selection
+               expect_true("File" %in% colnames(rv$tab_flt[[1]]))
+             }
+  )
+})
+>>>>>>> f821b2d (global variable adapted)
 
 # Test 2: Upload RData even though Excel was expected ------------------------------------------------------------------
 
@@ -81,7 +198,13 @@ class = "data.frame"
 ))
 
 test_that("Throws error because RData was uploaded but Excel was expected",code = {
+<<<<<<< HEAD
   shiny::testServer(xlsx_range_select_Server,args =  list(x = fn2, sheet = sheetNo), {
+||||||| parent of f821b2d (global variable adapted)
+  shiny::testServer(xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
+=======
+  shiny::testServer(ecerto::xlsx_range_select_Server,args =  list(x = fn2,sheet=sheetNo), {
+>>>>>>> f821b2d (global variable adapted)
     expect_error(tab(), "Please upload Excel only")
   }
   )

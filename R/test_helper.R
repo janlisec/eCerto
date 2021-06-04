@@ -1,5 +1,5 @@
 
-#'@noRd
+#' @keywords internal
 test_datreturn = function() {
   datreturnList = list(
     lab_statistics = structure(

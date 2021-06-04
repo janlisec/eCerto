@@ -25,7 +25,6 @@ app_server = function(input, output, session) {
  # --- --- --- --- --- --- --- --- ---
 
   observeEvent(excelformat(),{
-    browser()
   },ignoreInit = TRUE)
   
   observeEvent(t(),{
@@ -34,7 +33,7 @@ app_server = function(input, output, session) {
   })
 
   # --- --- --- --- --- --- --- --- ---
-  .RDataImport_Server("Rdata", rv)
+  m_RDataImport_Server("Rdata", rv)
   
   # @Frederick : ich programmiere sonst so, dass die Module zwar reactives als input erhalten können, diese aber intern nicht direkt
   # modifizieren, sondern auf einer Kopie arbeiten und ein reactive zurückgeben. Dieses überprüfe ich mit observeEvent auf Modifikationen
@@ -116,7 +115,7 @@ app_server = function(input, output, session) {
 
   m_CertificationServer(id = "certification", certification = reactive({getValue(rv)$Certifications}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
-  .HomogeneityServer(id = "Homogeneity", rv, datreturn)
+  m_HomogeneityServer(id = "Homogeneity", rv, datreturn)
 
   # --- --- --- --- --- --- --- --- --- --- ---
 

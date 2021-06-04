@@ -15,13 +15,18 @@
 #'
 #'@examples
 #' shiny::shinyApp(
-#'  ui = shiny::fluidPage(.RDataImport_UI(id = "test")),
-#'  server = function(input, output, session) { out <- .RDataImport_Server(id = "test");  observeEvent(out$Certifications$time_stamp, {print(out$Certifications$time_stamp)}) }
+#'  ui = shiny::fluidPage(m_RDataImport_UI(id = "test")),
+#'  server = function(input, output, session) { 
+#'    out <- m_RDataImport_Server(id = "test");  
+#'    observeEvent(out$Certifications$time_stamp, {
+#'      print(out$Certifications$time_stamp)
+#'    }) 
+#'  }
 #' )
 #'
 #'@export
 #'
-.RDataImport_UI <- function(id) {
+m_RDataImport_UI <- function(id) {
   tagList(
     wellPanel(
       fileInput(
@@ -60,7 +65,8 @@
   )
 }
 
-.RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
+#' @export
+m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
   stopifnot(R6::is.R6(rv))
   stopifnot(is.reactivevalues(rv$get()))
   
@@ -85,7 +91,13 @@
     observeEvent(rdata(),{
       message("RDataImport_Server: RData uploaded")
       res <- rdata()
+<<<<<<< HEAD
  
+||||||| parent of f821b2d (global variable adapted)
+      browser()
+=======
+      # browser()
+>>>>>>> f821b2d (global variable adapted)
       shiny::reactiveValuesToList(rv$get())
       if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes
@@ -111,7 +123,7 @@
             # rv$Certifications$time_stamp <- Sys.time()
           } else {
             err <- c(paste0("file_", resnames), paste0("expected_", rvnames))[c(resnames, rvnames) %in% names(which(table(c(resnames, rvnames))==1))]
-            shinyalert::shinyalert(title = ".RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:", paste(err, collapse=", ")), type = "warning")
+            shinyalert::shinyalert(title = "m_RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:", paste(err, collapse=", ")), type = "warning")
           }
         }
       } else {
@@ -197,7 +209,7 @@
       },
       content = function(file) {
         res <- shiny::reactiveValuesToList(getValue(rv))
-        browser()
+        # browser()
         res$Certifications$dataformat_version = "2021-05-27"
         save(res, file = file)
       },
