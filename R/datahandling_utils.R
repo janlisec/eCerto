@@ -1,5 +1,3 @@
-
-
 #' General access to data object (so data object can maybe get changed without that much code edit)
 #'
 #' @param df the data frame (e.g. a R6 object)
@@ -10,6 +8,9 @@
 #' @export
 #'
 #' @examples
+#' rv = reactiveClass$new(init_rv())
+#' setValue(rv,c("Certifications","data"),5)
+#' getValue(rv,c("Certifications","data")) # is 5?
 setValue = function(df,key,value){
   if(R6::is.R6(df)){
     df$set(key,value)
@@ -182,6 +183,7 @@ crop_dataframes = function(dfs,cols,rows) {
     stop("rows and column index are not numerics")
 
   if(!inherits(dfs,"list")){
+    browser()
     warning("data frame is not a list")
     dfs = list(dfs)
   }

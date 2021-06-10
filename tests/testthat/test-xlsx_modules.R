@@ -1,17 +1,17 @@
 local_edition(3)
 xlsx_test = list(
   datapath = c(
-    system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
+    system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
     system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
     system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
   ),
   name = c(
-    "Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx",
+    "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
     "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
     "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
 )
 
-dat_test <- shiny::reactiveVal(FALSE)
+
 
 
 # Certification Test ------------------------------------------------------
@@ -33,15 +33,18 @@ excelformat_test = shiny::reactiveVal("Certifications")
 
 
 
-# Homogeneity -------------------------------------------------------------
+# Homogeneity Upload -------------------------------------------------------------
 
-xlsx_test2 = list(
-  datapath = system.file(package = "ecerto", "extdata","Homog_test.xlsx"),
-  name = "Homog_test.xlsx"
-)
-excelformat_test = shiny::reactiveVal("Homogeneity")
 
-test_that("Successful Upload test",code = {
+
+test_that("Successful Homogeneity Upload test",code = {
+  xlsx_test2 = list(
+    datapath = system.file(package = "ecerto", "extdata","Homog_test.xlsx"),
+    name = "Homog_test.xlsx"
+  )
+  excelformat_test = shiny::reactiveVal("Homogeneity")
+  dat_test <- shiny::reactiveVal(FALSE)
+  
   shiny::testServer(app = m_ExcelUploadControl_Server,
     args = list(excelformat=excelformat_test, check = dat_test),
     expr =  {

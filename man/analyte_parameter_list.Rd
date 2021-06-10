@@ -20,5 +20,5 @@ which sample ids are available to be filtered at all and, for completion,
 the analyte name in case the list name fails
 }
 \examples{
-apm = analyte_parameter_list(data_of_godelement(rv$Certifications)) 
+apm = analyte_parameter_list(data_of_godelement(rv$Certifications))
 }

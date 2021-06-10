@@ -16,7 +16,7 @@ m_ExcelUploadControl_UI(id)
 \item{silent}{Option to print or omit status messages.}
 }
 \value{
-A reactive dataframe.
+A reactiveVal containing desired data
 }
 \description{
 \code{ExcelUploadControl} will provide a module to upload excel

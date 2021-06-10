@@ -99,7 +99,6 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
           resnames <- names(unlist(res, recursive = FALSE))
           rvnames <- names(unlist(reactiveValuesToList(rv$get()), recursive = FALSE))
           if (all(resnames %in% rvnames)) {
-            # browser()
             #list12 <- Map(c, reactiveValuesToList(rv), res)
             #rv_tmp <- do.call("reactiveValues", res)
             #rv <- rv_tmp
@@ -109,7 +108,6 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
             # reads an RData backup which already contains Stab data
             for (i in names(res)) {
               # könnte schieflaufen hier
-              browser()
               setValue(rv,i,res[[i]])
             }
             setValue(rv,c("Certifications","time_stamp"),Sys.time())
@@ -202,7 +200,6 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
       },
       content = function(file) {
         res <- shiny::reactiveValuesToList(getValue(rv))
-        # browser()
         res$Certifications$dataformat_version = "2021-05-27"
         save(res, file = file)
       },

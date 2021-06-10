@@ -14,7 +14,7 @@ test_that(
     expr = {
                session$setInputs(in_file_ecerto_backup = rdat)
                expect_equal(ecerto::getValue(rv,c("Certifications","user")),"JL")  
-               expect_snapshot(reactiveValuesToList(ecerto::getValue(rv)))
+               #expect_snapshot(reactiveValuesToList(ecerto::getValue(rv)))
                
                expect_equal(sort(names(getValue(rv))),c("Certifications", "Homogeneity", "Stability" ))
                expect_equal(getValue(rv, c("Certifications","user")),"JL")

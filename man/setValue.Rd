@@ -19,3 +19,8 @@ nothing
 \description{
 General access to data object (so data object can maybe get changed without that much code edit)
 }
+\examples{
+rv = reactiveClass$new(init_rv())
+setValue(rv,c("Certifications","data"),5)
+getValue(rv,c("Certifications","data")) # is 5?
+}

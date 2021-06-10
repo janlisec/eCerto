@@ -59,10 +59,7 @@ m_materialtabelleServer = function(id, rdataUpload, datreturn) {
 
     # data frame of selected analyte
     sAnData = shiny::reactive({
-      # rv$v
       getValue(datreturn)$selectedAnalyteDataframe
-      # datreturn$get("selectedAnalyteDataframe")
-      # datreturn$selectedAnalyteDataframe
     }) 
     
     lab_statistics = shiny::reactive({

@@ -15,7 +15,7 @@ prm_list = list(
 
 app$setInputs(`excelfile-moduleSelect` = "Certifications")
 app$uploadFile(`excelfile-uploadTabset-upld-xlsxfile-file` = c(
-  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
+  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
   system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
   system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
 ))

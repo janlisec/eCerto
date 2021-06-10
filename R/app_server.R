@@ -40,7 +40,6 @@ app_server = function(input, output, session) {
   # die Variante 'rv' direkt im Modul zu ändern scheint aber auch zu funktionieren, daher habe ich es dabei belassen und die andere Lösung auskommentiert
   # tmp <- .RDataImport_Server("Rdata", rv)
   # observeEvent(tmp$Certifications$time_stamp, {
-  #   browser()
   # }, ignoreInit = TRUE)
   # # --- --- --- --- --- --- --- --- ---
 
@@ -115,7 +114,15 @@ app_server = function(input, output, session) {
 
   m_CertificationServer(id = "certification", certification = reactive({getValue(rv)$Certifications}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
-  m_HomogeneityServer(id = "Homogeneity", rv, datreturn)
+  h_vals = m_HomogeneityServer(
+    id = "Homogeneity", 
+    homog = shiny::reactive({getValue(rv)$Homogeneity}), 
+    cert = shiny::reactive({getValue(rv)$Certifications})
+  ) 
+  shiny::observeEvent(h_vals(),{
+    print("m_HomogeneityServer - h_vals added")
+    setValue(datreturn, "h_vals", h_vals())
+  },ignoreInit = TRUE)
 
   # --- --- --- --- --- --- --- --- --- --- ---
 
@@ -129,7 +136,6 @@ app_server = function(input, output, session) {
 
   # get to Certification page after Transfer of Homogeneity Data
   observeEvent(trh(),{
-    browser()
     setValue(datreturn,"t_H",trh())
       updateNavbarPage(
         session = session,

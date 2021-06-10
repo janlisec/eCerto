@@ -4,7 +4,7 @@ app$snapshotInit("Excel_Upload_Errortest", screenshot = FALSE)
 app$setInputs(navbarpage = "Start")
 app$setInputs(`excelfile-moduleSelect` = "Certifications")
 app$uploadFile(`excelfile-uploadTabset-upld-xlsxfile-file` = c(
-  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx")
+  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx")
 ))
 app$snapshot(
   items = list(output = "excelfile-uploadTabset-preview_out"),
@@ -12,7 +12,7 @@ app$snapshot(
 
 app$setInputs(`excelfile-moduleSelect` = "Homogeneity")
 app$uploadFile(`excelfile-uploadTabset-upld-xlsxfile-file` = c(
-  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx")
+  system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx")
 ))
 app$snapshot(
   items = list(output = "excelfile-uploadTabset-preview_out"),

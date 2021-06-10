@@ -3,7 +3,7 @@ app$snapshotInit("mytest")
 
 app$setInputs(link_to_start = "click")
 app$setInputs(moduleSelect = "Certifications")
-app$uploadFile(`excelfile-excel_file` = c("Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx", "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx", "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")) # <-- This should be the path to the file, relative to the app's tests/shinytest directory
+app$uploadFile(`excelfile-excel_file` = c("Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx", "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx", "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")) # <-- This should be the path to the file, relative to the app's tests/shinytest directory
 app$setInputs(`excelfile-go` = "click")
 app$setInputs(`certification-analyteModule-flt_samplesSi` = character(0))
 app$setInputs(`certification-analyteModule-precisionSi` = 4)

@@ -10,7 +10,7 @@
 #'@param check Check, nothing been uploaded (TRUE) or uploaded(FALSE).
 #'@param silent Option to print or omit status messages.
 #'
-#'@return A reactive dataframe.
+#'@return A reactiveVal containing desired data
 #'
 #'@examples
 #' shiny::shinyApp(
@@ -98,8 +98,7 @@ m_ExcelUploadControl_Server = function(id, excelformat, check, silent=FALSE) {
         if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
         out(combine_cert_data(df_list = dat))
       }
-      if(excelformat() == "Stability") {
-        browser()
+      if(excelformat() == "Stability") {s
         out(dat[[1]])
       }
     })
