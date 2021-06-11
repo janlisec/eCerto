@@ -1,14 +1,15 @@
+#'@title CertValPlot.
+#'
+#'@description \code{CertValPlot} will generate a certified values plot.
+#'
+#'@details not yet
+#'
+#'@param data data.frame containing columns 'value', 'Lab' and 'Filter'.
+#'
+#'@return A specific type of boxplot.
+#'
+#'@export
 
-#' creates Certificate Validation Boxplot
-#' BAMTool
-#'Modul: Zertifizierung
-#'Certified Value Plot
-#'data : data table
-#'
-#' @param data 
-#'
-#' @return
-#' @export
 CertValPlot <- function(data=NULL) {
   data.stats <- plyr::ldply(split(data[,"value"], data[,"Lab"]), function(x) {data.frame("MW"=mean(x,na.rm=T), "Median"=median(x,na.rm=T), "SD"=sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
   data.stats <- data.frame(data.stats, "Filter"=sapply(split(data[,"L_flt"], data$Lab), all))

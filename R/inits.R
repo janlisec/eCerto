@@ -117,17 +117,21 @@ init_rv = function() {
 #' Analyte Parameter List (apm)
 #'
 #' @description \code{analyte_parameter_list} creates for each analyte the
-#'   parameter list. Each sublist contains information about he selected analyte
-#'   tab, and for each analyte the wanted precision, the filtered sample id,
+#'   parameter list. Each sublist contains information about the selected analyte
+#'   tab, and for each analyte the specified precision, the filtered sample id,
 #'   which sample ids are available to be filtered at all and, for completion,
 #'   the analyte name in case the list name fails
 #'
 #' @param certification data frame of certification data
 #'
 #' @return reactiveValues
+#'
 #' @export
 #'
-#' @examples apm = analyte_parameter_list(data_of_godelement(rv$Certifications))
+#' @examples
+#' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
+#' shiny::isolate(shiny::reactiveValuesToList(analyte_parameter_list(df)))
+#'
 analyte_parameter_list = function(certification = NULL) {
   if(!is.null(certification)){
     stopifnot(is.factor(certification[, "analyte"]))
@@ -140,6 +144,7 @@ analyte_parameter_list = function(certification = NULL) {
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "analytename" = NULL
   )
+  # @Frederick: wofür ist 'selected_tab' gut? Gehört dieser reactive value wirklich in die analyte_par_list?
   l = list("selected_tab" = NULL)
 
   analytes = levels(certification[, "analyte"])
@@ -156,9 +161,11 @@ analyte_parameter_list = function(certification = NULL) {
     }
   }
   # set names of sublists to analyte names
-  a_param_list = setNames(a_param_list, analytes)
+  a_param_list = stats::setNames(a_param_list, analytes)
 
   l$analytes = a_param_list
-  apm = do.call("reactiveValues", l) # finally, create reactiveValues
+  apm = do.call(shiny::reactiveValues, l) # finally, create reactiveValues
   # end param list
+  # @Frederick In the function description you claim that there is a return value. Please make explicit what the return value is using return()
+  return(apm)
 }

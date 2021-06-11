@@ -1,11 +1,12 @@
-#' calculation month
+#' @title mondf.
+#'
+#' @description Calculation of number of month between start and end date.
 #'
 #' @param d_start A start date
 #' @param d_end An end date
 #'
 #' @return
 #' @export
-#' @noRd
 mondf <- function(d_start, d_end) {
   lt <- as.POSIXlt(as.Date(d_start, origin="1900-01-01"))
   d_start <- lt$year*12 + lt$mon
@@ -15,14 +16,15 @@ mondf <- function(d_start, d_end) {
 }
 
 
-#' Plots for LTS module
+#' @title plot_lts_data.
+#'
+#' @description Plots for LTS module.
 #'
 #' @param x data
 #' @param type type of plot (either 1 oder 2)
 #'
 #' @return
 #' @export
-#' @noRd
 plot_lts_data <- function(x=NULL, type=1) {
   # # helper function
   # mondf <- function(d_start, d_end) {
@@ -94,14 +96,15 @@ plot_lts_data <- function(x=NULL, type=1) {
   invisible(foo_lts)
 }
 
-#' Read Excel for Long term stability
+#' @title read_lts_input.
+#'
+#' @description Read Excel function for Long-term-stability data.
 #'
 #' @param file Path to Excel File
 #' @param simplify Try to simplify list of imported Excel files into data.frame
 #'
 #' @return
 #' @export
-#' @noRd
 read_lts_input <- function(file=NULL, simplify=FALSE) {
   sheets <- openxlsx::getSheetNames(file = file)
   out <- vector("list", length(sheets))

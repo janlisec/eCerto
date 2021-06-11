@@ -1,13 +1,16 @@
-#' reactive class
-#' 
-#'builds a class, which allows only restricted access to the contained
-#'reactiveValues. elements should be accessed via [getValue()]. 
-#'1) structure of #'reactiveValues is clear from the beginning (no function like "addVariable"
-#'should exist!) 
-#'2) functions to calculate, e.g., the mean can be implemented
+#' @title A reactive class based on an R6 object.
 #'
-#'@name reactiveClass
-#'@export
+#' @description
+#' builds a class, which allows only restricted access to the contained  reactiveValues. elements should be accessed via [getValue()].
+#' (1) structure of #'reactiveValues is clear from the beginning (no function like "addVariable" should exist!)
+#' (2) functions to calculate, e.g., the mean can be implemented
+#'
+#' @param rv ReactiveValues object.
+#' @param field Field name of R6 object for get and set methods.
+#' @param value Value for set method.
+#' @name reactiveClass
+#' @export
+
 reactiveClass = R6::R6Class(
   classname = "reactiveValuesClass",
   private = list(

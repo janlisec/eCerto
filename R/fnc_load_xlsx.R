@@ -19,6 +19,8 @@
 #' fnc_load_xlsx(filepath=x, sheet=1, method="openxlsx")
 #' fnc_load_xlsx(filepath="C:/not_existent.file", sheet=1)
 #' fnc_load_xlsx(filepath=x, sheet=2)
+#' x <- system.file(package="ecerto", "extdata", "EmptyExcel.xlsx")
+#' fnc_load_xlsx(filepath=x, sheet=1, method="openxlsx")
 #'
 #'@return
 #'A dataframe.
@@ -41,16 +43,15 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
       "openxlsx"=openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = TRUE, ...)
   )
 
-  
-  
   # post process data
   if (method=="tidyxl") {
-    # in case, uploaded excel is empty
-    if(nrow(a[,"row"]) == 0) return(NULL)
+    # in case, the uploaded excel is empty/contains no information in cells return NULL
+    #if (nrow(a[,"row"]) == 0) return(NULL)
+    if (nrow(a) == 0) return(NULL)
     out <- matrix("", nrow=max(a[,"row"]), ncol=max(a[,"col"]),
                   dimnames=list(1:max(a[,"row"]), LETTERS[1:max(a[,"col"])]))
     # print(out)
-    
+
     for (tp in c("numeric","character")) {
       flt <- which(a[,"data_type"]==tp)
       if (length(flt)>=1)  {
@@ -58,8 +59,6 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
           out[as.numeric(a[i,"row"]), as.numeric(a[i,"col"])] <- as.character(a[i,tp])
         }
       }
-
-
     }
     # print(out)
     out <- as.data.frame(out)

@@ -2,13 +2,14 @@
 test_that(
   desc = "Successful Certifications Upload test",
   code = {
+    testthat::local_edition(3)
     fn1 = ecerto:::test_mod_xlsx_range()
     sheetNo <- shiny::reactiveVal(1)
     cells_selected <- matrix(c(7,1,16,6), ncol = 2, byrow = TRUE)
-    
+
     shiny::testServer(
       app = ecerto::xlsx_range_select_Server,
-      args = list(x = fn1, sheet = sheetNo), 
+      args = list(x = fn1, sheet = sheetNo),
       {
         suppressMessages(session$flushReact())
         # set rows and columns selection
@@ -65,7 +66,7 @@ test_that("Throws error because RData was uploaded, but Excel was expected",code
   class = "data.frame"
   ))
   sheetNo <- shiny::reactiveVal(1)
-  
+
   shiny::testServer(
     app = ecerto::xlsx_range_select_Server,
     args =  list(x = fn2,sheet=sheetNo), {
@@ -96,15 +97,14 @@ test_that("Throws error when one file is uploaded which is Empty Excel",code = {
     row.names = c(NA,-1L)
   ))
   sheetNo <- shiny::reactiveVal(1)
-  
+
   suppressMessages(
     shiny::testServer(
-      app = xlsx_range_select_Server, 
-      args = list(x = fn3,sheet=sheetNo), {
-        
+      app = xlsx_range_select_Server,
+      args = list(x = fn3, sheet = sheetNo), {
         expect_error(tab(), "uploaded Excel contain an empty one")
-        # expect_warning(tab(), "No data found on worksheet.")
-      })
+      }
+    )
   )
 })
 
@@ -128,18 +128,20 @@ test_that("Throws error correctly when only one Certifications get uploaded",cod
 
 test_that("no reaction after only one DataTable element is selected",
           code = {
+            fn1 <- ecerto:::test_mod_xlsx_range()
             sheetNo <- shiny::reactiveVal(1)
-            fn1 = ecerto:::test_mod_xlsx_range()
-            cells_selected = matrix(c(7,1),ncol = 2, byrow = TRUE)
+            cells_selected <- matrix(c(7,1), ncol = 2, byrow = TRUE)
             shiny::testServer(
               app = xlsx_range_select_Server,
-              args = list(x = fn1,sheet=sheetNo), {
+              args = list(x = fn1, sheet = sheetNo), {
                 suppressMessages(session$flushReact())
-                
-                # # set rows and columns selection
-                expect_silent(
-                  object = session$setInputs(uitab_cells_selected = cells_selected)
-                )
+                # @Frederick: dieser Test musste modifiziert werden. Ich habe den Modul-Code so geändert, dass der User eine MessageBox bekommt, wenn er versucht eine dritte Zelle innerhalb der Range zu wählen. Die Bedingung das der Klick keine Aktion hervorruft ist aber nicht mehr gegeben.
+                # set rows and columns selection
+                # expect_silent(
+                #   object = session$setInputs(uitab_cells_selected = cells_selected)
+                # )
+                session$setInputs(uitab_cells_selected = cells_selected)
+                expect_equal(input$uitab_cells_selected, cells_selected)
               }
             )
           })

@@ -14,11 +14,13 @@ reactiveValues
 }
 \description{
 \code{analyte_parameter_list} creates for each analyte the
-parameter list. Each sublist contains information about he selected analyte
-tab, and for each analyte the wanted precision, the filtered sample id,
+parameter list. Each sublist contains information about the selected analyte
+tab, and for each analyte the specified precision, the filtered sample id,
 which sample ids are available to be filtered at all and, for completion,
 the analyte name in case the list name fails
 }
 \examples{
-apm = analyte_parameter_list(data_of_godelement(rv$Certifications))
+df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
+shiny::isolate(shiny::reactiveValuesToList(analyte_parameter_list(df)))
+
 }

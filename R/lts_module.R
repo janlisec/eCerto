@@ -1,8 +1,15 @@
-#' Title
+#' @name longtermstability
+#' @aliases longtermstabilityUI
+#' @aliases longtermstabilityServer
 #'
-#' @param id
+#' @title longtermstabilityServer.
 #'
+#' @description Modul for LongTermStability Monitoring as currently (2021) used by Carsten Prinz.
+#'
+#' @param id Name when called as a module in a shiny app.
 #' @return
+#'
+#' @rdname longtermstability
 #' @export
 .longtermstabilityServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
@@ -352,16 +359,10 @@
       },
       contentType = "RData"
     )
-
-
   })
 }
 
-#' User Interface of LTS module
-#'
-#' @param id
-#'
-#' @return
+#' @rdname longtermstability
 #' @export
 .longtermstabilityUI = function(id) {
 

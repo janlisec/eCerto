@@ -2,15 +2,11 @@
 % Please edit documentation in R/reactiveClass.R
 \name{reactiveClass}
 \alias{reactiveClass}
-\title{reactive class}
+\title{A reactive class based on an R6 object.}
 \description{
-builds a class, which allows only restricted access to the contained
-reactiveValues. elements should be accessed via \code{\link[=getValue]{getValue()}}.
-\enumerate{
-\item structure of #'reactiveValues is clear from the beginning (no function like "addVariable"
-should exist!)
-\item functions to calculate, e.g., the mean can be implemented
-}
+builds a class, which allows only restricted access to the contained  reactiveValues. elements should be accessed via \code{\link[=getValue]{getValue()}}.
+(1) structure of #'reactiveValues is clear from the beginning (no function like "addVariable" should exist!)
+(2) functions to calculate, e.g., the mean can be implemented
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -30,6 +26,13 @@ should exist!)
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$new(rv)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{rv}}{ReactiveValues object.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-set"></a>}}
@@ -39,6 +42,15 @@ should exist!)
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$set(field = NULL, value)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field}}{Field name of R6 object for get and set methods.}
+
+\item{\code{value}}{Value for set method.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get"></a>}}
@@ -48,6 +60,13 @@ should exist!)
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$get(field = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field}}{Field name of R6 object for get and set methods.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-names"></a>}}

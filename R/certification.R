@@ -1,16 +1,22 @@
-#'@title CERTIFICATION MODULE
+#' @name mod_Certification
+#' @aliases m_CertificationUI
+#' @aliases m_CertificationServer
 #'
-#'@description \code{m_CertificationServer} is the module for handling the
+#' @title Certification.
+#'
+#' @description \code{m_CertificationServer} is the module for handling the
 #'  Certification part but also contains the materialtabelle (until further
 #'  changes).
 #'
-#'@details not yet
+#' @details not yet
 #'
-#'@param certification = reactive({rv$Certifications})
-#'@param datreturn the session data object
+#' @param id Name when called as a module in a shiny app.
+#' @param certification reactive({rv$Certifications})
+#' @param datreturn the session data object
 #'
-#'@return nothing directly, works over apm parameter
-#'@export
+#' @return nothing directly, works over apm parameter
+#' @rdname mod_Certification
+#' @export
 m_CertificationUI = function(id) {
   tabsetPanel(
     id = NS(id, "certificationPanel"),
@@ -33,7 +39,7 @@ m_CertificationUI = function(id) {
                                "QQ-Plot" = "qqplot",
                                "material table" = "mt"),
                    selected = c("boxplot","mt")
-                 )      
+                 )
                )
         ),
         column(8,
@@ -58,7 +64,7 @@ m_CertificationUI = function(id) {
                 # --- --- --- --- --- --- ---
               )
             ) ),
-          
+
           ##### Download-Teil
           column(
             2,
@@ -119,7 +125,7 @@ m_CertificationUI = function(id) {
           plotOutput("qqplot")
         )
       ),
-      conditionalPanel( 
+      conditionalPanel(
         # check if checkBoxes are marked for material table
         condition = "input.certification_view.indexOf('mt') > -1",
         ns = NS(id), # namespace of current module
@@ -133,19 +139,22 @@ m_CertificationUI = function(id) {
   )
 }
 
+#' @rdname mod_Certification
 #' @export
 m_CertificationServer = function(id, certification, datreturn) {
+
   stopifnot(is.reactive(certification))
+
   moduleServer(id, function(input, output, session) {
     exportTestValues(CertificationServer.d = { try(certification()) })
-    
+
     d_act = reactiveVal("Haha nope")
-    
+
     certification_data = reactive({data_of_godelement(certification())})
-    
+
     apm = analyte_parameter_list()
     dat = reactiveVal(NULL)
-    
+
     observeEvent(certification_data(), {
       #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
@@ -154,12 +163,12 @@ m_CertificationServer = function(id, certification, datreturn) {
         message("Certification Module start")
         updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
         apm = analyte_parameter_list(certification_data())
-        
+
         # selected analyte, sample filter, precision
         # --- --- --- --- --- --- --- --- --- --- ---
         selected_tab = m_analyteServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
-        
+
         # --- --- --- --- --- --- --- --- --- --- ---
         dat = m_CertLoadedServer(
           id = "loaded",
@@ -193,7 +202,7 @@ m_CertificationServer = function(id, certification, datreturn) {
 
           return(out)
         })
-        
+
         output$normality_statement <- renderText({
           l = lab_statistics()
           suppressWarnings(KS_p <-
@@ -224,11 +233,11 @@ m_CertificationServer = function(id, certification, datreturn) {
         #   # console log
         #   # message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
         # })
-        
+
         observeEvent(dat(),{
           setValue(datreturn,"selectedAnalyteDataframe",dat())
         })
-        
+
         observeEvent(lab_statistics(),{
           setValue(datreturn,"lab_statistics",lab_statistics())
         })
@@ -240,37 +249,37 @@ m_CertificationServer = function(id, certification, datreturn) {
             shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
 
           })
-        
+
         output$overview_stats <- DT::renderDataTable({
-          
+
           message("stats 1")
           message(dat())
           Stats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-        
+
         # mStats
         output$overview_mstats <- DT::renderDataTable({
           mstats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-        
+
         ### LOADED END ###s
-      } else { 
+      } else {
         # else if nothing is loaded, keep Panel empty
         updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
       }
     # }, ignoreInit = TRUE)
     })
 
-    
+
     # --- --- --- --- --- --- --- --- --- --- ---
     m_materialtabelleServer(
-      id = "mat_cert", 
-      rdataUpload = reactive({certification()$materialtabelle}), 
+      id = "mat_cert",
+      rdataUpload = reactive({certification()$materialtabelle}),
       datreturn = datreturn
     )
     # --- --- --- --- --- --- --- --- --- --- ---
-    
- 
-    
+
+
+
   })
 }

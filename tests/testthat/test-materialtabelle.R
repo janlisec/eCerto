@@ -1,6 +1,7 @@
 # Test 1: Certifications Uploaded, but Homogeneity hasn't yet ---------------------
 
 test_that("Init of materialtable after Certifications uploaded",code = {
+  testthat::local_edition(3)
   datreturn1 = ecerto:::test_datreturn()
   suppressMessages(
     shiny::testServer(
@@ -44,11 +45,12 @@ test_that("materialtable gets updated after another analyte gets selected",code 
       L_flt = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)),
     row.names = c(2L, 9L, 16L, 23L, 30L, 37L), class = "data.frame"
   )
-  
+
   suppressMessages(
     shiny::testServer(
       ecerto::m_materialtabelleServer,
       args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
+        testthat::local_edition(3)
         # session$flushReact()
         # expect_message('.',"materialTabelle - update initiated for: Si")
         expect_null(mater_table()["mean","Fe"])
@@ -66,8 +68,9 @@ test_that("materialtable gets updated after another analyte gets selected",code 
 # Test 3: Pooling on/off --------------------------------------------------
 
 test_that("Pooling on/off",code = {
+  testthat::local_edition(3)
   datreturn1 = ecerto:::test_datreturn()
-  
+
   suppressMessages(
     shiny::testServer(
       ecerto::m_materialtabelleServer,
@@ -84,9 +87,9 @@ test_that("Pooling on/off",code = {
 
 test_that("Transfer into column 'U3' successful",code = {
   datreturn1 = ecerto:::test_datreturn()
-  
+
   transfer = structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
-  
+
   com_check = c(0.0398172599441121, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)
   U3_check = c(0, 0.015535927030583, 0, 0, 0.015535927030583, 0, 0, 0, 0,0, 0)
   U_check = c(0.0796345198882242, 0.031071854061166, 0, 0, 0.031071854061166,0, 0, 0, 0, 0, 0)
@@ -94,7 +97,7 @@ test_that("Transfer into column 'U3' successful",code = {
     shiny::testServer(
       ecerto::m_materialtabelleServer,
       args = list(rdataUpload = shiny::reactive({NULL}), datreturn=datreturn1), {
-        
+
         session$setInputs(pooling=FALSE)
         setValue(datreturn,"t_H",transfer)
         session$flushReact()

@@ -1,30 +1,37 @@
-#'@title RDataImport.
+#' @name RDataImport
+#' @aliases m_RDataImport_UI
+#' @aliases m_RDataImport_Server
 #'
-#'@description
-#'\code{RDataImport} will provide a module to upload/backup Rdata files for certification trial data.
+#' @title RDataImport.
 #'
-#'@details
-#'not yet
+#' @description
+#' \code{RDataImport} will provide a module to upload/backup Rdata files for certification trial data.
+#'
+#' @details
+#' not yet
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv ReavtiveValues $$.
 #' @param silent Option to print or omit status messages.
 #'
-#'@return
-#'A reactive dataframe.
+#' @return
+#' A reactive dataframe.
 #'
-#'@examples
+#' @examples
+#' if (interactive()) {
 #' shiny::shinyApp(
-#'  ui = shiny::fluidPage(m_RDataImport_UI(id = "test")),
-#'  server = function(input, output, session) { 
-#'    out <- m_RDataImport_Server(id = "test");  
-#'    observeEvent(out$Certifications$time_stamp, {
+#'  ui = shiny::fluidPage(ecerto::m_RDataImport_UI(id = "test")),
+#'  server = function(input, output, session) {
+#'    out <- ecerto::m_RDataImport_Server(id = "test");
+#'    shiny::observeEvent(out$Certifications$time_stamp, {
 #'      print(out$Certifications$time_stamp)
-#'    }) 
+#'    })
 #'  }
 #' )
+#' }
 #'
-#'@export
+#' @rdname RDataImport
+#' @export
 #'
 m_RDataImport_UI <- function(id) {
   tagList(
@@ -36,7 +43,7 @@ m_RDataImport_UI <- function(id) {
         accept = c("RData")
       ),
     ),
-    
+
     #shinyjs::disabled(
     wellPanel(
       id = NS(id,"savepanel"),
@@ -65,13 +72,14 @@ m_RDataImport_UI <- function(id) {
   )
 }
 
+#' @rdname RDataImport
 #' @export
-m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
+m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALSE) {
   stopifnot(R6::is.R6(rv))
   stopifnot(is.reactivevalues(rv$get()))
-  
+
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     # observeEvent(input$in_file_ecerto_backup,{
     rdata <- eventReactive(input$in_file_ecerto_backup, {
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
@@ -87,7 +95,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
       })
       return(res)
     }, ignoreNULL = TRUE)
-    
+
     observeEvent(rdata(),{
       message("RDataImport_Server: RData uploaded")
       res <- rdata()
@@ -133,16 +141,16 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
           setValue(rv,c("Certifications","cert_sd"),res[["Certification"]][["cert_sd"]])
           setValue(rv,c("Certifications","normality_statement"),res[["Certification"]][["normality_statement"]])
           setValue(rv,c("Certifications","precision"),res[["Certification"]][["precision"]])
-          
+
           setValue(rv,c("Certifications","data_kompakt"),res[["Certification"]][["data_kompakt"]])
           setValue(rv,c("Certifications","CertValPlot"),res[["Certification"]][["CertValPlot"]])
           setValue(rv,c("Certifications","stats"),res[["Certification"]][["stats"]])
           setValue(rv,c("Certifications","boxplot"),res[["Certification"]][["boxplot"]])
           setValue(rv,c("Certifications","opt"),res[["Certification"]][["opt"]])
           setValue(rv,c("Certifications","mstats"),res[["Certification"]][["mstats"]])
-          
+
           setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
-          
+
           # materialtabelle
           setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
         }
@@ -167,9 +175,9 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
         setValue(rv,c("Certifications","time_stamp"),Sys.time())
         # rv$Certifications$time_stamp <- Sys.time()
       }
-      
+
     })
-    
+
     observeEvent(getValue(rv,"Certifications")$time_stamp , {
       #message("observeEvent(rv$Certifications$time_stamp")
       updateTextInput(
@@ -183,20 +191,20 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
         value =  getValue(rv,c("Certifications","study_id"))
       )
     })
-    
+
     observeEvent(input$study_id, {
       setValue(rv,c("Certifications","study_id"),input$study_id)
       # rv$Certifications$study_id <- input$study_id
     })
-    
+
     observeEvent(input$user, {
       setValue(rv,c("Certifications","user"),input$user)
       # rv$Certifications$user <- input$user
     })
-    
+
     output$ecerto_backup <- downloadHandler(
-      filename = function() { 
-        paste0(ifelse(is.null(getValue(rv,c("Certifications","study_id"))), "TEST", getValue(rv,c("Certifications","study_id"))), '.RData') 
+      filename = function() {
+        paste0(ifelse(is.null(getValue(rv,c("Certifications","study_id"))), "TEST", getValue(rv,c("Certifications","study_id"))), '.RData')
       },
       content = function(file) {
         res <- shiny::reactiveValuesToList(getValue(rv))
@@ -205,10 +213,10 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv())) {
       },
       contentType = "RData"
     )
-    
+
     # return(rv)
-    
+
   })
-  
+
 }
 
