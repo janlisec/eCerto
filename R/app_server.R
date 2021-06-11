@@ -10,7 +10,7 @@ app_server = function(input, output, session) {
 
   # Upload Controller -------------------------------------------------------
 
-  
+
   rv = reactiveClass$new(init_rv())
 
   updateSelectInput(inputId = "moduleSelect",
@@ -21,12 +21,16 @@ app_server = function(input, output, session) {
 
   excelformat = reactive({input$moduleSelect})
   # --- --- --- --- --- --- --- --- ---
-  t = m_ExcelUploadControl_Server("excelfile", excelformat, check = reactive({is.null( get_listUploadsource(rv,excelformat()) )}))
+  t <- m_ExcelUploadControl_Server(
+    id = "excelfile",
+    excelformat = excelformat,
+    check = reactive({is.null( get_listUploadsource(rv, excelformat()) )})
+  )
  # --- --- --- --- --- --- --- --- ---
 
   observeEvent(excelformat(),{
   },ignoreInit = TRUE)
-  
+
   observeEvent(t(),{
     setValue(rv, c(excelformat(),"data"), t())
     set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
@@ -34,7 +38,7 @@ app_server = function(input, output, session) {
 
   # --- --- --- --- --- --- --- --- ---
   m_RDataImport_Server("Rdata", rv)
-  
+
   # @Frederick : ich programmiere sonst so, dass die Module zwar reactives als input erhalten können, diese aber intern nicht direkt
   # modifizieren, sondern auf einer Kopie arbeiten und ein reactive zurückgeben. Dieses überprüfe ich mit observeEvent auf Modifikationen
   # die Variante 'rv' direkt im Modul zu ändern scheint aber auch zu funktionieren, daher habe ich es dabei belassen und die andere Lösung auskommentiert
@@ -90,14 +94,14 @@ app_server = function(input, output, session) {
   observeEvent(getValue(rv)$Homogeneity,{
     # when source is Excel, switch to Homogeneity Tab automatically
     message("app_server: observeEvent(getValue(rv,Homogeneity)): Homogeneity was uploaded")
-    
+
     if (get_listUploadsource(rv, "Homogeneity")=="Excel") {
       updateNavbarPage(
         session = session,
         inputId = "navbarpage",
         selected = "tP_homogeneity")
     }
-    
+
   }, ignoreInit = TRUE)
 
   # datreturn contains the by an analyte selected sub-frame for updating the
@@ -115,10 +119,10 @@ app_server = function(input, output, session) {
   m_CertificationServer(id = "certification", certification = reactive({getValue(rv)$Certifications}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
   h_vals = m_HomogeneityServer(
-    id = "Homogeneity", 
-    homog = shiny::reactive({getValue(rv)$Homogeneity}), 
+    id = "Homogeneity",
+    homog = shiny::reactive({getValue(rv)$Homogeneity}),
     cert = shiny::reactive({getValue(rv)$Certifications})
-  ) 
+  )
   shiny::observeEvent(h_vals(),{
     print("m_HomogeneityServer - h_vals added")
     setValue(datreturn, "h_vals", h_vals())

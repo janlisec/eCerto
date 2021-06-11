@@ -9,7 +9,7 @@ xlsx_range_select_UI(id)
 \arguments{
 \item{id}{Module ID when called in a shiny app.}
 
-\item{x}{Shiny inputFile referencing excel file(s).}
+\item{x}{Shiny fileInput referencing excel file(s).}
 
 \item{sheet}{Number of the sheet to preview.}
 
@@ -24,4 +24,27 @@ file and allow the user to specify a range by mouse click.
 }
 \details{
 not yet
+}
+\examples{
+shiny::shinyApp(
+ ui = shiny::fluidPage(
+   shiny::fluidRow(
+     shiny::column(3, shiny::fileInput(inputId = "x", label = "x", accept = "xlsx", multiple =TRUE)),
+     shiny::column(3, shiny::numericInput(inputId = "sheet", label = "sheet", value = 1)),
+     shiny::column(3, shiny::selectInput(inputId = "excelformat", label = "excelformat", choices = c("Certifications","Homogeneity","Stability")))
+   ),
+   shiny::hr(),
+   xlsx_range_select_UI(id = "test")
+ ),
+ server = function(input, output, session) {
+  out <- xlsx_range_select_Server(
+    id = "test",
+    x = reactive({input$x}),
+    sheet = reactive({input$sheet}),
+    excelformat = reactive({input$excelformat})
+   )
+  observeEvent(out$end_col, { print(out$end_col) })
+ }
+)
+
 }

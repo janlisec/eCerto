@@ -22,3 +22,17 @@ nothing
 \details{
 not yet
 }
+\examples{
+shiny::shinyApp(
+ ui = shiny::fluidPage(m_materialtabelleUI(id = "test")),
+ server = function(input, output, session) {
+ fpath <- system.file("extdata", "SR3_Fe_v26chs.RData", package="ecerto")
+ load(fpath)
+ rdataUpload <- reactive({res[[1]][["cert_vals"]]})
+ datreturn <- ecerto:::test_datreturn()
+ m_materialtabelleServer(id = "test", rdataUpload=rdataUpload, datreturn=datreturn);
+  #observeEvent(out(), {print(out())})
+ }
+)
+
+}

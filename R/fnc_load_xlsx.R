@@ -41,16 +41,18 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
       "openxlsx"=openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = TRUE, ...)
   )
 
-  
-  
   # post process data
   if (method=="tidyxl") {
+    # @Frederik --> ich glaube Du hast den folgenden (jetzt auskommmentierten) check eingebaut.
+    # Wahrscheinlich für den Fall, dass der User ein leeres Sheet auswählt, aber nrow funktioniert auf einem Vector nicht.
+    # habe 'max' als Alternative gewählt und hat mich >30' gekostet den Fehler zu finden. :(
     # in case, uploaded excel is empty
-    if(nrow(a[,"row"]) == 0) return(NULL)
+    #if (nrow(a[,"row"]) == 0) return(NULL)
+    if (max(a[,"row"]) == 0) return(NULL)
     out <- matrix("", nrow=max(a[,"row"]), ncol=max(a[,"col"]),
                   dimnames=list(1:max(a[,"row"]), LETTERS[1:max(a[,"col"])]))
     # print(out)
-    
+
     for (tp in c("numeric","character")) {
       flt <- which(a[,"data_type"]==tp)
       if (length(flt)>=1)  {
@@ -58,8 +60,6 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
           out[as.numeric(a[i,"row"]), as.numeric(a[i,"col"])] <- as.character(a[i,tp])
         }
       }
-
-
     }
     # print(out)
     out <- as.data.frame(out)

@@ -7,21 +7,30 @@
 #'
 #'@param id Name when called as a module in a shiny app.
 #'@param excelformat Selector for dataset type (reactive).
-#'@param check Check, nothing been uploaded (TRUE) or uploaded(FALSE).
+#'@param check Check if 'excelformat' dataset has been uploaded (FALSE) or not (TRUE) (reactive).
 #'@param silent Option to print or omit status messages.
 #'
 #'@return A reactiveVal containing desired data
 #'
 #'@examples
 #' shiny::shinyApp(
-#'  ui = shiny::fluidPage(.ExcelUploadControl_UI(id = "test")),
+#'  ui = shiny::fluidPage(
+#'    shiny::selectInput(inputId = "excelformat", label = "excelformat", choices = c("Certifications","Homogeneity","Stability")),
+#'    shiny::hr(),
+#'    m_ExcelUploadControl_UI(id = "test")
+#'  ),
 #'  server = function(input, output, session) {
-#'   out <- .ExcelUploadControl_Server(id = "test");  
-#'   observeEvent(out(), {print(out())}) 
+#'   out <- m_ExcelUploadControl_Server(
+#'     id = "test",
+#'     excelformat = reactive({input$excelformat}),
+#'     check = reactive({TRUE}))
+#'   #observeEvent(out(), {print(out())})
 #'  }
 #' )
 #'
-m_ExcelUploadControl_UI = function(id) {
+#'@export
+#'
+m_ExcelUploadControl_UI <- function(id) {
 
   shiny::tagList(
     # control elements
@@ -35,14 +44,12 @@ m_ExcelUploadControl_UI = function(id) {
   )
 }
 
-#'@export
-m_ExcelUploadControl_Server = function(id, excelformat, check, silent=FALSE) {
-
+m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
 
   stopifnot(is.reactive(excelformat))
 
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     output$btn_load <- renderUI({
       fluidRow(
         strong("Click to load"),
@@ -84,7 +91,7 @@ m_ExcelUploadControl_Server = function(id, excelformat, check, silent=FALSE) {
     out <- reactiveVal()
     observeEvent(input$go, {
       dat <- rv_xlsx_range_select$tab_flt
-      
+
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {
         dat <- dat[[1]]

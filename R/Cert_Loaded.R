@@ -26,7 +26,7 @@ m_CertLoadedUI = function(id) {
             label = "width",
             value = 400
           )
-        ), 
+        ),
         column(
           6,
           numericInput(
@@ -47,9 +47,9 @@ m_CertLoadedUI = function(id) {
       fluidRow(column(6, strong("mean")), column(6, strong("sd"))),
       # TODO
       fluidRow(
-        column(6, 
-               textOutput(NS(id,"cert_mean"))), 
-        column(6, 
+        column(6,
+               textOutput(NS(id,"cert_mean"))),
+        column(6,
                textOutput(NS(id,"cert_sd")))
       ),
     ),
@@ -60,27 +60,27 @@ m_CertLoadedUI = function(id) {
 }
 
 m_CertLoadedServer = function(id, certification, apm, selected_tab) {
-  
+
   moduleServer(id, function(input, output, session) {
-    
-    
-    # this data.frame contains the following columns for each analyte: 
+
+
+    # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat = reactive({
       req(selected_tab())
       # subset data frame for currently selected analyte
       current_analy = apm$analytes[[selected_tab()]]
-      
+
       cert.data = ecerto::data_of_godelement(certification()) # take the uploaded certification
       # round input values
       cert.data[, "value"] = round(cert.data[, "value"], current_analy$precision)
       cert.data <- cert.data[cert.data[, "analyte"] %in% selected_tab(), ]
       cert.data <-cert.data[!(cert.data[, "ID"] %in% current_analy$sample_filter), ]
       cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% input$flt_labs
-      
+
       # adjust factor levels
       cert.data[, "Lab"] <- factor(cert.data[, "Lab"])
-      
+
       # Notify User in case that only 1 finite measurement remained within group
       validate(
         need(
@@ -98,13 +98,13 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
       return(cert.data)
     }
     )
-    
+
     # BOXPLOT
     output$overview_boxplot <- renderPlot({
       #if (input$opt_show_files == "boxplot") {
       TestPlot(data = dat())
     })
-    
+
     # Filter laboraties (e.g. "L1")
     output$flt_labs <- renderUI({
       req(dat(), selected_tab())
@@ -124,23 +124,23 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
         multiple = TRUE
       )
     })
-    
+
     observeEvent(certification(), {
       if (uploadsource_of_element(certification())=="RData" ) {
-        updateNumericInput(inputId = "Fig01_width",value = certification()[["CertValPlot"]][["Fig01_width"]])
-        updateNumericInput(inputId = "Fig01_height",value = certification()[["CertValPlot"]][["Fig01_height"]])
-        updateSelectizeInput(inputId = "flt_labs",selected = certification()[["opt"]][["flt_labs"]])
+        updateNumericInput(session=session, inputId = "Fig01_width",value = certification()[["CertValPlot"]][["Fig01_width"]])
+        updateNumericInput(session=session, inputId = "Fig01_height",value = certification()[["CertValPlot"]][["Fig01_height"]])
+        updateSelectizeInput(session=session, inputId = "flt_labs",selected = certification()[["opt"]][["flt_labs"]])
       }
-      
+
     }, ignoreNULL = TRUE)
-    
+
     observeEvent(input$flt_labs,{
       # message(paste0("selected lab filter: ", input$flt_labs))
       apm$analytes[[selected_tab()]]$lab_filter = input$flt_labs
     })
-    
-    
-    
+
+
+
     # CertVal Plot
     output$overview_CertValPlot <- renderPlot({
       CertValPlot(data = dat())
@@ -149,7 +149,7 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
     }), width = reactive({
       input$Fig01_width
     }))
-    
+
     return(dat)
   })
 }

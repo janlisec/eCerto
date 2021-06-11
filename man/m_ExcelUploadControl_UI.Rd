@@ -11,7 +11,7 @@ m_ExcelUploadControl_UI(id)
 
 \item{excelformat}{Selector for dataset type (reactive).}
 
-\item{check}{Check, nothing been uploaded (TRUE) or uploaded(FALSE).}
+\item{check}{Check if 'excelformat' dataset has been uploaded (FALSE) or not (TRUE) (reactive).}
 
 \item{silent}{Option to print or omit status messages.}
 }
@@ -27,10 +27,17 @@ not yet
 }
 \examples{
 shiny::shinyApp(
- ui = shiny::fluidPage(.ExcelUploadControl_UI(id = "test")),
+ ui = shiny::fluidPage(
+   shiny::selectInput(inputId = "excelformat", label = "excelformat", choices = c("Certifications","Homogeneity","Stability")),
+   shiny::hr(),
+   m_ExcelUploadControl_UI(id = "test")
+ ),
  server = function(input, output, session) {
-  out <- .ExcelUploadControl_Server(id = "test");  
-  observeEvent(out(), {print(out())}) 
+  out <- m_ExcelUploadControl_Server(
+    id = "test",
+    excelformat = reactive({input$excelformat}),
+    check = reactive({TRUE}))
+  #observeEvent(out(), {print(out())})
  }
 )
 
