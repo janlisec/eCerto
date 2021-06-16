@@ -157,10 +157,42 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
           if (check_cs(x=cs)) {
             update_cs()
           }
+        DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
+      }
+      #print(cs) # the final row is the cell selected last by the user
+      if (nrow(cs)==2 && check_cs(x=cs)) {
+        update_cs()
+      }
+      # did the user select a third point
+      if (nrow(cs)>2) {
+        # is this third point outside or inside the current range
+        if (check_new_point(x=cs)) {
+          # when inside --> open a modal to inform the user that he needs to deselect another cell first
+          shiny::showModal(shiny::modalDialog(
+            shiny::HTML("You selected a cell within the current range.<br>Please deselect one of the two outer cells first.")
+          ))
+          DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
+        } else {
+          # when outside --> increase selected range automatically
+          if (check_cs(x=cs)) {
+            update_cs()
+          }
         }
       }
     })
 
+
+    shiny::observeEvent(tab_param$tab,{
+      if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
+      if(!is.null(unlist(tab_param$tab))){
+        tab_param$tab_flt = tab_param$tab
+        for (i in 1:length(tab_param$tab_flt)) {
+          tab_param$tab_flt[[i]][["File"]] = rep(x()$name[i], nrow(tab_param$tab_flt[[i]]))
+        }
+      }
+    })
+
+    uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({
       shiny::req(tab())
       out <- tab()[[1]]
@@ -186,6 +218,8 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
     })
 
     return(tab_param)
+
+  })
 
   })
 }

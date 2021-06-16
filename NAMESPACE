@@ -21,7 +21,10 @@ export(m_CertLoadedServer)
 export(m_CertLoadedUI)
 export(m_CertificationServer)
 export(m_CertificationUI)
+<<<<<<< HEAD
 export(m_ExcelUploadControl_Server)
+=======
+>>>>>>> 24c40996918cc234a979c90308cd8bdb19c9cec7
 export(m_ExcelUploadControl_UI)
 export(m_HomogeneityServer)
 export(m_HomogeneityUI)
