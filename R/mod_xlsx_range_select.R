@@ -67,15 +67,15 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
     } #getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
 
     tab <- shiny::reactive({
-      req(x(), sheet())
+      shiny::req(x(), sheet())
       # use different modes of fnc_load_xlsx to import data depending on file type
       if (!silent) message("xlsx_range_select_Server: reactive(tab): load files")
       # @Frederik: gibt es einen Grund 'excelformat' als reactive zu übergeben, wenn wir es intern nur als Konstante nutzen (isolate)?
-      if (isolate(excelformat())=="Certifications") {
+      if (shiny::isolate(excelformat())=="Certifications") {
         l <- lapply(x()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
-        validate(
-          need(all(!sapply(l, is.null)),"uploaded Excel contain an empty one"),
-          need(length(l)>=2,"less than 2 laboratory files uploaded. Upload more!")
+        shiny::validate(
+          shiny::need(all(!sapply(l, is.null)),"uploaded Excel contain an empty one"),
+          shiny::need(length(l)>=2,"less than 2 laboratory files uploaded. Upload more!")
         )
         # check if all tables have the same dimensions
         test <- length(unique(sapply(l, nrow)))==1 && length(unique(sapply(l, ncol)))==1
@@ -157,6 +157,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
           if (check_cs(x=cs)) {
             update_cs()
           }
+        }
         DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
       }
       #print(cs) # the final row is the cell selected last by the user
@@ -180,7 +181,6 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         }
       }
     })
-
 
     shiny::observeEvent(tab_param$tab,{
       if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
@@ -221,5 +221,4 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
 
   })
 
-  })
 }
