@@ -53,7 +53,7 @@ getValue = function(df, key=NULL) {
 }
 
 
-#' @tile creates long pivot table in laboratory style
+#' @title creates long pivot table in laboratory style
 #'
 #' @param x data frame with uploaded excel table
 #'
