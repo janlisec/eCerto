@@ -28,3 +28,22 @@ changes).
 \details{
 not yet
 }
+\examples{
+if (interactive()) {
+rv <- ecerto::init_rv()
+datreturn <- ecerto::init_datreturn()
+shiny::shinyApp(
+ ui = shiny::fluidPage(
+   m_CertificationUI(id = "test")
+ ),
+ server = function(input, output, session) {
+   m_CertificationServer(
+     id = "test",
+     certification = reactive({rv$Certifications}),
+     datreturn = datreturn
+   )
+ }
+)
+}
+
+}

@@ -31,10 +31,7 @@ if (interactive()) {
 shiny::shinyApp(
  ui = shiny::fluidPage(ecerto::m_RDataImport_UI(id = "test")),
  server = function(input, output, session) {
-   out <- ecerto::m_RDataImport_Server(id = "test");
-   shiny::observeEvent(out$Certifications$time_stamp, {
-     print(out$Certifications$time_stamp)
-   })
+   ecerto::m_RDataImport_Server(id = "test")
  }
 )
 }
