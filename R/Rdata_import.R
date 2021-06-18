@@ -22,10 +22,7 @@
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(ecerto::m_RDataImport_UI(id = "test")),
 #'  server = function(input, output, session) {
-#'    out <- ecerto::m_RDataImport_Server(id = "test");
-#'    shiny::observeEvent(out$Certifications$time_stamp, {
-#'      print(out$Certifications$time_stamp)
-#'    })
+#'    ecerto::m_RDataImport_Server(id = "test")
 #'  }
 #' )
 #' }
@@ -34,41 +31,42 @@
 #' @export
 #'
 m_RDataImport_UI <- function(id) {
-  tagList(
-    wellPanel(
-      fileInput(
-        inputId = NS(id,"in_file_ecerto_backup"),
+  ns <- shiny::NS(id)
+  shiny::tagList(
+    shiny::wellPanel(
+      shiny::fileInput(
+        inputId = ns("in_file_ecerto_backup"),
         label = "Load Previous Analysis",
         multiple = FALSE,
         accept = c("RData")
       ),
     ),
-
-    #shinyjs::disabled(
-    wellPanel(
-      id = NS(id,"savepanel"),
-      strong("Save"),
-      fluidRow(
-        column(6, textInput(
-          inputId = NS(id,"user"),
-          label = "User",
-          value = "FK"
-        )),
-        column(
-          6,
-          textInput(
-            inputId = NS(id,"study_id"),
+    shiny::wellPanel(
+      id = ns("savepanel"),
+      shiny::strong("Save"),
+      shiny::fluidRow(
+        shiny::column(
+          width = 6,
+          shiny::textInput(
+            inputId = ns("user"),
+            label = "User",
+            value = "FK"
+          )
+        ),
+        shiny::column(
+          width = 6,
+          shiny::textInput(
+            inputId = ns("study_id"),
             label = "Study ID",
             value = "TEST"
           )
         ),
-        column(
-          3,
-          downloadButton(outputId = NS(id,'ecerto_backup'), label = "Backup")
-        ),
+        shiny::column(
+          width = 3,
+          shiny::downloadButton(outputId = ns('ecerto_backup'), label = "Backup")
+        )
       )
     )
-    #)
   )
 }
 
@@ -81,43 +79,48 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
   shiny::moduleServer(id, function(input, output, session) {
 
     # observeEvent(input$in_file_ecerto_backup,{
-    rdata <- eventReactive(input$in_file_ecerto_backup, {
+    rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
-      validate(
-        need(tolower(file.type) == "rdata","Only RData allowed."),
-        need(length(file.type) == 1,"Please select only one RData file.")
+      shiny::validate(
+        shiny::need(tolower(file.type) == "rdata","Only RData allowed."),
+        shiny::need(length(file.type) == 1,"Please select only one RData file.")
       )
       file.type <- "RData"
+      load_envir <- new.env()
       tryCatch({
-        load(input$in_file_ecerto_backup$datapath[1])
+        load(input$in_file_ecerto_backup$datapath[1], envir = load_envir)
       }, error = function(e) {
-        stop(safeError(e))
+        stop(shiny::safeError(e))
       })
-      return(res)
+      return(get(x = "res", envir = load_envir))
     }, ignoreNULL = TRUE)
 
-    observeEvent(rdata(),{
-      message("RDataImport_Server: RData uploaded")
+    shiny::observeEvent(rdata(),{
+      if (!silent) message("m_RDataImport_Server: observeEvent(rdata()): RData uploaded")
       res <- rdata()
+      # @Frederick: die nächste Zeile hat keine Zuweisung. Kann sie raus oder ist sie aus reaktiven Gründen drin?
       shiny::reactiveValuesToList(rv$get())
       if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes
         if ( res$Certifications$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
           resnames <- names(unlist(res, recursive = FALSE))
-          rvnames <- names(unlist(reactiveValuesToList(rv$get()), recursive = FALSE))
+          rvnames <- names(unlist(shiny::reactiveValuesToList(rv$get()), recursive = FALSE))
           if (all(resnames %in% rvnames)) {
-            #list12 <- Map(c, reactiveValuesToList(rv), res)
-            #rv_tmp <- do.call("reactiveValues", res)
-            #rv <- rv_tmp
             # Transfer list elements
             # $$ToDo$$ one might provide a warning to the user in case he will
             # overwrite non empty fields i.e. he did load Stab data and now
             # reads an RData backup which already contains Stab data
+            #browser()
             for (i in names(res)) {
+              # @Frederick: ja, ist glaube ich schief gelaufen...
               # könnte schieflaufen hier
-              setValue(rv,i,res[[i]])
+              #setValue(rv,i,res[[i]])
+              for (j in names(res[[i]])) {
+                setValue(rv, c(i,j), res[[i]][[j]])
+              }
             }
+            # reset time_stamp with current $$ToDo think if this is really desirable
             setValue(rv,c("Certifications","time_stamp"),Sys.time())
             # rv$Certifications$time_stamp <- Sys.time()
           } else {
@@ -128,7 +131,8 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
       } else {
         # import functions for legacy data_format schemes
         if ("Certification" %in% names(res) && !is.null(res$Certification)) {
-          message("RDataImport_Server: Cert data transfered")
+          if (!silent) message("RDataImport_Server: Cert data transfered")
+          #browser()
           setValue(rv,c("Certifications","data"),res[["Certification"]][["data_input"]])
           setValue(rv,c("Certifications","input_files"),res[["Certification"]][["input_files"]])
           set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
@@ -151,11 +155,12 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
 
           setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
 
+          # @Frederick: Warum gibt es diese Zeile 2x? Notwendig wegen reactive oder Versehen?
           # materialtabelle
           setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
         }
         if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
-          message("RDataImport_Server: Homog data transfered")
+          if (!silent) message("RDataImport_Server: Homog data transfered")
           setValue(rv,c("Homogeneity","data"),res[["Homogeneity"]][["h_dat"]])
           set_listUploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
           setValue(rv,c("Homogeneity","h_file"),res[["Homogeneity"]][["h_file"]])
@@ -166,7 +171,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
           setValue(rv,c("Homogeneity","h_Fig_width"),res[["Homogeneity"]][["h_Fig_width"]])
         }
         if ("Stability" %in% names(res) && !is.null(res$Stability)) {
-          message("RDataImport_Server: Stab data transfered")
+          if (!silent) message("RDataImport_Server: Stab data transfered")
           setValue(rv,c("Stability","file"),res[["Stability"]][["s_file"]])
           setValue(rv,c("Stability","data"),res[["Stability"]][["s_dat"]])
           set_listUploadsource(rv = rv, m = "Stability", uploadsource = "RData")
@@ -178,31 +183,47 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
 
     })
 
-    observeEvent(getValue(rv,"Certifications")$time_stamp , {
-      #message("observeEvent(rv$Certifications$time_stamp")
-      updateTextInput(
+    # shiny::observeEvent(getValue(rv,"Certifications")$time_stamp , {
+    #   #if (!silent) message("observeEvent(rv$Certifications$time_stamp")
+    #   shiny::updateTextInput(
+    #     session = session,
+    #     inputId = "user",
+    #     value = getValue(rv,c("Certifications","user"))
+    #   )
+    #   shiny::updateTextInput(
+    #     session = session,
+    #     inputId = "study_id",
+    #     value =  getValue(rv,c("Certifications","study_id"))
+    #   )
+    # })
+
+    shiny::observeEvent(getValue(rv,"Certifications")$user , {
+      if (!silent) message("m_RDataImport_Server: observeEvent(getValue(rv,'Certifications')$user")
+      shiny::updateTextInput(
         session = session,
         inputId = "user",
         value = getValue(rv,c("Certifications","user"))
       )
-      updateTextInput(
-        session = session,
-        inputId = "study_id",
-        value =  getValue(rv,c("Certifications","study_id"))
-      )
+      # shiny::updateTextInput(
+      #   session = session,
+      #   inputId = "study_id",
+      #   value =  getValue(rv,c("Certifications","study_id"))
+      # )
     })
 
-    observeEvent(input$study_id, {
+    shiny::observeEvent(input$study_id, {
+      if (!silent) message("m_RDataImport_Server: observeEvent(input$study_id")
       setValue(rv,c("Certifications","study_id"),input$study_id)
       # rv$Certifications$study_id <- input$study_id
     })
 
-    observeEvent(input$user, {
+    shiny::observeEvent(input$user, {
+      if (!silent) message("m_RDataImport_Server: observeEvent(input$user")
       setValue(rv,c("Certifications","user"),input$user)
       # rv$Certifications$user <- input$user
     })
 
-    output$ecerto_backup <- downloadHandler(
+    output$ecerto_backup <- shiny::downloadHandler(
       filename = function() {
         paste0(ifelse(is.null(getValue(rv,c("Certifications","study_id"))), "TEST", getValue(rv,c("Certifications","study_id"))), '.RData')
       },
