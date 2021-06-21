@@ -4,16 +4,25 @@
 \alias{mondf}
 \title{mondf.}
 \usage{
-mondf(d_start, d_end)
+mondf(
+  x = NULL,
+  d_start = NULL,
+  type = c("year", "mon", "day")[2],
+  origin = "1900-01-01"
+)
 }
 \arguments{
-\item{d_start}{A start date}
+\item{x}{A vector of dates or character in format 'yyyy-mm-dd'.}
 
-\item{d_end}{An end date}
+\item{d_start}{A specific start date (if NULL the minimum of x will be used).}
+
+\item{type}{You may specify 'year' or 'day' instead of month here.}
+
+\item{origin}{The origin used.}
 }
 \value{
 
 }
 \description{
-Calculation of number of month between start and end date.
+Calculation of number of month since start date.
 }

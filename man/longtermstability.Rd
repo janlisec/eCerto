@@ -2,15 +2,15 @@
 % Please edit documentation in R/lts_module.R
 \name{longtermstability}
 \alias{longtermstability}
-\alias{.longtermstabilityServer}
+\alias{.longtermstabilityUI}
 \alias{longtermstabilityUI}
 \alias{longtermstabilityServer}
-\alias{.longtermstabilityUI}
+\alias{.longtermstabilityServer}
 \title{longtermstabilityServer.}
 \usage{
-.longtermstabilityServer(id)
-
 .longtermstabilityUI(id)
+
+.longtermstabilityServer(id)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}

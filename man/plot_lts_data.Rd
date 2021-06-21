@@ -7,12 +7,12 @@
 plot_lts_data(x = NULL, type = 1)
 }
 \arguments{
-\item{x}{data}
+\item{x}{data.}
 
-\item{type}{type of plot (either 1 oder 2)}
+\item{type}{type of plot (see return).}
 }
 \value{
-
+The plot function can be used to return only the calculated LTS value (in month) with type=0. If type=1 or 2 the normal or adjusted LTS plot will be computed additionally.
 }
 \description{
 Plots for LTS module.
