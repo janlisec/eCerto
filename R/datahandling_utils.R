@@ -82,48 +82,6 @@ laboratory_dataframe = function(x) {
   return(x)
 }
 
-#' @title Extracts values from nested list
-#'
-#' @param l the list object
-#' @param keys a vector of keys
-#'
-#' @return the extracted value
-#' @export
-#'
-#' @rdname datahandling_utils
-#' @examples
-#' lz = list(a1=list(b1 = "Streusalz",b2 = "Andreas Scheuer"), a2 = "Wurst")
-#' lz = do.call(shiny::reactiveValues,lz)
-#' access_nested_list(lz, c("a1","b2")) # should be "Andreas Scheuer"
-access_nested_list = function(l,keys) {
-  if(!is.null(keys)){
-    if(shiny::is.reactivevalues(l)) {
-      shiny::isolate(purrr::chuck(l, !!!keys))
-    } else {
-      purrr::chuck(l, !!!keys)
-    }
-  } else {
-    l
-  }
-}
-
-#' @rdname datahandling_utils
-#' @export
-set_nested_list = function(l,keys,value) {
-
-  if(!is.null(keys)){
-    if(shiny::is.reactivevalues(l)) {
-      access_nested_list(l, keys)
-      shiny::isolate(purrr::pluck(l, !!!keys) <- value)
-    } else {
-      purrr::pluck(l, !!!keys) <- value
-    }
-  } else {
-    l
-  }
-
-}
-
 #' Loads names of Excel sheets
 #'
 #' @param filepath the path to a single or multiple excel file(s)

@@ -1,36 +1,104 @@
 #' @title A reactive class based on an R6 object.
 #'
 #' @description
-#' builds a class, which allows only restricted access to the contained  reactiveValues. elements should be accessed via [getValue()].
-#' (1) structure of #'reactiveValues is clear from the beginning (no function like "addVariable" should exist!)
-#' (2) functions to calculate, e.g., the mean can be implemented
+#' Builds a class, which allows only restricted access to the contained 'reactiveValues'. Elements should be accessed via [getValue()].
+#' Possible advantages are that (1) structure of 'reactiveValues' is clear from the beginning (no function like "addVariable" should exist!)
+#' and that (2) functions to calculate the mean or plot current data can be implemented here directly.
 #'
 #' @param rv ReactiveValues object.
 #' @param field Field name of R6 object for get and set methods.
 #' @param value Value for set method.
+#'
 #' @name reactiveClass
+#'
+#' @examples
+#' rv <- shiny::reactiveValues(a=1)
+#' shiny::observeEvent(rv$a, { message(paste("rv$a changed:", rv$a)) })
+#' shiny:::flushReact()
+#' rv$a <- 2
+#' shiny:::flushReact()
+#' test <- reactiveClass$new(ecerto:::init_rv())
+#' ecerto::getValue(test, c("Certifications","data"))
+#' shiny::observeEvent(ecerto::getValue(test, "Certifications")$data, {
+#'   message(paste("Certifications$data changed:", ecerto::getValue(test, "Certifications")$data))
+#' })
+#' ecerto::setValue(test, c("Certifications","data"), 5)
+#' ecerto::getValue(test, c("Certifications","data"))
+#' shiny:::flushReact()
+#'
 #' @export
 
 reactiveClass = R6::R6Class(
   classname = "reactiveValuesClass",
   private = list(
-    reactive_data = NULL
+    #' @field reactive_data The 'reactiveValues' object parsed on initialize.
+    reactive_data = NULL,
+    #' @description
+    #' Read the (reactive) value of element 'keys' from list 'l'.
+    #' @param l 'reactiveValues' object.
+    #' @param keys Name of list element.
+    #' @return Value of element.
+    access_nested_list = function(l, keys) {
+      if(!is.null(keys)){
+        if(shiny::is.reactivevalues(l)) {
+          shiny::isolate(purrr::chuck(l, !!!keys))
+        } else {
+          purrr::chuck(l, !!!keys)
+        }
+      } else {
+        l
+      }
+    },
+    #' @description
+    #' Write the (reactive) value of element 'keys' from list 'l'.
+    #' @param l 'reactiveValues' object.
+    #' @param keys Name of list element.
+    #' @param value New value.
+    #' @return Value of element.
+    set_nested_list = function(l, keys, value) {
+      if(!is.null(keys)){
+        if(shiny::is.reactivevalues(l)) {
+          private$access_nested_list(l, keys)
+          shiny::isolate(purrr::pluck(l, !!!keys) <- value)
+        } else {
+          purrr::pluck(l, !!!keys) <- value
+        }
+      } else {
+        l
+      }
+    }
   ),
   public = list(
+    #' @description
+    #' Write the (reactive) value of element 'keys' from list 'l'.
+    #' @param rv 'reactiveValues' object.
+    #' @return A new 'reactiveClass' object.
     initialize = function(rv){
       # message("Initiate R6 object")
       stopifnot(shiny::is.reactivevalues(rv))
       private$reactive_data = rv
     },
-    set = function(field=NULL,value){
-      set_nested_list(private$reactive_data,field,value)
+    #' @description
+    #' Read the value of field element of R6 object.
+    #' @param field Name of list element.
+    #' @return Current value of field.
+    get = function(field=NULL) {
+      private$access_nested_list(private$reactive_data, field)
+    },
+    #' @description
+    #' Write the value to field element of R6 object.
+    #' @param field Name of list element.
+    #' @param value New value.
+    #' @return A new 'reactiveClass' object.
+    set = function(field=NULL, value){
+      private$set_nested_list(private$reactive_data, field, value)
       # if(!is.null(self$get(field))) {
       #   warning(paste0(field, " was ", self$get(field),"; overwritten now with ", x))
       # }
     },
-    get = function(field=NULL) {
-      access_nested_list(private$reactive_data,field)
-    },
+    #' @description
+    #' Return all elements of the reactiveValues list stored in the R6 object.
+    #' @return A new 'reactiveClass' object.
     names = function() {
       isolate(names(private$reactive_data))
     }

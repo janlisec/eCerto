@@ -5,8 +5,6 @@
 \alias{setValue}
 \alias{getValue}
 \alias{laboratory_dataframe}
-\alias{access_nested_list}
-\alias{set_nested_list}
 \alias{load_sheetnames}
 \alias{crop_dataframes}
 \alias{data_of_godelement}
@@ -23,10 +21,6 @@ setValue(df, key, value)
 getValue(df, key = NULL)
 
 laboratory_dataframe(x)
-
-access_nested_list(l, keys)
-
-set_nested_list(l, keys, value)
 
 load_sheetnames(filepath)
 
@@ -55,10 +49,6 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 
 \item{x}{data frame with uploaded excel table}
 
-\item{l}{list, which contains "data", but also e.g. "source"}
-
-\item{keys}{a vector of keys}
-
 \item{filepath}{the path to a single or multiple excel file(s)}
 
 \item{dfs}{list of dataframe(s)}
@@ -66,6 +56,8 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 \item{cols}{columns as array, e.g. 1:3}
 
 \item{rows}{rows as array, e.g. 5:8}
+
+\item{l}{list, which contains "data", but also e.g. "source"}
 
 \item{rv}{the list}
 
@@ -93,8 +85,6 @@ Nothing. The R6 object is updated automatically.
 Value of 'key' from 'df'.
 
 another data frame with extracted laboratory parameters
-
-the extracted value
 
 the names of sheets
 
@@ -126,9 +116,6 @@ setValue(rv, c("Certifications","data"), 5)
 getValue(rv, c("Certifications","data")) # is 5?
 datreturn <- ecerto:::test_datreturn()
 shiny::isolate(ecerto::getValue(datreturn)$t_H)
-lz = list(a1=list(b1 = "Streusalz",b2 = "Andreas Scheuer"), a2 = "Wurst")
-lz = do.call(shiny::reactiveValues,lz)
-access_nested_list(lz, c("a1","b2")) # should be "Andreas Scheuer"
 ecerto:::crop_dataframes(iris,2:3,5:6)
 if (interactive()) {
   rv = init_rv()
