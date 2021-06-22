@@ -1,16 +1,22 @@
-#'@title Analyte-module
+#' @name analyteModule
+#' @aliases m_analyteModuleUI
+#' @aliases m_analyteModuleServer
 #'
-#'@description \code{m_analyte} Module for organizing the analyte panel, which
+#' @title Analyte-module
+#'
+#' @description \code{m_analyte} Module for organizing the analyte panel, which
 #'  fill automatically after analytes are available and gives the user the
 #'  opportunity to select analytes as well as precision and filter samples.
 #'
-#'@details not yet
+#' @details not yet
 #'
-#'@param id Name when called as a module in a shiny app.
-#'@param apm reactiveValues object, which gives available analytes, holds parameter, etc.
+#' @param id Name when called as a module in a shiny app.
+#' @param apm reactiveValues object, which gives available analytes, holds parameter, etc.
 #'
-#'@return the currently selected tab. Other parameter via apm reactiveValues()
-#'@export
+#' @return the currently selected tab. Other parameter via apm reactiveValues()
+#'
+#' @rdname analyteModule
+#' @export
 #'
 m_analyteModuleUI = function(id){
   # empty tabset panel, to be filled by the analytes in the server Module
@@ -21,6 +27,7 @@ m_analyteModuleUI = function(id){
 
 }
 
+#' @rdname analyteModule
 #' @export
 m_analyteServer = function(id, apm) {
   stopifnot(is.reactivevalues(apm))

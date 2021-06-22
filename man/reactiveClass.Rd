@@ -2,22 +2,48 @@
 % Please edit documentation in R/reactiveClass.R
 \name{reactiveClass}
 \alias{reactiveClass}
-\title{reactive class}
+\title{A reactive class based on an R6 object.}
 \description{
-builds a class, which allows only restricted access to the contained
-reactiveValues. elements should be accessed via \code{\link[=getValue]{getValue()}}.
-\enumerate{
-\item structure of #'reactiveValues is clear from the beginning (no function like "addVariable"
-should exist!)
-\item functions to calculate, e.g., the mean can be implemented
+Builds a class, which allows only restricted access to the contained 'reactiveValues'. Elements should be accessed via \code{\link[=getValue]{getValue()}}.
+Possible advantages are that (1) structure of 'reactiveValues' is clear from the beginning (no function like "addVariable" should exist!)
+and that (2) functions to calculate the mean or plot current data can be implemented here directly.
 }
+\examples{
+rv <- shiny::reactiveValues(a=1)
+shiny::observeEvent(rv$a, { message(paste("rv$a changed:", rv$a)) })
+shiny:::flushReact()
+rv$a <- 2
+shiny:::flushReact()
+test <- reactiveClass$new(ecerto:::init_rv())
+ecerto::getValue(test, c("Certifications","data"))
+shiny::observeEvent(ecerto::getValue(test, "Certifications")$data, {
+  message(paste("Certifications$data changed:", ecerto::getValue(test, "Certifications")$data))
+})
+ecerto::setValue(test, c("Certifications","data"), 5)
+ecerto::getValue(test, c("Certifications","data"))
+shiny:::flushReact()
+
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{reactive_data}}{The 'reactiveValues' object parsed on initialize.}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{reactive_data}}{The 'reactiveValues' object parsed on initialize.}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{reactiveClass$new()}}
-\item \href{#method-set}{\code{reactiveClass$set()}}
 \item \href{#method-get}{\code{reactiveClass$get()}}
+\item \href{#method-set}{\code{reactiveClass$set()}}
 \item \href{#method-names}{\code{reactiveClass$names()}}
 \item \href{#method-clone}{\code{reactiveClass$clone()}}
 }
@@ -26,37 +52,92 @@ should exist!)
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Read the (reactive) value of element 'keys' from list 'l'.
+
+
+Write the (reactive) value of element 'keys' from list 'l'.
+
+
+Write the (reactive) value of element 'keys' from list 'l'.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$new(rv)}\if{html}{\out{</div>}}
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set"></a>}}
-\if{latex}{\out{\hypertarget{method-set}{}}}
-\subsection{Method \code{set()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{reactiveClass$set(field = NULL, value)}\if{html}{\out{</div>}}
-}
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{rv}}{'reactiveValues' object.}
 
+\item{\code{l}}{'reactiveValues' object.}
+
+\item{\code{keys}}{Name of list element.}
+
+\item{\code{l}}{'reactiveValues' object.}
+
+\item{\code{keys}}{Name of list element.}
+
+\item{\code{value}}{New value.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Value of element.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-get"></a>}}
 \if{latex}{\out{\hypertarget{method-get}{}}}
 \subsection{Method \code{get()}}{
+Read the value of field element of R6 object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$get(field = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field}}{Name of list element.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Current value of field.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set"></a>}}
+\if{latex}{\out{\hypertarget{method-set}{}}}
+\subsection{Method \code{set()}}{
+Write the value to field element of R6 object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{reactiveClass$set(field = NULL, value)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field}}{Name of list element.}
+
+\item{\code{value}}{New value.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new 'reactiveClass' object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-names"></a>}}
 \if{latex}{\out{\hypertarget{method-names}{}}}
 \subsection{Method \code{names()}}{
+Return all elements of the reactiveValues list stored in the R6 object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$names()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+A new 'reactiveClass' object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

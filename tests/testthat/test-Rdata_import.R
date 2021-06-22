@@ -1,21 +1,21 @@
 test_that(
   desc = "Successful RData (version 26) Upload",
   code = {
-
+    testthat::local_edition(3)
     rdat <- list(
       name = "SR3_Fe_v26chs.RData",
       datapath = system.file(package = "ecerto","extdata","SR3_Fe_v26chs.RData")
     )
-  rv_test =  ecerto::reactiveClass$new(ecerto::init_rv())
-  suppressMessages(
-  shiny::testServer(
-    app = ecerto::m_RDataImport_Server,
-    args = list(rv = rv_test),
-    expr = {
+    rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
+    suppressMessages(
+    shiny::testServer(
+      app = ecerto::m_RDataImport_Server,
+      args = list(rv = rv_test),
+      expr = {
                session$setInputs(in_file_ecerto_backup = rdat)
-               expect_equal(ecerto::getValue(rv,c("Certifications","user")),"JL")  
+               expect_equal(ecerto::getValue(rv,c("Certifications","user")),"JL")
                #expect_snapshot(reactiveValuesToList(ecerto::getValue(rv)))
-               
+
                expect_equal(sort(names(getValue(rv))),c("Certifications", "Homogeneity", "Stability" ))
                expect_equal(getValue(rv, c("Certifications","user")),"JL")
 
@@ -25,8 +25,8 @@ test_that(
                expect_snapshot(bbb[!names(bbb) %in% "time_stamp"])
                expect_snapshot(getValue(rv,"Homogeneity"))
                expect_snapshot(getValue(rv,"Stability"))
-   
-               
+
+
                }
   )
   )

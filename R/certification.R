@@ -1,167 +1,186 @@
-#'@title CERTIFICATION MODULE
+#' @name mod_Certification
+#' @aliases m_CertificationUI
+#' @aliases m_CertificationServer
 #'
-#'@description \code{m_CertificationServer} is the module for handling the
+#' @title Certification.
+#'
+#' @description \code{m_CertificationServer} is the module for handling the
 #'  Certification part but also contains the materialtabelle (until further
 #'  changes).
 #'
-#'@details not yet
+#' @details not yet
 #'
-#'@param certification = reactive({rv$Certifications})
-#'@param datreturn the session data object
+#' @param id Name when called as a module in a shiny app.
+#' @param certification reactive({rv$Certifications})
+#' @param datreturn the session data object
 #'
-#'@return nothing directly, works over apm parameter
-#'@export
+#' @return nothing directly, works over apm parameter
+#'
+#' @examples
+#' if (interactive()) {
+#' rv <- ecerto::init_rv()
+#' datreturn <- ecerto::init_datreturn()
+#' shiny::shinyApp(
+#'  ui = shiny::fluidPage(
+#'    m_CertificationUI(id = "test")
+#'  ),
+#'  server = function(input, output, session) {
+#'    m_CertificationServer(
+#'      id = "test",
+#'      certification = reactive({rv$Certifications}),
+#'      datreturn = datreturn
+#'    )
+#'  }
+#' )
+#' }
+#'
+#' @rdname mod_Certification
+#' @export
 m_CertificationUI = function(id) {
-  tabsetPanel(
-    id = NS(id, "certificationPanel"),
+  ns <- shiny::NS(id)
+  shiny::tabsetPanel(
+    id = ns("certificationPanel"),
     type = "hidden",
     # when nothing is loaded
-    tabPanel(title = "standby-Panel", value  = "standby", "empty panel content"),
+    shiny::tabPanel(
+      title = "standby-Panel",
+      value  = "standby",
+      # @Frederick: what is this non-named parameter for?
+      "empty panel content"
+    ),
     # when something is loaded
-    tabPanel(
+    shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      fluidRow(
-        column(4,
-               wellPanel(
-                 checkboxGroupInput(
-                   inputId = NS(id,"certification_view"),
-                   label = "Select View:",
-                   choices = c("boxplot"="boxplot",
-                               "Statistics 1" = "stats",
-                               "Statistics 2" = "stats2",
-                               "QQ-Plot" = "qqplot",
-                               "material table" = "mt"),
-                   selected = c("boxplot","mt")
-                 )      
-               )
+      shiny::fluidRow(
+        shiny::column(
+          width=4,
+          shiny::wellPanel(
+            shiny::checkboxGroupInput(
+              inputId = shiny::NS(id,"certification_view"),
+              label = "Select View:",
+              choices = c("boxplot"="boxplot",
+                         "Statistics 1" = "stats",
+                         "Statistics 2" = "stats2",
+                         "QQ-Plot" = "qqplot",
+                         "material table" = "mt"),
+              selected = c("boxplot","mt")
+            )
+          )
         ),
-        column(8,
-               wellPanel(
-                 # --- --- --- --- --- --- --- --- ---
-                 m_analyteModuleUI(NS(id, "analyteModule")),
-                 # --- --- --- --- --- --- --- --- ---
-               )
-        )
+        # --- --- --- --- --- --- --- --- ---
+        shiny::column(width=8, shiny::wellPanel(m_analyteModuleUI(ns("analyteModule"))))
+        # --- --- --- --- --- --- --- --- ---
       ),
-      conditionalPanel(
+      shiny::conditionalPanel(
         # check if checkBoxes are marked for material table
         condition = "input.certification_view.indexOf('boxplot') > -1",
-        ns = NS(id), # namespace of current module,
-        fluidRow(
-          column(
-            10,
-            wellPanel(
-              fluidRow(
-                # --- --- --- --- --- --- ---
-                m_CertLoadedUI(NS(id,"loaded"))
-                # --- --- --- --- --- --- ---
-              )
-            ) ),
-          
+        ns = shiny::NS(id), # namespace of current module,
+        shiny::fluidRow(
+          # --- --- --- --- --- --- ---
+          shiny::column(width = 10, shiny::wellPanel(fluidRow(m_CertLoadedUI(ns("loaded"))))),
+          # --- --- --- --- --- --- ---
           ##### Download-Teil
-          column(
-            2,
+          shiny::column(
+            width = 2,
             wellPanel(
-              fluidRow(strong("Download Report")),
-              fluidRow(
-                radioButtons(
-                  inputId = NS(id, 'output_file_format'),
+              shiny::fluidRow(strong("Download Report")),
+              shiny::fluidRow(
+                shiny::radioButtons(
+                  inputId = ns("output_file_format"),
                   label = NULL,
                   choices = c('PDF', 'HTML', 'Word'),
                   inline = TRUE
                 )
               ),
-              fluidRow(
-                column(6, align = "center", downloadButton('FinalReport', label = "Analyte")),
-                column(
-                  6,
+              shiny::fluidRow(
+                shiny::column(width = 6, align = "center", downloadButton('FinalReport', label = "Analyte")),
+                shiny::column(
+                  width = 6,
                   align = "center",
-                  downloadButton('MaterialReport', label =
-                                   "Material")
+                  shiny::downloadButton('MaterialReport', label = "Material")
                 )
               ),
-              fluidRow(
-                checkboxInput(
-                  inputId = NS(id, "show_code"), label = "Show Code in Report"
-                )
+              shiny::fluidRow(
+                shiny::checkboxInput(inputId = ns("show_code"), label = "Show Code in Report")
               )
             )
-          ) )
+          )
+        )
       ),
-      # Stats
-      conditionalPanel(
+      # Stats (on Lab distributions)
+      shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats') > -1",
-        ns = NS(id), # namespace of current module
-        wellPanel(
-          fluidRow(
-            column(
+        ns = shiny::NS(id), # namespace of current module
+        shiny::wellPanel(
+          shiny::fluidRow(
+            shiny::column(
               width = 9,
-              strong(
-                "Statistics regarding lab means, lab variances and outlier detection"
-              )
+              shiny::strong("Statistics regarding lab means, lab variances and outlier detection")
             ),
-            DT::dataTableOutput(NS(id,"overview_stats"))
+            DT::dataTableOutput(ns("overview_stats"))
           ),
         )
       ),
-      conditionalPanel(
+      # Stats2 (on Lab means)
+      shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats2') > -1",
-        ns = NS(id),
-        DT::dataTableOutput(NS(id, "overview_mstats")),
-        hr(),
-        fluidRow(
-          column(9, textOutput(outputId = NS(id,"normality_statement"))),
-        ),
-        conditionalPanel(
+        ns = shiny::NS(id),
+        DT::dataTableOutput(ns("overview_mstats")),
+        shiny::hr(),
+        shiny::fluidRow(shiny::column(9, shiny::textOutput(outputId = ns("normality_statement")))),
+        shiny::conditionalPanel(
           condition = "input.certification_view.indexOf('qqplot') > -1",
-          ns = NS(id),
-          plotOutput("qqplot")
+          ns = shiny::NS(id),
+          shiny::plotOutput("qqplot")
         )
       ),
-      conditionalPanel( 
+      # materialtabelle
+      shiny::conditionalPanel(
         # check if checkBoxes are marked for material table
         condition = "input.certification_view.indexOf('mt') > -1",
-        ns = NS(id), # namespace of current module
+        ns = shiny::NS(id), # namespace of current module
         # --- --- --- --- --- --- --- --- --- --- ---
-        # wellPanel(
-          m_materialtabelleUI(NS(id,"mat_cert"))
-        # ),
+        m_materialtabelleUI(ns("mat_cert"))
         # --- --- --- --- --- --- --- --- --- --- ---
       ),
     )
   )
 }
 
+#' @rdname mod_Certification
 #' @export
 m_CertificationServer = function(id, certification, datreturn) {
-  stopifnot(is.reactive(certification))
-  moduleServer(id, function(input, output, session) {
+
+  stopifnot(shiny::is.reactive(certification))
+
+  shiny::moduleServer(id, function(input, output, session) {
+
     exportTestValues(CertificationServer.d = { try(certification()) })
-    
-    d_act = reactiveVal("Haha nope")
-    
-    certification_data = reactive({data_of_godelement(certification())})
-    
-    apm = analyte_parameter_list()
-    dat = reactiveVal(NULL)
-    
-    observeEvent(certification_data(), {
+
+    d_act <- shiny::reactiveVal("Haha nope")
+
+    certification_data <- shiny::reactive({data_of_godelement(certification())})
+
+    apm <- analyte_parameter_list()
+    dat <- shiny::reactiveVal(NULL)
+
+    shiny::observeEvent(certification_data(), {
       #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
       if(!is.null(certification_data())){
         d_act("TRUE")
         message("Certification Module start")
-        updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-        apm = analyte_parameter_list(certification_data())
-        
+        shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
+        apm <- analyte_parameter_list(certification_data())
+
         # selected analyte, sample filter, precision
         # --- --- --- --- --- --- --- --- --- --- ---
-        selected_tab = m_analyteServer("analyteModule", apm)
+        selected_tab <- m_analyteServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
-        
+
         # --- --- --- --- --- --- --- --- --- --- ---
-        dat = m_CertLoadedServer(
+        dat <- m_CertLoadedServer(
           id = "loaded",
           certification = certification,
           apm = apm,
@@ -179,7 +198,7 @@ m_CertificationServer = function(id, certification, datreturn) {
         # L3 0.05126667 0.0004926121 6
         lab_statistics = reactive({
           # data <- dat()
-          req(dat())
+          shiny::req(dat())
           message("CertificationServer : lab_statistics created")
           out <-
             plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
@@ -193,17 +212,13 @@ m_CertificationServer = function(id, certification, datreturn) {
 
           return(out)
         })
-        
-        output$normality_statement <- renderText({
+
+        output$normality_statement <- shiny::renderText({
           l = lab_statistics()
-          suppressWarnings(KS_p <-
-                             stats::ks.test(
-                               x = l$mean,
-                               y = "pnorm",
-                               mean = mean(l$mean),
-                               sd = sd(l$mean)
-                             )$p.value)
-          normality_statement  = paste0(
+          suppressWarnings(
+            KS_p <- stats::ks.test(x = l$mean, y = "pnorm", mean = mean(l$mean), sd = sd(l$mean))$p.value
+          )
+          normality_statement <- paste0(
             "The data is",
             ifelse(KS_p < 0.05, " not ", " "),
             "normally distributed (KS_p=",
@@ -224,13 +239,13 @@ m_CertificationServer = function(id, certification, datreturn) {
         #   # console log
         #   # message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
         # })
-        
-        observeEvent(dat(),{
-          setValue(datreturn,"selectedAnalyteDataframe",dat())
+
+        shiny::observeEvent(dat(),{
+          setValue(datreturn, "selectedAnalyteDataframe", dat())
         })
-        
-        observeEvent(lab_statistics(),{
-          setValue(datreturn,"lab_statistics",lab_statistics())
+
+        shiny::observeEvent(lab_statistics(),{
+          setValue(datreturn, "lab_statistics", lab_statistics())
         })
 
 
@@ -238,39 +253,35 @@ m_CertificationServer = function(id, certification, datreturn) {
           shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
           if("stats2" %in% input$certification_view)
             shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
-
           })
-        
+
         output$overview_stats <- DT::renderDataTable({
-          
           message("stats 1")
           message(dat())
           Stats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-        
+
         # mStats
         output$overview_mstats <- DT::renderDataTable({
           mstats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-        
+
         ### LOADED END ###s
-      } else { 
+      } else {
         # else if nothing is loaded, keep Panel empty
-        updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
+        shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
       }
     # }, ignoreInit = TRUE)
     })
 
-    
+
     # --- --- --- --- --- --- --- --- --- --- ---
     m_materialtabelleServer(
-      id = "mat_cert", 
-      rdataUpload = reactive({certification()$materialtabelle}), 
+      id = "mat_cert",
+      rdataUpload = reactive({certification()$materialtabelle}),
       datreturn = datreturn
     )
     # --- --- --- --- --- --- --- --- --- --- ---
-    
- 
-    
+
   })
 }

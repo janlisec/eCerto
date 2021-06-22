@@ -1,16 +1,24 @@
-#' General access to data object (so data object can maybe get changed without that much code edit)
+#' @name datahandling_utils
+#' @aliases setValue
+#' @aliases getValue
 #'
-#' @param df the data frame (e.g. a R6 object)
-#' @param key key(s)
-#' @param value value to set
+#' @title setValue.
 #'
-#' @return nothing
+#' @description General access to data object (so data object can maybe get changed without that much code edit)
+#'
+#' @param df The data frame (an R6 object).
+#' @param key A character vector specifying the key-chain to put the value in (see examples).
+#' @param value Value to set.
+#'
+#' @return Nothing. The R6 object is updated automatically.
+#'
 #' @export
 #'
+#' @rdname datahandling_utils
 #' @examples
-#' rv = reactiveClass$new(init_rv())
-#' setValue(rv,c("Certifications","data"),5)
-#' getValue(rv,c("Certifications","data")) # is 5?
+#' rv <- reactiveClass$new(init_rv())
+#' setValue(rv, c("Certifications","data"), 5)
+#' getValue(rv, c("Certifications","data")) # is 5?
 setValue = function(df,key,value){
   if(R6::is.R6(df)){
     df$set(key,value)
@@ -20,41 +28,44 @@ setValue = function(df,key,value){
 }
 
 
-#' Returns element. If 'key' is used, reactivity not working correctly.
+#' @title getValue.
+#'
+#' @description Returns element. If 'key' is used, reactivity not working correctly.
 #' Preferable way for calling `getValue(df)$key`, see example
 #'
-#' @param df 
-#' @param key key, see notes
-#' @param react should
+#' @param df An object of class R6.
+#' @param key Key value within R6 object 'df'.
 #'
-#' @return
+#' @return Value of 'key' from 'df'.
+#'
 #' @export
 #'
+#' @rdname datahandling_utils
 #' @examples
-#' datreturn = test_datreturn()
-#' isolate(getValue(datreturn)$t_H)
+#' datreturn <- ecerto:::test_datreturn()
+#' shiny::isolate(ecerto::getValue(datreturn)$t_H)
 getValue = function(df, key=NULL, reactiveReturn = FALSE) {
   if(reactiveReturn==TRUE) {
     stop("reactiveReturn is still under testing")
   }
   if(R6::is.R6(df)){
     if(reactiveReturn){
-      reactive({df$get(key)})
+      return(reactive({df$get(key)}))
     } else {
-      df$get(key)
+      return(df$get(key))
     }
-    return()
   } else {
     stop("object of class ", class(df), " can't get set currently.")
   }
 }
 
 
-#' creates long pivot table in laboratory style
+#' @title creates long pivot table in laboratory style
 #'
 #' @param x data frame with uploaded excel table
 #'
 #' @return another data frame with extracted laboratory parameters
+#' @rdname datahandling_utils
 #' @export
 laboratory_dataframe = function(x) {
   stopifnot(!is.reactive(x))
@@ -78,52 +89,12 @@ laboratory_dataframe = function(x) {
   return(x)
 }
 
-#' Extracts values from nested list
-#'
-#' @param l the list object
-#' @param keys a vector of keys
-#'
-#' @return the extracted value
-#' @export
-#'
-#' @examples
-#' lz = list(a1=list(b1 = "Streusalz",b2 = "Andreas Scheuer"), a2 = "Wurst")
-#' lz = do.call(shiny::reactiveValues,lz)
-#' access_nested_list(lz, c("a1","b2")) # should be "Andreas Scheuer"
-access_nested_list = function(l,keys) {
-  if(!is.null(keys)){
-    if(shiny::is.reactivevalues(l)) {
-      shiny::isolate(purrr::chuck(l, !!!keys))
-    } else {
-      purrr::chuck(l, !!!keys)
-    }
-  } else {
-    l
-  }
-}
-
-#' [similar to access_nested_list()]][ecerto::access_nested_list]
-#' @export
-set_nested_list = function(l,keys,value) {
-  
-  if(!is.null(keys)){
-    if(shiny::is.reactivevalues(l)) {
-      access_nested_list(l, keys)
-      shiny::isolate(purrr::pluck(l, !!!keys) <- value)
-    } else {
-      purrr::pluck(l, !!!keys) <- value
-    }
-  } else {
-    l
-  }
-  
-}
-
 #' Loads names of Excel sheets
 #'
 #' @param filepath the path to a single or multiple excel file(s)
 #'
 #' @return the names of sheets
+#' @rdname datahandling_utils
 #' @export
 load_sheetnames = function(filepath){
   a = lapply(shiny::isolate(filepath), function(x) {
@@ -174,8 +145,9 @@ load_sheetnames = function(filepath){
 #'
 #' @return cropped list of data frames(s)
 #'
-#' @examples crop_dataframes(iris,2:3,5:6)
-crop_dataframes = function(dfs,cols,rows) {
+#' @rdname datahandling_utils
+#' @examples ecerto:::crop_dataframes(iris,2:3,5:6)
+crop_dataframes <- function(dfs, cols, rows) {
   if(missing(dfs))
     stop("list of dataframes missing")
   if(missing(cols))
@@ -192,10 +164,10 @@ crop_dataframes = function(dfs,cols,rows) {
   if(!inherits(dfs,"list")){
     browser()
     warning("data frame is not a list")
-    dfs = list(dfs)
+    dfs <- list(dfs)
   }
 
-  r = lapply(dfs, function(y) {
+  r <- lapply(dfs, function(y) {
     y[rows,cols]
   })
   return(r)
@@ -207,49 +179,12 @@ crop_dataframes = function(dfs,cols,rows) {
 #' @param l list, which contains "data", but also e.g. "source"
 #'
 #' @return
+#' @rdname datahandling_utils
 #' @export
 data_of_godelement = function(l) {
   stopifnot(!is.reactive(l)) # d shouldn't be a reactive
   l[["data"]]
 }
-
-#' #' getter function for module element of the "god list"
-#' #' modules so far are "Certifications, Homogeneity, Stability"
-#' #'
-#' #' @param c "god list
-#' #' @param m element to be fetched (e.g. "Certifications")
-#' #'
-#' #' @return
-#' #' @export
-#' get_listelem = function(c, m) {
-#'   .Deprecated("getValue")
-#'   data_of_godelement(c[[m]])
-#' }
-
-#' #' setter function for an element in the "god list"
-#' #'
-#' #' @param rv "god list"
-#' #' @param m element to be fed (e.g. "Certifications")
-#' #' @param dat data to be inserted
-#' #'
-#' #' @return
-#' #' @export
-#' set_listelem = function(rv, m, dat) {
-#'   # if(!is.null(get_listelem(c,m))) {
-#'   #   warning(paste0(m, " in list is not null"))
-#'   #   return(NULL)
-#'   # }
-#'   .Deprecated("setValue")
-#' 
-#'   if(is.reactive(dat)) {
-#'     rv$set(c(m,"data"),isolate(dat()))
-#'     # c[[m]][["data"]] = isolate(dat())
-#'   } else {
-#'     rv$set(c(m,"data"),dat)
-#'     # c[[m]][["data"]] = dat
-#'   }
-#' 
-#' }
 
 
 #' set source of upload for an element
@@ -260,11 +195,12 @@ data_of_godelement = function(l) {
 #'
 #' @return nothing directly, but via rv
 #' @export
+#' @rdname datahandling_utils
 #' @examples
-#' ## Not run: 
-#  # From within a reactive context, you can access values with:
-#' rv = init_rv()
-#' set_listUploadsource(rv,"Certification","Excel")
+#' if (interactive()) {
+#'   rv = init_rv()
+#'   set_listUploadsource(rv,"Certification","Excel")
+#' }
 
 set_listUploadsource = function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
@@ -282,6 +218,7 @@ set_listUploadsource = function(rv, m, uploadsource) {
 #' @param m "Certification", etc.
 #'
 #' @return
+#' @rdname datahandling_utils
 #' @export
 
 get_listUploadsource = function(rv, m) {
@@ -293,22 +230,25 @@ get_listUploadsource = function(rv, m) {
 
 #' Returns source of upload for an element, is internally used by \code{get_listUploadsource}
 #' (outdated)
-#' @param d
+#' @param d Bin nicht sicher, ob diese Funktion sinnvoll ist.
 #'
 #' @return
-#' @noRd
+#' @rdname datahandling_utils
+#' @export
 uploadsource_of_element = function(d) {
   d[["uploadsource"]]
 }
 
 
 #' Rounds material table.
-#' 
+#'
 #'
 #' @param value the value to be rounded
 #' @param precision precision value
 #'
 #' @return the rounded value
+#'
+#' @rdname datahandling_utils
 #' @export
 #' @examples roundMT(34.3434,3)
 roundMT = function(value,precision = NULL) {
@@ -325,6 +265,7 @@ roundMT = function(value,precision = NULL) {
 #' @param p precision after the decimal sign
 #'
 #' @return numbers formatted
+#' @rdname datahandling_utils
 #' @export
 pn <- function(n=NULL, p=4L) {
   # n : numeric vector
@@ -350,6 +291,7 @@ pn <- function(n=NULL, p=4L) {
 #' @param value value to be updated
 #'
 #' @return nothing directly
+#' @rdname datahandling_utils
 #' @export
 update_reactivecell = function(r,colname,analyterow = NULL,value) {
 

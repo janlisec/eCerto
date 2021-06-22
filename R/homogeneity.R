@@ -1,22 +1,28 @@
-#'@title HOMOGENEITY MODULE
+#' @name mod_Homogeneity
+#' @aliases m_HomogeneityUI
+#' @aliases m_HomogeneityServer
 #'
-#'@description \code{m_Homogeneity} is the module for handling Homogeneity Data
+#' @title HOMOGENEITY MODULE
 #'
-#'@details not yet
+#' @description \code{m_Homogeneity} is the module for handling Homogeneity Data
 #'
-#'@param homog = the Homogeneity table shiny::reactive({getValue(rv)$Homogeneity})
-#'@param cert = shiny::reactive({getValue(rv)$Certifications})
+#' @details not yet
 #'
-#'@return h_vals = The Homogeneity data (not the transfered ones yet)
-#'@export
+#' @param id Name when called as a module in a shiny app.
+#' @param homog = the Homogeneity table shiny::reactive({getValue(rv)$Homogeneity})
+#' @param cert = shiny::reactive({getValue(rv)$Certifications})
+#'
+#' @return h_vals = The Homogeneity data (not the transfered ones yet)
+#' @rdname mod_Homogeneity
+#' @export
 m_HomogeneityUI = function(id) {
   shiny::tabsetPanel(
     id = NS(id, "HomogeneityPanel"),
     type = "hidden",
     # when nothing is loaded
     shiny::tabPanel(
-      title = "standby-Panel", 
-      value  = "standby", 
+      title = "standby-Panel",
+      value  = "standby",
       "emtpy channel here, nix los"
       #helpText("Example Table"), imageOutput("myImage08a", inline = TRUE)
     ),
@@ -26,7 +32,7 @@ m_HomogeneityUI = function(id) {
       value = "loaded",
       shiny::fluidRow(
         shiny::column(10, DT::dataTableOutput(NS(id,"h_vals"))),
-        #  column(2, 
+        #  column(2,
         # #  conditionalPanel(
         # #   condition="output.c_fileUploaded_message != ''",
         #    fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
@@ -66,28 +72,29 @@ m_HomogeneityUI = function(id) {
   )
 }
 
+#' @rdname mod_Homogeneity
 #' @export
 m_HomogeneityServer = function(id, homog, cert) {
   stopifnot(shiny::is.reactive(homog))
   stopifnot(shiny::is.reactive(cert))
-  
+
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     h_vals = reactiveVal(NULL)
-    
+
     shiny::observeEvent(homog(), {
       if(!is.null(homog())){
         shiny::updateTabsetPanel(session = session,"HomogeneityPanel", selected = "loaded")
-      } else { 
+      } else {
         # else if nothing is loaded, keep Panel empty
         shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
       }
     })
     #if loaded (successfully), male area visible
     # AGAIN: SUCCESSFULLY LOADED HERE!
-    
-    
-    
+
+
+
     h_Data = shiny::reactive({
       h_dat = ecerto::data_of_godelement(homog())
       h_dat[,"analyte"] <- factor(h_dat[,"analyte"])
@@ -97,7 +104,7 @@ m_HomogeneityServer = function(id, homog, cert) {
       h_dat[,"H_type"] <- factor(h_dat[,"H_type"])
       return(h_dat)
     })
-    
+
     newh_vals =  shiny::reactive({
       plyr::ldply(split(h_Data(), h_Data()[,"analyte"]), function(y) {
         plyr::ldply(split(y, y[,"H_type"]), function(x) {
@@ -111,33 +118,33 @@ m_HomogeneityServer = function(id, homog, cert) {
           s_bb_min <- (sqrt(MSwithin/n)*(2/(N*(n-1)))^(1/4))/mn
           data.frame("mean"=mn, "n"=n, "N"=N, "MSamong"=MSamong, "MSwithin"=MSwithin, "P"=anm$Pr[1], "s_bb"=s_bb, "s_bb_min"=s_bb_min)
         }, .id="H_type")
-      }, .id="analyte") 
-    }) 
-    
+      }, .id="analyte")
+    })
+
     observe({h_vals(newh_vals())})
-    
+
     output$h_fileUploaded <- shiny::reactive({
       return(!is.null(h_Data()))
     })
-    
+
     output$h_sel_analyt <- shiny::renderUI({
       shiny::req(h_Data())
       lev <- levels(interaction(h_Data()[,"analyte"],h_Data()[,"H_type"]))
       shiny::selectInput(inputId=session$ns("h_sel_analyt"), label="analyte", choices=lev)
     })
-    
+
     h_means <- shiny::reactive({
       shiny::req(h_Data(), input$h_sel_analyt)
       h_dat <- h_Data()
       h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
       out <- plyr::ldply(split(h_dat[,"value"], h_dat[,"Flasche"]), function(x) {
-        data.frame("mean"=mean(x,na.rm=T), "sd"=sd(x,na.rm=T), "n"=sum(is.finite(x))) 
+        data.frame("mean"=mean(x,na.rm=T), "sd"=sd(x,na.rm=T), "n"=sum(is.finite(x)))
       }, .id="Flasche")
       rownames(out) <- out[,"Flasche"]
       return(out)
     })
-    
+
     # Error checks
     h_errors <- shiny::reactive({
       shiny::req(input$h_precision)
@@ -145,7 +152,7 @@ m_HomogeneityServer = function(id, homog, cert) {
       return("")
     })
     output$h_error_message <- shiny::renderText(h_errors())
-    
+
     # Tables
     output$h_overview_stats <- DT::renderDataTable({
       shiny::req(h_means(), input$h_precision)
@@ -153,12 +160,12 @@ m_HomogeneityServer = function(id, homog, cert) {
       for (i in c("mean","sd")) { tab[,i] <- pn(tab[,i], input$h_precision) }
       return(tab)
     }, options = list(paging = FALSE, searching = FALSE), rownames=NULL)
-    
+
     h_vals_print = reactive({
       shiny::req(h_Data())
       c_Data = cert
       h_vals_print <- h_vals()
-      
+
       for (i in c("mean","MSamong","MSwithin","P","s_bb","s_bb_min")) {
         h_vals_print[,i] <- ecerto::pn(h_vals_print[,i], input$h_precision)
       }
@@ -170,12 +177,12 @@ m_HomogeneityServer = function(id, homog, cert) {
       }
       return(h_vals_print)
     })
-    
+
     output$h_vals <- DT::renderDataTable({
       h_vals_print()
     }, options = list(paging = FALSE, searching = FALSE), rownames=NULL)
-    
-    
+
+
     # Plots & Print
     output$h_boxplot <- shiny::renderPlot({
       shiny::req(h_Data(), input$h_sel_analyt, input$h_precision, input$h_Fig_width)
@@ -195,7 +202,7 @@ m_HomogeneityServer = function(id, homog, cert) {
       mtext(text = paste("Overall sd =", osd), side = 3, line = 1.3, adj = 1)
       mtext(text = paste("ANOVA P =", anp), side = 3, line = 2.45, adj = 0)
     }, height=500, width=reactive({input$h_Fig_width}))
-    
+
     output$h_statement <- shiny::renderText({
       shiny::req(h_Data(), input$h_sel_analyt)
       ansd <- max(h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,c("s_bb","s_bb_min")])
@@ -206,37 +213,37 @@ m_HomogeneityServer = function(id, homog, cert) {
         return(paste0("The tested items (Flasche) are not significantly different (ANOVA P-value = ", pn(anp,2), "). The uncertainty value for analyte ", input$h_sel_analyt, " was determined as ", pn(ansd), "."))
       }
     })
-    
+
     output$h_anova <- shiny::renderPrint({
       shiny::req(h_Data(), input$h_sel_analyt)
       h_dat <- h_Data()
       h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
       anova(lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))
     })
-    
-    
+
+
     # Special UI
     # TODO
     output$h_transfer_ubb <- shiny::renderUI({
       shiny::validate(shiny::need(input$sel_analyt, message = "please upload certification data first"))
       shiny::req(getData("cert_vals"))
       shiny::selectInput(
-        inputId=session$ns("h_transfer_ubb"), 
-        label="", 
-        selectize=TRUE, 
+        inputId=session$ns("h_transfer_ubb"),
+        label="",
+        selectize=TRUE,
         choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"]
       )
     })
-    
+
     output$h_transfer_H_type <- shiny::renderUI({
       shiny::req(h_Data())
       shiny::selectInput(inputId=session$ns("h_transfer_H_type"), label="", selectize=TRUE, choices=levels(h_vals()[,"H_type"]))
     })
-    
-    
-    
+
+
+
     # })
-    
+
     return(h_vals)
   })
 }

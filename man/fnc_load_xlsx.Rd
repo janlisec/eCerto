@@ -32,5 +32,7 @@ fnc_load_xlsx(filepath=x, sheet=1)
 fnc_load_xlsx(filepath=x, sheet=1, method="openxlsx")
 fnc_load_xlsx(filepath="C:/not_existent.file", sheet=1)
 fnc_load_xlsx(filepath=x, sheet=2)
+x <- system.file(package="ecerto", "extdata", "EmptyExcel.xlsx")
+fnc_load_xlsx(filepath=x, sheet=1, method="openxlsx")
 
 }
