@@ -12,7 +12,7 @@
 #' @param homog = the Homogeneity table shiny::reactive({getValue(rv)$Homogeneity})
 #' @param cert = shiny::reactive({getValue(rv)$Certifications})
 #'
-#' @return h_vals = The Homogeneity data (not the transfered ones yet)
+#' @return h_vals = The Homogeneity data (not the transferred ones yet)
 #' @rdname mod_Homogeneity
 #' @export
 m_HomogeneityUI = function(id) {
