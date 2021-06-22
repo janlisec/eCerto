@@ -33,10 +33,17 @@ setValue = function(df,key,value){
 #' @examples
 #' datreturn = test_datreturn()
 #' isolate(getValue(datreturn)$t_H)
-getValue = function(df, key=NULL) {
-  
+getValue = function(df, key=NULL, reactiveReturn = FALSE) {
+  if(reactiveReturn==TRUE) {
+    stop("reactiveReturn is still under testing")
+  }
   if(R6::is.R6(df)){
-    return(df$get(key))
+    if(reactiveReturn){
+      reactive({df$get(key)})
+    } else {
+      df$get(key)
+    }
+    return()
   } else {
     stop("object of class ", class(df), " can't get set currently.")
   }
