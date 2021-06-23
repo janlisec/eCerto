@@ -33,7 +33,7 @@
 reactiveClass = R6::R6Class(
   classname = "reactiveValuesClass",
   private = list(
-    #' @field reactive_data The 'reactiveValues' object parsed on initialize.
+    # #' @field reactive_data The 'reactiveValues' object parsed on initialize.
     reactive_data = NULL
   ),
   public = list(

@@ -26,20 +26,6 @@ shiny:::flushReact()
 }
 
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{reactive_data}}{The 'reactiveValues' object parsed on initialize.}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{reactive_data}}{The 'reactiveValues' object parsed on initialize.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
