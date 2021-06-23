@@ -17,9 +17,15 @@
 #' @rdname datahandling_utils
 #' @examples
 #' rv <- reactiveClass$new(init_rv())
-#' setValue(rv, c("Certifications","data"), 5)
-#' getValue(rv, c("Certifications","data")) # is 5?
+#' # Only run examples in interactive R sessions
+#' if (interactive()) {
+#'  setValue(rv, c("Certifications","data"), 5)
+#'  getValue(rv, c("Certifications","data")) # is 5?
+#'  setValue(rv, c("Certifications","user"),"Franz")
+#'  getValue(rv, c("Certifications","user"))
+#' }
 setValue = function(df,key,value){
+
   if(R6::is.R6(df)){
     df$set(key,value)
   } else {
@@ -31,7 +37,7 @@ setValue = function(df,key,value){
 #' @title getValue.
 #'
 #' @description Returns element. If 'key' is used, reactivity not working correctly.
-#' Preferable way for calling `getValue(df)$key`, see example
+#' Preferable way for calling `getValue(df, key)`, see example
 #'
 #' @param df An object of class R6.
 #' @param key Key value within R6 object 'df'.
@@ -43,7 +49,7 @@ setValue = function(df,key,value){
 #' @rdname datahandling_utils
 #' @examples
 #' datreturn <- ecerto:::test_datreturn()
-#' shiny::isolate(ecerto::getValue(datreturn)$t_H)
+#' shiny::isolate(ecerto::getValue(datreturn, "t_H"))
 getValue = function(df, key=NULL, reactiveReturn = FALSE) {
   if(reactiveReturn==TRUE) {
     stop("reactiveReturn is still under testing")

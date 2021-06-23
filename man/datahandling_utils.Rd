@@ -18,7 +18,7 @@
 \usage{
 setValue(df, key, value)
 
-getValue(df, key = NULL)
+getValue(df, key = NULL, reactiveReturn = FALSE)
 
 laboratory_dataframe(x)
 
@@ -112,10 +112,15 @@ Preferable way for calling \code{getValue(df)$key}, see example
 }
 \examples{
 rv <- reactiveClass$new(init_rv())
-setValue(rv, c("Certifications","data"), 5)
-getValue(rv, c("Certifications","data")) # is 5?
+# Only run examples in interactive R sessions
+if (interactive()) {
+ setValue(rv, c("Certifications","data"), 5)
+ getValue(rv, c("Certifications","data")) # is 5?
+ setValue(rv, c("Certifications","user"),"Franz")
+ getValue(rv, c("Certifications","user"))
+}
 datreturn <- ecerto:::test_datreturn()
-shiny::isolate(ecerto::getValue(datreturn)$t_H)
+shiny::isolate(ecerto::getValue(datreturn, "t_H"))
 ecerto:::crop_dataframes(iris,2:3,5:6)
 if (interactive()) {
   rv = init_rv()
