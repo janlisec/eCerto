@@ -32,41 +32,7 @@ reactiveClass = R6::R6Class(
   classname = "reactiveValuesClass",
   private = list(
     #' @field reactive_data The 'reactiveValues' object parsed on initialize.
-    reactive_data = NULL,
-    #' @description
-    #' Read the (reactive) value of element 'keys' from list 'l'.
-    #' @param l 'reactiveValues' object.
-    #' @param keys Name of list element.
-    #' @return Value of element.
-    access_nested_list = function(l, keys) {
-      if(!is.null(keys)){
-        if(shiny::is.reactivevalues(l)) {
-          shiny::isolate(purrr::chuck(l, !!!keys))
-        } else {
-          purrr::chuck(l, !!!keys)
-        }
-      } else {
-        l
-      }
-    },
-    #' @description
-    #' Write the (reactive) value of element 'keys' from list 'l'.
-    #' @param l 'reactiveValues' object.
-    #' @param keys Name of list element.
-    #' @param value New value.
-    #' @return Value of element.
-    set_nested_list = function(l, keys, value) {
-      if(!is.null(keys)){
-        if(shiny::is.reactivevalues(l)) {
-          private$access_nested_list(l, keys)
-          shiny::isolate(purrr::pluck(l, !!!keys) <- value)
-        } else {
-          purrr::pluck(l, !!!keys) <- value
-        }
-      } else {
-        l
-      }
-    }
+    reactive_data = NULL
   ),
   public = list(
     #' @description
@@ -80,18 +46,24 @@ reactiveClass = R6::R6Class(
     },
     #' @description
     #' Read the value of field element of R6 object.
-    #' @param field Name of list element.
+    #' @param keys Name of list element.
     #' @return Current value of field.
-    get = function(field=NULL) {
-      private$access_nested_list(private$reactive_data, field)
+    get = function(keys=NULL) {
+
+      purrr::chuck(private$reactive_data, !!!keys)
+      
     },
     #' @description
     #' Write the value to field element of R6 object.
-    #' @param field Name of list element.
+    #' @param keys Name of list element.
     #' @param value New value.
     #' @return A new 'reactiveClass' object.
-    set = function(field=NULL, value){
-      private$set_nested_list(private$reactive_data, field, value)
+    set = function(keys=NULL, value){
+      # value needs to be NULL, otherwise pluck() is going to delete the
+      # list entry
+      if(!is.null(value)) {
+        purrr::pluck(private$reactive_data, !!!keys) <- value
+      } 
       # if(!is.null(self$get(field))) {
       #   warning(paste0(field, " was ", self$get(field),"; overwritten now with ", x))
       # }

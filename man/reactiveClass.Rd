@@ -52,12 +52,6 @@ shiny:::flushReact()
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Read the (reactive) value of element 'keys' from list 'l'.
-
-
-Write the (reactive) value of element 'keys' from list 'l'.
-
-
 Write the (reactive) value of element 'keys' from list 'l'.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$new(rv)}\if{html}{\out{</div>}}
@@ -67,21 +61,11 @@ Write the (reactive) value of element 'keys' from list 'l'.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{rv}}{'reactiveValues' object.}
-
-\item{\code{l}}{'reactiveValues' object.}
-
-\item{\code{keys}}{Name of list element.}
-
-\item{\code{l}}{'reactiveValues' object.}
-
-\item{\code{keys}}{Name of list element.}
-
-\item{\code{value}}{New value.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Value of element.
+A new 'reactiveClass' object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -90,13 +74,13 @@ Value of element.
 \subsection{Method \code{get()}}{
 Read the value of field element of R6 object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{reactiveClass$get(field = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{reactiveClass$get(keys = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{field}}{Name of list element.}
+\item{\code{keys}}{Name of list element.}
 }
 \if{html}{\out{</div>}}
 }
@@ -110,13 +94,13 @@ Current value of field.
 \subsection{Method \code{set()}}{
 Write the value to field element of R6 object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{reactiveClass$set(field = NULL, value)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{reactiveClass$set(keys = NULL, value)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{field}}{Name of list element.}
+\item{\code{keys}}{Name of list element.}
 
 \item{\code{value}}{New value.}
 }
