@@ -108,7 +108,7 @@ nothing directly
 General access to data object (so data object can maybe get changed without that much code edit)
 
 Returns element. If 'key' is used, reactivity not working correctly.
-Preferable way for calling \code{getValue(df)$key}, see example
+Preferable way for calling \code{getValue(df, key)}, see example
 }
 \examples{
 rv <- reactiveClass$new(init_rv())

@@ -179,7 +179,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
       }
       })
 
-    # shiny::observeEvent(getValue(rv,"Certifications")$time_stamp , {
+    # shiny::observeEvent(getValue(rv,c("Certifications","time_stamp)) , {
     #   #if (!silent) message("observeEvent(rv$Certifications$time_stamp")
     #   shiny::updateTextInput(
     #     session = session,

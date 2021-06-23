@@ -13,9 +13,9 @@ m_HomogeneityServer(id, homog, cert)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{homog}{= the Homogeneity table shiny::reactive({getValue(rv)$Homogeneity})}
+\item{homog}{= the Homogeneity table shiny::reactive({getValue(rv,"Homogeneity")})}
 
-\item{cert}{= shiny::reactive({getValue(rv)$Certifications})}
+\item{cert}{= shiny::reactive({getValue(rv,"Certifications")})}
 }
 \value{
 h_vals = The Homogeneity data (not the transferred ones yet)

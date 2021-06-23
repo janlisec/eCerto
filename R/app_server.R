@@ -136,8 +136,8 @@ app_server = function(input, output, session) {
   # --- --- --- --- --- --- --- --- --- --- ---
   h_vals = m_HomogeneityServer(
     id = "Homogeneity",
-    homog = shiny::reactive({getValue(rv)$Homogeneity}),
-    cert = shiny::reactive({getValue(rv)$Certifications})
+    homog = shiny::reactive({getValue(rv,"Homogeneity")}),
+    cert = shiny::reactive({getValue(rv,"Certifications")})
   )
   shiny::observeEvent(h_vals(),{
     print("m_HomogeneityServer - h_vals added")
@@ -148,9 +148,9 @@ app_server = function(input, output, session) {
 
   trh = m_TransferHomogeneityServer(
     id = "trH",
-    homogData = reactive({getValue(datreturn)$h_vals}),
-    matTab_col_code = reactive({attr(getValue(datreturn)$mater_table, "col_code")}),
-    matTab_analytes = reactive({as.character(getValue(datreturn)$mater_table[, "analyte"])})
+    homogData = reactive({getValue(datreturn,"h_vals")}),
+    matTab_col_code = reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
+    matTab_analytes = reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
   )
   # --- --- --- --- --- --- --- --- --- --- ---
 

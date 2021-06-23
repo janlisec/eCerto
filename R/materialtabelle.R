@@ -80,11 +80,11 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
     # data frame of selected analyte
     sAnData = shiny::reactive({
-      ecerto::getValue(datreturn)$selectedAnalyteDataframe
+      ecerto::getValue(datreturn,"selectedAnalyteDataframe")
     })
 
     lab_statistics = shiny::reactive({
-      ecerto::getValue(datreturn)$lab_statistics
+      ecerto::getValue(datreturn,"lab_statistics")
       # datreturn$get("lab_statistics")
       })
 
@@ -99,10 +99,10 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     mater_table = shiny::reactiveVal(NULL)
 
     # Homogeneity transfer
-     shiny::observeEvent(getValue(datreturn)$t_H ,{
+     shiny::observeEvent(getValue(datreturn,"t_H") ,{
       # if(!is.null(mater_table())){
 
-        transferred_array = ecerto::getValue(datreturn)$t_H
+        transferred_array = ecerto::getValue(datreturn,"t_H")
         mergeby = names(transferred_array)
         mater_table_tmp = mater_table()
         mater_table_tmp[,mergeby] = transferred_array
