@@ -14,8 +14,7 @@
 #' @param rv ReavtiveValues $$.
 #' @param silent Option to print or omit status messages.
 #'
-#' @return
-#' A reactive dataframe.
+#' @return rdata A reactive, but only for notifying the navbarpanel
 #'
 #' @examples
 #' if (interactive()) {
@@ -78,7 +77,6 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    # observeEvent(input$in_file_ecerto_backup,{
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
       shiny::validate(
@@ -99,7 +97,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
       if (!silent) message("m_RDataImport_Server: observeEvent(rdata()): RData uploaded")
       res <- rdata()
       # @Frederick: die nächste Zeile hat keine Zuweisung. Kann sie raus oder ist sie aus reaktiven Gründen drin?
-      shiny::reactiveValuesToList(rv$get())
+      # @Jan Konnte raus, war nur für print (23. Juni)
       if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes
         if ( res$Certifications$dataformat_version=="2021-05-27") {
@@ -152,12 +150,12 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
           setValue(rv,c("Certifications","boxplot"),res[["Certification"]][["boxplot"]])
           setValue(rv,c("Certifications","opt"),res[["Certification"]][["opt"]])
           setValue(rv,c("Certifications","mstats"),res[["Certification"]][["mstats"]])
-
+          # materialtabelle
           setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
 
           # @Frederick: Warum gibt es diese Zeile 2x? Notwendig wegen reactive oder Versehen?
-          # materialtabelle
-          setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
+          # @Jan war ein Versehen beim Ändern, --> gelöscht (23. Juni)
+   
         }
         if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
           if (!silent) message("RDataImport_Server: Homog data transfered")
@@ -178,10 +176,8 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
           setValue(rv,c("Stability","s_vals"),res[["Stability"]][["s_vals"]])
         }
         setValue(rv,c("Certifications","time_stamp"),Sys.time())
-        # rv$Certifications$time_stamp <- Sys.time()
       }
-
-    })
+      })
 
     # shiny::observeEvent(getValue(rv,"Certifications")$time_stamp , {
     #   #if (!silent) message("observeEvent(rv$Certifications$time_stamp")
@@ -197,7 +193,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
     #   )
     # })
 
-    shiny::observeEvent(getValue(rv,"Certifications")$user , {
+    shiny::observeEvent(getValue(rv,c("Certifications", "user")) , {
       if (!silent) message("m_RDataImport_Server: observeEvent(getValue(rv,'Certifications')$user")
       shiny::updateTextInput(
         session = session,
@@ -235,7 +231,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
       contentType = "RData"
     )
 
-    # return(rv)
+    return(rdata)
 
   })
 
