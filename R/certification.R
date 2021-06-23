@@ -11,7 +11,7 @@
 #' @details not yet
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param certification reactive({rv$Certifications})
+#' @param certification reactive({getValue(rv,"Certifications")})
 #' @param datreturn the session data object
 #'
 #' @return nothing directly, works over apm parameter

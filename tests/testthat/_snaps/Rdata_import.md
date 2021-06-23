@@ -3,6 +3,21 @@
     Code
       bbb[!names(bbb) %in% "time_stamp"]
     Output
+      $user
+      [1] "JL"
+      
+      $study_id
+      [1] "TEST"
+      
+      $dataformat_version
+      [1] "2021-05-27"
+      
+
+---
+
+    Code
+      getValue(rv, "Certifications")
+    Output
       $data
            ID Lab analyte replicate      value unit
       1     1 L01      Si         1 0.04520000 0.05
@@ -1107,15 +1122,6 @@
       
       $uploadsource
       [1] "RData"
-      
-      $user
-      [1] "JL"
-      
-      $study_id
-      [1] "TEST"
-      
-      $dataformat_version
-      [1] "2021-05-27"
       
       $lab_means
           Lab       mean           sd n

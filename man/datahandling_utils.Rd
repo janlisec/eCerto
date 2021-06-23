@@ -116,8 +116,8 @@ rv <- reactiveClass$new(init_rv())
 if (interactive()) {
  setValue(rv, c("Certifications","data"), 5)
  getValue(rv, c("Certifications","data")) # is 5?
- setValue(rv, c("Certifications","user"),"Franz")
- getValue(rv, c("Certifications","user"))
+ setValue(rv, c("General","user"),"Franz")
+ getValue(rv, c("General","user"))
 }
 datreturn <- ecerto:::test_datreturn()
 shiny::isolate(ecerto::getValue(datreturn, "t_H"))

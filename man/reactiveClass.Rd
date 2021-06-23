@@ -9,19 +9,21 @@ Possible advantages are that (1) structure of 'reactiveValues' is clear from the
 and that (2) functions to calculate the mean or plot current data can be implemented here directly.
 }
 \examples{
+if(interactive()) {
 rv <- shiny::reactiveValues(a=1)
-shiny::observeEvent(rv$a, { message(paste("rv$a changed:", rv$a)) })
+shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
 shiny:::flushReact()
 rv$a <- 2
 shiny:::flushReact()
 test <- reactiveClass$new(ecerto:::init_rv())
 ecerto::getValue(test, c("Certifications","data"))
 shiny::observeEvent(ecerto::getValue(test, "Certifications")$data, {
-  message(paste("Certifications$data changed:", ecerto::getValue(test, "Certifications")$data))
+  message("Certifications$data changed:", ecerto::getValue(test, "Certifications")$data)
 })
 ecerto::setValue(test, c("Certifications","data"), 5)
 ecerto::getValue(test, c("Certifications","data"))
 shiny:::flushReact()
+}
 
 }
 \section{Public fields}{
@@ -114,7 +116,7 @@ A new 'reactiveClass' object.
 \if{html}{\out{<a id="method-names"></a>}}
 \if{latex}{\out{\hypertarget{method-names}{}}}
 \subsection{Method \code{names()}}{
-Return all elements of the reactiveValues list stored in the R6 object.
+Returns names of all elements of the reactiveValues list stored in the R6 object, except "General"
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$names()}\if{html}{\out{</div>}}
 }

@@ -13,7 +13,7 @@ m_CertificationServer(id, certification, datreturn)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{certification}{reactive({rv$Certifications})}
+\item{certification}{reactive({getValue(rv,"Certifications")})}
 
 \item{datreturn}{the session data object}
 }

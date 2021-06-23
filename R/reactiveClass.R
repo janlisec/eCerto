@@ -12,19 +12,21 @@
 #' @name reactiveClass
 #'
 #' @examples
+#' if(interactive()) {
 #' rv <- shiny::reactiveValues(a=1)
-#' shiny::observeEvent(rv$a, { message(paste("rv$a changed:", rv$a)) })
+#' shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
 #' shiny:::flushReact()
 #' rv$a <- 2
 #' shiny:::flushReact()
 #' test <- reactiveClass$new(ecerto:::init_rv())
 #' ecerto::getValue(test, c("Certifications","data"))
 #' shiny::observeEvent(ecerto::getValue(test, "Certifications")$data, {
-#'   message(paste("Certifications$data changed:", ecerto::getValue(test, "Certifications")$data))
+#'   message("Certifications$data changed:", ecerto::getValue(test, "Certifications")$data)
 #' })
 #' ecerto::setValue(test, c("Certifications","data"), 5)
 #' ecerto::getValue(test, c("Certifications","data"))
 #' shiny:::flushReact()
+#' }
 #'
 #' @export
 
@@ -69,10 +71,11 @@ reactiveClass = R6::R6Class(
       # }
     },
     #' @description
-    #' Return all elements of the reactiveValues list stored in the R6 object.
+    #' Returns names of all elements of the reactiveValues list stored in the R6 object, except "General"
     #' @return A new 'reactiveClass' object.
     names = function() {
-      isolate(names(private$reactive_data))
+      n = isolate(names(private$reactive_data))
+      n[!n == "General"]
     }
   )
 )

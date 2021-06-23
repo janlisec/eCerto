@@ -26,7 +26,7 @@ app$setInputs(`excelfile-go` = "click")
 app$setInputs(navbarpage = "tP_homogeneity")
 app$setInputs(`trH-h_transfer_ubb_button` = "click")
 
-# get only Homogeneity outputs (next two lines here)
+# get only Homogeneity outputs (next three lines here)
 vals <- app$getAllValues()
 hcols_output = grep("Homogeneity+|trH+", names(vals$output), perl=TRUE, value=FALSE)
 hcols_input = grep("Homogeneity+|trH+", names(vals$input), perl=TRUE, value=FALSE)
