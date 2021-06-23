@@ -98,9 +98,9 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
       res <- rdata()
       # @Frederick: die nächste Zeile hat keine Zuweisung. Kann sie raus oder ist sie aus reaktiven Gründen drin?
       # @Jan Konnte raus, war nur für print (23. Juni)
-      if ("Certifications.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
+      if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
         # import functions for defined data_format schemes
-        if ( res$Certifications$dataformat_version=="2021-05-27") {
+        if ( res$General$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
           resnames <- names(unlist(res, recursive = FALSE))
           rvnames <- names(unlist(shiny::reactiveValuesToList(rv$get()), recursive = FALSE))
@@ -119,8 +119,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
               }
             }
             # reset time_stamp with current $$ToDo think if this is really desirable
-            setValue(rv,c("Certifications","time_stamp"),Sys.time())
-            # rv$Certifications$time_stamp <- Sys.time()
+            setValue(rv,c("General","time_stamp"),Sys.time())
           } else {
             err <- c(paste0("file_", resnames), paste0("expected_", rvnames))[c(resnames, rvnames) %in% names(which(table(c(resnames, rvnames))==1))]
             shinyalert::shinyalert(title = "m_RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:", paste(err, collapse=", ")), type = "warning")
@@ -135,8 +134,8 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
           setValue(rv,c("Certifications","input_files"),res[["Certification"]][["input_files"]])
           set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
           # save
-          setValue(rv,c("Certifications","user"),res$Certification$user)
-          setValue(rv,c("Certifications","study_id"),res$Certification$study_id)
+          setValue(rv,c("General","user"),res$Certification$user)
+          setValue(rv,c("General","study_id"),res$Certification$study_id)
           # processing
           setValue(rv,c("Certifications","lab_means"), res[["Certification"]][["lab_means"]])
           setValue(rv,c("Certifications","cert_mean"),res[["Certification"]][["cert_mean"]])
@@ -175,57 +174,54 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
           set_listUploadsource(rv = rv, m = "Stability", uploadsource = "RData")
           setValue(rv,c("Stability","s_vals"),res[["Stability"]][["s_vals"]])
         }
-        setValue(rv,c("Certifications","time_stamp"),Sys.time())
+        setValue(rv,c("General","time_stamp"),Sys.time())
       }
       })
 
-    # shiny::observeEvent(getValue(rv,c("Certifications","time_stamp)) , {
-    #   #if (!silent) message("observeEvent(rv$Certifications$time_stamp")
+    # shiny::observeEvent(getValue(rv,c("General","time_stamp)) , {
     #   shiny::updateTextInput(
     #     session = session,
     #     inputId = "user",
-    #     value = getValue(rv,c("Certifications","user"))
+    #     value = getValue(rv,c("General","user"))
     #   )
     #   shiny::updateTextInput(
     #     session = session,
     #     inputId = "study_id",
-    #     value =  getValue(rv,c("Certifications","study_id"))
+    #     value =  getValue(rv,c("General","study_id"))
     #   )
     # })
 
-    shiny::observeEvent(getValue(rv,c("Certifications", "user")) , {
-      if (!silent) message("m_RDataImport_Server: observeEvent(getValue(rv,'Certifications')$user")
+    shiny::observeEvent(getValue(rv,c("General", "user")) , {
+      if (!silent) message("m_RDataImport_Server: observeEvent(getValue(rv,'General')$user")
       shiny::updateTextInput(
         session = session,
         inputId = "user",
-        value = getValue(rv,c("Certifications","user"))
+        value = getValue(rv,c("General","user"))
       )
       # shiny::updateTextInput(
       #   session = session,
       #   inputId = "study_id",
-      #   value =  getValue(rv,c("Certifications","study_id"))
+      #   value =  getValue(rv,c("General","study_id"))
       # )
     })
 
     shiny::observeEvent(input$study_id, {
       if (!silent) message("m_RDataImport_Server: observeEvent(input$study_id")
-      setValue(rv,c("Certifications","study_id"),input$study_id)
-      # rv$Certifications$study_id <- input$study_id
+      setValue(rv,c("General","study_id"),input$study_id)
     })
 
     shiny::observeEvent(input$user, {
       if (!silent) message("m_RDataImport_Server: observeEvent(input$user")
-      setValue(rv,c("Certifications","user"),input$user)
-      # rv$Certifications$user <- input$user
+      setValue(rv,c("General","user"),input$user)
     })
 
     output$ecerto_backup <- shiny::downloadHandler(
       filename = function() {
-        paste0(ifelse(is.null(getValue(rv,c("Certifications","study_id"))), "TEST", getValue(rv,c("Certifications","study_id"))), '.RData')
+        paste0(ifelse(is.null(getValue(rv,c("General","study_id"))), "TEST", getValue(rv,c("General","study_id"))), '.RData')
       },
       content = function(file) {
         res <- shiny::reactiveValuesToList(getValue(rv))
-        res$Certifications$dataformat_version = "2021-05-27"
+        res$General$dataformat_version = "2021-05-27"
         save(res, file = file)
       },
       contentType = "RData"

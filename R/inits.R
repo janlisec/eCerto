@@ -67,16 +67,19 @@ init_materialTabelle <- function(analytes) {
 init_rv = function() {
   rv <- do.call(shiny::reactiveValues,
                list(
+                 "General" = list(
+                   # save
+                   "user" = NULL,
+                   "study_id" = NULL,
+                   "time_stamp" = as.Date.POSIXct(0),
+                   "dataformat_version" = "2021-05-27"
+                 ),
                  "Certifications" = list(
                    # upload
                    "data" = NULL,
                    "input_files" = NULL,
                    "uploadsource" = NULL,
-                   # save
-                   "user" = NULL,
-                   "study_id" = NULL,
-                   "time_stamp" = as.Date.POSIXct(0),
-                   "dataformat_version" = "2021-05-27",
+                   
                    # processing
                    "lab_means" = NULL,
                    "cert_mean" = NULL,

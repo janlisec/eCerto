@@ -21,8 +21,8 @@
 #' if (interactive()) {
 #'  setValue(rv, c("Certifications","data"), 5)
 #'  getValue(rv, c("Certifications","data")) # is 5?
-#'  setValue(rv, c("Certifications","user"),"Franz")
-#'  getValue(rv, c("Certifications","user"))
+#'  setValue(rv, c("General","user"),"Franz")
+#'  getValue(rv, c("General","user"))
 #' }
 setValue = function(df,key,value){
 
@@ -333,4 +333,19 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
   }
 
   r(df)
+}
+
+#' @keywords internal
+#' to switch to Start Page
+to_startPage = function(session, value="Certification") {
+  updateNavbarPage(
+    session = session,
+    inputId = "navbarpage",
+    selected = "Start"
+  )
+  updateSelectInput(
+    session = session,
+    inputId = "moduleSelect",
+    selected = value
+  )
 }
