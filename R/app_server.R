@@ -9,48 +9,44 @@
 app_server = function(input, output, session) {
 
   
-  observeEvent(input$navbarpage, {
-    # when Homogeneity is clicked but has no been uploaded yet --> change to
-    # Upload page
-    if (input$navbarpage == "tP_homogeneity" &&
-        is.null(get_listUploadsource(rv, "Homogeneity"))) {
-      to_startPage(session, value="Homogeneity")
-    }
-    # ... same for Certification ...
-    if (input$navbarpage == "tP_certification" &&
-        is.null(get_listUploadsource(rv, "Certifications"))) {
-      to_startPage(session, value="Certifications")
-    }
-    # ... and Stability
-    if (input$navbarpage == "tP_Stability" &&
-        is.null(get_listUploadsource(rv, "Stability"))) {
-      to_startPage(session, value="Stability")
-    }
-  })
+  rv = reactiveClass$new(init_rv()) # initiate persistent variables
+  datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
   
-  
-  # Upload Controller -------------------------------------------------------
 
-
-  rv = reactiveClass$new(init_rv())
-
+  # Certification, Homogeneity, Stability -----------------------------------
+  excelformat = reactive({input$moduleSelect})
   updateSelectInput(inputId = "moduleSelect",
                     session = session,
                     choices = rv$names(),
                     selected = rv$names()[1]
   )
 
-  excelformat = reactive({input$moduleSelect})
-  # --- --- --- --- --- --- --- --- ---
+
+  # Upload Controller -------------------------------------------------------
+
   t <- m_ExcelUploadControl_Server(
     id = "excelfile",
     excelformat = excelformat,
     check = reactive({is.null( get_listUploadsource(rv, excelformat()) )})
   )
- # --- --- --- --- --- --- --- --- ---
-  observeEvent(excelformat(),{
-  },ignoreInit = TRUE)
+  upload_noti = m_RDataImport_Server("Rdata", rv)
 
+  # page turners -------------------------------------------------------------
+  
+  # when Start Button was clicked
+  observeEvent(input$link_to_start, {
+    to_startPage(session, value="Certifications")
+  })
+  # when RData was uploaded
+  observeEvent(upload_noti(),{
+    message("observer: certification was uploaded")
+    updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "tP_certification")
+    
+  })
+  # when Excel was uploaded...
   observeEvent(t(),{
     setValue(rv, c(excelformat(),"data"), t())
     set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
@@ -69,21 +65,23 @@ app_server = function(input, output, session) {
       
     }
   })
-  # --- --- --- --- --- --- --- --- ---
-  upload_noti = m_RDataImport_Server("Rdata", rv)
-  # when Rdata was uploaded
-  observeEvent(upload_noti(),{
-      message("observer: certification was uploaded")
-      updateNavbarPage(
-        session = session,
-        inputId = "navbarpage",
-        selected = "tP_certification")
-    
-  })
-  # # --- --- --- --- --- --- --- --- ---
-
-  observeEvent(input$link_to_start, {
-    to_startPage(session, value="Certifications")
+  observeEvent(input$navbarpage, {
+    # when Homogeneity is clicked but has no been uploaded yet --> change to
+    # Upload page
+    if (input$navbarpage == "tP_homogeneity" &&
+        is.null(get_listUploadsource(rv, "Homogeneity"))) {
+      to_startPage(session, value="Homogeneity")
+    }
+    # ... same for Certification ...
+    if (input$navbarpage == "tP_certification" &&
+        is.null(get_listUploadsource(rv, "Certifications"))) {
+      to_startPage(session, value="Certifications")
+    }
+    # ... and Stability
+    if (input$navbarpage == "tP_Stability" &&
+        is.null(get_listUploadsource(rv, "Stability"))) {
+      to_startPage(session, value="Stability")
+    }
   })
 
   # # when certification was uploaded
@@ -120,18 +118,13 @@ app_server = function(input, output, session) {
   # 
   # }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
-  # datreturn contains the by an analyte selected sub-frame for updating the
-  # material table. Because a reactive from another module inside
-  # CertificationServer is returned, storing it in reactiveValues() worked so
-  # far.
-  datreturn = reactiveClass$new(init_datreturn())
+
 
 
   # * --> All values for material table should be set/written in the designated module
 
 
-  # --- --- --- --- --- --- --- --- --- --- ---
-
+# Panels ------------------------------------------------------------------
   m_CertificationServer(id = "certification", certification = reactive({getValue(rv,"Certifications")}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
   h_vals = m_HomogeneityServer(
@@ -139,11 +132,10 @@ app_server = function(input, output, session) {
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
     cert = shiny::reactive({getValue(rv,"Certifications")})
   )
-  shiny::observeEvent(h_vals(),{
-    print("m_HomogeneityServer - h_vals added")
-    setValue(datreturn, "h_vals", h_vals())
-  },ignoreInit = TRUE)
 
+
+  # --- --- --- --- --- --- --- --- --- --- ---
+  .longtermstabilityServer("lts")
   # --- --- --- --- --- --- --- --- --- --- ---
 
   trh = m_TransferHomogeneityServer(
@@ -154,7 +146,7 @@ app_server = function(input, output, session) {
   )
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  # get to Certification page after Transfer of Homogeneity Data
+  # to Certification page after Transfer of Homogeneity Data
   observeEvent(trh(),{
     setValue(datreturn,"t_H",trh())
       updateNavbarPage(
@@ -163,18 +155,10 @@ app_server = function(input, output, session) {
         selected = "tP_certification")
   })
 
-  .longtermstabilityServer("lts")
-}
-
-to_startPage = function(session, value="Certification") {
-  updateNavbarPage(
-    session = session,
-    inputId = "navbarpage",
-    selected = "Start"
-  )
-  updateSelectInput(
-    session = session,
-    inputId = "moduleSelect",
-    selected = value
-  )
+  # After Homogeneity values have been uploaded
+  shiny::observeEvent(h_vals(),{
+    print("m_HomogeneityServer - h_vals added")
+    setValue(datreturn, "h_vals", h_vals())
+  },ignoreInit = TRUE)
+  
 }
