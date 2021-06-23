@@ -37,35 +37,35 @@
 m_materialtabelleUI <- function(id) {
 
   shiny::fluidRow(
-    shiny::column(12, strong("Overview")),
+    shiny::column(12, shiny::strong("Overview")),
     shiny::column(
       2,
-      strong("Material Certification"),
-      br(),
-      shiny::actionButton(inputId = NS(id,"show_table"), label = "recalculate"),
+      shiny::strong("Material Certification"),
+      shiny::br(),
+      shiny::actionButton(inputId = shiny::NS(id,"show_table"), label = "recalculate"),
       shiny::checkboxInput(
         inputId = shiny::NS(id, "pooling"),
         label = "pooling",
         value = FALSE
       ),
-      shiny::uiOutput(NS(id,"c_fix_col_names")),
-      shiny::uiOutput(NS(id,"c_displayed_col_name")),
+      shiny::uiOutput(shiny::NS(id,"c_fix_col_names")),
+      shiny::uiOutput(shiny::NS(id,"c_displayed_col_name")),
       # validate(need(input$c_fix_col_names, message = "please select col name"))
       # mater_table <- getData("mater_table")
       shiny::helpText(
         "In this interactive table you can:",
-        tags$br(),
+        shiny::tags$br(),
         "(1) Modify values by double click on the respective cells in the table (please note that some columns are protected).",
-        tags$br(),
+        shiny::tags$br(),
         "(2) Click 'recalculate' to update calculations.",
-        tags$br(),
+        shiny::tags$br(),
         "(3) Modify the column name for editable columns.",
-        tags$br(),
+        shiny::tags$br(),
         "(4) Delete editable columns completely by selecting 'delete' as column name (Caution! irreversible)."
       )
     ),
     shiny::column(10,
-           DT::DTOutput(NS(id,"matreport"))
+           DT::DTOutput(shiny::NS(id,"matreport"))
     )
   )
   # )
@@ -139,7 +139,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         # been uploaded via RData
         if(is.null(rdataUpload())) {
           message("m_materialtabelleServer: initiate empty materialtabelle")
-          c = init_materialTabelle(availableAnalytes())
+          c = ecerto::init_materialTabelle(availableAnalytes())
           mater_table(c) # save materialtabelle
         }
 
@@ -151,8 +151,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
       ifelse(input$pooling,
-             roundMT(mean(data[, "value"], na.rm = T), precision2),
-             roundMT(mean(sapply(
+             ecerto::roundMT(mean(data[, "value"], na.rm = T), precision2),
+             ecerto::roundMT(mean(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
              )), precision2)
       )
@@ -164,8 +164,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
       ifelse(input$pooling,
-             roundMT(stats::sd(data[, "value"], na.rm = T), precision2),
-             roundMT(stats::sd(sapply(
+             ecerto::roundMT(stats::sd(data[, "value"], na.rm = T), precision2),
+             ecerto::roundMT(stats::sd(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
              )), precision2))
     })
@@ -180,13 +180,13 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # in case mater table has been initiated...
         if(!is.null(mater_table())) {
           message(paste0("m_materialtabelleServer: update initiated for ", sAnData()[1,"analyte"]))
-          update_reactivecell(
+          ecerto::update_reactivecell(
             r = mater_table,
             colname = "mean",
             analyterow = sAnData()[1,"analyte"],
             value = cert_mean()
           )
-          update_reactivecell(
+          ecerto::update_reactivecell(
             r = mater_table,
             colname = "sd",
             analyterow = sAnData()[1,"analyte"],
@@ -199,7 +199,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
             no= nrow(lab_statistics()) - length(input$flt_labs)
           )
 
-          update_reactivecell(
+          ecerto::update_reactivecell(
             r = mater_table,
             colname = "n",
             analyterow = sAnData()[1,"analyte"],
@@ -239,7 +239,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         }
         # delete
         if (input$c_displayed_col_name == "delete") {
-          k <- which(colnames(mater_table()) == isolate(input$c_fix_col_names))
+          k <- which(colnames(mater_table()) == shiny::isolate(input$c_fix_col_names))
           tmp_cert_vals <- mater_table()[, -k]
           attr(tmp_cert_vals, "disable") <-
             sapply(attr(mater_table(), "disable"), function(x) {
@@ -266,14 +266,14 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         grep(x, colnames(mater_table()))
       }))
       cert_val <- apply(mater_table()[,f_cols,drop=FALSE], 1, prod, na.rm = T)
-      update_reactivecell(
+      ecerto::update_reactivecell(
         r = mater_table,
         colname = "cert_val",
         value = cert_val
       )
 
       char <- mater_table()[, "sd"] / (sqrt(mater_table()[, "n"]) * mater_table()[, "mean"])
-      update_reactivecell(mater_table, "char", value = char)
+      ecerto::update_reactivecell(mater_table, "char", value = char)
 
       u_cols <- unlist(sapply(c("char", paste0("U", 2:7)), function(x) {
         grep(x, colnames(mater_table()))
@@ -284,7 +284,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       update_reactivecell(r = mater_table,colname = "com",value = com)
 
       U <- mater_table()[, "k"] * mater_table()[, "com"]
-      update_reactivecell(r = mater_table, colname = "U", value = U)
+      ecerto::update_reactivecell(r = mater_table, colname = "U", value = U)
       ecerto::setValue(datreturn, "mater_table", mater_table())
 
     }, ignoreInit = TRUE)
@@ -298,7 +298,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       for (k in unlist(sapply(c("char", paste0("U", 2:7), "com", "U"), function(x) {
         grep(x, colnames(a))
       }))){
-        a[, k] <- roundMT(a[, k], precision2)
+        a[, k] <- ecerto::roundMT(a[, k], precision2)
       }
       # Update column names if changed
       for (k in 1:nrow(attr(mater_table(), "col_code"))) {

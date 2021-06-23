@@ -73,7 +73,7 @@ m_RDataImport_UI <- function(id) {
 #' @export
 m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALSE) {
   stopifnot(R6::is.R6(rv))
-  stopifnot(is.reactivevalues(rv$get()))
+  stopifnot(shiny::is.reactivevalues(rv$get()))
 
   shiny::moduleServer(id, function(input, output, session) {
 

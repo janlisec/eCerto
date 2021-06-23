@@ -12,7 +12,7 @@ read_lts_input(file = NULL, simplify = FALSE)
 \item{simplify}{Try to simplify list of imported Excel files into data.frame}
 }
 \value{
-
+Excel
 }
 \description{
 Read Excel function for Long-term-stability data.

@@ -7,7 +7,7 @@
 #' @param type You may specify 'year' or 'day' instead of month here.
 #' @param origin The origin used.
 #'
-#' @return
+#' @return number of months
 #' @export
 mondf <- function(x=NULL, d_start=NULL, type=c("year","mon","day")[2], origin="1900-01-01") {
   lt <- as.POSIXlt(as.Date(x, origin=origin))
@@ -41,9 +41,9 @@ plot_lts_data <- function(x=NULL, type=1) {
   mon <- mondf(rt)
 
   # establish linear model
-  foo.lm <- lm(vals~mon)
-  a <- coef(foo.lm)[1]
-  b <- coef(foo.lm)[2]
+  foo.lm <- stats::lm(vals~mon)
+  a <- stats::coef(foo.lm)[1]
+  b <- stats::coef(foo.lm)[2]
 
   # extract relevant values from definition part
   U <- x[["def"]][,"U"]
@@ -70,10 +70,10 @@ plot_lts_data <- function(x=NULL, type=1) {
       sub=sub,
       main=main
     )
-    axis(side = 3, at = range(mon), labels = rt[c(1,length(rt))])
-    abline(foo.lm, lty=2, col=4) # <-- slope
-    abline(h=mn+c(-1,0,1)*U, lty=c(2,1,2), col=c(3,2,3))
-    points(vals~mon, pch=24, bg=c(grey(0.6),2)[1+!is.na(com)])
+    graphics::axis(side = 3, at = range(mon), labels = rt[c(1,length(rt))])
+    graphics::abline(foo.lm, lty=2, col=4) # <-- slope
+    graphics::abline(h=mn+c(-1,0,1)*U, lty=c(2,1,2), col=c(3,2,3))
+    graphics::points(vals~mon, pch=24, bg=c(grDevices::grey(0.6),2)[1+!is.na(com)])
   }
 
   if (type==2) {
@@ -81,7 +81,7 @@ plot_lts_data <- function(x=NULL, type=1) {
     plot(
       c(foo_adj,mn+b*foo_lts)~c(mon,foo_lts),
       pch=21,
-      bg=c(c(grey(0.6),2)[1+!is.na(com)],4),
+      bg=c(c(grDevices::grey(0.6),2)[1+!is.na(com)],4),
       ylim=range(c(foo_adj,mn+b*foo_lts,mn+c(-1,1)*U)),
       xlab="Month [n]",
       ylab=paste(ylab, "adjusted"),
@@ -89,10 +89,10 @@ plot_lts_data <- function(x=NULL, type=1) {
       main=paste(main, "(adjusted)")
     )
     # $$ToDo$$ end date estimation is only approximate (based on ~30d/month or precisely on 365/12=30.42)
-    axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1]+foo_lts*30.42))
-    abline(lm(foo_adj~mon), lty=2, col=4)
-    abline(h=mn+c(-1,0,1)*U, lty=c(2,1,2), col=c(3,2,3))
-    text(x=foo_lts, y=mn+b*foo_lts, pos=2, labels = paste("n =",foo_lts))
+    graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1]+foo_lts*30.42))
+    graphics::abline(stats::lm(foo_adj~mon), lty=2, col=4)
+    graphics::abline(h=mn+c(-1,0,1)*U, lty=c(2,1,2), col=c(3,2,3))
+    graphics::text(x=foo_lts, y=mn+b*foo_lts, pos=2, labels = paste("n =",foo_lts))
   }
 
   names(foo_lts) <- as.character(as.POSIXlt(as.Date(rt[1]+foo_lts*30.42, origin="1900-01-01")))
@@ -106,7 +106,7 @@ plot_lts_data <- function(x=NULL, type=1) {
 #' @param file Path to Excel File
 #' @param simplify Try to simplify list of imported Excel files into data.frame
 #'
-#' @return
+#' @return Excel
 #' @export
 read_lts_input <- function(file=NULL, simplify=FALSE) {
   sheets <- openxlsx::getSheetNames(file = file)

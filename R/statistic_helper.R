@@ -11,7 +11,7 @@ Stats <- function(data = NULL, precision = 4) {
     plyr::ldply(split(data$value, data$Lab), function(x) {
       data.frame(
         "mean" = round(mean(x, na.rm = T), precision),
-        "sd" = round(sd(x, na.rm = T), precision),
+        "sd" = round(stats::sd(x, na.rm = T), precision),
         "n" = sum(is.finite(x)),
         stringsAsFactors = FALSE
       )
@@ -38,8 +38,8 @@ Stats <- function(data = NULL, precision = 4) {
 #' @noRd
 Scheffe <- function(data=NULL) {
   return(data.frame(
-    "Scheffe_05"=agricolae::scheffe.test(y = lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"],
-    "Scheffe_01"=agricolae::scheffe.test(y = lm(value~Lab, data=data), trt="Lab", alpha = 0.01)$group[levels(data$Lab),"groups"],
+    "Scheffe_05"=agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"],
+    "Scheffe_01"=agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.01)$group[levels(data$Lab),"groups"],
     row.names=levels(data$Lab))
   )
 }
@@ -135,7 +135,7 @@ Nalimov <- function(lab_means=NULL) {
     abs((x-m)/s)*sqrt(n/(n-1))
   }
   cval <- sapply(lab_means$mean, function(x) {
-    nalimov(x=x, m=mean(lab_means$mean), s=sd(lab_means$mean), n=nrow(lab_means))
+    nalimov(x=x, m=mean(lab_means$mean), s=stats::sd(lab_means$mean), n=nrow(lab_means))
   })
   
   return(data.frame(
@@ -157,7 +157,7 @@ Nalimov <- function(lab_means=NULL) {
 #' @param data 
 #' @noRd
 Cochran <- function(data=NULL) {
-  vars <- sapply(split(data[,"value"], data[,"Lab"]), var, na.rm=T)
+  vars <- sapply(split(data[,"value"], data[,"Lab"]), stats::var, na.rm=T)
   ns <- sapply(split(data[,"value"], data[,"Lab"]), function(x) { sum(is.finite(x)) })
   out <- data.frame("Cochran"=rep(NA, length(vars)), row.names=names(vars))
   # there might be labs reporting data without variance --> these should be excluded from/before Cochrane
@@ -192,16 +192,16 @@ Cochran <- function(data=NULL) {
 #' @param precision 
 #' @noRd
 mstats <- function(data=NULL, precision=4) {
-  lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
+  lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
   n <- nrow(lab_means)
   out <- data.frame(
     "Mean"=round(mean(lab_means$mean),precision), 
-    "Median"=round(median(lab_means$mean),precision), 
-    "SD"=round(sd(lab_means$mean),precision), 
+    "Median"=round(stats::median(lab_means$mean),precision), 
+    "SD"=round(stats::sd(lab_means$mean),precision), 
     "MAD"=round(stats::mad(lab_means$mean),precision), 
     "Bartlett_p"=formatC(stats::bartlett.test(value~Lab, data=data)$p.value,format="E",digits=2),
-    "ANOVA_p"=formatC(anova(lm(value~Lab, data=data))$Pr[1],format="E",digits=2),
-    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=lab_means$mean, y="pnorm", mean = mean(lab_means$mean), sd = sd(lab_means$mean))$p.value), format="E",digits=2),
+    "ANOVA_p"=formatC(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],format="E",digits=2),
+    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=lab_means$mean, y="pnorm", mean = mean(lab_means$mean), sd = stats::sd(lab_means$mean))$p.value), format="E",digits=2),
     "Skewness"=round(moments::skewness(x = lab_means$mean),precision),
     "Agostino_p"=NA,
     "Kurtosis"=round(moments::kurtosis(x = lab_means$mean),precision),

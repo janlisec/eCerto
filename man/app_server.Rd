@@ -14,7 +14,7 @@ app_server(input, output, session)
 \item{session}{session.}
 }
 \value{
-
+the Server
 }
 \description{
 Main Server

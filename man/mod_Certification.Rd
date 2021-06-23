@@ -39,7 +39,7 @@ shiny::shinyApp(
  server = function(input, output, session) {
    m_CertificationServer(
      id = "test",
-     certification = reactive({rv$Certifications}),
+     certification = shiny::reactive({rv$Certifications}),
      datreturn = datreturn
    )
  }

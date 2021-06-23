@@ -16,7 +16,7 @@
 \item{id}{Name when called as a module in a shiny app.}
 }
 \value{
-
+nothing
 }
 \description{
 Modul for LongTermStability Monitoring as currently (2021) used by Carsten Prinz.

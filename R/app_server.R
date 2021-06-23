@@ -4,18 +4,18 @@
 #' @param output output.
 #' @param session session.
 #'
-#' @return
+#' @return the Server
 #' @export
 app_server = function(input, output, session) {
 
   
-  rv = reactiveClass$new(init_rv()) # initiate persistent variables
-  datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
+  rv = ecerto::reactiveClass$new(init_rv()) # initiate persistent variables
+  datreturn = ecerto::reactiveClass$new(init_datreturn()) # initiate runtime variables
   
 
   # Certification, Homogeneity, Stability -----------------------------------
-  excelformat = reactive({input$moduleSelect})
-  updateSelectInput(inputId = "moduleSelect",
+  excelformat = shiny::reactive({input$moduleSelect})
+  shiny::updateSelectInput(inputId = "moduleSelect",
                     session = session,
                     choices = rv$names(),
                     selected = rv$names()[1]
@@ -27,37 +27,37 @@ app_server = function(input, output, session) {
   t <- m_ExcelUploadControl_Server(
     id = "excelfile",
     excelformat = excelformat,
-    check = reactive({is.null( get_listUploadsource(rv, excelformat()) )})
+    check = shiny::reactive({is.null( ecerto::get_listUploadsource(rv, excelformat()) )})
   )
-  upload_noti = m_RDataImport_Server("Rdata", rv)
+  upload_noti = ecerto::m_RDataImport_Server("Rdata", rv)
 
   # page turners -------------------------------------------------------------
   
   # when Start Button was clicked
-  observeEvent(input$link_to_start, {
+  shiny::observeEvent(input$link_to_start, {
     to_startPage(session, value="Certifications")
   })
   # when RData was uploaded
-  observeEvent(upload_noti(),{
+  shiny::observeEvent(upload_noti(),{
     message("observer: certification was uploaded")
-    updateNavbarPage(
+    shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",
       selected = "tP_certification")
     
   })
   # when Excel was uploaded...
-  observeEvent(t(),{
-    setValue(rv, c(excelformat(),"data"), t())
-    set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
+  shiny::observeEvent(t(),{
+    ecerto::setValue(rv, c(excelformat(),"data"), t())
+    ecerto::set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
     if(excelformat() == "Certifications"){
       message("observer: certification was uploaded")
-      updateNavbarPage(
+      shiny::updateNavbarPage(
         session = session,
         inputId = "navbarpage",
         selected = "tP_certification")
     } else if (excelformat() == "Homogeneity") {
-      updateNavbarPage(
+      shiny::updateNavbarPage(
         session = session,
         inputId = "navbarpage",
         selected = "tP_homogeneity")
@@ -65,21 +65,21 @@ app_server = function(input, output, session) {
       
     }
   })
-  observeEvent(input$navbarpage, {
+  shiny::observeEvent(input$navbarpage, {
     # when Homogeneity is clicked but has no been uploaded yet --> change to
     # Upload page
     if (input$navbarpage == "tP_homogeneity" &&
-        is.null(get_listUploadsource(rv, "Homogeneity"))) {
+        is.null(ecerto::get_listUploadsource(rv, "Homogeneity"))) {
       to_startPage(session, value="Homogeneity")
     }
     # ... same for Certification ...
     if (input$navbarpage == "tP_certification" &&
-        is.null(get_listUploadsource(rv, "Certifications"))) {
+        is.null(ecerto::get_listUploadsource(rv, "Certifications"))) {
       to_startPage(session, value="Certifications")
     }
     # ... and Stability
     if (input$navbarpage == "tP_Stability" &&
-        is.null(get_listUploadsource(rv, "Stability"))) {
+        is.null(ecerto::get_listUploadsource(rv, "Stability"))) {
       to_startPage(session, value="Stability")
     }
   })
@@ -125,9 +125,9 @@ app_server = function(input, output, session) {
 
 
 # Panels ------------------------------------------------------------------
-  m_CertificationServer(id = "certification", certification = reactive({getValue(rv,"Certifications")}), datreturn)
+  ecerto::m_CertificationServer(id = "certification", certification = shiny::reactive({getValue(rv,"Certifications")}), datreturn)
   # --- --- --- --- --- --- --- --- --- --- ---
-  h_vals = m_HomogeneityServer(
+  h_vals = ecerto::m_HomogeneityServer(
     id = "Homogeneity",
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
     cert = shiny::reactive({getValue(rv,"Certifications")})
@@ -135,21 +135,21 @@ app_server = function(input, output, session) {
 
 
   # --- --- --- --- --- --- --- --- --- --- ---
-  .longtermstabilityServer("lts")
+  ecerto::.longtermstabilityServer("lts")
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  trh = m_TransferHomogeneityServer(
+  trh = ecerto::m_TransferHomogeneityServer(
     id = "trH",
-    homogData = reactive({getValue(datreturn,"h_vals")}),
-    matTab_col_code = reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
-    matTab_analytes = reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+    homogData = shiny::reactive({ecerto::getValue(datreturn,"h_vals")}),
+    matTab_col_code = shiny::reactive({attr(ecerto::getValue(datreturn,"mater_table"), "col_code")}),
+    matTab_analytes = shiny::reactive({as.character(ecerto::getValue(datreturn,"mater_table")[, "analyte"])})
   )
   # --- --- --- --- --- --- --- --- --- --- ---
 
   # to Certification page after Transfer of Homogeneity Data
-  observeEvent(trh(),{
-    setValue(datreturn,"t_H",trh())
-      updateNavbarPage(
+  shiny::observeEvent(trh(),{
+    ecerto::setValue(datreturn,"t_H",trh())
+      shiny::updateNavbarPage(
         session = session,
         inputId = "navbarpage",
         selected = "tP_certification")
@@ -158,7 +158,7 @@ app_server = function(input, output, session) {
   # After Homogeneity values have been uploaded
   shiny::observeEvent(h_vals(),{
     print("m_HomogeneityServer - h_vals added")
-    setValue(datreturn, "h_vals", h_vals())
+    ecerto::setValue(datreturn, "h_vals", h_vals())
   },ignoreInit = TRUE)
   
 }

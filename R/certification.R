@@ -27,7 +27,7 @@
 #'  server = function(input, output, session) {
 #'    m_CertificationServer(
 #'      id = "test",
-#'      certification = reactive({rv$Certifications}),
+#'      certification = shiny::reactive({rv$Certifications}),
 #'      datreturn = datreturn
 #'    )
 #'  }
@@ -78,13 +78,13 @@ m_CertificationUI = function(id) {
         ns = shiny::NS(id), # namespace of current module,
         shiny::fluidRow(
           # --- --- --- --- --- --- ---
-          shiny::column(width = 10, shiny::wellPanel(fluidRow(m_CertLoadedUI(ns("loaded"))))),
+          shiny::column(width = 10, shiny::wellPanel(shiny::fluidRow(m_CertLoadedUI(ns("loaded"))))),
           # --- --- --- --- --- --- ---
           ##### Download-Teil
           shiny::column(
             width = 2,
-            wellPanel(
-              shiny::fluidRow(strong("Download Report")),
+            shiny::wellPanel(
+              shiny::fluidRow(shiny::strong("Download Report")),
               shiny::fluidRow(
                 shiny::radioButtons(
                   inputId = ns("output_file_format"),
@@ -94,7 +94,7 @@ m_CertificationUI = function(id) {
                 )
               ),
               shiny::fluidRow(
-                shiny::column(width = 6, align = "center", downloadButton('FinalReport', label = "Analyte")),
+                shiny::column(width = 6, align = "center", shiny::downloadButton('FinalReport', label = "Analyte")),
                 shiny::column(
                   width = 6,
                   align = "center",
@@ -156,38 +156,36 @@ m_CertificationServer = function(id, certification, datreturn) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    exportTestValues(CertificationServer.d = { try(certification()) })
-
-    d_act <- shiny::reactiveVal("Haha nope")
+    shiny::exportTestValues(CertificationServer.d = { try(certification()) }) # for shinytest
 
     certification_data <- shiny::reactive({data_of_godelement(certification())})
 
-    apm <- analyte_parameter_list()
+    apm <- ecerto::analyte_parameter_list()
     dat <- shiny::reactiveVal(NULL)
 
     shiny::observeEvent(certification_data(), {
       #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
       if(!is.null(certification_data())){
-        d_act("TRUE")
+
         message("Certification Module start")
         shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-        apm <- analyte_parameter_list(certification_data())
+        apm <- ecerto::analyte_parameter_list(certification_data())
 
         # selected analyte, sample filter, precision
         # --- --- --- --- --- --- --- --- --- --- ---
-        selected_tab <- m_analyteServer("analyteModule", apm)
+        selected_tab <- ecerto::m_analyteServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
 
         # --- --- --- --- --- --- --- --- --- --- ---
-        dat <- m_CertLoadedServer(
+        dat <- ecerto::m_CertLoadedServer(
           id = "loaded",
           certification = certification,
           apm = apm,
           selected_tab =  selected_tab
         )
         # --- --- --- --- --- --- --- --- --- --- ---
-        exportTestValues(CertLoadedServer.output = { try(dat()) })
+        shiny::exportTestValues(CertLoadedServer.output = { try(dat()) }) # for shinytest
 
         # Calculates statistics for all available labs
         # formerly: lab_means()
@@ -196,7 +194,7 @@ m_CertificationServer = function(id, certification, datreturn) {
         # L1 0.04551667 0.0012560520 6
         # L2 0.05150000 0.0007563068 6
         # L3 0.05126667 0.0004926121 6
-        lab_statistics = reactive({
+        lab_statistics = shiny::reactive({
           # data <- dat()
           shiny::req(dat())
           message("CertificationServer : lab_statistics created")
@@ -204,7 +202,7 @@ m_CertificationServer = function(id, certification, datreturn) {
             plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
               data.frame(
                 "mean" = mean(x, na.rm = T),
-                "sd" = sd(x, na.rm = T),
+                "sd" = stats::sd(x, na.rm = T),
                 "n" = sum(is.finite(x))
               )
             }, .id = "Lab")
@@ -216,7 +214,7 @@ m_CertificationServer = function(id, certification, datreturn) {
         output$normality_statement <- shiny::renderText({
           l = lab_statistics()
           suppressWarnings(
-            KS_p <- stats::ks.test(x = l$mean, y = "pnorm", mean = mean(l$mean), sd = sd(l$mean))$p.value
+            KS_p <- stats::ks.test(x = l$mean, y = "pnorm", mean = mean(l$mean), sd = stats::sd(l$mean))$p.value
           )
           normality_statement <- paste0(
             "The data is",
@@ -241,15 +239,15 @@ m_CertificationServer = function(id, certification, datreturn) {
         # })
 
         shiny::observeEvent(dat(),{
-          setValue(datreturn, "selectedAnalyteDataframe", dat())
+          ecerto::setValue(datreturn, "selectedAnalyteDataframe", dat())
         })
 
         shiny::observeEvent(lab_statistics(),{
-          setValue(datreturn, "lab_statistics", lab_statistics())
+          ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
         })
 
 
-        observeEvent(input$certification_view, {
+        shiny::observeEvent(input$certification_view, {
           shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
           if("stats2" %in% input$certification_view)
             shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
@@ -263,7 +261,7 @@ m_CertificationServer = function(id, certification, datreturn) {
 
         # mStats
         output$overview_mstats <- DT::renderDataTable({
-          mstats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
+         mstats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
 
         ### LOADED END ###s
@@ -278,7 +276,7 @@ m_CertificationServer = function(id, certification, datreturn) {
     # --- --- --- --- --- --- --- --- --- --- ---
     m_materialtabelleServer(
       id = "mat_cert",
-      rdataUpload = reactive({certification()$materialtabelle}),
+      rdataUpload = shiny::reactive({certification()$materialtabelle}),
       datreturn = datreturn
     )
     # --- --- --- --- --- --- --- --- --- --- ---

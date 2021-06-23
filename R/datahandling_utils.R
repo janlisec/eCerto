@@ -50,16 +50,9 @@ setValue = function(df,key,value){
 #' @examples
 #' datreturn <- ecerto:::test_datreturn()
 #' shiny::isolate(ecerto::getValue(datreturn, "t_H"))
-getValue = function(df, key=NULL, reactiveReturn = FALSE) {
-  if(reactiveReturn==TRUE) {
-    stop("reactiveReturn is still under testing")
-  }
+getValue = function(df, key=NULL) {
   if(R6::is.R6(df)){
-    if(reactiveReturn){
-      return(reactive({df$get(key)}))
-    } else {
-      return(df$get(key))
-    }
+    return(df$get(key))
   } else {
     stop("object of class ", class(df), " can't get set currently.")
   }
@@ -74,16 +67,17 @@ getValue = function(df, key=NULL, reactiveReturn = FALSE) {
 #' @rdname datahandling_utils
 #' @export
 laboratory_dataframe = function(x) {
-  stopifnot(!is.reactive(x))
+  stopifnot(!shiny::is.reactive(x))
   x = as.data.frame(x)
-  flt <- apply(subset(x, select=-c(1,2,File)), 1, function(y) {any(is.finite(as.numeric(y)))})
+  dat = x[,!names(x) %in% c(names(x[,c(1,2)]),"Species")]
+  flt <- apply(dat, 1, function(y) {any(is.finite(as.numeric(y)))})
   if (any(flt)) x <- x[which(flt),,drop=F]
   #combine into data frame and return
   analyte <- x[,1]
   unit <- x[,2]
   # drop first (analyte name), second (unit)
   # and File name column before continue
-  dat <- subset(x, select=-c(1,2,File))
+  # dat <- subset(x, select=-c(1,2,File))
   # create new data frame
   x <- data.frame(
     "analyte"=factor(rep(analyte,times=ncol(dat)), levels=analyte),
@@ -188,7 +182,7 @@ crop_dataframes <- function(dfs, cols, rows) {
 #' @rdname datahandling_utils
 #' @export
 data_of_godelement = function(l) {
-  stopifnot(!is.reactive(l)) # d shouldn't be a reactive
+  stopifnot(!shiny::is.reactive(l)) # d shouldn't be a reactive
   l[["data"]]
 }
 
@@ -338,12 +332,12 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
 #' @keywords internal
 #' to switch to Start Page
 to_startPage = function(session, value="Certification") {
-  updateNavbarPage(
+  shiny::updateNavbarPage(
     session = session,
     inputId = "navbarpage",
     selected = "Start"
   )
-  updateSelectInput(
+  shiny::updateSelectInput(
     session = session,
     inputId = "moduleSelect",
     selected = value

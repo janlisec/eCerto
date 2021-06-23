@@ -18,7 +18,7 @@
 \usage{
 setValue(df, key, value)
 
-getValue(df, key = NULL, reactiveReturn = FALSE)
+getValue(df, key = NULL)
 
 laboratory_dataframe(x)
 

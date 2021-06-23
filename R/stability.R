@@ -5,7 +5,7 @@
 }
 
 .StabilityServer = function(id, rv) {
-  moduleServer(id, function(input, output, session) {
+  shiny::moduleServer(id, function(input, output, session) {
    
   })
 }

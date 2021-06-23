@@ -17,7 +17,7 @@
 #' @export
 m_HomogeneityUI = function(id) {
   shiny::tabsetPanel(
-    id = NS(id, "HomogeneityPanel"),
+    id = shiny::NS(id, "HomogeneityPanel"),
     type = "hidden",
     # when nothing is loaded
     shiny::tabPanel(
@@ -31,18 +31,18 @@ m_HomogeneityUI = function(id) {
       title = "active-Panel",
       value = "loaded",
       shiny::fluidRow(
-        shiny::column(10, DT::dataTableOutput(NS(id,"h_vals"))),
+        shiny::column(10, DT::dataTableOutput(shiny::NS(id,"h_vals"))),
         #  column(2,
         # #  conditionalPanel(
         # #   condition="output.c_fileUploaded_message != ''",
-        #    fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
-        #    fluidRow(uiOutput("h_transfer_H_type")),
-        #    fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
-        #    fluidRow(uiOutput("h_transfer_ubb")),
-        #    fluidRow(actionButton(inputId = "h_transfer_ubb_button", label = "Transfer Now!"), align="right")
+        # shiny::fluidRow(shiny::HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
+        # shiny::fluidRow(shiny::uiOutput("h_transfer_H_type")),
+        # shiny::fluidRow(shiny::HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
+        # shiny::fluidRow(shiny::uiOutput("h_transfer_ubb")),
+        # shiny::fluidRow(shiny::actionButton(inputId = "h_transfer_ubb_button", label = "Transfer Now!"), align="right")
         # )
       ),
-      hr(),
+      shiny::hr(),
       shiny::fluidRow(
         shiny::column(3, DT::dataTableOutput(shiny::NS(id,"h_overview_stats"))),
         shiny::column(9,
@@ -56,15 +56,15 @@ m_HomogeneityUI = function(id) {
                         )
                       ),
                       shiny::fluidRow(
-                        shiny::column(12, shiny::plotOutput(NS(id,"h_boxplot"), inline=TRUE), offset = 0.1)
+                        shiny::column(12, shiny::plotOutput(shiny::NS(id,"h_boxplot"), inline=TRUE), offset = 0.1)
                       ),
                       shiny::fluidRow(
-                        shiny::column(12, shiny::textOutput(NS(id,"h_statement")), offset = 0.1),
-                        tags$style(type="text/css", "#h_statement {margin-top:2%;}")
+                        shiny::column(12, shiny::textOutput(shiny::NS(id,"h_statement")), offset = 0.1),
+                        shiny::tags$style(type="text/css", "#h_statement {margin-top:2%;}")
                       ),
                       shiny::fluidRow(
-                        shiny::column(12, shiny::verbatimTextOutput(NS(id,"h_anova")), offset = 0.1),
-                        tags$style(type="text/css", "#h_anova {margin-top:2%;}")
+                        shiny::column(12, shiny::verbatimTextOutput(shiny::NS(id,"h_anova")), offset = 0.1),
+                        shiny::tags$style(type="text/css", "#h_anova {margin-top:2%;}")
                       )
         )
       )
@@ -80,7 +80,7 @@ m_HomogeneityServer = function(id, homog, cert) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    h_vals = reactiveVal(NULL)
+    h_vals = shiny::reactiveVal(NULL)
 
     shiny::observeEvent(homog(), {
       if(!is.null(homog())){
@@ -98,9 +98,9 @@ m_HomogeneityServer = function(id, homog, cert) {
     h_Data = shiny::reactive({
       h_dat = ecerto::data_of_godelement(homog())
       h_dat[,"analyte"] <- factor(h_dat[,"analyte"])
-      validate(need("Flasche" %in% colnames(h_dat), "No column 'Flasche' found in input file."))
+      shiny::validate(shiny::need("Flasche" %in% colnames(h_dat), "No column 'Flasche' found in input file."))
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
-      validate(need("H_type" %in% colnames(h_dat), "No column 'H_type' found in input file."))
+      shiny::validate(shiny::need("H_type" %in% colnames(h_dat), "No column 'H_type' found in input file."))
       h_dat[,"H_type"] <- factor(h_dat[,"H_type"])
       return(h_dat)
     })
@@ -108,7 +108,7 @@ m_HomogeneityServer = function(id, homog, cert) {
     newh_vals =  shiny::reactive({
       plyr::ldply(split(h_Data(), h_Data()[,"analyte"]), function(y) {
         plyr::ldply(split(y, y[,"H_type"]), function(x) {
-          anm <- anova(lm(value ~ Flasche, data=x))
+          anm <- stats::anova(stats::lm(value ~ Flasche, data=x))
           MSamong <- anm[1,"Mean Sq"]
           MSwithin <- anm[2,"Mean Sq"]
           mn <- mean(sapply(split(x[,"value"],x[,"Flasche"]),mean,na.rm=T),na.rm=T)
@@ -121,7 +121,7 @@ m_HomogeneityServer = function(id, homog, cert) {
       }, .id="analyte")
     })
 
-    observe({h_vals(newh_vals())})
+    shiny::observe({h_vals(newh_vals())})
 
     output$h_fileUploaded <- shiny::reactive({
       return(!is.null(h_Data()))
@@ -139,7 +139,7 @@ m_HomogeneityServer = function(id, homog, cert) {
       h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
       out <- plyr::ldply(split(h_dat[,"value"], h_dat[,"Flasche"]), function(x) {
-        data.frame("mean"=mean(x,na.rm=T), "sd"=sd(x,na.rm=T), "n"=sum(is.finite(x)))
+        data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x)))
       }, .id="Flasche")
       rownames(out) <- out[,"Flasche"]
       return(out)
@@ -161,7 +161,7 @@ m_HomogeneityServer = function(id, homog, cert) {
       return(tab)
     }, options = list(paging = FALSE, searching = FALSE), rownames=NULL)
 
-    h_vals_print = reactive({
+    h_vals_print = shiny::reactive({
       shiny::req(h_Data())
       c_Data = cert
       h_vals_print <- h_vals()
@@ -191,17 +191,17 @@ m_HomogeneityServer = function(id, homog, cert) {
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
       plot(h_dat)
       omn <- round(mean(h_dat[,"value"],na.rm=T),input$h_precision)
-      osd <- round(sd(h_dat[,"value"],na.rm=T),input$h_precision)
-      anp <- formatC(anova(lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1],digits = 2, format = "e")
-      par(mar=c(5,4,6,0)+0.1)
-      plot(x=c(1,length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
-      abline(h=omn, lty=2)
-      abline(h=omn+c(-1,1)*osd, lty=2, col=grey(0.8))
-      boxplot(h_dat[,"value"] ~ h_dat[,"Flasche"], add=TRUE)
-      mtext(text = paste("Overall mean =", omn), side = 3, line = 2.45, adj = 1)
-      mtext(text = paste("Overall sd =", osd), side = 3, line = 1.3, adj = 1)
-      mtext(text = paste("ANOVA P =", anp), side = 3, line = 2.45, adj = 0)
-    }, height=500, width=reactive({input$h_Fig_width}))
+      osd <- round(stats::sd(h_dat[,"value"],na.rm=T),input$h_precision)
+      anp <- formatC(stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1],digits = 2, format = "e")
+      graphics::par(mar=c(5,4,6,0)+0.1)
+      graphics::plot(x=c(1,length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
+      graphics::abline(h=omn, lty=2)
+      graphics::abline(h=omn+c(-1,1)*osd, lty=2, col=grDevices::grey(0.8))
+      graphics::boxplot(h_dat[,"value"] ~ h_dat[,"Flasche"], add=TRUE)
+      graphics::mtext(text = paste("Overall mean =", omn), side = 3, line = 2.45, adj = 1)
+      graphics::mtext(text = paste("Overall sd =", osd), side = 3, line = 1.3, adj = 1)
+      graphics::mtext(text = paste("ANOVA P =", anp), side = 3, line = 2.45, adj = 0)
+    }, height=500, width=shiny::reactive({input$h_Fig_width}))
 
     output$h_statement <- shiny::renderText({
       shiny::req(h_Data(), input$h_sel_analyt)
@@ -218,22 +218,22 @@ m_HomogeneityServer = function(id, homog, cert) {
       shiny::req(h_Data(), input$h_sel_analyt)
       h_dat <- h_Data()
       h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
-      anova(lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))
+      stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))
     })
 
 
     # Special UI
     # TODO
-    output$h_transfer_ubb <- shiny::renderUI({
-      shiny::validate(shiny::need(input$sel_analyt, message = "please upload certification data first"))
-      shiny::req(getData("cert_vals"))
-      shiny::selectInput(
-        inputId=session$ns("h_transfer_ubb"),
-        label="",
-        selectize=TRUE,
-        choices=attr(getData("cert_vals"), "col_code")[substr(attr(getData("cert_vals"), "col_code")[,"ID"],1,1)=="U","Name"]
-      )
-    })
+    # output$h_transfer_ubb <- shiny::renderUI({
+    #   shiny::validate(shiny::need(input$sel_analyt, message = "please upload certification data first"))
+    #   shiny::req(cert())
+    #   shiny::selectInput(
+    #     inputId=session$ns("h_transfer_ubb"),
+    #     label="",
+    #     selectize=TRUE,
+    #     choices=attr(cert(), "col_code")[substr(attr(cert(), "col_code")[,"ID"],1,1)=="U","Name"]
+    #   )
+    # })
 
     output$h_transfer_H_type <- shiny::renderUI({
       shiny::req(h_Data())

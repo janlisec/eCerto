@@ -1,6 +1,6 @@
 #' Main User Interface
 #'
-#' @return
+#' @return the UI
 #' @export
 app_ui = function(){
 
@@ -11,36 +11,36 @@ app_ui = function(){
     shiny::navbarPage(
       id = "navbarpage",
 
-      title = div(
+      title = shiny::div(
         class = "verticalhorizontal",
-        img(
+        shiny::img(
           src = "bam_logo_20pt.gif",
           position = "absolute",
           margin = "auto"
         ),
-        strong("BAM"),
-        em("ecerto"),
+        shiny::strong("BAM"),
+        shiny::em("ecerto"),
         position = "relative"
       ),
 
       shiny::tabPanel(
         "Home",
 
-        mainPanel(
-          h1("Introducing eCerto"),
-          p("Certifications are..."),
-          p("Homogeneities are..."),
-          p("Stabilities are..."),
-          actionLink("link_to_start", "Click here to start"),
+        shiny::mainPanel(
+          shiny::h1("Introducing eCerto"),
+          shiny::p("Certifications are..."),
+          shiny::p("Homogeneities are..."),
+          shiny::p("Stabilities are..."),
+          shiny::actionLink("link_to_start", "Click here to start"),
           # bookmarkButton()
         )
 
       ),
       shiny::navbarMenu(
         title = "eCerto",
-        icon = icon("angle-right"),
+        icon = shiny::icon("angle-right"),
         # tabs
-        tabPanel(
+        shiny::tabPanel(
           id = "start",
           title = "Start",
 
@@ -48,11 +48,11 @@ app_ui = function(){
             shiny::column(
               width = 3,
               shiny::wellPanel(
-                strong("start new session (numb)"),
-                br(),
-                actionButton(inputId = "sessionstart", label = "new")
+                shiny::strong("start new session (numb)"),
+                shiny::br(),
+                shiny::actionButton(inputId = "sessionstart", label = "new")
               ),
-              wellPanel(m_RDataImport_UI("Rdata")),
+              shiny::wellPanel(m_RDataImport_UI("Rdata")),
             ),
             shiny::column(
               width = 9,
@@ -68,44 +68,44 @@ app_ui = function(){
             )
           )
         ),
-        tabPanel(
+        shiny::tabPanel(
           id = "certif_tab",
           title = "Certification",
           value = "tP_certification",
-          icon = icon("angle-right"),
+          icon = shiny::icon("angle-right"),
           m_CertificationUI("certification"),
           # wellPanel(
           #   .materialtabelleUI("mat_cert")
           # )
         ),
-        tabPanel(
+        shiny::tabPanel(
           id = "homog_tab",
           title = "Homogeneity",
-          icon = icon("angle-right"),
+          icon = shiny::icon("angle-right"),
           value = "tP_homogeneity",
-          wellPanel(m_TransferHomogeneityUI("trH")),
+          shiny::wellPanel(m_TransferHomogeneityUI("trH")),
           m_HomogeneityUI("Homogeneity")
         ),
-        tabPanel(
+        shiny::tabPanel(
           title = "Stability",
-          icon = icon("angle-right"),
+          icon = shiny::icon("angle-right"),
           value = "tP_Stability",
-          verbatimTextOutput("stab")
+          shiny::verbatimTextOutput("stab")
         )
       ),
       # eCerto Ende
 
       # Long term stability
-      tabPanel(
+      shiny::tabPanel(
         title = "LTS",
-        icon = icon("angle-right"),
+        icon = shiny::icon("angle-right"),
         value = "tP_LTS",
         .longtermstabilityUI("lts")
       ),
 
-      tabPanel(
+      shiny::tabPanel(
         title = "Help",
-        icon = icon("angle-right"),
+        icon = shiny::icon("angle-right"),
         value = "tP_help",
         # source(
         #   file = "ui_tabPanel_help.R",

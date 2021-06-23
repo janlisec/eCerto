@@ -21,7 +21,7 @@ mondf(
 \item{origin}{The origin used.}
 }
 \value{
-
+number of months
 }
 \description{
 Calculation of number of month since start date.

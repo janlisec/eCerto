@@ -2,13 +2,13 @@
 % Please edit documentation in R/app.R
 \name{app}
 \alias{app}
-\title{Title}
+\title{App}
 \usage{
 app()
 }
 \value{
-
+the App
 }
 \description{
-Title
+App
 }

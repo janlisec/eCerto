@@ -7,7 +7,7 @@
 #' @description Modul for LongTermStability Monitoring as currently (2021) used by Carsten Prinz.
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @return
+#' @return nothing
 #'
 #' @rdname longtermstability
 #' @export
@@ -163,16 +163,16 @@
 
     # Data Tables
     # current LTS values
-    tab_LTSvals <- shiny::reactiveVal(isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
+    tab_LTSvals <- shiny::reactiveVal(shiny::isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
     shiny::observeEvent(i(), {
       # select the current set of values based on i() without showing the comments (to save screen space)
       tab_LTSvals(datalist[["lts_data"]][[i()]][["val"]][,1:3])
     })
     output$LTS_vals <- DT::renderDataTable({
-      req(i())
+      shiny::req(i())
       # trigger redraw on new value and update reactive Value to this end
       input$LTS_ApplyNewValue
-      tab_LTSvals(isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
+      tab_LTSvals(shiny::isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
       tab_LTSvals()
     }, options = list(paging = TRUE, pageLength = 25, searching = FALSE, stateSave = TRUE), rownames=NULL, server = FALSE, selection = 'single')
 
@@ -188,7 +188,7 @@
 
     # current LTS definition
     output$LTS_def <- DT::renderDataTable({
-      req(datalist$lts_data)
+      shiny::req(datalist$lts_data)
       out <- datalist$lts_data[[i()]][["def"]]
       out[,"Coef_of_Var"] <- formatC(round(out[,"Coef_of_Var"], 4), digits=4, format="f")
       # reorder and rename columns according to wish of Carsten Prinz
@@ -247,7 +247,7 @@
       sr <- input$LTS_vals_rows_selected
       tmp <- datalist$lts_data[[i()]][["val"]]
       if (length(sr)) {
-        points(x = rep(mondf(tmp[,"Date"])[sr],2), y = rep(tmp[sr,"Value"],2), pch = c(21,4), cex = 2, col = 5)
+       graphics::points(x = rep(mondf(tmp[,"Date"])[sr],2), y = rep(tmp[sr,"Value"],2), pch = c(21,4), cex = 2, col = 5)
       }
     })
 
@@ -336,7 +336,7 @@
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
-        if ("ecerto" %in% rownames(installed.packages())) {
+        if ("ecerto" %in% rownames(utils::installed.packages())) {
           # installed with package
           rmdfile <- system.file("rmd", "LTSreport.Rmd", package = "ecerto")[1]
           logofile <- system.file("rmd", "BAMLogo2015.svg", package = "ecerto")[1]

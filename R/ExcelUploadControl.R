@@ -41,13 +41,13 @@ m_ExcelUploadControl_UI <- function(id) {
 
   shiny::tagList(
     # control elements
-    fluidRow(
-      column(3, uiOutput(outputId = shiny::NS(id,"excel_file"))),
-      column(3, numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1)),
-      column(6, align="right", uiOutput(outputId = shiny::NS(id,"btn_load")))
+    shiny::fluidRow(
+      shiny::column(3, shiny::uiOutput(outputId = shiny::NS(id,"excel_file"))),
+      shiny::column(3, shiny::numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1)),
+      shiny::column(6, align="right", shiny::uiOutput(outputId = shiny::NS(id,"btn_load")))
     ),
     # preview table
-    xlsx_range_select_UI(shiny::NS(id,"Upload")),
+    ecerto::xlsx_range_select_UI(shiny::NS(id,"Upload")),
   )
 }
 
@@ -56,50 +56,50 @@ m_ExcelUploadControl_UI <- function(id) {
 
 m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
 
-  stopifnot(is.reactive(excelformat))
+  stopifnot(shiny::is.reactive(excelformat))
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    output$btn_load <- renderUI({
-      fluidRow(
-        strong("Click to load"),
-        br(),
+    output$btn_load <- shiny::renderUI({
+      shiny::fluidRow(
+        shiny::strong("Click to load"),
+        shiny::br(),
         shiny::actionButton(inputId = shiny::NS(id, "go"), label = "LOAD")
       )
     })
 
-    current_file_input <- reactiveVal(NULL)
-    output$excel_file <- renderUI({
+    current_file_input <- shiny::reactiveVal(NULL)
+    output$excel_file <- shiny::renderUI({
       if (check()) {
-        updateNumericInput(session = session, inputId = "sheet_number", value=1)
+        shiny::updateNumericInput(session = session, inputId = "sheet_number", value=1)
         shinyjs::hideElement(id = "sheet_number")
         shinyjs::hideElement(id = "btn_load")
         current_file_input(NULL)
-        fileInput(multiple = excelformat()=="Certifications", inputId = shiny::NS(id,"excel_file"), label = "Select Excel (xlsx)", accept = "xlsx")
+        shiny::fileInput(multiple = excelformat()=="Certifications", inputId = shiny::NS(id,"excel_file"), label = "Select Excel (xlsx)", accept = "xlsx")
       } else {
-        HTML("<p style='color:red;'>Already uploaded</p>")
+        shiny::HTML("<p style='color:red;'>Already uploaded</p>")
       }
     })
 
-    observeEvent(input$excel_file, {
-      sheetnames <- load_sheetnames(input$excel_file$datapath)
+    shiny::observeEvent(input$excel_file, {
+      sheetnames <- ecerto::load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
-        updateNumericInput(session = session, inputId = "sheet_number", value = 1, min = 1, max = length(sheetnames), step = 1)
+        shiny::updateNumericInput(session = session, inputId = "sheet_number", value = 1, min = 1, max = length(sheetnames), step = 1)
         shinyjs::showElement(id = "sheet_number")
       }
       shinyjs::showElement(id = "btn_load")
       current_file_input(input$excel_file)
     })
 
-    rv_xlsx_range_select <- xlsx_range_select_Server(
+    rv_xlsx_range_select <- ecerto::xlsx_range_select_Server(
       id = "Upload",
       x = current_file_input,
-      sheet = reactive({ input$sheet_number }),
+      sheet = shiny::reactive({ input$sheet_number }),
       excelformat = excelformat
     )
 
-    out <- reactiveVal()
-    observeEvent(input$go, {
+    out <- shiny::reactiveVal()
+    shiny::observeEvent(input$go, {
       dat <- rv_xlsx_range_select$tab_flt
 
       # perform minimal validation checks
@@ -115,7 +115,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
         out(combine_cert_data(df_list = dat))
       }
-      if(excelformat() == "Stability") {s
+      if(excelformat() == "Stability") {
         out(dat[[1]])
       }
     })

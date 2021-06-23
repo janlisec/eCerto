@@ -21,10 +21,35 @@
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    shiny::fluidRow(
-#'      shiny::column(3, shiny::fileInput(inputId = "x", label = "Modul parameter: x", accept = "xlsx", multiple =TRUE)),
-#'      shiny::column(3, shiny::numericInput(inputId = "sheet", label = "Modul parameter: sheet", value = 1)),
-#'      shiny::column(3, shiny::selectInput(inputId = "excelformat", label = "Modul parameter: excelformat", choices = c("Certifications","Homogeneity","Stability"))),
-#'      shiny::column(3, shiny::selectInput(inputId = "silent", label = "Modul parameter: silent", choices = c("TRUE","FALSE")))
+#'      shiny::column(
+#'       3, 
+#'       shiny::fileInput(
+#'        inputId = "x", 
+#'        label = "Modul parameter: x", 
+#'        accept = "xlsx", 
+#'        multiple =TRUE
+#'      )),
+#'      shiny::column(
+#'        3, 
+#'        shiny::numericInput(
+#'         inputId = "sheet", label = "Modul parameter: sheet", value = 1
+#'        )
+#'      ),
+#'      shiny::column(
+#'         3, 
+#'         shiny::selectInput(
+#'          inputId = "excelformat", 
+#'          label = "Modul parameter: excelformat", 
+#'          choices = c("Certifications","Homogeneity","Stability")
+#'         )
+#'      ),
+#'      shiny::column(
+#'        3, 
+#'        shiny::selectInput(
+#'          inputId = "silent", 
+#'          label = "Modul parameter: silent", choices = c("TRUE","FALSE")
+#'        )
+#'      )
 #'    ),
 #'    shiny::hr(),
 #'    xlsx_range_select_UI(id = "test")
@@ -56,8 +81,8 @@ xlsx_range_select_UI <- function(id) {
 #' @export
 xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::reactive({"Certifications"}), silent=FALSE) {
 
-  stopifnot(is.reactive(x))
-  stopifnot(is.reactive(sheet))
+  stopifnot(shiny::is.reactive(x))
+  stopifnot(shiny::is.reactive(sheet))
   ns <- shiny::NS(id)
 
   shiny::moduleServer(id, function(input, output, session) {
@@ -70,7 +95,11 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       shiny::req(x(), sheet())
       # use different modes of fnc_load_xlsx to import data depending on file type
       if (!silent) message("xlsx_range_select_Server: reactive(tab): load files")
-      # @Frederik: gibt es einen Grund 'excelformat' als reactive zu übergeben, wenn wir es intern nur als Konstante nutzen (isolate)?
+      # @Frederik: gibt es einen Grund 'excelformat' als reactive zu übergeben,
+      #  wenn wir es intern nur als Konstante nutzen (isolate)?
+      # @Jan (23. Juni): Hier ist die Reaktivität tatsächlich nicht notwendig,
+      #   aber wird es vielleicht mal wenn mehr Sonderregeln für Homg und Stab
+      #   dazukommen
       if (shiny::isolate(excelformat())=="Certifications") {
         l <- lapply(x()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
         shiny::validate(
@@ -101,6 +130,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
     # @Frederick: Wenn Du Änderungen vornimmst, versuche zu überlegen, ob diese wirklich an die von Dir gewählte Stelle gehören oder
     # besser woanders hin sollten. Dieses Modul ist eigentlich nur dazu da ein Excel-File zu laden und den Nutzer einen Bereich auswählen zu lassen
     # ich hätte den Dateinamen daher als Spalte erst außerhalb des Moduls angehängt (mod_ExcelUploadControl?), oder übersehe ich etwas? (Kann aber so bleiben, nur ein Kommentar)
+    # @Jan Einverstanden (23. Juni)
     shiny::observeEvent(tab_param$tab,{
       if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
       if(!is.null(unlist(tab_param$tab))){
@@ -131,6 +161,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         tab_param$end_row = max(cs[,1])
         tab_param$tab = crop_dataframes(
           # @Frederik: hier tab_param$tab zu nehmen hat zu Fehlern geführt, wenn man als user mehrere Zellen an und wieder abgewählt hat
+          # @Jan (23. Juni) Generell eine kritische Stelle
           #dfs = tab_param$tab,
           dfs = tab(),
           rows = as.numeric(tab_param$start_row):as.numeric(tab_param$end_row),
@@ -202,7 +233,6 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       }
       return(out)
       },
-      # @Frederik: kann es sein, dass Du "t" aus versehen gegen "start_row" getauscht hast? Habe diese Änderung rückgängig gemacht.
       #options=list("dom"="start_row", pageLength=nrow(tab()[[1]]),ordering=FALSE),
       options = list("dom"="t", pageLength=nrow(tab()[[1]]),ordering=FALSE),
       selection = list(target="cell", selectable=matrix(-1*c(1:nrow(tab()[[1]]), rep(0,nrow(tab()[[1]]))), ncol=2))
