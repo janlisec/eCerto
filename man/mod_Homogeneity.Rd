@@ -18,7 +18,7 @@ m_HomogeneityServer(id, homog, cert)
 \item{cert}{= shiny::reactive({getValue(rv)$Certifications})}
 }
 \value{
-h_vals = The Homogeneity data (not the transfered ones yet)
+h_vals = The Homogeneity data (not the transferred ones yet)
 }
 \description{
 \code{m_Homogeneity} is the module for handling Homogeneity Data
