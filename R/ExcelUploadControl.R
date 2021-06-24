@@ -97,8 +97,10 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       sheet = shiny::reactive({ input$sheet_number }),
       excelformat = excelformat
     )
+    
 
     out <- shiny::reactiveVal()
+    # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
       dat <- rv_xlsx_range_select$tab_flt
 
@@ -113,7 +115,16 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       if(excelformat() == "Certifications") {
         # perform minimal validation tests
         if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
-        out(combine_cert_data(df_list = dat))
+        results = tryCatch({
+          expr = combine_cert_data(df_list = dat)
+        },
+          error = function(e) {
+            cat(paste("Error Test\n", e))
+            showModal(modalDialog(title = "Something went wrong with Upload.","Check for example the selected rows and columns"))
+            return(NULL)
+          }
+        )
+        out(results)
       }
       if(excelformat() == "Stability") {
         out(dat[[1]])

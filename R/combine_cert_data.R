@@ -15,9 +15,9 @@
 #'@export
 #'
 combine_cert_data <- function(df_list = NULL, silent = FALSE) {
-
+  
     if (!silent) message("combine_cert_data: Prepare dataset after upload")
-
+  
     # process tables from multiple files individually
     df_list <- lapply(df_list, function(x) {
       laboratory_dataframe(x)
