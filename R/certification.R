@@ -132,7 +132,7 @@ m_CertificationUI = function(id) {
         shiny::conditionalPanel(
           condition = "input.certification_view.indexOf('qqplot') > -1",
           ns = shiny::NS(id),
-          shiny::plotOutput("qqplot")
+          shiny::plotOutput(ns("qqplot"))
         )
       ),
       # materialtabelle
@@ -247,6 +247,7 @@ m_CertificationServer = function(id, certification, datreturn) {
         })
 
 
+        # Box "QQ-Plot" clickable? Depends in state of Box above it
         shiny::observeEvent(input$certification_view, {
           shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
           if("stats2" %in% input$certification_view)
@@ -263,6 +264,13 @@ m_CertificationServer = function(id, certification, datreturn) {
         output$overview_mstats <- DT::renderDataTable({
          mstats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+        
+        output$qqplot <- shiny::renderPlot({
+          shiny::req(lab_statistics())
+          y <- lab_statistics()[, "mean"]
+          stats::qqnorm(y = y)
+          stats::qqline(y = y, col = 2)
+        }, height = 400, width = 400)
 
         ### LOADED END ###s
       } else {
