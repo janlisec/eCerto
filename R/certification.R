@@ -255,8 +255,6 @@ m_CertificationServer = function(id, certification, datreturn) {
           })
 
         output$overview_stats <- DT::renderDataTable({
-          message("stats 1")
-          message(dat())
           Stats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
 

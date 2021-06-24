@@ -48,9 +48,9 @@ app_ui = function(){
             shiny::column(
               width = 3,
               shiny::wellPanel(
-                shiny::strong("start new session (numb)"),
+                shiny::strong("Restart Session"),
                 shiny::br(),
-                shiny::actionButton(inputId = "sessionstart", label = "new")
+                shiny::actionButton(inputId = "session_restart", label = "Restart")
               ),
               shiny::wellPanel(m_RDataImport_UI("Rdata")),
             ),

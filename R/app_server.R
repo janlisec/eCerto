@@ -83,6 +83,24 @@ app_server = function(input, output, session) {
       to_startPage(session, value="Stability")
     }
   })
+  
+
+# Restart App -------------------------------------------------------------
+  # Open confirmation dialog
+  observeEvent(input$session_restart, {
+    showModal(modalDialog(
+      easyClose = FALSE,
+      title="Sure you want to restart the session?",
+      "This will erase all non-saved inputs!",
+      footer = tagList(actionButton("confirmRestart", "Restart"),
+                       modalButton("Cancel")
+      )
+    ))
+  })
+  observeEvent(input$confirmRestart, {
+    session$reload()
+    removeModal()
+  })
 
   # # when certification was uploaded
   # # observeEvent(getValue(rv,c("Certifications","data")),{
