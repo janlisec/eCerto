@@ -210,7 +210,10 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
     })
 
-    # manipulate material tabelle
+
+# manipulate material tabelle ---------------------------------------------
+
+    # select column to be renamed
     output$c_fix_col_names = shiny::renderUI({
       shiny::selectInput(
         inputId = session$ns("c_fix_col_names"),
@@ -219,11 +222,12 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         choices = attr(mater_table(), "col_code")[, "ID"]
       )
     })
+    # rename
     output$c_displayed_col_name = shiny::renderUI({
       shiny::textInput(
         inputId = session$ns("c_displayed_col_name"),
         label = "modify displayed column name",
-        value = attr(mater_table(), "col_code")[attr(mater_table(), "col_code")[, "ID"] ==
+        value = attr(shiny::isolate(mater_table()), "col_code")[attr(shiny::isolate(mater_table()), "col_code")[, "ID"] ==
                                                   input$c_fix_col_names, "Name"]
       )
     })
@@ -308,7 +312,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       a
     })
 
-    # export materialtabelle for testing. Since it hasn't created yet
+    # export materialtabelle for testing. Since it perhaps hasn't created yet:
     # use try(), see https://github.com/rstudio/shinytest/issues/350
     shiny::exportTestValues(materialtabelle = { try(tmp_mater_table()) })
 
