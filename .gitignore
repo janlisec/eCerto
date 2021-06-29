@@ -32,9 +32,8 @@ vignettes/*.pdf
 # more
 data/
 source/
+inst/extdata/deprecated/
 # inst/extdata/
 inst/doc
-
 shiny_bookmarks
-
 .Rproj.user
