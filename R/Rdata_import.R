@@ -187,21 +187,26 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
         inputId = "user",
         value = getValue(rv,c("General","user"))
       )
-      # shiny::updateTextInput(
-      #   session = session,
-      #   inputId = "study_id",
-      #   value =  getValue(rv,c("General","study_id"))
-      # )
     })
 
-    shiny::observeEvent(input$study_id, {
+    shiny::observeEvent(getValue(rv,c("General", "study_id")), {
       # if (!silent) message("m_RDataImport_Server: observeEvent(input$study_id")
-      setValue(rv,c("General","study_id"),input$study_id)
+      shiny::updateTextInput(
+        session = session,
+        inputId = "study_id",
+        value =  getValue(rv,c("General","study_id"))
+      )
+      # setValue(rv,c("General","study_id"),input$study_id)
     })
 
     shiny::observeEvent(input$user, {
       # if (!silent) message("m_RDataImport_Server: observeEvent(input$user")
       setValue(rv,c("General","user"),input$user)
+    })
+    
+    shiny::observeEvent(input$study_id, {
+      # if (!silent) message("m_RDataImport_Server: observeEvent(input$user")
+      setValue(rv,c("General","study_id"),input$study_id)
     })
 
     # DOWNLOAD
