@@ -7,7 +7,7 @@
 combine_cert_data(df_list = NULL, silent = FALSE)
 }
 \arguments{
-\item{df_list}{list of imported Excel tables.}
+\item{df_list}{list of already imported Excel tables.}
 
 \item{silent}{Option to print or omit status messages.}
 }

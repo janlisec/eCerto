@@ -87,6 +87,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
 
   shiny::moduleServer(id, function(input, output, session) {
 
+    
     getRngTxt <- function(sc=1, sr=1, ec=1, er=1) {
       paste0(LETTERS[sc], sr, ":", LETTERS[ec], er)
     } #getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
@@ -94,7 +95,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
     tab <- shiny::reactive({
       shiny::req(x(), sheet())
       # use different modes of fnc_load_xlsx to import data depending on file type
-      if (!silent) message("xlsx_range_select_Server: reactive(tab): load files")
+      if (!silent) message("xlsx_range_select_Server: reactive(tab): load ", nrow(x()), " files")
       # @Frederik: gibt es einen Grund 'excelformat' als reactive zu übergeben,
       #  wenn wir es intern nur als Konstante nutzen (isolate)?
       # @Jan (23. Juni): Hier ist die Reaktivität tatsächlich nicht notwendig,

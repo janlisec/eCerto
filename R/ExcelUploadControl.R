@@ -92,13 +92,14 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       current_file_input(input$excel_file)
     })
 
+    # --- --- --- --- --- --- --- --- --- ---
     rv_xlsx_range_select <- ecerto::xlsx_range_select_Server(
       id = "Upload",
       x = current_file_input,
       sheet = shiny::reactive({ input$sheet_number }),
       excelformat = excelformat
     )
-    
+    # --- --- --- --- --- --- --- --- --- ---                     
 
     out <- shiny::reactiveVal()
     # when LOAD Button is clicked
@@ -119,12 +120,14 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         results = tryCatch({
           expr = combine_cert_data(df_list = dat)
         },
-          error = function(e) {
-            # cat(paste("Error Test\n", e))
+          error = function(errormessage) {
             showModal(
               modalDialog(
                 title = "Something went wrong with Upload.",
-                paste("Check for example the selected rows and columns\n", e)
+                paste(
+                  "Check for example the selected rows and columns\n", 
+                  errormessage
+                )
               )
             )
             return(NULL)

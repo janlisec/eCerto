@@ -61,7 +61,7 @@ getValue = function(df, key=NULL) {
 }
 
 
-#' @title creates long pivot table in laboratory style
+#' @title creates long pivot table in laboratory style after load
 #'
 #' @param x data frame with uploaded excel table
 #'
@@ -70,25 +70,42 @@ getValue = function(df, key=NULL) {
 #' @export
 laboratory_dataframe = function(x) {
   stopifnot(!shiny::is.reactive(x))
-  x = as.data.frame(x)
-  dat = x[,!names(x) %in% c(names(x[,c(1,2)]),"Species")]
-  flt <- apply(dat, 1, function(y) {any(is.finite(as.numeric(y)))})
-  if (any(flt)) x <- x[which(flt),,drop=F]
+
+  x2 = as.data.frame(x)
+  x2_sub =  x2[,!names(x2) %in% c(names(x2[,c(1,2)]),"Species","File")]
+  flt <- apply(x2_sub, 1, function(y) {any(is.finite(as.numeric(y)))})
+  if (any(flt)) x2 <- x2[which(flt),,drop=F]
   #combine into data frame and return
-  analyte <- x[,1]
-  unit <- x[,2]
+  analyte <- x2[,1]
+  unit <- x2[,2]
+  dat = x2[,!names(x2) %in% c(names(x2[,c(1,2)]),"Species","File")]
   # drop first (analyte name), second (unit)
-  # and File name column before continue
-  # dat <- subset(x, select=-c(1,2,File))
+  # and File name column before continue;
   # create new data frame
-  x <- data.frame(
-    "analyte"=factor(rep(analyte,times=ncol(dat)), levels=analyte),
+  x2 <- data.frame(
+    "analyte"=factor(rep(analyte,times=ncol(dat)),levels=analyte),
     "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
     "value"=as.numeric(unlist(dat)),
     "unit"=as.character(rep(unit,times=ncol(dat)))
     )
 
-  return(x)
+  return(x2)
+  
+  
+  # flt <- apply(x[,-c(1:2)], 1, function(y) {any(is.finite(as.numeric(y)))})
+  # if (any(flt)) x <- x[which(flt),,drop=F]
+  # #combine into data frame and return
+  # analyte <- x[,1]
+  # unit <- x[,2]
+  # dat <- x[,-c(1:2)]
+  # x <- data.frame("analyte"=factor(rep(analyte,times=ncol(dat)), levels=analyte),
+  #                 "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
+  #                 "value"=as.numeric(unlist(dat)),
+  #                 #"value"=unlist(dat),
+  #                 "unit"=as.character(rep(unit,times=ncol(dat))))
+  # 
+  # 
+  
 }
 
 #' Loads names of Excel sheets
