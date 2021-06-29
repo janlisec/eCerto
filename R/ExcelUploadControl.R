@@ -69,6 +69,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
     })
 
     current_file_input <- shiny::reactiveVal(NULL)
+    # Excel-File-Input und Sheet-number
     output$excel_file <- shiny::renderUI({
       if (check()) {
         shiny::updateNumericInput(session = session, inputId = "sheet_number", value=1)
@@ -119,8 +120,13 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
           expr = combine_cert_data(df_list = dat)
         },
           error = function(e) {
-            cat(paste("Error Test\n", e))
-            showModal(modalDialog(title = "Something went wrong with Upload.","Check for example the selected rows and columns"))
+            # cat(paste("Error Test\n", e))
+            showModal(
+              modalDialog(
+                title = "Something went wrong with Upload.",
+                paste("Check for example the selected rows and columns\n", e)
+              )
+            )
             return(NULL)
           }
         )
