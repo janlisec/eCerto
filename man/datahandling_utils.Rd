@@ -32,7 +32,7 @@ set_listUploadsource(rv, m, uploadsource)
 
 get_listUploadsource(rv, m)
 
-uploadsource_of_element(d)
+uploadsource_of_element(mod)
 
 roundMT(value, precision = NULL)
 
@@ -65,7 +65,7 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 
 \item{uploadsource}{the source of upload}
 
-\item{d}{Bin nicht sicher, ob diese Funktion sinnvoll ist.}
+\item{mod}{module list}
 
 \item{precision}{precision value}
 

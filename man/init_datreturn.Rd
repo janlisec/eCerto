@@ -3,7 +3,7 @@
 \name{init_datreturn}
 \alias{init_datreturn}
 \title{Initiates a reactiveValues object used for session-only and
-module-overarching content}
+module-to-materialtabelle content}
 \usage{
 init_datreturn()
 }
@@ -12,5 +12,5 @@ datreturn
 }
 \description{
 Initiates a reactiveValues object used for session-only and
-module-overarching content
+module-to-materialtabelle content
 }

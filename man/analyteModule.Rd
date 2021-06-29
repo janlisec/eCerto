@@ -17,7 +17,7 @@ m_analyteServer(id, apm)
 \item{apm}{reactiveValues object, which gives available analytes, holds parameter, etc.}
 }
 \value{
-the currently selected tab. Other parameter via apm reactiveValues()
+the currently selected tab and Other parameter via apm reactiveValues()
 }
 \description{
 \code{m_analyte} Module for organizing the analyte panel, which

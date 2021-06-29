@@ -13,7 +13,7 @@
 #' @param id Name when called as a module in a shiny app.
 #' @param apm reactiveValues object, which gives available analytes, holds parameter, etc.
 #'
-#' @return the currently selected tab. Other parameter via apm reactiveValues()
+#' @return the currently selected tab and Other parameter via apm reactiveValues()
 #'
 #' @rdname analyteModule
 #' @export
@@ -32,8 +32,9 @@ m_analyteModuleUI = function(id){
 m_analyteServer = function(id, apm) {
   stopifnot(shiny::is.reactivevalues(apm))
   shiny::moduleServer(id, function(input, output, session){
+    whereami::cat_where("AnalyteModule")
     ns <- session$ns # to get full namespace here in server function
-    analytes = shiny::isolate(shiny::reactiveValuesToList(apm))$analytes
+    analytes = shiny::isolate(shiny::reactiveValuesToList(apm))
     # message("analyteModule; all analytes: ", analytes)
 
     # append/prepend a tab for each analyte available
@@ -47,8 +48,8 @@ m_analyteServer = function(id, apm) {
                             shiny::selectizeInput(
                  inputId = ns(paste0("flt_samples",a.name)),#NS(id,paste0("flt_samples",a.name)),
                  label = "Filter Sample IDs",
-                 choices = apm$analytes[[a.name]]$sample_ids,
-                 selected = apm$analytes[[a.name]]$sample_filter,
+                 choices = apm[[a.name]]$sample_ids,
+                 selected = apm[[a.name]]$sample_filter,
                  multiple = TRUE
                )
               ),
@@ -82,12 +83,20 @@ m_analyteServer = function(id, apm) {
     selected_tab = shiny::eventReactive(input$tabs,{
       input$tabs
     })
+    
+    # RData Upload
+    # observeEvent(apm,{
+    #   updateSelectizeInput("flt_samples",selected = apm$analytes[[i]]$sample_filter)
+    # })
     # update precision and the selected sample id filter in the reactiveValues
     # when their value change in the selected tab
     shiny::observe({
+      req(input$tabs)
       lapply(names(analytes), function(i){
-        apm$analytes[[i]]$precision = input[[paste0("precision",i)]]
-        apm$analytes[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
+        if(!is.null(input[[paste0("precision",i)]]))
+          apm[[i]]$precision = input[[paste0("precision",i)]]
+        if(!is.null(input[[paste0("flt_samples",i)]]))
+          apm[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
       })
     })
 

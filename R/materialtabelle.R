@@ -77,7 +77,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
   stopifnot(R6::is.R6(datreturn))
   stopifnot(shiny::is.reactivevalues(ecerto::getValue(datreturn,NULL)))
   shiny::moduleServer(id, function(input, output, session) {
-
+  whereami::cat_where(where = "Materialtabelle")
     # data frame of selected analyte
     sAnData = shiny::reactive({
       ecerto::getValue(datreturn,"selectedAnalyteDataframe")
@@ -122,7 +122,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
     # in case backup data
     shiny::observeEvent(rdataUpload(),{
-      message("m_materialtabelleServer: insert materialtabelle")
+      message("m_materialtabelleServer: RData Uploaded, insert materialtabelle")
       mater_table(rdataUpload()) # save materialtabelle
     },ignoreNULL = TRUE)
 

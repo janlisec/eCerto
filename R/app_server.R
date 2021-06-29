@@ -39,7 +39,7 @@ app_server = function(input, output, session) {
   })
   # when RData was uploaded
   shiny::observeEvent(upload_noti(),{
-    message("observer: certification was uploaded")
+    # message("observer: certifCication was uploaded")
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",
@@ -48,10 +48,11 @@ app_server = function(input, output, session) {
   })
   # when Excel was uploaded...
   shiny::observeEvent(t(),{
+    message("app_server: Excel Upload, set rv.Data")
     ecerto::setValue(rv, c(excelformat(),"data"), t())
     ecerto::set_listUploadsource(rv, excelformat(), uploadsource = "Excel")
     if(excelformat() == "Certifications"){
-      message("observer: certification was uploaded")
+      # message("observer: certification was uploaded")
       shiny::updateNavbarPage(
         session = session,
         inputId = "navbarpage",
@@ -143,8 +144,19 @@ app_server = function(input, output, session) {
 
 
 # Panels ------------------------------------------------------------------
-  ecerto::m_CertificationServer(id = "certification", certification = shiny::reactive({getValue(rv,"Certifications")}), datreturn)
+  apm = ecerto::m_CertificationServer(
+    id = "certification", 
+    certification = shiny::reactive({getValue(rv,c("Certifications"))}), 
+    apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
+    datreturn = datreturn
+  )
+  observeEvent(apm(),{
+    whereami::cat_where("app_server: apm changed, set rv.apm",color = "blue")
+    setValue(rv,c("General","apm"), apm())
+  }, ignoreNULL = TRUE)
+  
   # --- --- --- --- --- --- --- --- --- --- ---
+  
   h_vals = ecerto::m_HomogeneityServer(
     id = "Homogeneity",
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
@@ -166,6 +178,7 @@ app_server = function(input, output, session) {
 
   # to Certification page after Transfer of Homogeneity Data
   shiny::observeEvent(trh(),{
+    message("app_server: trh() changed, set datreturn.t_H")
     ecerto::setValue(datreturn,"t_H",trh())
       shiny::updateNavbarPage(
         session = session,
@@ -175,7 +188,7 @@ app_server = function(input, output, session) {
 
   # After Homogeneity values have been uploaded
   shiny::observeEvent(h_vals(),{
-    print("m_HomogeneityServer - h_vals added")
+    message("app_server: h_vals() changed, set datreturn.h_vals")
     ecerto::setValue(datreturn, "h_vals", h_vals())
   },ignoreInit = TRUE)
   

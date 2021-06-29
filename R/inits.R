@@ -1,12 +1,12 @@
 #' Initiates a reactiveValues object used for session-only and
-#' module-overarching content
+#' module-to-materialtabelle content
 #'
 #' @return datreturn
 #'
 init_datreturn = function() {
   shiny::reactiveValues(
     selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
-    h_vals = NULL,                      # values from Homogeneity-module for .TransferHomogeneity
+    h_vals = NULL,                      # values from Homogeneity-module materialtabelle via .TransferHomogeneity
     mater_table = NULL,                 # *READ-ONLY* material table, formerly 'cert_vals'
     t_H = NULL,                         # when Homogeneity is transferred
     lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
@@ -72,13 +72,16 @@ init_rv = function() {
                    "user" = NULL,
                    "study_id" = NULL,
                    "time_stamp" = as.Date.POSIXct(0),
-                   "dataformat_version" = "2021-05-27"
+                   "dataformat_version" = "2021-05-27",
+                   # filter
+                   "apm" = NULL
                  ),
                  "Certifications" = list(
                    # upload
                    "data" = NULL,
                    "input_files" = NULL,
                    "uploadsource" = NULL,
+                   
                    
                    # processing
                    "lab_means" = NULL,
@@ -139,7 +142,6 @@ analyte_parameter_list = function(certification = NULL) {
   if(!is.null(certification)){
     stopifnot(is.factor(certification[, "analyte"]))
   }
-
   param_template = list(
     "precision" = NULL,
     "sample_filter" = NULL, # saving which samples where selected for filter
@@ -147,8 +149,7 @@ analyte_parameter_list = function(certification = NULL) {
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "analytename" = NULL
   )
-  # @Frederick: wofür ist 'selected_tab' gut? Gehört dieser reactive value wirklich in die analyte_par_list?
-  l = list("selected_tab" = NULL)
+  # l = list()
 
   analytes = levels(certification[, "analyte"])
   # create list with lists of all analytes (i.e. a nested list)
@@ -166,7 +167,8 @@ analyte_parameter_list = function(certification = NULL) {
   # set names of sublists to analyte names
   a_param_list = stats::setNames(a_param_list, analytes)
 
-  l$analytes = a_param_list
+  # l$analytes = a_param_list
+  l = a_param_list
   apm = do.call(shiny::reactiveValues, l) # finally, create reactiveValues
   # end param list
   # @Frederick In the function description you claim that there is a return value. Please make explicit what the return value is using return()

@@ -53,8 +53,10 @@ setValue = function(df,key,value){
 getValue = function(df, key=NULL) {
   if(R6::is.R6(df)){
     return(df$get(key))
+  } else if(is.list(df)){
+    return(df[[key]])
   } else {
-    stop("object of class ", class(df), " can't get set currently.")
+    stop("object of class ", class(df), " can't get/set currently.")
   }
 }
 
@@ -162,7 +164,6 @@ crop_dataframes <- function(dfs, cols, rows) {
     stop("rows and column index are not numerics")
 
   if(!inherits(dfs,"list")){
-    browser()
     warning("data frame is not a list")
     dfs <- list(dfs)
   }
@@ -230,13 +231,14 @@ get_listUploadsource = function(rv, m) {
 
 #' Returns source of upload for an element, is internally used by \code{get_listUploadsource}
 #' (outdated)
-#' @param d Bin nicht sicher, ob diese Funktion sinnvoll ist.
+#' Bin nicht sicher, ob diese Funktion sinnvoll ist.
+#' @param mod module list
 #'
 #' @return
 #' @rdname datahandling_utils
 #' @export
-uploadsource_of_element = function(d) {
-  d[["uploadsource"]]
+uploadsource_of_element = function(mod) {
+  mod[["uploadsource"]]
 }
 
 

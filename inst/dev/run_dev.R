@@ -6,5 +6,6 @@ suppressWarnings(lapply(paste('package:', names(sessionInfo()$otherPkgs), sep = 
 rm(list = ls(all.names = TRUE)) # clean environment
 devtools::document('.') # create NAMESPACE and man
 devtools::load_all('.') # load package
+# options(shiny.reactlog=TRUE)
 options(app.prod = FALSE) # TRUE = production mode, FALSE = development mode
 shiny::runApp('inst/app') # run the main app

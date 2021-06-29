@@ -12,6 +12,7 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param certification reactive({getValue(rv,"Certifications")})
+#' @param apm.input analyteParameterList, when uploaded from RData
 #' @param datreturn the session data object
 #'
 #' @return nothing directly, works over apm parameter
@@ -46,6 +47,8 @@ m_CertificationUI = function(id) {
       title = "standby-Panel",
       value  = "standby",
       # @Frederick: what is this non-named parameter for?
+      # @Jan (29. Juni 2021): Wurde früher angezeigt, wenn noch nix geladen war.
+      #   Ist heute ein Platzhalter, wenn etwas beim Upload schiefgeht
       "empty panel content"
     ),
     # when something is loaded
@@ -150,32 +153,63 @@ m_CertificationUI = function(id) {
 
 #' @rdname mod_Certification
 #' @export
-m_CertificationServer = function(id, certification, datreturn) {
+m_CertificationServer = function(id, certification, apm.input, datreturn) {
 
-  stopifnot(shiny::is.reactive(certification))
-
+  # stopifnot(shiny::is.reactive(certification))
   shiny::moduleServer(id, function(input, output, session) {
+    whereami::cat_where("Certification")
+    shiny::exportTestValues(CertificationServer.d = { try(certification) }) # for shinytest
 
-    shiny::exportTestValues(CertificationServer.d = { try(certification()) }) # for shinytest
 
-    certification_data <- shiny::reactive({data_of_godelement(certification())})
-
-    apm <- ecerto::analyte_parameter_list()
+    certification.data <- shiny::reactive({certification()$data})
+    apm_return <- reactiveVal(NULL)
     dat <- shiny::reactiveVal(NULL)
+    
 
-    shiny::observeEvent(certification_data(), {
+
+    shiny::observeEvent(certification.data(), {
+      whereami::cat_where(whereami::whereami(), color = "blue")
+      
       #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
-      if(!is.null(certification_data())){
-
+      if(!is.null(isolate(certification.data()))){
         message("Certification Module start")
         shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-        apm <- ecerto::analyte_parameter_list(certification_data())
+        
+        # Creation of AnalyteParameterList.
+        # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
+          if(uploadsource_of_element(certification())=="Excel") {
+            apm = analyte_parameter_list(isolate(certification.data()))
+          } else if(uploadsource_of_element(certification())=="RData") {
+            if(!is.null(apm.input())) {
+              apm = do.call(shiny::reactiveValues, apm.input())
+              } else {
+              apm = analyte_parameter_list(isolate(certification.data()))
+            }
+          } else {
+            stop("unknown Upload Type")
+          }
+          # apm = switch (uploadsource_of_element(certification()),
+          #   Excel = ecerto::analyte_parameter_list(isolate(certification.data())),
+          #   RData = ifelse(!is.null(apm.input), do.call("reactiveValues",apm.input),ecerto::analyte_parameter_list(isolate(certification.data())))
+          # )
 
-        # selected analyte, sample filter, precision
         # --- --- --- --- --- --- --- --- --- --- ---
+        # Materialtabelle is in Certification-UI, that's why it is here
+        m_materialtabelleServer(
+          id = "mat_cert",
+          rdataUpload = shiny::reactive({certification()$materialtabelle}),
+          datreturn = datreturn
+        )
+        # --- --- --- --- --- --- --- --- --- --- ---
+        
+        # --- --- --- --- --- --- --- --- --- --- ---
+        # selected analyte, sample filter, precision
         selected_tab <- ecerto::m_analyteServer("analyteModule", apm)
         # --- --- --- --- --- --- --- --- --- --- ---
+        observeEvent(apm[[selected_tab()]],{
+          apm_return(reactiveValuesToList(apm))
+        })
 
         # --- --- --- --- --- --- --- --- --- --- ---
         dat <- ecerto::m_CertLoadedServer(
@@ -186,6 +220,7 @@ m_CertificationServer = function(id, certification, datreturn) {
         )
         # --- --- --- --- --- --- --- --- --- --- ---
         shiny::exportTestValues(CertLoadedServer.output = { try(dat()) }) # for shinytest
+
 
         # Calculates statistics for all available labs
         # formerly: lab_means()
@@ -210,6 +245,7 @@ m_CertificationServer = function(id, certification, datreturn) {
 
           return(out)
         })
+        
 
         output$normality_statement <- shiny::renderText({
           l = lab_statistics()
@@ -226,23 +262,13 @@ m_CertificationServer = function(id, certification, datreturn) {
           # getData("normality_statement")
         })
 
-        # observe({
-        #   setValue(datreturn,"lab_statistics",lab_statistics())
-        #   # datreturn$set("lab_statistics",lab_statistics())
-        #   # datreturn$lab_statistics = lab_statistics()
-        #   # message("m_CertificationServer -- lab_statistics created")
-        #   # datreturn$set("selectedAnalyteDataframe",dat())
-        #   setValue(datreturn,"selectedAnalyteDataframe",dat())
-        #   # datreturn$selectedAnalyteDataframe = dat()
-        #   # console log
-        #   # message(paste0(".CertificiationServer -- analyte selected: ",dat()[1,"analyte"]))
-        # })
-
         shiny::observeEvent(dat(),{
+          message("Certification: dat() changed, set datreturn.selectedAnalyteDataframe")
           ecerto::setValue(datreturn, "selectedAnalyteDataframe", dat())
         })
 
         shiny::observeEvent(lab_statistics(),{
+          message("Certification: lab_statistics() changed, set datreturn.lab_statistics")
           ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
         })
 
@@ -255,12 +281,12 @@ m_CertificationServer = function(id, certification, datreturn) {
           })
 
         output$overview_stats <- DT::renderDataTable({
-          Stats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
+          Stats(data = dat(), precision = apm[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
 
         # mStats
         output$overview_mstats <- DT::renderDataTable({
-         mstats(data = dat(), precision = apm$analytes[[selected_tab()]]$precision)
+         mstats(data = dat(), precision = apm[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
         
         output$qqplot <- shiny::renderPlot({
@@ -270,6 +296,8 @@ m_CertificationServer = function(id, certification, datreturn) {
           stats::qqline(y = y, col = 2)
         }, height = 400, width = 400)
 
+
+        
         ### LOADED END ###s
       } else {
         # else if nothing is loaded, keep Panel empty
@@ -278,14 +306,6 @@ m_CertificationServer = function(id, certification, datreturn) {
     # }, ignoreInit = TRUE)
     })
 
-
-    # --- --- --- --- --- --- --- --- --- --- ---
-    m_materialtabelleServer(
-      id = "mat_cert",
-      rdataUpload = shiny::reactive({certification()$materialtabelle}),
-      datreturn = datreturn
-    )
-    # --- --- --- --- --- --- --- --- --- --- ---
-
+  return(apm_return)
   })
 }

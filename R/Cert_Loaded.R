@@ -71,13 +71,15 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-
+  whereami::cat_where("CertLoaded")
+    
+    
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat = shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
-      current_analy = apm$analytes[[selected_tab()]]
+      current_analy = apm[[selected_tab()]]
 
       cert.data = ecerto::data_of_godelement(certification()) # take the uploaded certification
       # round input values
@@ -123,7 +125,7 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
               is.finite(tmp[, "value"]), ]
       choices <- levels(factor(tmp[, "Lab"]))
       # selected <- choices[which(sapply(split(tmp[, "L_flt"], factor(tmp[, "Lab"])), all))]
-      selected = apm$analytes[[selected_tab()]]$lab_filter
+      selected = apm[[selected_tab()]]$lab_filter
       shiny::selectizeInput(
         inputId = session$ns("flt_labs"),
         label = "Filter Labs",
@@ -144,7 +146,7 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
 
     shiny::observeEvent(input$flt_labs,{
       # message(paste0("selected lab filter: ", input$flt_labs))
-      apm$analytes[[selected_tab()]]$lab_filter = input$flt_labs
+      apm[[selected_tab()]]$lab_filter = input$flt_labs
     })
 
 
