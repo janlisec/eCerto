@@ -117,15 +117,21 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
     })
 
     tab_param <- shiny::reactiveValues("tab"=NULL, "start_row"=1, "end_row"=1, "start_col"=1, "end_col"=1, "tab_flt"=matrix(1), "rng"="A1:A1")
-    # after upload of excel file(s)
+    # event: upload of excel file(s)
     shiny::observeEvent(tab(), {
-      if (!silent) message("xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
+      if (!silent) 
+        message("xlsx_range_select_Server: observeEvent(tab): 
+                table uploaded; set initial crop parameters")
       tab_param$tab <- tab()
       tab_param$start_row <- 1
       tab_param$start_col <- 1
       tab_param$end_row <- nrow(tab()[[1]])
       tab_param$end_col <- ncol(tab()[[1]])
-      tab_param$rng <- getRngTxt()
+      tab_param$rng <-
+        getRngTxt(tab_param$start_col,
+                  tab_param$start_row,
+                  tab_param$end_col,
+                  tab_param$end_row)
     })
 
     # @Frederick: Wenn Du Änderungen vornimmst, versuche zu überlegen, ob diese wirklich an die von Dir gewählte Stelle gehören oder
@@ -161,9 +167,9 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         tab_param$start_row = min(cs[,1])
         tab_param$end_row = max(cs[,1])
         tab_param$tab = crop_dataframes(
-          # @Frederik: hier tab_param$tab zu nehmen hat zu Fehlern geführt, wenn man als user mehrere Zellen an und wieder abgewählt hat
-          # @Jan (23. Juni) Generell eine kritische Stelle
-          #dfs = tab_param$tab,
+          # @Frederik: hier tab_param$tab zu nehmen hat zu Fehlern geführt, wenn
+          # man als user mehrere Zellen an und wieder abgewählt hat
+          # @Jan (23. Juni) Generell eine kritische Stelle...
           dfs = tab(),
           rows = as.numeric(tab_param$start_row):as.numeric(tab_param$end_row),
           cols = as.numeric(tab_param$start_col):as.numeric(tab_param$end_col)
@@ -171,11 +177,11 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
         DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
       }
-      #print(cs) # the final row is the cell selected last by the user
+      # the final row is the cell selected last by the user
       if (nrow(cs)==2 && check_cs(x=cs)) {
         update_cs()
       }
-      # did the user select a third point
+      # did the user select a third point ?
       if (nrow(cs)>2) {
         # is this third point outside or inside the current range
         if (check_new_point(x=cs)) {
@@ -192,7 +198,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         }
         DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
       }
-      #print(cs) # the final row is the cell selected last by the user
+      # the final row is the cell selected last by the user
       if (nrow(cs)==2 && check_cs(x=cs)) {
         update_cs()
       }
