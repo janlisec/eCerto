@@ -14,7 +14,7 @@
 #' @param rv ReavtiveValues $$.
 #' @param silent Option to print or omit status messages.
 #'
-#' @return rdata A reactive, but only for notifying the navbarpanel
+#' @return rdata A reactive, but only for notifying the navbarpanel to change
 #'
 #' @examples
 #' if (interactive()) {
@@ -71,12 +71,14 @@ m_RDataImport_UI <- function(id) {
 
 #' @rdname RDataImport
 #' @export
-m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALSE) {
+m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FALSE) {
   stopifnot(R6::is.R6(rv))
   stopifnot(shiny::is.reactivevalues(rv$get()))
 
   shiny::moduleServer(id, function(input, output, session) {
 
+    continue = reactiveVal(NULL) # NULL -> don't continue
+    
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
@@ -94,17 +96,51 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
       return(get(x = "res", envir = load_envir))
     }, ignoreNULL = TRUE)
 
+    # Is anything already uploaded via Excel? If so, show Window Dialog
     shiny::observeEvent(rdata(),{
-      if (!silent) message("m_RDataImport_Server: observeEvent(rdata()): RData uploaded")
+      ttt = sapply(rv$names(), function(x) {!is.null(getValue(rv,c(x,"uploadsource")))},simplify = "array")
+      if(any(ttt)){
+        showModal(
+          modalDialog(
+            title = "Existent data",
+            htmltools::HTML("Modul(s) <u>", paste(names(ttt[ttt==TRUE]),collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
+            footer = tagList(
+              actionButton(shiny::NS(id,"cancel"), "Cancel"),
+              actionButton(shiny::NS(id,"overwrite"), "Overwrite", class = "btn btn-danger")
+            )
+          )
+        )
+      } else {
+        continue(TRUE)
+      }
+    })
+    
+    # the observers from before
+    # shall be overwritten?
+    observeEvent(input$overwrite, {
+      continue(TRUE)
+      showNotification("Overwritten")
+      removeModal()
+    })
+    # shall be cancelled?
+    observeEvent(input$cancel, {
+      removeModal()
+    })
+    
+    shiny::observeEvent(continue(),{
+      whereami::cat_where(where = "RData_import: RData uploaded", color = "grey")
       res <- rdata()
-      # @Frederick: die nächste Zeile hat keine Zuweisung. Kann sie raus oder ist sie aus reaktiven Gründen drin?
-      # @Jan Konnte raus, war nur für print (23. Juni)
-      if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE))) {
+
+      if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE))) 
+        {
+        # Non-legacy upload #####
         # import functions for defined data_format schemes
         if ( res$General$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
           resnames <- names(unlist(res, recursive = FALSE))
           rvnames <- names(unlist(shiny::reactiveValuesToList(rv$get()), recursive = FALSE))
+
+    
           if (all(resnames %in% rvnames)) {
             # Transfer list elements
             # $$ToDo$$ one might provide a warning to the user in case he will
@@ -112,23 +148,21 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
             # reads an RData backup which already contains Stab data
             #browser()
             for (i in names(res)) {
-              # @Frederick: ja, ist glaube ich schief gelaufen...
-              # könnte schieflaufen hier
-              #setValue(rv,i,res[[i]])
               for (j in names(res[[i]])) {
                 setValue(rv, c(i,j), res[[i]][[j]])
               }
             }
             # reset time_stamp with current $$ToDo think if this is really desirable
             setValue(rv,c("General","time_stamp"),Sys.time())
+            set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
             message("RDataImport: Non-legacy upload finished")
           } else {
             err <- c(paste0("file_", resnames), paste0("expected_", rvnames))[c(resnames, rvnames) %in% names(which(table(c(resnames, rvnames))==1))]
             shinyalert::shinyalert(title = "m_RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:", paste(err, collapse=", ")), type = "warning")
           }
         }
+        # Legacy upload
       } else {
-        # import functions for legacy data_format schemes
         if ("Certification" %in% names(res) && !is.null(res$Certification)) {
           if (!silent) message("RDataImport_Server: Cert data transfered")
           #browser()
@@ -153,10 +187,6 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
           setValue(rv,c("Certifications","mstats"),res[["Certification"]][["mstats"]])
           # materialtabelle
           setValue(rv,c("Certifications","materialtabelle"),res[["Certification"]][["cert_vals"]])
-
-          # @Frederick: Warum gibt es diese Zeile 2x? Notwendig wegen reactive oder Versehen?
-          # @Jan war ein Versehen beim Ändern, --> gelöscht (23. Juni)
-   
         }
         if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
           if (!silent) message("RDataImport_Server: Homog data transfered")
@@ -178,7 +208,9 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
         }
         setValue(rv,c("General","time_stamp"),Sys.time())
       }
-      })
+      },ignoreNULL = TRUE)
+    
+
 
     shiny::observeEvent(getValue(rv,c("General", "user")) , {
       # if (!silent) whereami::cat_where(whereami::whereami(),color = "blue")
@@ -222,7 +254,7 @@ m_RDataImport_Server = function(id, rv=reactiveClass$new(init_rv()), silent=FALS
       contentType = "RData"
     )
 
-    return(rdata)
+    return(continue)
 
   })
 

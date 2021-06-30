@@ -79,7 +79,7 @@ xlsx_range_select_UI <- function(id) {
 
 #' @rdname xlsx_range_select
 #' @export
-xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::reactive({"Certifications"}), silent=FALSE) {
+xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::reactive({"Certifications"}), silent=TRUE) {
 
   stopifnot(shiny::is.reactive(x))
   stopifnot(shiny::is.reactive(sheet))
@@ -120,8 +120,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
     # event: upload of excel file(s)
     shiny::observeEvent(tab(), {
       if (!silent) 
-        message("xlsx_range_select_Server: observeEvent(tab): 
-                table uploaded; set initial crop parameters")
+        message("xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
       tab_param$tab <- tab()
       tab_param$start_row <- 1
       tab_param$start_col <- 1

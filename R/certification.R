@@ -12,7 +12,7 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param certification reactive({getValue(rv,"Certifications")})
-#' @param apm.input analyteParameterList, when uploaded from RData
+#' @param apm.input analyteParameterList, when uploaded from RData (reactive)
 #' @param datreturn the session data object
 #'
 #' @return nothing directly, works over apm parameter
@@ -140,7 +140,7 @@ m_CertificationUI = function(id) {
       ),
       # materialtabelle
       shiny::conditionalPanel(
-        # check if checkBoxes are marked for material table
+        # check if checkBox is marked for material table
         condition = "input.certification_view.indexOf('mt') > -1",
         ns = shiny::NS(id), # namespace of current module
         # --- --- --- --- --- --- --- --- --- --- ---
@@ -158,37 +158,43 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
   # stopifnot(shiny::is.reactive(certification))
   shiny::moduleServer(id, function(input, output, session) {
     whereami::cat_where("Certification")
-    shiny::exportTestValues(CertificationServer.d = { try(certification) }) # for shinytest
+    # shiny::exportTestValues(CertificationServer.d = { try(certification) }) # for shinytest
 
 
     certification.data <- shiny::reactive({certification()$data})
-    apm_return <- reactiveVal(NULL)
+    apm_return <- shiny::reactiveVal(NULL)
+    apm = reactiveVal()
+    renewTabs = shiny::reactiveVal(NULL)
     dat <- shiny::reactiveVal(NULL)
     
-
-
+    # temp
+    observeEvent(apm.input(),{
+      apm_return(apm.input())
+    })
+    
     shiny::observeEvent(certification.data(), {
-      whereami::cat_where(whereami::whereami(), color = "blue")
-      
       #if loaded (successfully), make area visible
       # AGAIN: SUCCESSFULLY LOADED HERE!
-      if(!is.null(isolate(certification.data()))){
+      # if(!is.null(isolate(certification.data()))){
         message("Certification Module start")
         shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
+        renewTabs(1)
         
+        if(uploadsource_of_element(certification())=="Excel") {
+          apm(reactiveValuesToList(analyte_parameter_list(isolate(certification.data()))))
+        } else if(uploadsource_of_element(certification())=="RData") {
+          if(!is.null(apm.input())) { # RData contained "apm"
+            apm(apm.input()) #do.call(shiny::reactiveValues, apm.input())
+          } else { # RData did not contain "apm" --> create
+            apm(reactiveValuesToList(analyte_parameter_list(isolate(certification.data()))))
+          }
+        } else {
+          stop("unknown Upload Type")
+        }
+      })
         # Creation of AnalyteParameterList.
         # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
-          if(uploadsource_of_element(certification())=="Excel") {
-            apm = analyte_parameter_list(isolate(certification.data()))
-          } else if(uploadsource_of_element(certification())=="RData") {
-            if(!is.null(apm.input())) {
-              apm = do.call(shiny::reactiveValues, apm.input())
-              } else {
-              apm = analyte_parameter_list(isolate(certification.data()))
-            }
-          } else {
-            stop("unknown Upload Type")
-          }
+          
           # apm = switch (uploadsource_of_element(certification()),
           #   Excel = ecerto::analyte_parameter_list(isolate(certification.data())),
           #   RData = ifelse(!is.null(apm.input), do.call("reactiveValues",apm.input),ecerto::analyte_parameter_list(isolate(certification.data())))
@@ -205,12 +211,12 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
         
         # --- --- --- --- --- --- --- --- --- --- ---
         # selected analyte, sample filter, precision
-        selected_tab <- ecerto::m_analyteServer("analyteModule", apm)
+        tablist = reactiveVal(NULL) # store created tabs; to be replaced
+        selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
         # --- --- --- --- --- --- --- --- --- --- ---
-        observeEvent(apm[[selected_tab()]],{
-          apm_return(reactiveValuesToList(apm))
+        observeEvent(apm()[[selected_tab()]],{
+          apm_return(apm())
         })
-
         # --- --- --- --- --- --- --- --- --- --- ---
         dat <- ecerto::m_CertLoadedServer(
           id = "loaded",
@@ -219,7 +225,7 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
           selected_tab =  selected_tab
         )
         # --- --- --- --- --- --- --- --- --- --- ---
-        shiny::exportTestValues(CertLoadedServer.output = { try(dat()) }) # for shinytest
+        # shiny::exportTestValues(CertLoadedServer.output = { try(dat()) }) # for shinytest
 
 
         # Calculates statistics for all available labs
@@ -281,12 +287,12 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
           })
 
         output$overview_stats <- DT::renderDataTable({
-          Stats(data = dat(), precision = apm[[selected_tab()]]$precision)
+          Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
 
         # mStats
         output$overview_mstats <- DT::renderDataTable({
-         mstats(data = dat(), precision = apm[[selected_tab()]]$precision)
+         mstats(data = dat(), precision = apm()[[selected_tab()]]$precision)
         }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
         
         output$qqplot <- shiny::renderPlot({
@@ -298,13 +304,13 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
 
 
         
-        ### LOADED END ###s
-      } else {
-        # else if nothing is loaded, keep Panel empty
-        shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
-      }
-    # }, ignoreInit = TRUE)
-    })
+    #     ### LOADED END ###s
+    #   } else {
+    #     # else if nothing is loaded, keep Panel empty
+    #     shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
+    #   }
+    # # }, ignoreInit = TRUE)
+    # })
 
   return(apm_return)
   })

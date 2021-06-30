@@ -13,7 +13,7 @@ xlsx_range_select_Server(
   x = NULL,
   sheet = NULL,
   excelformat = shiny::reactive({     "Certifications" }),
-  silent = FALSE
+  silent = TRUE
 )
 }
 \arguments{

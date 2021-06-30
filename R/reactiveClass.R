@@ -46,15 +46,15 @@ reactiveClass = R6::R6Class(
       stopifnot(shiny::is.reactivevalues(rv))
       private$reactive_data = rv
     },
+    
     #' @description
     #' Read the value of field element of R6 object.
     #' @param keys Name of list element.
     #' @return Current value of field.
     get = function(keys=NULL) {
-
       purrr::chuck(private$reactive_data, !!!keys)
-      
     },
+    
     #' @description
     #' Write the value to field element of R6 object.
     #' @param keys Name of list element.

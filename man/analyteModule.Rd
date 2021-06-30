@@ -9,12 +9,16 @@
 \usage{
 m_analyteModuleUI(id)
 
-m_analyteServer(id, apm)
+m_analyteServer(id, apm, renewTabs, tablist)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
 \item{apm}{reactiveValues object, which gives available analytes, holds parameter, etc.}
+
+\item{renewTabs}{The order, to delete and renew Tabs, for example when new data is uploaded}
+
+\item{tablist}{list of currently set tab (temporarily, see https://git.bam.de/fkress/ecerto/-/issues/46)}
 }
 \value{
 the currently selected tab and Other parameter via apm reactiveValues()

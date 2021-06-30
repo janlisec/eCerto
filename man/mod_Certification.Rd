@@ -15,7 +15,7 @@ m_CertificationServer(id, certification, apm.input, datreturn)
 
 \item{certification}{reactive({getValue(rv,"Certifications")})}
 
-\item{apm.input}{analyteParameterList, when uploaded from RData}
+\item{apm.input}{analyteParameterList, when uploaded from RData (reactive)}
 
 \item{datreturn}{the session data object}
 }

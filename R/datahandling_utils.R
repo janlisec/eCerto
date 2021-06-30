@@ -27,7 +27,7 @@
 setValue = function(df,key,value){
 
   if(R6::is.R6(df)){
-    df$set(key,value)
+    df$set(key, value) # in reactiveClass.R
   } else {
     stop("object of class ", class(df), " can't get set currently.")
   }

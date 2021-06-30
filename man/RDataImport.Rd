@@ -18,7 +18,7 @@ m_RDataImport_Server(id, rv = reactiveClass$new(init_rv()), silent = FALSE)
 \item{silent}{Option to print or omit status messages.}
 }
 \value{
-rdata A reactive, but only for notifying the navbarpanel
+rdata A reactive, but only for notifying the navbarpanel to change
 }
 \description{
 \code{RDataImport} will provide a module to upload/backup Rdata files for certification trial data.

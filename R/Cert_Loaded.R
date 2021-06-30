@@ -79,7 +79,7 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
     dat = shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
-      current_analy = apm[[selected_tab()]]
+      current_analy = apm()[[selected_tab()]]
 
       cert.data = ecerto::data_of_godelement(certification()) # take the uploaded certification
       # round input values
@@ -125,7 +125,7 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
               is.finite(tmp[, "value"]), ]
       choices <- levels(factor(tmp[, "Lab"]))
       # selected <- choices[which(sapply(split(tmp[, "L_flt"], factor(tmp[, "Lab"])), all))]
-      selected = apm[[selected_tab()]]$lab_filter
+      selected = apm()[[selected_tab()]]$lab_filter
       shiny::selectizeInput(
         inputId = session$ns("flt_labs"),
         label = "Filter Labs",
@@ -136,7 +136,9 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
     })
 
     shiny::observeEvent(certification(), {
-      if (uploadsource_of_element(certification())=="RData" ) {
+      us = uploadsource_of_element(certification())
+      
+      if (!is.null(us) && us=="RData" ) {
         shiny::updateNumericInput(session=session, inputId = "Fig01_width",value = certification()[["CertValPlot"]][["Fig01_width"]])
         shiny::updateNumericInput(session=session, inputId = "Fig01_height",value = certification()[["CertValPlot"]][["Fig01_height"]])
         shiny::updateSelectizeInput(session=session, inputId = "flt_labs",selected = certification()[["opt"]][["flt_labs"]])
@@ -146,7 +148,9 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
 
     shiny::observeEvent(input$flt_labs,{
       # message(paste0("selected lab filter: ", input$flt_labs))
-      apm[[selected_tab()]]$lab_filter = input$flt_labs
+      apm_tmp = apm()
+      apm_tmp[[selected_tab()]]$lab_filter = input$flt_labs
+      apm(apm_tmp)
     })
 
 
