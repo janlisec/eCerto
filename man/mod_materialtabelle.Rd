@@ -29,7 +29,7 @@ not yet
 \examples{
 if (interactive()) {
 shiny::shinyApp(
- ui = shiny::fluidPage(m_materialtabelleUI(id = "test")),
+ ui = shiny::fluidPage(shinyalert::useShinyalert(), m_materialtabelleUI(id = "test")),
  server = function(input, output, session) {
  fpath <- system.file("extdata", "SR3_Fe_v26chs.RData", package="ecerto")
  load(fpath)

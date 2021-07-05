@@ -63,7 +63,7 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
       homogData()
     }
     ,{
-      if(!is.null(homogData()) &&!is.null(matTab_col_code())){
+      if(!is.null(homogData()) &&!is.null(matTab_col_code()) && sum(substr(matTab_col_code()[,"ID"],1,1)=="U")>=1){
 
         shinyjs::enable(id = "transferPanel")
         message("Transfer Homogeneity Panel activated")
