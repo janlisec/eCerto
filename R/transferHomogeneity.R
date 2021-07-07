@@ -56,17 +56,19 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
 
     cert_vals = shiny::reactiveVal()
 
-    # activate transfer panel only, when (1) materialtabelle was created after
-    # certification upload and (2) homogeneity data was uploaded
+
     shiny::observeEvent({
       matTab_col_code()
       homogData()
     }
     ,{
+      # activate transfer panel only, when 
+      # (1) materialtabelle was created after certification upload AND
+      # (2) homogeneity data was uploaded AND
+      # (3) materialtabelle contains at least one column with "U"
       if (!is.null(homogData()) &&
           !is.null(matTab_col_code()) &&
           sum(substr(matTab_col_code()[, "ID"], 1, 1) == "U") >= 1) {
-        
         shinyjs::enable(id = "transferPanel")
         message("Transfer Homogeneity Panel activated")
         cert_vals(data.frame(rep(0,length(matTab_analytes()))))
@@ -85,7 +87,6 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
 
     })
 
-    # TODO
     return_reactive = shiny::eventReactive(input$h_transfer_ubb_button, {
       shiny::req(
         input$h_transfer_ubb,

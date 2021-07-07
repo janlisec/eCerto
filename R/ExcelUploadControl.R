@@ -105,7 +105,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
       dat <- rv_xlsx_range_select$tab_flt
-      whereami::cat_where(where = "ExcelUpload: Excel uploaded",color = "grey")
+      # whereami::cat_where(where = "ExcelUpload: Excel uploaded",color = "grey")
       
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {

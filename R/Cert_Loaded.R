@@ -71,7 +71,7 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-  whereami::cat_where("CertLoaded")
+  # whereami::cat_where("CertLoaded")
     
     
     # this data.frame contains the following columns for each analyte:

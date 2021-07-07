@@ -111,7 +111,7 @@ app_server = function(input, output, session) {
     datreturn = datreturn
   )
   observeEvent(apm(),{
-    whereami::cat_where("app_server: apm changed, set rv.apm",color = "blue")
+    # whereami::cat_where("app_server: apm changed, set rv.apm",color = "blue")
     setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
   }, ignoreNULL = TRUE)
   

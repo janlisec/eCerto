@@ -157,7 +157,7 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
 
   # stopifnot(shiny::is.reactive(certification))
   shiny::moduleServer(id, function(input, output, session) {
-    whereami::cat_where("Certification")
+    # whereami::cat_where("Certification")
     # shiny::exportTestValues(CertificationServer.d = { try(certification) }) # for shinytest
 
 

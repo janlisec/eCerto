@@ -128,7 +128,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
     })
     
     shiny::observeEvent(continue(),{
-      whereami::cat_where(where = "RData_import: RData uploaded", color = "grey")
+      # whereami::cat_where(where = "RData_import: RData uploaded", color = "grey")
       res <- rdata()
 
       if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE))) 
