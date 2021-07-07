@@ -28,6 +28,7 @@ m_TransferHomogeneityUI = function(id) {
   shinyjs::disabled(
     shiny::fluidRow(id = shiny::NS(id,"transferPanel"),
              #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
+             p(id = NS(id,"element"), ""),
              shiny::column(4,
                            shiny::selectInput(
                       inputId=shiny::NS(id,"h_transfer_H_type"),
@@ -70,6 +71,7 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
           !is.null(matTab_col_code()) &&
           sum(substr(matTab_col_code()[, "ID"], 1, 1) == "U") >= 1) {
         shinyjs::enable(id = "transferPanel")
+        shinyjs::html("element", "")
         message("Transfer Homogeneity Panel activated")
         cert_vals(data.frame(rep(0,length(matTab_analytes()))))
 
@@ -83,6 +85,8 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
           inputId = "h_transfer_ubb",
           choices=matTab_col_code()[substr(matTab_col_code()[,"ID"],1,1)=="U","Name"]
         )
+      } else if (sum(substr(matTab_col_code()[, "ID"], 1, 1) == "U") < 1){
+        shinyjs::html("element", '<p style="color:Orange;">Transfer not possible: No U column in material table to transfer to!</p>')
       }
 
     })
