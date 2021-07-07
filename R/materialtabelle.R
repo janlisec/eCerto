@@ -87,8 +87,10 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # strip unused F and U columns from 'mater_table'
       cc <- attr(mt, "col_code")
       if (nrow(cc)>=1) {
+        browser()
         flt <- sapply(1:nrow(cc), function(i) {
-          cc[i,"ID"]==cc[i,"Name"] & (all(mt[,cc[i,"Name"]]==1) | all(mt[,cc[i,"Name"]]==0))
+          cc[i, "ID"] == cc[i, "Name"] &
+            (all(mt[, cc[i, "Name"]] == 1) | all(mt[, cc[i, "Name"]] == 0))
         })
         if (any(flt)) {
           mt <- mt[,!(colnames(mt) %in% cc[flt,"Name"])]

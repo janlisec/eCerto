@@ -93,7 +93,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
     })
 
     # --- --- --- --- --- --- --- --- --- ---
-    rv_xlsx_range_select <- ecerto::xlsx_range_select_Server(
+    rv_xlsx_range_select <- xlsx_range_select_Server(
       id = "Upload",
       x = current_file_input,
       sheet = shiny::reactive({ input$sheet_number }),

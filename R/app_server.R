@@ -46,7 +46,7 @@ app_server = function(input, output, session) {
       selected = "tP_certification")
     
   }, ignoreNULL = TRUE)
-  # when Excel was uploaded...
+  # when Excel was uploaded with LOAD-Button...
   shiny::observeEvent(ExcelUp(),{
     message("app_server: Excel Upload, set rv.Data")
     setValue(rv, c(excelformat(),"data"), ExcelUp())
