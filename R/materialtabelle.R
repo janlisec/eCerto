@@ -48,11 +48,21 @@ m_materialtabelleUI <- function(id) {
         value = FALSE
       ),
       shiny::fluidRow(
-        shiny::column(width = 3, shiny::actionButton(inputId = ns("c_addF"), label = "Add F")),
-        shiny::column(width = 3, shiny::actionButton(inputId = ns("c_remF"), label = "Rem F")),
-        shiny::column(width = 3, shiny::actionButton(inputId = ns("c_addU"), label = "Add U")),
-        shiny::column(width = 3, shiny::actionButton(inputId = ns("c_remU"), label = "Rem U"))
-      ),
+        shiny::column(width = 6,align = "center", 
+          "F",
+          shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = "110%"),
+          shiny::actionButton(inputId = ns("c_remF"), label = "Remove", width = "110%")
+        ),
+        shiny::column(width = 6,align = "center", 
+                      "U",
+          shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = "110%"),
+          shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "110%")
+        ),
+      ),  
+      # shiny::fluidRow(
+      #   # shiny::column(width = 6, shiny::actionButton(inputId = ns("c_remF"), label = "Rem F", width = "100%")),
+      #   shiny::column(width = 6, shiny::actionButton(inputId = ns("c_remU"), label = "Rem U", width = "100%"))
+      # ),
       shiny::helpText(
         "In this interactive table you can add columns of correction factors of the mean as well as uncertainty contributions.",
         shiny::tags$br(),
@@ -72,7 +82,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    whereami::cat_where(where = "Materialtabelle")
+    # whereami::cat_where(where = "Materialtabelle")
     ns <- shiny::NS(id)
 
     # define table as reactiveVal to update it at different places within the module
