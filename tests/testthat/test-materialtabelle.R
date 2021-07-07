@@ -15,8 +15,9 @@ test_that("Init of materialtable after Certifications uploaded",code = {
         # # c = init_materialTabelle(availableAnalytes())
         # # mater_table(c) # save materialtabelle
         expect_equal(nrow(mater_table()),11)
-        m_cols = c("analyte", "mean", "F1", "F2", "F3", "cert_val", "sd", "n",
-                   "char", "U2", "U3", "U4", "U5", "U6", "U7", "com", "k", "U")
+        # the old version had all F and U columns, now they are removed if empty
+        #m_cols = c("analyte", "mean", "F1", "F2", "F3", "cert_val", "sd", "n", "char", "U2", "U3", "U4", "U5", "U6", "U7", "com", "k", "U")
+        m_cols = c("analyte", "mean", "cert_val", "sd", "n", "char", "com", "k", "U")
         expect_equal(colnames(mater_table()),m_cols)
         expect_equal(cert_sd(),0.0034)
         expect_equal(cert_mean(),0.0493)
