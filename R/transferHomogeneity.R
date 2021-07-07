@@ -15,8 +15,8 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param homogData reactive of Homogeneity data, if present.
-#' @param matTab_col_code columns of materialtable to be transferred to
-#' @param matTab_analytes available analytes of materialtable
+#' @param matTab_col_code columns of materialtabelle to be transferred to
+#' @param matTab_analytes available analytes of materialtabelle
 #'
 #'@return
 #'A reactive and one-column dataframe, containing the data to be merged.
@@ -63,8 +63,10 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
       homogData()
     }
     ,{
-      if(!is.null(homogData()) &&!is.null(matTab_col_code()) && sum(substr(matTab_col_code()[,"ID"],1,1)=="U")>=1){
-
+      if (!is.null(homogData()) &&
+          !is.null(matTab_col_code()) &&
+          sum(substr(matTab_col_code()[, "ID"], 1, 1) == "U") >= 1) {
+        
         shinyjs::enable(id = "transferPanel")
         message("Transfer Homogeneity Panel activated")
         cert_vals(data.frame(rep(0,length(matTab_analytes()))))

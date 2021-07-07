@@ -15,9 +15,9 @@ m_TransferHomogeneityServer(id, homogData, matTab_col_code, matTab_analytes)
 
 \item{homogData}{reactive of Homogeneity data, if present.}
 
-\item{matTab_col_code}{columns of materialtable to be transferred to}
+\item{matTab_col_code}{columns of materialtabelle to be transferred to}
 
-\item{matTab_analytes}{available analytes of materialtable}
+\item{matTab_analytes}{available analytes of materialtabelle}
 }
 \value{
 A reactive and one-column dataframe, containing the data to be merged.

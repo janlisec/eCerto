@@ -83,12 +83,14 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     shiny::exportTestValues(precision2 = { try(precision2) })
 
     # helper function to remove unused user columns
+    # @ Jan: ich würde die Funktion gerne auch auslagern um Tests zu schreiben. OK?
     remove_unused_cols <- function(mt=NULL) {
       # strip unused F and U columns from 'mater_table'
       cc <- attr(mt, "col_code")
       if (nrow(cc)>=1) {
         flt <- sapply(1:nrow(cc), function(i) {
           cc[i, "ID"] == cc[i, "Name"] &&
+            # only proceed of Name and ID of the attribute are equal
             (all(mt[, cc[i, "Name"]] == 1) | all(mt[, cc[i, "Name"]] == 0))
         })
         if (any(flt)) {
@@ -122,7 +124,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
       # set result as new value in the R6 object
       ecerto::setValue(datreturn, "mater_table", mt)
-
+      message("materialtabelle: set datreturn.mater_table")
       invisible(mt)
     }
 
@@ -132,7 +134,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # get smallest index number available
       n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[,"ID"],1,1)=="F","ID"],2,2)))))
       shinyalert::shinyalert(
-        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = ns("tmp"), label = "Type name to add", value = paste0("F",n))),
+        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = session$ns("tmp"), label = "Type name to add", value = paste0("F",n))),
         cancelButtonText = "Cancel", confirmButtonText = "Add", showCancelButton = TRUE, size = "xs",
         callbackR = function(value) {
           if (value) {
@@ -154,7 +156,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       if (any(substr(cc[,"ID"],1,1)=="F")) {
         choices <- cc[substr(cc[,"ID"],1,1)=="F","Name"]
         shinyalert::shinyalert(
-          html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = ns("tmp"), label = "Select to remove", choices = choices)),
+          html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = session$ns("tmp"), label = "Select to remove", choices = choices)),
           cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "xs",
           callbackR = function(value) {
             if (value) {
@@ -176,7 +178,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # get smallest index number available
       n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[,"ID"],1,1)=="U","ID"],2,2)))))
       shinyalert::shinyalert(
-        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = ns("tmp"), label = "Type name to add", value = paste0("U",n))),
+        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = session$ns("tmp"), label = "Type name to add", value = paste0("U",n))),
         cancelButtonText = "Cancel", confirmButtonText = "Add", showCancelButton = TRUE, size = "xs",
         callbackR = function(value) {
           if (value) {
@@ -198,7 +200,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       if (any(substr(cc[,"ID"],1,1)=="U")) {
         choices <- cc[substr(cc[,"ID"],1,1)=="U","Name"]
         shinyalert::shinyalert(
-          html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = ns("tmp"), label = "Select to remove", choices = choices)),
+          html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = session$ns("tmp"), label = "Select to remove", choices = choices)),
           cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "xs",
           callbackR = function(value) {
             if (value) {
@@ -331,7 +333,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
     # monitor table editing and update if necessary
     tmp_mater_table <- shiny::eventReactive(mater_table(),{
-      message(".materialtabelle updated")
+      message("m_materialtabelle: mater_table() updated")
       mt <- mater_table()
       u_cols <- unlist(sapply(c("char", paste0("U", 1:9), "com", "U"), function(x) {
         grep(x, colnames(mt))

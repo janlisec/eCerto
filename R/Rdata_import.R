@@ -146,7 +146,6 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             # $$ToDo$$ one might provide a warning to the user in case he will
             # overwrite non empty fields i.e. he did load Stab data and now
             # reads an RData backup which already contains Stab data
-            #browser()
             for (i in names(res)) {
               for (j in names(res[[i]])) {
                 setValue(rv, c(i,j), res[[i]][[j]])
@@ -165,7 +164,6 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
       } else {
         if ("Certification" %in% names(res) && !is.null(res$Certification)) {
           if (!silent) message("RDataImport_Server: Cert data transfered")
-          #browser()
           setValue(rv,c("Certifications","data"),res[["Certification"]][["data_input"]])
           setValue(rv,c("Certifications","input_files"),res[["Certification"]][["input_files"]])
           set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
