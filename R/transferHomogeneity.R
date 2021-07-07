@@ -67,7 +67,6 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
 
         shinyjs::enable(id = "transferPanel")
         message("Transfer Homogeneity Panel activated")
-
         cert_vals(data.frame(rep(0,length(matTab_analytes()))))
 
         shiny::updateSelectInput(
