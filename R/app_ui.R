@@ -107,6 +107,7 @@ app_ui = function(){
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
+        shiny::includeMarkdown(system.file(package = "ecerto","help","materialtabelle.md"))
         # source(
         #   file = "ui_tabPanel_help.R",
         #   local = TRUE,
