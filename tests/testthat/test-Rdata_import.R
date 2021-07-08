@@ -13,11 +13,11 @@ test_that(
       args = list(rv = rv_test),
       expr = {
                session$setInputs(in_file_ecerto_backup = rdat)
-               expect_equal(ecerto::getValue(rv,c("General","user")),"JL")
+               expect_equal(ecerto::getValue(rv,c("General","user")),"FK2")
                #expect_snapshot(reactiveValuesToList(ecerto::getValue(rv)))
 
                expect_equal(sort(rv$names()),c("Certifications", "Homogeneity", "Stability" ))
-               expect_equal(getValue(rv, c("General","user")),"JL")
+               expect_equal(getValue(rv, c("General","user")),"FK2")
 
                # because time_stamp changes every runtime, exclude it for testing
                # as follows

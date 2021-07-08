@@ -41,7 +41,6 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
 
     shiny::observeEvent(renewTabs(),{
       message("analyte_module: Renew Tabs")
-
       tablist() %>% purrr::walk(~shiny::removeTab("tabs", .x)) # remove old tabs
       tablist(NULL)
       # append/prepend a tab for each analyte available
@@ -116,7 +115,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       })
     })
 
-    observe({apm(analytes())})
+    observe({apm(analytes())}) # update apm
     return(selected_tab)
   })
 }

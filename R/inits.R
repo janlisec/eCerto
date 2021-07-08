@@ -81,8 +81,6 @@ init_rv = function() {
                    "data" = NULL,
                    "input_files" = NULL,
                    "uploadsource" = NULL,
-                   
-                   
                    # processing
                    "lab_means" = NULL,
                    "cert_mean" = NULL,
@@ -152,6 +150,7 @@ analyte_parameter_list = function(certification = NULL) {
   # l = list()
 
   analytes = levels(certification[, "analyte"])
+  
   # create list with lists of all analytes (i.e. a nested list)
   a_param_list = rep(list(param_template), length(analytes))
   if(!is.null(certification)){
@@ -166,11 +165,10 @@ analyte_parameter_list = function(certification = NULL) {
   }
   # set names of sublists to analyte names
   a_param_list = stats::setNames(a_param_list, analytes)
-
-  # l$analytes = a_param_list
   l = a_param_list
-  apm = do.call(shiny::reactiveValues, l) # finally, create reactiveValues
+  # l$analytes = factor(names(a_param_list),levels = names(a_param_list))
+  # apm = do.call(shiny::reactiveValues, l) # finally, create reactiveValues
+  apm = l # currently no need for reactiveValues
   # end param list
-  # @Frederick In the function description you claim that there is a return value. Please make explicit what the return value is using return()
   return(apm)
 }

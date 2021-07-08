@@ -180,13 +180,15 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
         shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
         renewTabs(1)
         
+        # Creation of AnalyteParameterList.
+        # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
         if(uploadsource_of_element(certification())=="Excel") {
-          apm(reactiveValuesToList(analyte_parameter_list(isolate(certification.data()))))
+          apm(analyte_parameter_list(isolate(certification.data())))
         } else if(uploadsource_of_element(certification())=="RData") {
           if(!is.null(apm.input())) { # RData contained "apm"
             apm(apm.input()) #do.call(shiny::reactiveValues, apm.input())
           } else { # RData did not contain "apm" --> create
-            apm(reactiveValuesToList(analyte_parameter_list(isolate(certification.data()))))
+            apm(analyte_parameter_list(isolate(certification.data())))
           }
         } else {
           stop("unknown Upload Type")
@@ -194,11 +196,7 @@ m_CertificationServer = function(id, certification, apm.input, datreturn) {
       })
         # Creation of AnalyteParameterList.
         # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
-          
-          # apm = switch (uploadsource_of_element(certification()),
-          #   Excel = ecerto::analyte_parameter_list(isolate(certification.data())),
-          #   RData = ifelse(!is.null(apm.input), do.call("reactiveValues",apm.input),ecerto::analyte_parameter_list(isolate(certification.data())))
-          # )
+
 
         # --- --- --- --- --- --- --- --- --- --- ---
         # Materialtabelle is in Certification-UI, that's why it is here
