@@ -7,14 +7,14 @@
 #' @description \code{m_CertLoaded} is active as soon as Certification data was
 #'  uploaded.
 #'
-#' @details not yet
+#' @details additional returns are handled via apm
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param certification = reactive({rv$Certifications})
+#' @param certification certification data.frame: reactive({rv$Certifications})
 #' @param apm reactiveValues with analyte parameter
-#' @param selected_tab currently selected tab
+#' @param selected_tab currently selected tab, for example "Si" or "Cu" etc.
 #'
-#' @return nothing directly, works over apm parameter
+#' @return dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt 
 #' @rdname mod_CertLoaded
 #' @export
 m_CertLoadedUI = function(id) {
@@ -50,11 +50,11 @@ m_CertLoadedUI = function(id) {
           shiny::downloadButton(outputId = 'Fig01', label = "Figure")
         )
       ),
-      shiny::fluidRow(shiny::column(6, shiny::strong("mean")), shiny::column(6, shiny::strong("sd"))),
-      # TODO
+      shiny::fluidRow(shiny::column(6, shiny::strong("mean")), 
+                      shiny::column(6, shiny::strong("sd"))),
       shiny::fluidRow(
         shiny::column(6,
-                      shiny::textOutput(shiny::NS(id,"cert_mean"))),
+               shiny::textOutput(shiny::NS(id,"cert_mean"))),
         shiny::column(6,
                shiny::textOutput(shiny::NS(id,"cert_sd")))
       ),
@@ -68,13 +68,9 @@ m_CertLoadedUI = function(id) {
 #' @rdname mod_CertLoaded
 #' @export
 m_CertLoadedServer = function(id, certification, apm, selected_tab) {
-
   shiny::moduleServer(id, function(input, output, session) {
 
-  # whereami::cat_where("CertLoaded")
-    
-    
-    # this data.frame contains the following columns for each analyte:
+        # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat = shiny::reactive({
       shiny::req(selected_tab())
@@ -143,6 +139,9 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
         shiny::updateNumericInput(session=session, inputId = "Fig01_height",value = certification()[["CertValPlot"]][["Fig01_height"]])
         shiny::updateSelectizeInput(session=session, inputId = "flt_labs",selected = certification()[["opt"]][["flt_labs"]])
       }
+      updateNumericInput(session,
+                         inputId = "Fig01_width",
+                         value = 150 + 40 * length(levels(factor(data_of_godelement(certification())[, "Lab"]))))
 
     }, ignoreNULL = TRUE)
 
@@ -154,7 +153,6 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
     })
 
 
-
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       CertValPlot(data = dat())
@@ -163,7 +161,7 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
     }), width = shiny::reactive({
       input$Fig01_width
     }))
-
+    
     return(dat)
   })
 }
