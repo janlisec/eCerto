@@ -34,9 +34,8 @@ m_analyteModuleUI = function(id){
 m_analyteServer = function(id, apm, renewTabs, tablist) {
   stopifnot(shiny::is.reactive(apm))
   shiny::moduleServer(id, function(input, output, session){
-    whereami::cat_where("AnalyteModule")
     ns <- session$ns # to get full namespace here in server function
-    analytes = apm
+    # analytes = apm
     
 
     shiny::observeEvent(renewTabs(),{
@@ -44,7 +43,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       tablist() %>% purrr::walk(~shiny::removeTab("tabs", .x)) # remove old tabs
       tablist(NULL)
       # append/prepend a tab for each analyte available
-      for (a.name in names(analytes())) {
+      for (a.name in names(isolate(apm()))) {
         tablist_tmp <- c(tablist(), a.name) # add to tablist for removing later
         tablist(tablist_tmp)
         shiny::appendTab(inputId = "tabs",
@@ -56,8 +55,8 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
                                            shiny::selectizeInput(
                                              inputId = ns(paste0("flt_samples",a.name)),#NS(id,paste0("flt_samples",a.name)),
                                              label = "Filter Sample IDs",
-                                             choices = analytes()[[a.name]]$sample_ids,
-                                             selected = analytes()[[a.name]]$sample_filter,
+                                             choices = isolate(apm())[[a.name]]$sample_ids,
+                                             selected = isolate(apm())[[a.name]]$sample_filter,
                                              multiple = TRUE
                                            )
                              ),
@@ -76,9 +75,18 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       shiny::updateTabsetPanel(
         session = session, 
         inputId = "tabs", 
-        selected = names(analytes())[1]
+        selected = names(isolate(apm()))[1]
       )
       renewTabs(NULL)
+      # message("analyte_module: Update Precision and sample filter")
+      # lapply(names(isolate(apm())), function(i){
+      #   analytes_tmp = isolate(apm())
+      #   if(!is.null(input[[paste0("precision",i)]]))
+      #     analytes_tmp[[i]]$precision = input[[paste0("precision",i)]]
+      #   if(!is.null(input[[paste0("flt_samples",i)]]))
+      #     analytes_tmp[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
+      #   apm(analytes_tmp)
+      # })
     }, ignoreNULL = TRUE)
     
 
@@ -88,34 +96,47 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       shinyjs::addClass(
         selector = s,
         class = "selct")
-      # change the "selected tab" reactive in the reactiveValues when another tab
-      # is selected
-      # apm$selected_tab = input$tabs
+
     },ignoreInit = TRUE)
 
     selected_tab = shiny::eventReactive(input$tabs,{
       input$tabs
     })
     
-    # RData Upload
-    # observeEvent(apm,{
-    #   updateSelectizeInput("flt_samples",selected = apm$analytes[[i]]$sample_filter)
-    # })
-    # update precision and the selected sample id filter in the reactiveValues
-    # when their value change in the selected tab
-    shiny::observe({
-      req(input$tabs)
-      lapply(names(analytes()), function(i){
-        analytes_tmp = analytes()
-        if(!is.null(input[[paste0("precision",i)]]))
-          analytes_tmp[[i]]$precision = input[[paste0("precision",i)]]
-        if(!is.null(input[[paste0("flt_samples",i)]]))
-          analytes_tmp[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
-        analytes(analytes_tmp)
-      })
+    # update precision 
+    shiny::observeEvent(input[[paste0("precision",selected_tab())]],{
+      message("analyte_module: Precision change")
+      analytes_tmp = isolate(apm())
+      if(!is.null(input[[paste0("precision",selected_tab())]]))
+        analytes_tmp[[selected_tab()]]$precision = input[[paste0("precision",selected_tab())]]
+      apm(analytes_tmp)
     })
+    # update flt_samples 
+    shiny::observeEvent(input[[paste0("flt_samples",selected_tab())]],{
+      message("analyte_module: flt_samples change")
+      analytes_tmp = isolate(apm())
+      if(!is.null(input[[paste0("flt_samples",selected_tab())]]))
+        analytes_tmp[[selected_tab()]]$sample_filter = input[[paste0("flt_samples",selected_tab())]]
+      apm(analytes_tmp)
+    })
+    # and the selected sample id filter in the reactiveValues
+    # when their value change in the selected tab
+    # shiny::observeEvent(selected_tab(),{
+    #   message("analyte_module: Update Precision and sample filter")
+    #   lapply(names(isolate(apm())), function(i){
+    #     analytes_tmp = isolate(apm())
+    #     if(!is.null(input[[paste0("precision",i)]]))
+    #       analytes_tmp[[i]]$precision = input[[paste0("precision",i)]]
+    #     if(!is.null(input[[paste0("flt_samples",i)]]))
+    #       analytes_tmp[[i]]$sample_filter = input[[paste0("flt_samples",i)]]
+    #     apm(analytes_tmp)
+    #   })
+    # }, ignoreNULL = TRUE)
 
-    observe({apm(analytes())}) # update apm
+    # observe({
+    #   message("analyte_module: apm changed")
+    #   apm(analytes())
+    # }) # update apm
     return(selected_tab)
   })
 }
