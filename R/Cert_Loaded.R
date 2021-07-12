@@ -10,8 +10,8 @@
 #' @details additional returns are handled via apm
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param certification certification data.frame: reactive({rv$Certifications})
-#' @param apm reactiveValues with analyte parameter
+#' @param rv 
+#' @param apm reactiveVal with analyte parameter
 #' @param selected_tab currently selected tab, for example "Si" or "Cu" etc.
 #'
 #' @return dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt 
@@ -67,26 +67,26 @@ m_CertLoadedUI = function(id) {
 
 #' @rdname mod_CertLoaded
 #' @export
-m_CertLoadedServer = function(id, certification, apm, selected_tab) {
+m_CertLoadedServer = function(id, rv, apm, selected_tab) {
   shiny::moduleServer(id, function(input, output, session) {
 
-        # this data.frame contains the following columns for each analyte:
+    filtered_labs = reactiveVal(NULL) 
+    
+    # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat = shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
+      message("Cert_Load: dat-reactive invalidated")
       current_analy = apm()[[selected_tab()]]
-
-      cert.data = ecerto::data_of_godelement(certification()) # take the uploaded certification
+      cert.data = getValue(rv,c("Certifications","data")) # take the uploaded certification
       # round input values
       cert.data[, "value"] = round(cert.data[, "value"], current_analy$precision)
       cert.data <- cert.data[cert.data[, "analyte"] %in% selected_tab(), ]
       cert.data <- cert.data[!(cert.data[, "ID"] %in% current_analy$sample_filter), ]
-      cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% input$flt_labs
-
+      cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% filtered_labs()
       # adjust factor levels
       cert.data[, "Lab"] <- factor(cert.data[, "Lab"])
-
       # Notify User in case that only 1 finite measurement remained within group
       shiny::validate(
         shiny::need(
@@ -131,25 +131,36 @@ m_CertLoadedServer = function(id, certification, apm, selected_tab) {
       )
     })
 
-    shiny::observeEvent(certification(), {
-      us = uploadsource_of_element(certification())
+    shiny::observeEvent(getValue(rv,c("Certifications","uploadsource")), {
+      us = getValue(rv,c("Certifications","uploadsource"))
       
       if (!is.null(us) && us=="RData" ) {
-        shiny::updateNumericInput(session=session, inputId = "Fig01_width",value = certification()[["CertValPlot"]][["Fig01_width"]])
-        shiny::updateNumericInput(session=session, inputId = "Fig01_height",value = certification()[["CertValPlot"]][["Fig01_height"]])
-        shiny::updateSelectizeInput(session=session, inputId = "flt_labs",selected = certification()[["opt"]][["flt_labs"]])
+        shiny::updateNumericInput(session=session, inputId = "Fig01_width",value = isolate(getValue(rv,c("Certifications","CertValPlot")))[["Fig01_width"]])
+        shiny::updateNumericInput(session=session, inputId = "Fig01_height",value = isolate(getValue(rv,c("Certifications","CertValPlot")))[["Fig01_height"]])
+        shiny::updateSelectizeInput(session=session, inputId = "flt_labs",selected = isolate(getValue(rv,c("Certifications","opt")))[["flt_labs"]])
       }
       updateNumericInput(session,
                          inputId = "Fig01_width",
-                         value = 150 + 40 * length(levels(factor(data_of_godelement(certification())[, "Lab"]))))
+                         value = 150 + 40 * length(levels(factor(isolate(getValue(rv,c("Certifications","data")))[, "Lab"]))))
 
     }, ignoreNULL = TRUE)
 
     shiny::observeEvent(input$flt_labs,{
-      # message(paste0("selected lab filter: ", input$flt_labs))
+      message("Cert_load: lab filter: ", input$flt_labs)
+      filtered_labs( input$flt_labs)
       apm_tmp = apm()
       apm_tmp[[selected_tab()]]$lab_filter = input$flt_labs
       apm(apm_tmp)
+    }, ignoreNULL = FALSE)
+    
+    output$cert_mean = renderText({
+      mt = getValue(rv,c("Certifications","materialtabelle"))
+      mt[mt$analyte==selected_tab(),]$mean
+    })
+    
+    output$cert_sd = renderText({
+      mt = getValue(rv,c("Certifications","materialtabelle"))
+      mt[mt$analyte==selected_tab(),"sd"]
     })
 
 
