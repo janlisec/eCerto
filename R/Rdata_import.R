@@ -153,7 +153,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             }
             # reset time_stamp with current $$ToDo think if this is really desirable
             setValue(rv,c("General","time_stamp"),Sys.time())
-            set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
+            set_uploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
             message("RDataImport: Non-legacy upload finished")
           } else {
             err <- c(paste0("file_", resnames), paste0("expected_", rvnames))[c(resnames, rvnames) %in% names(which(table(c(resnames, rvnames))==1))]
@@ -166,7 +166,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           if (!silent) message("RDataImport_Server: Cert data transfered")
           setValue(rv,c("Certifications","data"),res[["Certification"]][["data_input"]])
           setValue(rv,c("Certifications","input_files"),res[["Certification"]][["input_files"]])
-          set_listUploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
+          set_uploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
           # save
           setValue(rv,c("General","user"),res$Certification$user)
           setValue(rv,c("General","study_id"),res$Certification$study_id)
@@ -189,7 +189,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
           if (!silent) message("RDataImport_Server: Homog data transfered")
           setValue(rv,c("Homogeneity","data"),res[["Homogeneity"]][["h_dat"]])
-          set_listUploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
+          set_uploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
           setValue(rv,c("Homogeneity","h_file"),res[["Homogeneity"]][["h_file"]])
           # Processing
           setValue(rv,c("Homogeneity","h_vals"),res[["Homogeneity"]][["h_vals"]])
@@ -201,7 +201,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           if (!silent) message("RDataImport_Server: Stab data transfered")
           setValue(rv,c("Stability","file"),res[["Stability"]][["s_file"]])
           setValue(rv,c("Stability","data"),res[["Stability"]][["s_dat"]])
-          set_listUploadsource(rv = rv, m = "Stability", uploadsource = "RData")
+          set_uploadsource(rv = rv, m = "Stability", uploadsource = "RData")
           setValue(rv,c("Stability","s_vals"),res[["Stability"]][["s_vals"]])
         }
         setValue(rv,c("General","time_stamp"),Sys.time())

@@ -96,7 +96,7 @@ m_HomogeneityServer = function(id, homog, cert) {
 
 
     h_Data = shiny::reactive({
-      h_dat = ecerto::data_of_godelement(homog())
+      h_dat = homog()[["data"]]
       h_dat[,"analyte"] <- factor(h_dat[,"analyte"])
       shiny::validate(shiny::need("Flasche" %in% colnames(h_dat), "No column 'Flasche' found in input file."))
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])

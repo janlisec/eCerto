@@ -109,3 +109,42 @@ test_that("Transfer into column 'U3' successful",code = {
   )
 })
 
+# Test 5: Homogeneity Transfer ---------------------
+
+test_that("Lab filter",code = {
+  datreturn1 = ecerto:::test_datreturn()
+  suppressMessages(
+    shiny::testServer(
+      ecerto::m_materialtabelleServer,
+      args = list(
+        rdataUpload = shiny::reactive({NULL}), 
+        datreturn = datreturn1
+      ), {
+        session$setInputs(pooling=FALSE)
+        session$flushReact()
+        # print(tmp_mater_table())
+        sAnData_tmp = sAnData()
+        sAnData_tmp[sAnData_tmp$Lab=="L1",]$L_flt <- TRUE
+        setValue(datreturn,"selectedAnalyteDataframe",sAnData_tmp)
+        # session$setInputs(datreturn$selectedAnalyteDataframe=sAnData_tmp)
+        session$flushReact()
+        # print(dput(mater_table()[mater_table()$analyte=="Si",]))
+        # data <- sAnData()[!sAnData()[, "L_flt"], ]
+        # expected_mean = roundMT(mean(sapply(
+        #   split(data[, "value"], as.character(data[, "Lab"])), mean, na.rm = T
+        # )), 4)
+        # expected_Si = structure(list(analyte = "Si", mean = 0.0484, cert_val = 0.0484,
+        #                              sd = 0.0041, n = 2L, char = 0.0599, com = 0.0599,
+        #                              k = 2, U = 0.1198), col_code = structure(list(
+        #                                ID = character(0), Name = character(0)), row.names = integer(0), class = "data.frame"), row.names = 1L, class = "data.frame")
+        # print(expected_mean)
+        # actual_mean = tmp_mater_table()[tmp_mater_table()$analyte=="Si",]$mean
+        # expect_equal(actual_mean,0.0512)
+        actual_Si = tmp_mater_table()[tmp_mater_table()$analyte=="Si",]
+        expected_Si = structure(list(analyte = "Si", mean = 0.0512, cert_val = 0.0512, 
+                                     sd = 1e-04, n = 2L, char = 0.0014, com = 0.0014, k = 2, U = 0.0028), col_code = structure(list(
+                                       ID = character(0), Name = character(0)), row.names = integer(0), class = "data.frame"), row.names = 1L, class = "data.frame")
+        expect_equal(actual_Si,expected_Si)
+      })
+    )
+})

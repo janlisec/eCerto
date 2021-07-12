@@ -38,7 +38,7 @@
 #' @export
 #'
 m_ExcelUploadControl_UI <- function(id) {
-
+  
   shiny::tagList(
     # control elements
     shiny::fluidRow(
@@ -55,11 +55,11 @@ m_ExcelUploadControl_UI <- function(id) {
 #' @export
 
 m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
-
+  
   stopifnot(shiny::is.reactive(excelformat))
-
+  
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     output$btn_load <- shiny::renderUI({
       shiny::fluidRow(
         shiny::strong("Click to load"),
@@ -67,7 +67,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         shiny::actionButton(inputId = shiny::NS(id, "go"), label = "LOAD")
       )
     })
-
+    
     current_file_input <- shiny::reactiveVal(NULL)
     # Excel-File-Input und Sheet-number
     output$excel_file <- shiny::renderUI({
@@ -81,7 +81,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         shiny::HTML("<p style='color:red;'>Already uploaded</p>")
       }
     })
-
+    
     shiny::observeEvent(input$excel_file, {
       sheetnames <- ecerto::load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
@@ -91,7 +91,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       shinyjs::showElement(id = "btn_load")
       current_file_input(input$excel_file)
     })
-
+    
     # --- --- --- --- --- --- --- --- --- ---
     rv_xlsx_range_select <- xlsx_range_select_Server(
       id = "Upload",
@@ -100,13 +100,13 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       excelformat = excelformat
     )
     # --- --- --- --- --- --- --- --- --- ---                     
-
+    
     out <- shiny::reactiveVal()
+    
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
+      message("ExcelUploadControl: Load-button clicked")
       dat <- rv_xlsx_range_select$tab_flt
-      # whereami::cat_where(where = "ExcelUpload: Excel uploaded",color = "grey")
-      
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {
         dat <- dat[[1]]
@@ -116,11 +116,19 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         out(dat)
       }
       if(excelformat() == "Certifications") {
-        # perform minimal validation tests
-        if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
-        results = tryCatch({
-          expr = combine_cert_data(df_list = dat)
-        },
+        # in case it is Cerrification module and the input table has not been filtered 
+        # (columns of tab_flt contains File column), then ask if this is correct
+        if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab_flt[[1]]) -1 &
+           nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab_flt[[1]])
+        ) {
+          shinyalert::shinyalert(title = "Forgot select row and column?", text = "Certifications are same size than during Import. Please select row and column", type = "warning")
+         } else {
+          
+          # perform minimal validation tests
+          if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
+          results = tryCatch({
+            expr = combine_cert_data(df_list = dat)
+          },
           error = function(errormessage) {
             showModal(
               modalDialog(
@@ -133,13 +141,15 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
             )
             return(NULL)
           }
-        )
-        out(results)
+          )
+          out(results)
+  
+        }
       }
       if(excelformat() == "Stability") {
         out(dat[[1]])
       }
-     
+      
     })
     return(out)
   })

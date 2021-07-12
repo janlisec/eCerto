@@ -46,10 +46,7 @@ m_CertificationUI = function(id) {
     shiny::tabPanel(
       title = "standby-Panel",
       value  = "standby",
-      # @Frederick: what is this non-named parameter for?
-      # @Jan (29. Juni 2021): Wurde früher angezeigt, wenn noch nix geladen war.
-      #   Ist heute ein Platzhalter, wenn etwas beim Upload schiefgeht
-      "empty panel content"
+      "empty panel content" # Platzhalter, falls aus Versehen leere Seite aufgerufen wird
     ),
     # when something is loaded
     shiny::tabPanel(
@@ -161,7 +158,10 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     # shiny::exportTestValues(CertificationServer.d = { try(certification) }) # for shinytest
     
     certification = reactive({getValue(rv,"Certifications")})
-
+  
+    # observeEvent(apm.input(),{
+    #   message("---- apm.input! --------")
+    # })
     
     certification.data <- shiny::reactive({certification()$data})
     apm_return <- shiny::reactiveVal(NULL)
@@ -171,7 +171,8 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     
     # temp
     observeEvent(apm.input(),{
-      apm_return(apm.input())
+      message("---- apm.input! --------")
+      apm(apm.input())
     })
     
     shiny::observeEvent(getValue(rv,c("Certifications","data")), {
@@ -181,7 +182,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     
     observeEvent(getValue(rv,c("Certifications","uploadsource")),{
       # when uploadsource changed, renew Analyte Tabs
-      message("Certification: Uploadsource changed; initiate apm")
+      message("Certification: Uploadsource changed to ", isolate(getValue(rv,c('Certifications','uploadsource'))), "; initiate apm")
       # Creation of AnalyteParameterList.
       # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
       if(getValue(rv,c("Certifications","uploadsource"))=="Excel") {
@@ -199,18 +200,16 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       renewTabs(1)
     })
 
-   
-    # Creation of AnalyteParameterList.
-    # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
-    
+    # only forward rData Upload after RData was uploaded
     rdataupload = shiny::reactive({
       shiny::req(getValue(rv,"Certifications"))
-      if(!is.null(uploadsource_of_element(getValue(rv,"Certifications"))) && uploadsource_of_element(certification())=="RData") {
+      if(!is.null(getValue(rv,c("Certifications","uploadsource"))) && 
+         getValue(rv,c("Certifications","uploadsource"))=="RData") {
+        message("Certifications: forward RData to Materialtabelle")
         return(getValue(rv,c("Certifications","materialtabelle")))
-      } else {
-        return(NULL)
-      }
-      
+      } #else {
+      #  return(NULL)
+      #}
     })
     
     # --- --- --- --- --- --- --- --- --- --- ---
@@ -218,8 +217,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     m_materialtabelleServer(
       id = "mat_cert",
       rdataUpload = rdataupload,
-      datreturn = datreturn,
-      lab_filter = reactive({apm()[[selected_tab()]]$lab_filter})
+      datreturn = datreturn
     )
     # --- --- --- --- --- --- --- --- --- --- ---
     # --- --- --- --- --- --- --- --- --- --- ---
@@ -227,9 +225,11 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     tablist = reactiveVal(NULL) # store created tabs; to be replaced
     selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
-    observeEvent(apm()[[selected_tab()]],{
+    observeEvent(apm()[[isolate(selected_tab())]],{
       message("Certifications: apm changed for ", isolate(selected_tab()))
       apm_return(apm())
+      # message("app_server: apm changed, set rv.apm")
+      # setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
     })
     # --- --- --- --- --- --- --- --- --- --- ---
     dat <- ecerto::m_CertLoadedServer(

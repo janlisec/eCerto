@@ -26,6 +26,7 @@
 #'
 m_TransferHomogeneityUI = function(id) {
   shinyjs::disabled(
+
     shiny::fluidRow(id = shiny::NS(id,"transferPanel"),
              #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
              p(id = NS(id,"element"), ""),
@@ -47,6 +48,7 @@ m_TransferHomogeneityUI = function(id) {
              ),
              shiny::column(4, shiny::actionButton(inputId = shiny::NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"))
     )
+    
   )
 }
 
@@ -98,7 +100,10 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
       )
       message("TRANSFER BUTTON clicked")
       h_vals <- homogData()
-      cert_vals(stats::setNames(cert_vals(),as.character(shiny::isolate(input$h_transfer_ubb))))
+      cert_vals(
+        stats::setNames(cert_vals(),
+                        as.character(shiny::isolate(input$h_transfer_ubb)))
+      )
       for (i in 1:length(matTab_analytes())) {
         # select cell of same analyte and Homogeneity type matTab()
         j <-
@@ -118,6 +123,7 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
       }
       return(cert_vals())
     })
+    
     return(return_reactive)
   })
 }

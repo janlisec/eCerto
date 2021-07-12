@@ -3,6 +3,12 @@
 ## Materialtabelle
 
 ### Parameter
+
+#### com
+com describes the *com*bined uncertainty from all U columns: `sqrt(sum(x ^ 2))`
+
+
+#### n
 n ist die Anzahl der für die mean-Berechnung verwendeten Werte. Beispiel: Wir haben für einen beliebigen Analyten 3 Labore mit je 5 Replikaten. Wir können `cert_mean` berechnen aus den 3 Mittelwerten der Labore (n=3). Wenn ein Labor gefiltert wird, dann wird es im Plot grau angezeigt aber für cert_mean nicht berücksichtigt (n=2). Beides gilt für den Fall pooling==FALSE. 
 
 `pooling` bedeutet, das man cert_val nicht aus den Labormittelwerten schätzt, sondern aus allen Mess-Werten. Im Beispiel wäre n=15 ohne und n=10 mit Laborfilter.

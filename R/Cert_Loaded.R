@@ -71,6 +71,7 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
   shiny::moduleServer(id, function(input, output, session) {
 
     filtered_labs = reactiveVal(NULL) 
+    current_analy = reactive({apm()[[selected_tab()]]})
     
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
@@ -78,12 +79,12 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
       message("Cert_Load: dat-reactive invalidated")
-      current_analy = apm()[[selected_tab()]]
+      
       cert.data = getValue(rv,c("Certifications","data")) # take the uploaded certification
       # round input values
-      cert.data[, "value"] = round(cert.data[, "value"], current_analy$precision)
+      cert.data[, "value"] = round(cert.data[, "value"], current_analy()$precision)
       cert.data <- cert.data[cert.data[, "analyte"] %in% selected_tab(), ]
-      cert.data <- cert.data[!(cert.data[, "ID"] %in% current_analy$sample_filter), ]
+      cert.data <- cert.data[!(cert.data[, "ID"] %in% current_analy()$sample_filter), ]
       cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% filtered_labs()
       # adjust factor levels
       cert.data[, "Lab"] <- factor(cert.data[, "Lab"])
@@ -95,9 +96,9 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
             sapply(split(cert.data[, "value"], cert.data[, "Lab"]), length) < 2
           ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
         shiny::need(
-          is.numeric(current_analy$precision) &&
-            current_analy$precision >= 0 &&
-            current_analy$precision <= 6,
+          is.numeric(current_analy()$precision) &&
+            current_analy()$precision >= 0 &&
+            current_analy()$precision <= 6,
           message = "please check precision value: should be numeric and between 0 and 6"
         )
       )
@@ -158,12 +159,12 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
         apm(apm_tmp)
       } else {
         # if not valid --> reset
-        # currently a bit hacky. since just giving filtered_labs_tmp would not trigger
-        # the reactive, first reset to the first and then give the actual filtered labs
         shinyalert::shinyalert(
           title = "Too many labs filtered",
           text = "You can not filter all labs."
         )
+        # currently a bit hacky. since just giving filtered_labs_tmp would not trigger
+        # the reactive, first reset to the first and then give the actual filtered labs
         apm_tmp = apm()
         apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp[1]
         apm(apm_tmp)

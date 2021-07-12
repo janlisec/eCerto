@@ -96,11 +96,6 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       shiny::req(x(), sheet())
       # use different modes of fnc_load_xlsx to import data depending on file type
       if (!silent) message("xlsx_range_select_Server: reactive(tab): load ", nrow(x()), " files")
-      # @Frederik: gibt es einen Grund 'excelformat' als reactive zu übergeben,
-      #  wenn wir es intern nur als Konstante nutzen (isolate)?
-      # @Jan (23. Juni): Hier ist die Reaktivität tatsächlich nicht notwendig,
-      #   aber wird es vielleicht mal wenn mehr Sonderregeln für Homg und Stab
-      #   dazukommen
       if (shiny::isolate(excelformat())=="Certifications") {
         l <- lapply(x()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
         shiny::validate(
@@ -122,6 +117,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       if (!silent) 
         message("xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
       tab_param$tab <- tab()
+      tab_param$tab_upload = isolate(tab()) # table as during upload (for checking if row and column was selected)
       tab_param$start_row <- 1
       tab_param$start_col <- 1
       tab_param$end_row <- nrow(tab()[[1]])
@@ -133,10 +129,6 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
                   tab_param$end_row)
     })
 
-    # @Frederick: Wenn Du Änderungen vornimmst, versuche zu überlegen, ob diese wirklich an die von Dir gewählte Stelle gehören oder
-    # besser woanders hin sollten. Dieses Modul ist eigentlich nur dazu da ein Excel-File zu laden und den Nutzer einen Bereich auswählen zu lassen
-    # ich hätte den Dateinamen daher als Spalte erst außerhalb des Moduls angehängt (mod_ExcelUploadControl?), oder übersehe ich etwas? (Kann aber so bleiben, nur ein Kommentar)
-    # @Jan Einverstanden (23. Juni)
     shiny::observeEvent(tab_param$tab,{
       if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
       if(!is.null(unlist(tab_param$tab))){
@@ -155,7 +147,9 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       if (!silent) message("xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
       cs <- input$uitab_cells_selected
       check_cs <- function(x) {
-        diff(range(x[,1]))>=1 && diff(range(x[,2]))>=1 && any(tab_param$start_col != min(x[,2]), tab_param$end_col != max(x[,2]), tab_param$start_row != min(cs[,1]), tab_param$end_row != max(cs[,1]))
+        diff(range(x[,1]))>=1 && 
+        diff(range(x[,2]))>=1 && 
+        any(tab_param$start_col != min(x[,2]), tab_param$end_col != max(x[,2]), tab_param$start_row != min(cs[,1]), tab_param$end_row != max(cs[,1]))
       }
       check_new_point <- function(x) {
         x[3,1]>=min(x[-3,1]) & x[3,1]<=max(x[-3,1]) & x[3,2]>=min(x[-3,2]) & x[3,2]<=max(x[-3,2])
@@ -166,9 +160,6 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         tab_param$start_row = min(cs[,1])
         tab_param$end_row = max(cs[,1])
         tab_param$tab = crop_dataframes(
-          # @Frederik: hier tab_param$tab zu nehmen hat zu Fehlern geführt, wenn
-          # man als user mehrere Zellen an und wieder abgewählt hat
-          # @Jan (23. Juni) Generell eine kritische Stelle...
           dfs = tab(),
           rows = as.numeric(tab_param$start_row):as.numeric(tab_param$end_row),
           cols = as.numeric(tab_param$start_col):as.numeric(tab_param$end_col)
@@ -219,6 +210,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       }
     })
 
+    # TODO Eventuell in ExcelUploadControl verschieben
     shiny::observeEvent(tab_param$tab,{
       if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
       if(!is.null(unlist(tab_param$tab))){

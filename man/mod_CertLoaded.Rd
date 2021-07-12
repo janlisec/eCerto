@@ -8,24 +8,24 @@
 \usage{
 m_CertLoadedUI(id)
 
-m_CertLoadedServer(id, certification, apm, selected_tab)
+m_CertLoadedServer(id, rv, apm, selected_tab)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{certification}{= reactive({rv$Certifications})}
+\item{rv}{}
 
-\item{apm}{reactiveValues with analyte parameter}
+\item{apm}{reactiveVal with analyte parameter}
 
-\item{selected_tab}{currently selected tab}
+\item{selected_tab}{currently selected tab, for example "Si" or "Cu" etc.}
 }
 \value{
-nothing directly, works over apm parameter
+dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt
 }
 \description{
 \code{m_CertLoaded} is active as soon as Certification data was
 uploaded.
 }
 \details{
-not yet
+additional returns are handled via apm
 }

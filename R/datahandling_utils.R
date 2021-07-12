@@ -92,20 +92,6 @@ laboratory_dataframe = function(x) {
   return(x2)
   
   
-  # flt <- apply(x[,-c(1:2)], 1, function(y) {any(is.finite(as.numeric(y)))})
-  # if (any(flt)) x <- x[which(flt),,drop=F]
-  # #combine into data frame and return
-  # analyte <- x[,1]
-  # unit <- x[,2]
-  # dat <- x[,-c(1:2)]
-  # x <- data.frame("analyte"=factor(rep(analyte,times=ncol(dat)), levels=analyte),
-  #                 "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
-  #                 "value"=as.numeric(unlist(dat)),
-  #                 #"value"=unlist(dat),
-  #                 "unit"=as.character(rep(unit,times=ncol(dat))))
-  # 
-  # 
-  
 }
 
 #' Loads names of Excel sheets
@@ -135,26 +121,6 @@ load_sheetnames = function(filepath){
   }
   return(a[[1]])
 }
-
-
-# load_excelfiles = function(filepath, sheet) {
-#
-#   lapply(filepath, function(x) {
-#     ext <- tools::file_ext(x)
-#     if(ext == "xlsx"){
-#       tryCatch({
-#         a = openxlsx::read.xlsx(x, sheet)
-#         # a$File = rep(x,nrow(a))
-#       }, error = function(e) {
-#         stop(safeError(e))
-#       }, warning = function(w){        # Specifying warning message
-#         # message("There was a warning message.")
-#       })
-#     } else {
-#       validate("Invalid file; Please upload a .xlsx file")
-#     }
-#   })
-# }
 
 #' Crops dataframe(s)
 #'
@@ -192,18 +158,6 @@ crop_dataframes <- function(dfs, cols, rows) {
 }
 
 
-#' Returns the "data" element of the current "god list" element
-#'
-#' @param l list, which contains "data", but also e.g. "source"
-#'
-#' @return
-#' @rdname datahandling_utils
-#' @export
-data_of_godelement = function(l) {
-  stopifnot(!shiny::is.reactive(l)) # d shouldn't be a reactive
-  l[["data"]]
-}
-
 
 #' set source of upload for an element
 #'
@@ -217,10 +171,10 @@ data_of_godelement = function(l) {
 #' @examples
 #' if (interactive()) {
 #'   rv = init_rv()
-#'   set_listUploadsource(rv,"Certification","Excel")
+#'   set_uploadsource(rv,"Certification","Excel")
 #' }
 
-set_listUploadsource = function(rv, m, uploadsource) {
+set_uploadsource = function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
   stopifnot(uploadsource %in% c("RData","Excel"))
   setValue(rv,c(m,"uploadsource"),uploadsource)
@@ -229,34 +183,6 @@ set_listUploadsource = function(rv, m, uploadsource) {
 
 }
 
-
-#' get source of upload for an element
-#'
-#' @param rv the list
-#' @param m "Certification", etc.
-#'
-#' @return
-#' @rdname datahandling_utils
-#' @export
-
-get_listUploadsource = function(rv, m) {
-  getValue(rv,c(m,"uploadsource"))
-  # rv$get(c(m,"uploadsource"))
-  # uploadsource_of_element(c[[m]])
-
-}
-
-#' Returns source of upload for an element, is internally used by \code{get_listUploadsource}
-#' (outdated)
-#' Bin nicht sicher, ob diese Funktion sinnvoll ist.
-#' @param mod module list
-#'
-#' @return
-#' @rdname datahandling_utils
-#' @export
-uploadsource_of_element = function(mod) {
-  mod[["uploadsource"]]
-}
 
 
 #' Rounds material table.

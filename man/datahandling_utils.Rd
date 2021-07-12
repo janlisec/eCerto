@@ -7,10 +7,7 @@
 \alias{laboratory_dataframe}
 \alias{load_sheetnames}
 \alias{crop_dataframes}
-\alias{data_of_godelement}
-\alias{set_listUploadsource}
-\alias{get_listUploadsource}
-\alias{uploadsource_of_element}
+\alias{set_uploadsource}
 \alias{roundMT}
 \alias{pn}
 \alias{update_reactivecell}
@@ -26,13 +23,7 @@ load_sheetnames(filepath)
 
 crop_dataframes(dfs, cols, rows)
 
-data_of_godelement(l)
-
-set_listUploadsource(rv, m, uploadsource)
-
-get_listUploadsource(rv, m)
-
-uploadsource_of_element(mod)
+set_uploadsource(rv, m, uploadsource)
 
 roundMT(value, precision = NULL)
 
@@ -57,15 +48,11 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 
 \item{rows}{rows as array, e.g. 5:8}
 
-\item{l}{list, which contains "data", but also e.g. "source"}
-
 \item{rv}{the list}
 
-\item{m}{"Certification", etc.}
+\item{m}{one of "Certification","Homogeneity", "Stability"}
 
 \item{uploadsource}{the source of upload}
-
-\item{mod}{module list}
 
 \item{precision}{precision value}
 
@@ -90,13 +77,7 @@ the names of sheets
 
 cropped list of data frames(s)
 
-
-
 nothing directly, but via rv
-
-
-
-
 
 the rounded value
 
@@ -124,7 +105,7 @@ shiny::isolate(ecerto::getValue(datreturn, "t_H"))
 ecerto:::crop_dataframes(iris,2:3,5:6)
 if (interactive()) {
   rv = init_rv()
-  set_listUploadsource(rv,"Certification","Excel")
+  set_uploadsource(rv,"Certification","Excel")
 }
 roundMT(34.3434,3)
 }
