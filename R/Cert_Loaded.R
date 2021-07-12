@@ -147,11 +147,32 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
 
     shiny::observeEvent(input$flt_labs,{
       message("Cert_load: lab filter: ", input$flt_labs)
-      filtered_labs( input$flt_labs)
-      apm_tmp = apm()
-      apm_tmp[[selected_tab()]]$lab_filter = input$flt_labs
-      apm(apm_tmp)
-    }, ignoreNULL = FALSE)
+      filtered_labs_tmp = filtered_labs()
+      tmp <- dat()[dat()[, "analyte"] == selected_tab() &
+              is.finite(dat()[, "value"]), ]
+      n_labs <- length(levels(factor(tmp[, "Lab"])))
+      if(length(input$flt_labs) < n_labs) {
+        filtered_labs( input$flt_labs)
+        apm_tmp = apm()
+        apm_tmp[[selected_tab()]]$lab_filter = input$flt_labs
+        apm(apm_tmp)
+      } else {
+        # if not valid --> reset
+        # currently a bit hacky. since just giving filtered_labs_tmp would not trigger
+        # the reactive, first reset to the first and then give the actual filtered labs
+        shinyalert::shinyalert(
+          title = "Too many labs filtered",
+          text = "You can not filter all labs."
+        )
+        apm_tmp = apm()
+        apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp[1]
+        apm(apm_tmp)
+        apm_tmp = apm()
+        apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp
+        apm(apm_tmp)
+      }
+
+    }, ignoreNULL = FALSE, ignoreInit = TRUE)
     
     output$cert_mean = renderText({
       mt = getValue(rv,c("Certifications","materialtabelle"))
