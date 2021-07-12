@@ -175,7 +175,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     })
     
     shiny::observeEvent(getValue(rv,c("Certifications","data")), {
-      print("test: Certifications data")
       message("Certification: Certification-data changed")
       shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
     })
@@ -186,12 +185,12 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # Creation of AnalyteParameterList.
       # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
       if(getValue(rv,c("Certifications","uploadsource"))=="Excel") {
-        apm(analyte_parameter_list(isolate(certification.data())))
+        apm(analyte_parameter_list(isolate(getValue(rv,c("Certifications","data")))))
       } else if(getValue(rv,c("Certifications","uploadsource"))=="RData") {
-        if(!is.null(apm.input())) { # RData contained "apm"
-          apm(apm.input()) #do.call(shiny::reactiveValues, apm.input())
+        if(!is.null(isolate(apm.input()))) { # RData contained "apm"
+          apm(isolate(apm.input())) #do.call(shiny::reactiveValues, apm.input())
         } else { # RData did not contain "apm" --> create
-          apm(analyte_parameter_list(isolate(certification.data())))
+          apm(analyte_parameter_list(isolate(getValue(rv,c("Certifications","data")))))
         }
       } else {
         stop("unknown Upload Type")
@@ -219,7 +218,8 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     m_materialtabelleServer(
       id = "mat_cert",
       rdataUpload = rdataupload,
-      datreturn = datreturn
+      datreturn = datreturn,
+      lab_filter = reactive({apm()[[selected_tab()]]$lab_filter})
     )
     # --- --- --- --- --- --- --- --- --- --- ---
     # --- --- --- --- --- --- --- --- --- --- ---
@@ -228,7 +228,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
     observeEvent(apm()[[selected_tab()]],{
-      message("Certifications: apm for ", isolate(selected_tab()), " changed")
+      message("Certifications: apm changed for ", isolate(selected_tab()))
       apm_return(apm())
     })
     # --- --- --- --- --- --- --- --- --- --- ---
@@ -326,6 +326,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     # # }, ignoreInit = TRUE)
     # })
     
-    return(apm_return)
+    return(apm)
   })
 }

@@ -12,7 +12,7 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rdataUpload if uploaded via RData - reactive({rv$Certifications$materialtabelle})
-#' @param datreturn the session data (R6) object
+#' @param datreturn the session data (R6) object (ID Lab analyte replicate  value unit S_flt L_flt)
 #'
 #'@return nothing
 #'
@@ -75,11 +75,9 @@ m_materialtabelleUI <- function(id) {
 
 #' @rdname mod_materialtabelle
 #' @export
-m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
-
+m_materialtabelleServer <- function(id, rdataUpload, datreturn, lab_filter) {
   stopifnot(R6::is.R6(datreturn))
   stopifnot(shiny::is.reactivevalues(ecerto::getValue(datreturn,NULL)))
-
   shiny::moduleServer(id, function(input, output, session) {
 
     # whereami::cat_where(where = "Materialtabelle")
@@ -322,8 +320,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         )
         n <- ifelse(
           test = input$pooling,
-          yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% input$flt_labs), "n"]),
-          no = nrow(lab_statistics()) - length(input$flt_labs)
+          yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% lab_filter), "n"]),
+          no = nrow(lab_statistics()) - length(lab_filter)
         )
         ecerto::update_reactivecell(
           r = mater_table,
