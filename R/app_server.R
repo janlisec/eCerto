@@ -153,7 +153,6 @@ app_server = function(input, output, session) {
   # to Certification page after Transfer of Homogeneity Data
   shiny::observeEvent(trh(),{
     message("app_server: trh() changed, set datreturn.t_H")
-    # t = round(trh(),sapply(apm(), purrr::pluck,"precision"))
     setValue(datreturn,"t_H",trh())
       shiny::updateNavbarPage(
         session = session,

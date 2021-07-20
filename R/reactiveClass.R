@@ -74,8 +74,9 @@ reactiveClass = R6::R6Class(
     #' Returns names of all elements of the reactiveValues list stored in the R6 object, except "General"
     #' @return A new 'reactiveClass' object.
     names = function() {
-      n = shiny::isolate(names(private$reactive_data))
-      n[!n == "General"]
+      # n = shiny::isolate(names(private$reactive_data))
+      # n[!n %in% c("General","materialtabelle")]
+      isolate(self$get("modules"))
     }
   )
 )

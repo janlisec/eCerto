@@ -25,7 +25,6 @@
 #'  getValue(rv, c("General","user"))
 #' }
 setValue = function(df,key,value){
-
   if(R6::is.R6(df)){
     df$set(key, value) # in reactiveClass.R
   } else {
@@ -288,4 +287,34 @@ to_startPage = function(session, value="Certification") {
     inputId = "moduleSelect",
     selected = value
   )
+}
+
+#' names of nested list elements, but ignore data.frame column names. 
+#' Refer to https://stackoverflow.com/q/68453593/6946122
+#'
+#' @param l nested list
+#' @param maxDepth the maximum depth, the names of list should be returned
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' a = list(
+#'  b = list(df1 = data.frame(col = c(1, 2)), e = list(z = NULL)),
+#'  c = NULL,
+#'  df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4)))
+#' listNames(a,2) # [1] "b.df1" "b.e"   "c"     "df2"
+listNames = function(l, maxDepth = 2) {
+  n = 0
+  listNames_rec = function(l, n) {
+    if(!is.list(l) | is.data.frame(l) | n>=2) TRUE
+    else { 
+      n = n + 1
+      # print(n)
+      lapply(l, listNames_rec, n)
+    }
+  }
+  
+  n = names(unlist(listNames_rec(l, n)))
+  return(n)
 }

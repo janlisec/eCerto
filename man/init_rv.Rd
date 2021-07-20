@@ -13,7 +13,8 @@ a reactiveValues
 \code{init_rv} initializes the main reactive value (rv) to store
 the results from all modules. It therefore gets handed over multiple times.
 In further programming, it should be considered to be replaced by a class
-in OOP style.
+in OOP style. Note: If other modules besides Certification, Homogeneity and
+Stability added, adapt the modules list
 }
 \examples{
 rv = init_rv()

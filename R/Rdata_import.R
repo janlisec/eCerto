@@ -137,19 +137,21 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         # import functions for defined data_format schemes
         if ( res$General$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
-          resnames <- names(unlist(res, recursive = FALSE))
-          rvnames <- names(unlist(shiny::reactiveValuesToList(rv$get()), recursive = FALSE))
+          resnames <- listNames(l = res, maxDepth = 2) # names(unlist(res, recursive = FALSE))
+          rvnames <- listNames(shiny::reactiveValuesToList(rv$get()),2) # names(unlist(shiny::reactiveValuesToList(rv$get()), recursive = FALSE))
 
-    
+          browser()
           if (all(resnames %in% rvnames)) {
             # Transfer list elements
             # $$ToDo$$ one might provide a warning to the user in case he will
             # overwrite non empty fields i.e. he did load Stab data and now
             # reads an RData backup which already contains Stab data
+            
             for (i in names(res)) {
-              for (j in names(res[[i]])) {
-                setValue(rv, c(i,j), res[[i]][[j]])
-              }
+              # for (j in names(res[[i]])) {
+              #   setValue(rv, c(i,j), res[[i]][[j]])
+              # }
+              setValue(rv,i,res[[i]])
             }
             # reset time_stamp with current $$ToDo think if this is really desirable
             setValue(rv,c("General","time_stamp"),Sys.time())
@@ -230,12 +232,10 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
     })
 
     shiny::observeEvent(input$user, {
-      # if (!silent) message("m_RDataImport_Server: observeEvent(input$user")
       setValue(rv,c("General","user"),input$user)
     })
     
     shiny::observeEvent(input$study_id, {
-      # if (!silent) message("m_RDataImport_Server: observeEvent(input$user")
       setValue(rv,c("General","study_id"),input$study_id)
     })
 
