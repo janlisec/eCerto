@@ -176,12 +176,12 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
     
     output$cert_mean = renderText({
-      mt = getValue(rv,c("Certifications","materialtabelle"))
+      mt = getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),]$mean
     })
     
     output$cert_sd = renderText({
-      mt = getValue(rv,c("Certifications","materialtabelle"))
+      mt = getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),"sd"]
     })
 

@@ -148,3 +148,16 @@ test_that("Lab filter",code = {
       })
     )
 })
+
+
+datreturn1 = ecerto:::test_datreturn()
+suppressMessages(
+shiny::testServer(
+  ecerto::m_materialtabelleServer,
+  args = list(
+    rdataUpload = shiny::reactive({NULL}), 
+    datreturn = datreturn1
+  ), {
+    session$setInputs(pooling=FALSE)
+  })
+)

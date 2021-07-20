@@ -253,6 +253,7 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
     value = value[1]
   }
 
+  # message("reactivecell: Update ",  deparse(substitute(r())), "; column: ", colname)
   # extract original row to be edit into variable (1/3)
   df = r()
   if(is.null(analyterow)){

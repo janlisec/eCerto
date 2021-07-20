@@ -157,13 +157,13 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     # whereami::cat_where("Certification")
     # shiny::exportTestValues(CertificationServer.d = { try(certification) }) # for shinytest
     
-    certification = reactive({getValue(rv,"Certifications")})
+    # certification = reactive({getValue(rv,"Certifications")})
   
     # observeEvent(apm.input(),{
     #   message("---- apm.input! --------")
     # })
     
-    certification.data <- shiny::reactive({certification()$data})
+    # certification.data <- shiny::reactive({certification()$data})
     apm_return <- shiny::reactiveVal(NULL)
     apm = reactiveVal()
     renewTabs = shiny::reactiveVal(NULL)
@@ -202,11 +202,11 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
 
     # only forward rData Upload after RData was uploaded
     rdataupload = shiny::reactive({
-      shiny::req(getValue(rv,"Certifications"))
-      if(!is.null(getValue(rv,c("Certifications","uploadsource"))) && 
-         getValue(rv,c("Certifications","uploadsource"))=="RData") {
+      # shiny::req(getValue(rv,"Certifications"))
+      us = isolate(getValue(rv,c("Certifications","uploadsource")))
+      if(!is.null(us) && us=="RData") {
         message("Certifications: forward RData to Materialtabelle")
-        return(getValue(rv,c("Certifications","materialtabelle")))
+        return(getValue(rv,c("materialtabelle")))
       } #else {
       #  return(NULL)
       #}

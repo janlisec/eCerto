@@ -106,13 +106,14 @@ app_server = function(input, output, session) {
 
 # Panels ------------------------------------------------------------------
   apm.upload = eventReactive(getValue(rv,c("Certifications","uploadsource")),{
+    message("app_server: uploadsource changed")
     if(getValue(rv,c("Certifications","uploadsource"))=="RData"){
       getValue(rv,c("General","apm"))
     }
   })
   apm = m_CertificationServer(
     id = "certification", 
-    rv = rv, #shiny::reactive({getValue(rv,c("Certifications"))}), 
+    rv = rv, 
     apm.input =  apm.upload,
     datreturn = datreturn
   )
@@ -131,7 +132,6 @@ app_server = function(input, output, session) {
     cert = shiny::reactive({getValue(rv,"Certifications")})
   )
 
-
   # --- --- --- --- --- --- --- --- --- --- ---
   .longtermstabilityServer("lts")
   # --- --- --- --- --- --- --- --- --- --- ---
@@ -144,11 +144,11 @@ app_server = function(input, output, session) {
   )
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  # observeEvent(getValue(datreturn,"mater_table"),{
-  #   message("app_server: datreturn.mater_table changed; set rv.materialtabelle")
-  #   setValue(rv,c("Certifications","materialtabelle"),
-  #            getValue(datreturn,"mater_table"))
-  # })
+  observeEvent(getValue(datreturn,"mater_table"),{
+    message("app_server: datreturn.mater_table changed; set rv.materialtabelle")
+    setValue(rv,c("materialtabelle"),
+             getValue(datreturn,"mater_table"))
+  })
 
   # to Certification page after Transfer of Homogeneity Data
   shiny::observeEvent(trh(),{
