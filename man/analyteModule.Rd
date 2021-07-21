@@ -18,7 +18,7 @@ m_analyteServer(id, apm, renewTabs, tablist)
 
 \item{renewTabs}{The order, to delete and renew Tabs, for example when new data is uploaded}
 
-\item{tablist}{list of currently set tab (temporarily, see https://git.bam.de/fkress/ecerto/-/issues/46)}
+\item{tablist}{list of current tabs (temporarily, see https://git.bam.de/fkress/ecerto/-/issues/46)}
 }
 \value{
 the currently selected tab and Other parameter via apm reactiveValues()
@@ -30,4 +30,26 @@ opportunity to select analytes as well as precision and filter samples.
 }
 \details{
 not yet
+}
+\examples{
+if (interactive()) {
+apm = reactiveVal()
+df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
+apm(analyte_parameter_list(df))
+shiny::shinyApp(
+ ui = shiny::fluidPage(
+ shinyjs::useShinyjs(),
+   m_analyteModuleUI(id = "test")
+ ),
+ server = function(input, output, session) {
+   m_analyteServer(
+     id = "test",
+     apm = apm,
+     renewTab = reactiveVal(1),
+     tablist = reactiveVal()
+   )
+ }
+)
+}
+
 }

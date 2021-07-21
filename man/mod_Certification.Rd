@@ -32,15 +32,15 @@ not yet
 }
 \examples{
 if (interactive()) {
-rv = reactiveClass$new(init_rv()) # initiate persistent variables
-setValue(rv, c(ex_intern,"data"), ExcelUp()) 
-set_uploadsource(rv, ex_intern, uploadsource = "Excel")
-datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
 shiny::shinyApp(
  ui = shiny::fluidPage(
    m_CertificationUI(id = "test")
  ),
  server = function(input, output, session) {
+  rv = reactiveClass$new(init_rv()) # initiate persistent variables
+  observe({setValue(rv, c("Certifications","data"), test_ExcelUP()) })
+   observe({set_uploadsource(rv, "Certifications", uploadsource = "Excel") })
+  datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
    m_CertificationServer(
      id = "test",
      rv = rv,
