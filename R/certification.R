@@ -150,22 +150,24 @@ m_CertificationUI = function(id) {
 
 #' @rdname mod_Certification
 #' @export
-m_CertificationServer = function(id, rv, apm.input, datreturn) {
-  
-  # stopifnot(shiny::is.reactive(certification))
+m_CertificationServer = function(id, rv, apm.input, datreturn) {  
   shiny::moduleServer(id, function(input, output, session) {
-    # whereami::cat_where("Certification")
-    # shiny::exportTestValues(CertificationServer.d = { try(certification) }) # for shinytest
     
-    # certification = reactive({getValue(rv,"Certifications")})
-  
-    # observeEvent(apm.input(),{
-    #   message("---- apm.input! --------")
-    # })
+    uploadsource = reactiveVal(NULL)
+    observeEvent(getValue(rv,c("Certifications","uploadsource")),{
+      o = getValue(rv,c("Certifications","uploadsource"))
+      # assign upload source if (a) hasn't been assigned yet or (b), if not
+      # null, has changed since the last time, for example because other data
+      # source has been uploaded
+      # browser()
+      if(is.null(uploadsource()) || uploadsource() != o ){
+        uploadsource(o)
+      }
+    })
     
-    # certification.data <- shiny::reactive({certification()$data})
     apm_return <- shiny::reactiveVal(NULL)
     apm = reactiveVal()
+    rdataupload = reactiveVal()
     renewTabs = shiny::reactiveVal(NULL)
     dat <- shiny::reactiveVal(NULL)
     
@@ -180,14 +182,18 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
     })
     
-    observeEvent(getValue(rv,c("Certifications","uploadsource")),{
+    # TODO isolate bringt eigentlich nix hier
+    observeEvent(uploadsource(),{
       # when uploadsource changed, renew Analyte Tabs
       message("Certification: Uploadsource changed to ", isolate(getValue(rv,c('Certifications','uploadsource'))), "; initiate apm")
       # Creation of AnalyteParameterList.
       # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
-      if(getValue(rv,c("Certifications","uploadsource"))=="Excel") {
+      if(uploadsource()=="Excel") {
         apm(analyte_parameter_list(isolate(getValue(rv,c("Certifications","data")))))
-      } else if(getValue(rv,c("Certifications","uploadsource"))=="RData") {
+      } else if(uploadsource()=="RData") {
+        # only forward rData Upload after RData was uploaded
+        message("Certifications: forward RData to Materialtabelle")
+        rdataupload(getValue(rv,c("materialtabelle")))
         if(!is.null(isolate(apm.input()))) { # RData contained "apm"
           apm(isolate(apm.input())) #do.call(shiny::reactiveValues, apm.input())
         } else { # RData did not contain "apm" --> create
@@ -201,16 +207,16 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     })
 
     # only forward rData Upload after RData was uploaded
-    rdataupload = shiny::reactive({
-      # shiny::req(getValue(rv,"Certifications"))
-      us = isolate(getValue(rv,c("Certifications","uploadsource")))
-      if(!is.null(us) && us=="RData") {
-        message("Certifications: forward RData to Materialtabelle")
-        return(getValue(rv,c("materialtabelle")))
-      } #else {
-      #  return(NULL)
-      #}
-    })
+    # rdataupload = shiny::reactive({
+    #   # shiny::req(getValue(rv,"Certifications"))
+    #   us = isolate(getValue(rv,c("Certifications","uploadsource")))
+    #   if(!is.null(us) && us=="RData") {
+    #     message("Certifications: forward RData to Materialtabelle")
+    #     return(getValue(rv,c("materialtabelle")))
+    #   } #else {
+    #   #  return(NULL)
+    #   #}
+    # })
     
     # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is in Certification-UI, that's why it is here
