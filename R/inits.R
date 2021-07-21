@@ -118,7 +118,6 @@ init_rv = function() {
         "s_vals" = NULL
       )
     )
-    
   )
 }
 
@@ -137,8 +136,13 @@ init_rv = function() {
 #' @export
 #'
 #' @examples
+#' apm = reactiveVal()
 #' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
-#' shiny::isolate(shiny::reactiveValuesToList(analyte_parameter_list(df)))
+#' apm(analyte_parameter_list(df))
+#' apm_tmp = isolate(apm())
+#' apm_tmp[["A1"]]$confirmed = TRUE
+#' apm(apm_tmp)
+#' isolate(apm()[["A1"]]$confirmed) # TRUE
 #'
 analyte_parameter_list = function(certification = NULL) {
   if(!is.null(certification)){
@@ -149,7 +153,8 @@ analyte_parameter_list = function(certification = NULL) {
     "sample_filter" = NULL, # saving which samples where selected for filter
     "sample_ids" = NULL, # which samples are available for the filter
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
-    "analytename" = NULL
+    "analytename" = NULL,
+    "confirmed" = FALSE # has the analyte manually been confirmed?
   )
   # l = list()
   
@@ -169,10 +174,6 @@ analyte_parameter_list = function(certification = NULL) {
   }
   # set names of sublists to analyte names
   a_param_list = stats::setNames(a_param_list, analytes)
-  l = a_param_list
-  # l$analytes = factor(names(a_param_list),levels = names(a_param_list))
-  # apm = do.call(shiny::reactiveValues, l) # finally, create reactiveValues
-  apm = l # currently no need for reactiveValues
   # end param list
-  return(apm)
+  return(a_param_list)
 }
