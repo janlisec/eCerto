@@ -13,11 +13,11 @@ m_CertificationServer(id, rv, apm.input, datreturn)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
+\item{rv}{the whole R6 object}
+
 \item{apm.input}{analyteParameterList, when uploaded from RData (reactive)}
 
 \item{datreturn}{the session data object}
-
-\item{certification}{reactive({getValue(rv,"Certifications")})}
 }
 \value{
 analyte parameter
@@ -32,8 +32,10 @@ not yet
 }
 \examples{
 if (interactive()) {
-rv <- ecerto::init_rv()
-datreturn <- ecerto::init_datreturn()
+rv = reactiveClass$new(init_rv()) # initiate persistent variables
+setValue(rv, c(ex_intern,"data"), ExcelUp()) 
+set_uploadsource(rv, ex_intern, uploadsource = "Excel")
+datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
 shiny::shinyApp(
  ui = shiny::fluidPage(
    m_CertificationUI(id = "test")
@@ -41,7 +43,8 @@ shiny::shinyApp(
  server = function(input, output, session) {
    m_CertificationServer(
      id = "test",
-     certification = shiny::reactive({rv$Certifications}),
+     rv = rv,
+     apm.input = reactiveVal(),
      datreturn = datreturn
    )
  }

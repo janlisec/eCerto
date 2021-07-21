@@ -11,7 +11,7 @@
 #' @details not yet
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param certification reactive({getValue(rv,"Certifications")})
+#' @param rv the whole R6 object
 #' @param apm.input analyteParameterList, when uploaded from RData (reactive)
 #' @param datreturn the session data object
 #'
@@ -19,16 +19,19 @@
 #'
 #' @examples
 #' if (interactive()) {
-#' rv <- ecerto::init_rv()
-#' datreturn <- ecerto::init_datreturn()
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    m_CertificationUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
+#'   rv = reactiveClass$new(init_rv()) # initiate persistent variables
+#'   observe({setValue(rv, c("Certifications","data"), test_ExcelUP()) })
+#'    observe({set_uploadsource(rv, "Certifications", uploadsource = "Excel") })
+#'   datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
 #'    m_CertificationServer(
 #'      id = "test",
-#'      certification = shiny::reactive({rv$Certifications}),
+#'      rv = rv,
+#'      apm.input = reactiveVal(),
 #'      datreturn = datreturn
 #'    )
 #'  }
@@ -159,7 +162,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # assign upload source if (a) hasn't been assigned yet or (b), if not
       # null, has changed since the last time, for example because other data
       # source has been uploaded
-      # browser()
       if(is.null(uploadsource()) || uploadsource() != o ){
         uploadsource(o)
       }
@@ -187,7 +189,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # when uploadsource changed, renew Analyte Tabs
       message("Certification: Uploadsource changed to ", isolate(getValue(rv,c('Certifications','uploadsource'))), "; initiate apm")
       # Creation of AnalyteParameterList.
-      # Note: Can not be R6 object so far, since indices [[i]] are used in analyte_module
       if(uploadsource()=="Excel") {
         apm(analyte_parameter_list(isolate(getValue(rv,c("Certifications","data")))))
       } else if(uploadsource()=="RData") {

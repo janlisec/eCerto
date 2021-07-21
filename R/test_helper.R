@@ -195,3 +195,28 @@ test_certification = function() {
     data_kompakt = NULL, CertValPlot = NULL, stats = NULL, boxplot = NULL, 
     opt = NULL, mstats = NULL, materialtabelle = NULL)
 }
+
+test_ExcelUP = function() {
+  # After Upload of two Excel Files, what is saved in c(Certifications,data) and Input to Certifications
+  structure(list(ID = 1:24, Lab = c("L1", "L1", "L1", "L1", "L1", 
+                                    "L1", "L1", "L1", "L1", "L1", "L1", "L1", "L2", "L2", "L2", "L2", 
+                                    "L2", "L2", "L2", "L2", "L2", "L2", "L2", "L2"), analyte = structure(c(1L, 
+                                                                                                           2L, 3L, 1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L, 
+                                                                                                           3L, 1L, 2L, 3L, 1L, 2L, 3L), .Label = c("Si", "Fe", "Cu"), class = "factor"), 
+                 replicate = structure(c(1L, 1L, 1L, 2L, 2L, 2L, 3L, 3L, 3L, 
+                                         4L, 4L, 4L, 1L, 1L, 1L, 2L, 2L, 2L, 3L, 3L, 3L, 4L, 4L, 4L
+                 ), .Label = c("1", "2", "3", "4"), class = "factor"), value = c(0.0504, 
+                                                                                 0.049, 4.37, 0.0512, 0.0563, 4.385, 0.0524, 0.0515, 4.34, 
+                                                                                 0.052, 0.0505, 4.388, 0.0452, 0.0529, 4.4048, 0.0435, 0.0527, 
+                                                                                 4.3802, 0.0472, 0.0482, 4.3907, 0.0456, 0.0478, 4.391), unit = c("0.05", 
+                                                                                                                                                  "0.05", "4.3", "0.05", "0.05", "4.3", "0.05", "0.05", "4.3", 
+                                                                                                                                                  "0.05", "0.05", "4.3", "0.05", "0.05", "4.3", "0.05", "0.05", 
+                                                                                                                                                  "4.3", "0.05", "0.05", "4.3", "0.05", "0.05", "4.3"), S_flt = c(FALSE, 
+                                                                                                                                                                                                                  FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
+                                                                                                                                                                                                                  FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
+                                                                                                                                                                                                                  FALSE, FALSE, FALSE, FALSE, FALSE), L_flt = c(FALSE, FALSE, 
+                                                                                                                                                                                                                                                                FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
+                                                                                                                                                                                                                                                                FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
+                                                                                                                                                                                                                                                                FALSE, FALSE, FALSE, FALSE)), class = "data.frame", row.names = c(NA, 
+                                                                                                                                                                                                                                                                                                                                  24L))
+}
