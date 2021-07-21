@@ -35,9 +35,9 @@
 #' @export
 #'
 m_materialtabelleUI <- function(id) {
-
+  
   ns <- shiny::NS(id)
-
+  
   shiny::fluidRow(
     shiny::column(
       width = 2,
@@ -49,14 +49,14 @@ m_materialtabelleUI <- function(id) {
       ),
       shiny::fluidRow(
         shiny::column(width = 6,align = "center", 
-          "F",
-          shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = "110%"),
-          shiny::actionButton(inputId = ns("c_remF"), label = "Remove", width = "110%")
+                      "F",
+                      shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = "110%"),
+                      shiny::actionButton(inputId = ns("c_remF"), label = "Remove", width = "110%")
         ),
         shiny::column(width = 6,align = "center", 
                       "U",
-          shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = "110%"),
-          shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "110%")
+                      shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = "110%"),
+                      shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "110%")
         ),
       ),  
       # shiny::fluidRow(
@@ -79,18 +79,16 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
   stopifnot(R6::is.R6(datreturn))
   stopifnot(shiny::is.reactivevalues(ecerto::getValue(datreturn,NULL)))
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     silent = FALSE # messages
-    # whereami::cat_where(where = "Materialtabelle")
-    ns <- shiny::NS(id)
-
+    
     # define table as reactiveVal to update it at different places within the module
     mater_table <- shiny::reactiveVal(NULL)
-
+    
     # create and test precision2. Since it hasn't created yet use try(), see https://github.com/rstudio/shinytest/issues/350
     precision2 <- 4
     # shiny::exportTestValues(precision2 = { try(precision2) })
-
+    
     # helper function to remove unused user columns
     # @ Jan: ich würde die Funktion gerne auch auslagern um Tests zu schreiben. OK?
     remove_unused_cols <- function(mt=NULL) {
@@ -110,7 +108,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       }
       return(mt)
     }
-
+    
     # helper function to update calculations
     recalc_mat_table <- function(mt=NULL) {
       # message("materialtabelle: recalculate table")
@@ -122,7 +120,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         colname = "cert_val", 
         value = mt[,"cert_val"]
       )
-
+      
       # update the 'char'acteristic uncertainty
       mt[,"char"] <- mt[, "sd"] / (sqrt(mt[, "n"]) * mt[, "mean"])
       ecerto::update_reactivecell(
@@ -130,7 +128,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         colname = "char", 
         value = mt[,"char"]
       )
-
+      
       # update the 'com'bined uncertainty
       u_cols <- unlist(sapply(c("char", paste0("U", 1:9)), function(x) { grep(x, colnames(mt)) }))
       mt[,"com"] <- apply(mt[,u_cols,drop=FALSE], 1, function(x) { sqrt(sum(x ^ 2, na.rm = T)) })
@@ -139,7 +137,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         colname = "com", 
         value = mt[,"com"]
       )
-
+      
       # update the overall uncertainty
       mt[,"U"] <- mt[, "k"] * mt[, "com"]
       ecerto::update_reactivecell(
@@ -147,13 +145,13 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         colname = "U", 
         value = mt[,"U"]
       )
-
+      
       # set result as new value in the R6 object
       ecerto::setValue(datreturn, "mater_table", mt)
       if(!silent) message("materialtabelle: recalc_mat_table; set datreturn.mater_table")
       invisible(mt)
     }
-
+    
     # add a correction factor column
     shiny::observeEvent(input$c_addF, {
       cc <- attr(mater_table(), "col_code")
@@ -174,7 +172,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
           }
         }
       )
-
+      
     })
     # remove a correction factor column
     shiny::observeEvent(input$c_remF, {
@@ -218,7 +216,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
           }
         }
       )
-
+      
     })
     # remove a uncertainty factor column
     shiny::observeEvent(input$c_remU, {
@@ -243,8 +241,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         shinyalert::shinyalert(text = "No Uncertainty Term defined. You have to add one before you can remove it.", type = "info")
       }
     })
-
-
+    
+    
     # data frame of selected analyte
     sAnData = shiny::reactive({ ecerto::getValue(datreturn,"selectedAnalyteDataframe") })
     lab_filter = shiny::reactive({unique(as.character(sAnData()[sAnData()$L_flt==TRUE,]$Lab))})
@@ -254,28 +252,28 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     
     # get current lab statistics
     lab_statistics = shiny::reactive({ ecerto::getValue(datreturn,"lab_statistics") })
-
+    
     # Homogeneity transfer
-     shiny::observeEvent(getValue(datreturn,"t_H") ,{
-       if(!silent)message("materialtabelle: Homogenity Transfer")
-        transferred_array = ecerto::getValue(datreturn,"t_H")
-        mergeby = names(transferred_array)
-        mater_table_tmp = mater_table()
-
-        if(length(mergeby)==2){
-          # in case column name differs from it's ID
-          mater_table_tmp[,mergeby[2]] = transferred_array[2]
-          mater_table(mater_table_tmp)
-        } else if(length(mergeby)==1) {
-          # in case column name is equal to it's ID
-          mater_table_tmp[,mergeby] = transferred_array
-          mater_table(mater_table_tmp)
-        } else {
-          stop("transferred number of columns should be 1 or 2")
-        }
-
+    shiny::observeEvent(getValue(datreturn,"t_H") ,{
+      if(!silent)message("materialtabelle: Homogenity Transfer")
+      transferred_array = ecerto::getValue(datreturn,"t_H")
+      mergeby = names(transferred_array)
+      mater_table_tmp = mater_table()
+      
+      if(length(mergeby)==2){
+        # in case column name differs from it's ID
+        mater_table_tmp[,mergeby[2]] = transferred_array[2]
+        mater_table(mater_table_tmp)
+      } else if(length(mergeby)==1) {
+        # in case column name is equal to it's ID
+        mater_table_tmp[,mergeby] = transferred_array
+        mater_table(mater_table_tmp)
+      } else {
+        stop("transferred number of columns should be 1 or 2")
+      }
+      
     }, ignoreNULL = TRUE)
-
+    
     # in case backup data
     shiny::observeEvent(rdataUpload(),{
       if(!silent)message("m_materialtabelleServer: RData Uploaded, insert materialtabelle")
@@ -283,10 +281,10 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       mt <- remove_unused_cols(mt=mt)
       mater_table(mt) # save materialtabelle
     }, ignoreNULL = TRUE)
-
+    
     # get all availables analytes
     availableAnalytes = shiny::reactive({levels(sAnData()[["analyte"]])})
-
+    
     # the data table should be created only once, since the levels shouldn't
     # change after certification upload
     shiny::observeEvent(availableAnalytes(), once = TRUE, {
@@ -298,9 +296,9 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         mater_table(mt) # write to reactiveValue
       }
     })
-
+    
     cert_mean <- shiny::reactive({
-      # shiny::req(sAnData())
+      shiny::req(sAnData())
       if(!silent) message("---materialtabelle: cert_mean---")
       data <- sAnData()[!sAnData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
@@ -312,9 +310,9 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
              )), precision2)
       )
     })
-
+    
     cert_sd <- shiny::reactive({
-      # req(input$precision2)
+      shiny::req(sAnData())
       if (!silent) message("---materialtabelle: cert_sd---")
       data <- sAnData()[!sAnData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from
@@ -328,11 +326,13 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
              )), precision2))
     })
-
+    
     # when an Analyte-tab was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
     # in case mater table has been initiated...
-    shiny::observeEvent(sAnData(),{
+    # shiny::observeEvent(sAnData(),{
+    shiny::observe({
+      req(sAnData())
       if(!is.null(mater_table())) {
         if (!silent) message("materialtabelleServer: update initiated for ", sAnData()[1,"analyte"])
         ecerto::update_reactivecell(
@@ -347,7 +347,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
           analyterow = sAnData()[1,"analyte"],
           value = cert_sd()
         )
-
+        
         n <- ifelse(
           test = input$pooling,
           yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% lab_filter()), "n"]),
@@ -362,13 +362,13 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         # recalc_mat_table(mt=mater_table())
       }
     })
-
+    
     # Whenever the reactiveVal gets changed, recalculate...
     shiny::observeEvent(mater_table(), {
       if (!silent) message("m_materialtabelleServer: mater_table updated, recalc")
       recalc_mat_table(mt=mater_table())
     }) # , ignoreInit = TRUE
-
+    
     # monitor table editing and update if necessary
     tmp_mater_table <- shiny::eventReactive(mater_table(),{
       if (!silent) message("materialtabelle: mater_table() has been updated; create visible table")
@@ -388,11 +388,11 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       }
       return(mt)
     })
-
+    
     # export materialtabelle for testing. Since it perhaps hasn't created yet:
     # use try(), see https://github.com/rstudio/shinytest/issues/350
     # shiny::exportTestValues(materialtabelle = { try(tmp_mater_table()) })
-
+    
     # the rendered, editable mat_table as seen by user
     output$matreport <- DT::renderDT(
       DT::datatable(
@@ -406,20 +406,20 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       ),
       server = TRUE
     )
-
+    
     # ensure update of mater_table() on user input
     shiny::observeEvent(input$matreport_cell_edit, {
       if (!silent) message("materialtabelle: user input")
-     # convert value to numeric
-     x <- as.numeric(gsub("[^[:digit:].]", "", input$matreport_cell_edit$value))
-
-     # replace in correct position
-     mt <- mater_table()
-     mt[input$matreport_cell_edit$row, input$matreport_cell_edit$col + 1] <- x
-
-     # update 'mater_table'
-     mater_table(mt)
-   })
-
+      # convert value to numeric
+      x <- as.numeric(gsub("[^[:digit:].]", "", input$matreport_cell_edit$value))
+      
+      # replace in correct position
+      mt <- mater_table()
+      mt[input$matreport_cell_edit$row, input$matreport_cell_edit$col + 1] <- x
+      
+      # update 'mater_table'
+      mater_table(mt)
+    })
+    
   })
 }
