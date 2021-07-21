@@ -163,8 +163,9 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
           title = "Too many labs filtered",
           text = "You can not filter all labs."
         )
-        # currently a bit hacky. since just giving filtered_labs_tmp would not trigger
-        # the reactive, first reset to the first and then give the actual filtered labs
+        # currently a bit hacky. since just giving filtered_labs_tmp would not
+        # trigger the reactive, first reset to the first and then give the
+        # actual filtered labs
         apm_tmp = apm()
         apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp[1]
         apm(apm_tmp)
@@ -194,6 +195,17 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
     }), width = shiny::reactive({
       input$Fig01_width
     }))
+    
+    observe({
+      CertValPlot_list = list(
+        "show" = FALSE,
+        "fnc" = deparse(CertValPlot),
+        "call" = str2lang('CertValPlot(data=data)'),
+        "Fig01_width" = input$Fig01_width,
+        "Fig01_height" = input$Fig01_height
+      )
+      setValue(rv,c("Certifications","CertValPlot"), CertValPlot_list)
+    })
     
     return(dat)
   })
