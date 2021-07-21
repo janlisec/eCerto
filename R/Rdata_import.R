@@ -140,7 +140,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           resnames <- listNames(l = res, maxDepth = 2) # names(unlist(res, recursive = FALSE))
           rvnames <- listNames(shiny::reactiveValuesToList(rv$get()),2) # names(unlist(shiny::reactiveValuesToList(rv$get()), recursive = FALSE))
 
-          browser()
+          
           if (all(resnames %in% rvnames)) {
             # Transfer list elements
             # $$ToDo$$ one might provide a warning to the user in case he will
@@ -158,8 +158,10 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             set_uploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
             message("RDataImport: Non-legacy upload finished")
           } else {
-            err <- c(paste0("file_", resnames), paste0("expected_", rvnames))[c(resnames, rvnames) %in% names(which(table(c(resnames, rvnames))==1))]
-            shinyalert::shinyalert(title = "m_RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:", paste(err, collapse=", ")), type = "warning")
+            allgivenexpected = c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
+            found_table = names(which(table(c(resnames, rvnames))==1))
+            err <- allgivenexpected[c(resnames, rvnames) %in% found_table]
+            shinyalert::shinyalert(title = "m_RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:\n", paste(err, collapse=", ")), type = "warning")
           }
         }
         # Legacy upload

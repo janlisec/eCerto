@@ -287,9 +287,10 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # get all availables analytes
     availableAnalytes = shiny::reactive({levels(sAnData()[["analyte"]])})
 
-    # the data table should be created only once, since the levels shouldn't change after certification upload
+    # the data table should be created only once, since the levels shouldn't
+    # change after certification upload
     shiny::observeEvent(availableAnalytes(), once = TRUE, {
-      # initiate empty materialtabelle only if nothing has yet  been uploaded via RData
+      # initiate empty materialtabelle only if nothing has yet been uploaded via RData
       if (is.null(rdataUpload())) {
         if(!silent) message("m_materialtabelleServer: initiate empty materialtabelle")
         mt <- ecerto::init_materialTabelle(availableAnalytes())
@@ -331,7 +332,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # when an Analyte-tab was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
     # in case mater table has been initiated...
-    shiny::observe({
+    shiny::observeEvent(sAnData(),{
       if(!is.null(mater_table())) {
         if (!silent) message("materialtabelleServer: update initiated for ", sAnData()[1,"analyte"])
         ecerto::update_reactivecell(
