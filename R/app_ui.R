@@ -25,7 +25,13 @@ app_ui = function(){
 
       shiny::tabPanel(
         "Home",
-
+        shiny::sidebarPanel(width = 3,
+          # shiny::wellPanel(
+            shiny::strong("Restart Session"),
+            shiny::br(),
+            shiny::actionButton(inputId = "session_restart", label = "Restart")
+          # )
+        ),
         shiny::mainPanel(
           shiny::h1("Introducing eCerto"),
           shiny::p("Certifications are..."),
@@ -47,11 +53,7 @@ app_ui = function(){
           shiny::fluidRow(
             shiny::column(
               width = 3,
-              shiny::wellPanel(
-                shiny::strong("Restart Session"),
-                shiny::br(),
-                shiny::actionButton(inputId = "session_restart", label = "Restart")
-              ),
+              
               shiny::wellPanel(m_RDataImport_UI("Rdata")),
             ),
             shiny::column(
