@@ -13,11 +13,11 @@ m_CertLoadedServer(id, rv, apm, selected_tab)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{rv}{}
+\item{rv}{Reactive R6 object containing all trial data.}
 
-\item{apm}{reactiveVal with analyte parameter}
+\item{apm}{reactiveVal with analyte parameter.}
 
-\item{selected_tab}{currently selected tab, for example "Si" or "Cu" etc.}
+\item{selected_tab}{currently selected tab (==analyte), for example "Si" or "Cu" etc.}
 }
 \value{
 dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt

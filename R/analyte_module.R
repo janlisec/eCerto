@@ -21,7 +21,7 @@
 #' @export
 #' @examples
 #' if (interactive()) {
-#' apm = reactiveVal()
+#' apm <- shiny::reactiveVal()
 #' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
 #' apm(analyte_parameter_list(df))
 #' shiny::shinyApp(
@@ -46,7 +46,7 @@ m_analyteModuleUI = function(id){
     shinyjs::inlineCSS('.selct  {background: green; color: white;border: 5px solid black;}'),
     shiny::tabsetPanel(id = shiny::NS(id,"tabs"))
   )
-  
+
 }
 
 #' @rdname analyteModule
@@ -59,14 +59,14 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
     selected_tab = shiny::eventReactive(input$tabs,{
       input$tabs
     })
-    
+
     confirmedTabs = reactiveVal()
-    
+
     shiny::observeEvent(renewTabs(),{
       message("analyte_module: Renew Tabs")
       tablist() %>% purrr::walk(~shiny::removeTab("tabs", .x)) # remove old tabs
       tablist(NULL)
-      
+
       # append/prepend a tab for each analyte available
       for (a.name in names(isolate(apm()))) {
         message("append Tab: ", a.name)
@@ -103,8 +103,8 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       # select only first tab after tabs-creation
       firstTab = names(isolate(apm()))[1]
       shiny::updateTabsetPanel(
-        session = session, 
-        inputId = "tabs", 
+        session = session,
+        inputId = "tabs",
         selected =firstTab
       )
       # set first selected Tab on TRUE
@@ -113,17 +113,17 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       apm(analytes_tmp)
 
       # Make confirmed Tabs (geht auch bestimmt schöner mit map() oder so)
-      l = c() 
+      l = c()
       for (i in isolate(apm())) {
         if(i$confirmed == TRUE) {
           l = append(l,i$analytename)
           markConfirmed(i$analytename)
-        } 
-      } 
+        }
+      }
       confirmedTabs(l)
       renewTabs(NULL) # reset variable to NULL for next renew-command
     }, ignoreNULL = TRUE)
-    
+
     # change color of tab when selected by changing class
     markConfirmed = function(tab) {
       message("color tab: ", tab)
@@ -133,15 +133,15 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
         selector = s,
         class = "selct")
     }
-    
+
     observeEvent(confirmedTabs(),{
 
       for (i in confirmedTabs()) {
         markConfirmed(i)
       }
     })
-    
-    
+
+
     shiny::observeEvent(selected_tab(),{
       if(!selected_tab() %in% confirmedTabs()) {
         ct = confirmedTabs()
@@ -152,10 +152,10 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       analytes_tmp[[selected_tab()]]$confirmed = TRUE
       apm(analytes_tmp)
     },ignoreInit = TRUE, ignoreNULL = TRUE)
-    
-    
-    
-    # update precision 
+
+
+
+    # update precision
     shiny::observe({
       req(selected_tab())
       message("analyte_module: Precision change")
@@ -164,7 +164,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
         analytes_tmp[[selected_tab()]]$precision = input[[paste0("precision",selected_tab())]]
       apm(analytes_tmp)
     })
-    
+
     # update flt_samples (the sample filter)
     shiny::observe({
       req(selected_tab())
@@ -174,7 +174,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
         analytes_tmp[[selected_tab()]]$sample_filter = input[[paste0("flt_samples",selected_tab())]]
       apm(analytes_tmp)
     })
-    
+
     return(selected_tab) # module returns currently selected analyte-tab
   })
 }

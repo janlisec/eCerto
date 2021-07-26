@@ -10,11 +10,11 @@
 #' @details additional returns are handled via apm
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param rv 
-#' @param apm reactiveVal with analyte parameter
-#' @param selected_tab currently selected tab, for example "Si" or "Cu" etc.
+#' @param rv Reactive R6 object containing all trial data.
+#' @param apm reactiveVal with analyte parameter.
+#' @param selected_tab currently selected tab (==analyte), for example "Si" or "Cu" etc.
 #'
-#' @return dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt 
+#' @return dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt
 #' @rdname mod_CertLoaded
 #' @export
 m_CertLoadedUI = function(id) {
@@ -50,7 +50,7 @@ m_CertLoadedUI = function(id) {
           shiny::downloadButton(outputId = 'Fig01', label = "Figure")
         )
       ),
-      shiny::fluidRow(shiny::column(6, shiny::strong("mean")), 
+      shiny::fluidRow(shiny::column(6, shiny::strong("mean")),
                       shiny::column(6, shiny::strong("sd"))),
       shiny::fluidRow(
         shiny::column(6,
@@ -70,16 +70,16 @@ m_CertLoadedUI = function(id) {
 m_CertLoadedServer = function(id, rv, apm, selected_tab) {
   shiny::moduleServer(id, function(input, output, session) {
 
-    filtered_labs = reactiveVal(NULL) 
-    current_analy = reactive({apm()[[selected_tab()]]})
-    
+    filtered_labs <- shiny::reactiveVal(NULL)
+    current_analy <- shiny::reactive({apm()[[selected_tab()]]})
+
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat = shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
       message("Cert_Load: dat-reactive invalidated")
-      
+
       cert.data = getValue(rv,c("Certifications","data")) # take the uploaded certification
       # round input values
       cert.data[, "value"] = round(cert.data[, "value"], current_analy()$precision)
@@ -103,8 +103,7 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
         )
       )
       return(cert.data)
-    }
-    )
+    })
 
     # BOXPLOT
     output$overview_boxplot <- shiny::renderPlot({
@@ -117,9 +116,7 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
       shiny::req(dat(), selected_tab())
       # analytelist$analytes[[i]]$lab_filter
       tmp <- dat()
-      tmp <-
-        tmp[tmp[, "analyte"] == selected_tab() &
-              is.finite(tmp[, "value"]), ]
+      tmp <- tmp[tmp[, "analyte"] == selected_tab() & is.finite(tmp[, "value"]), ]
       choices <- levels(factor(tmp[, "Lab"]))
       # selected <- choices[which(sapply(split(tmp[, "L_flt"], factor(tmp[, "Lab"])), all))]
       selected = apm()[[selected_tab()]]$lab_filter
@@ -133,16 +130,31 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
     })
 
     shiny::observeEvent(getValue(rv,c("Certifications","uploadsource")), {
-      us = getValue(rv,c("Certifications","uploadsource"))
-      
+
+      us <- getValue(rv,c("Certifications","uploadsource"))
+
       if (!is.null(us) && us=="RData" ) {
-        shiny::updateNumericInput(session=session, inputId = "Fig01_width",value = isolate(getValue(rv,c("Certifications","CertValPlot")))[["Fig01_width"]])
-        shiny::updateNumericInput(session=session, inputId = "Fig01_height",value = isolate(getValue(rv,c("Certifications","CertValPlot")))[["Fig01_height"]])
-        shiny::updateSelectizeInput(session=session, inputId = "flt_labs",selected = isolate(getValue(rv,c("Certifications","opt")))[["flt_labs"]])
+        shiny::updateNumericInput(
+          session=session,
+          inputId = "Fig01_width",
+          value = shiny::isolate(getValue(rv, c("Certifications","CertValPlot")))[["Fig01_width"]]
+        )
+        shiny::updateNumericInput(
+          session=session,
+          inputId = "Fig01_height",
+          value = shiny::isolate(getValue(rv, c("Certifications","CertValPlot")))[["Fig01_height"]]
+        )
+        shiny::updateSelectizeInput(
+          session=session,
+          inputId = "flt_labs",
+          selected = shiny::isolate(getValue(rv, c("Certifications","opt")))[["flt_labs"]]
+        )
       }
-      updateNumericInput(session,
-                         inputId = "Fig01_width",
-                         value = 150 + 40 * length(levels(factor(isolate(getValue(rv,c("Certifications","data")))[, "Lab"]))))
+      shiny::updateNumericInput(
+        session=session,
+        inputId = "Fig01_width",
+        value = 150 + 40 * length(levels(factor(shiny::isolate(getValue(rv, c("Certifications","data")))[, "Lab"])))
+      )
 
     }, ignoreNULL = TRUE)
 
@@ -175,14 +187,14 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
       }
 
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
-    
-    output$cert_mean = renderText({
-      mt = getValue(rv,c("materialtabelle"))
+
+    output$cert_mean <- shiny::renderText({
+      mt <- getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),]$mean
     })
-    
-    output$cert_sd = renderText({
-      mt = getValue(rv,c("materialtabelle"))
+
+    output$cert_sd <- shiny::renderText({
+      mt <- getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),"sd"]
     })
 
@@ -195,8 +207,8 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
     }), width = shiny::reactive({
       input$Fig01_width
     }))
-    
-    observe({
+
+    shiny::observe({
       CertValPlot_list = list(
         "show" = FALSE,
         "fnc" = deparse(CertValPlot),
@@ -206,7 +218,7 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
       )
       setValue(rv,c("Certifications","CertValPlot"), CertValPlot_list)
     })
-    
+
     return(dat)
   })
 }
