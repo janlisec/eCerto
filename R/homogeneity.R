@@ -9,13 +9,31 @@
 #' @details not yet
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param homog = the Homogeneity table shiny::reactive({getValue(rv,"Homogeneity")})
-#' @param cert = shiny::reactive({getValue(rv,"Certifications")})
+#' @param homog The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).
+#' @param cert The Certification table - shiny::reactive({getValue(rv,"Certifications")}).
+#'
+#' @examples
+#' if (interactive()) {
+#' shiny::shinyApp(
+#'  ui = shiny::fluidPage(
+#'    m_HomogeneityUI(id = "test")
+#'  ),
+#'  server = function(input, output, session) {
+#'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#'    m_HomogeneityServer(
+#'      id = "test",
+#'      homog = shiny::reactive({test_homog()}),
+#'      cert = shiny::reactive({test_certification()})
+#'    )
+#'  }
+#' )
+#' }
 #'
 #' @return h_vals = The Homogeneity data (not the transferred ones yet)
 #' @rdname mod_Homogeneity
 #' @export
-m_HomogeneityUI = function(id) {
+
+m_HomogeneityUI <- function(id) {
   shiny::tabsetPanel(
     id = shiny::NS(id, "HomogeneityPanel"),
     type = "hidden",
@@ -44,28 +62,24 @@ m_HomogeneityUI = function(id) {
       ),
       shiny::hr(),
       shiny::fluidRow(
-        shiny::column(3, DT::dataTableOutput(shiny::NS(id,"h_overview_stats"))),
-        shiny::column(9,
-                      shiny::fluidRow(
-                        shiny::column(2, shiny::uiOutput(shiny::NS(id,"h_sel_analyt"))),
-                        shiny::column(2, shiny::numericInput(inputId=shiny::NS(id,"h_Fig_width"), label="Figure Width", value=850)),
-                        shiny::column(2,shiny::numericInput(inputId=shiny::NS(id,"h_precision"), label="Precision", value=4)),
-                        shiny::column(6,
-                                      shiny::fluidRow(shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>")),
-                                      shiny::fluidRow(shiny::downloadButton('h_Report', label="Download")), align = "right"
-                        )
-                      ),
-                      shiny::fluidRow(
-                        shiny::column(12, shiny::plotOutput(shiny::NS(id,"h_boxplot"), inline=TRUE), offset = 0.1)
-                      ),
-                      shiny::fluidRow(
-                        shiny::column(12, shiny::textOutput(shiny::NS(id,"h_statement")), offset = 0.1),
-                        shiny::tags$style(type="text/css", "#h_statement {margin-top:2%;}")
-                      ),
-                      shiny::fluidRow(
-                        shiny::column(12, shiny::verbatimTextOutput(shiny::NS(id,"h_anova")), offset = 0.1),
-                        shiny::tags$style(type="text/css", "#h_anova {margin-top:2%;}")
-                      )
+        shiny::column(
+          width = 3,
+          DT::dataTableOutput(shiny::NS(id,"h_overview_stats"))
+        ),
+        shiny::column(
+          width = 7,
+          shiny::fluidRow(
+            shiny::plotOutput(shiny::NS(id,"h_boxplot"), inline=TRUE),
+            shiny::uiOutput(shiny::NS(id,"h_statement2"))
+          )
+        ),
+        shiny::column(
+          width = 2,
+          shiny::uiOutput(shiny::NS(id,"h_sel_analyt")),
+          shiny::numericInput(inputId=shiny::NS(id,"h_Fig_width"), label="Figure Width", value=650),
+          shiny::numericInput(inputId=shiny::NS(id,"h_precision"), label="Precision", value=4),
+          shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
+          shiny::downloadButton('h_Report', label="Download")
         )
       )
     )
@@ -80,14 +94,15 @@ m_HomogeneityServer = function(id, homog, cert) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
+    ns <- shiny::NS(id)
     h_vals = shiny::reactiveVal(NULL)
 
     shiny::observeEvent(homog(), {
       if(!is.null(homog())){
-        shiny::updateTabsetPanel(session = session,"HomogeneityPanel", selected = "loaded")
+        shiny::updateTabsetPanel(session = session, "HomogeneityPanel", selected = "loaded")
       } else {
         # else if nothing is loaded, keep Panel empty
-        shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "standBy")
+        shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standBy")
       }
     })
     #if loaded (successfully), male area visible
@@ -159,7 +174,7 @@ m_HomogeneityServer = function(id, homog, cert) {
       tab <- h_means()
       for (i in c("mean","sd")) { tab[,i] <- pn(tab[,i], input$h_precision) }
       return(tab)
-    }, options = list(paging = FALSE, searching = FALSE), rownames=NULL)
+    }, options = list(paging = FALSE, searching = FALSE), rownames=NULL, selection = "none")
 
     h_vals_print = shiny::reactive({
       shiny::req(h_Data())
@@ -180,21 +195,28 @@ m_HomogeneityServer = function(id, homog, cert) {
 
     output$h_vals <- DT::renderDataTable({
       h_vals_print()
-    }, options = list(paging = FALSE, searching = FALSE), rownames=NULL)
+    }, options = list(paging = FALSE, searching = FALSE), rownames=NULL, selection = list(mode="single", target="row"))
 
+
+    shiny::observeEvent(input$h_vals_rows_selected, {
+      #browser()
+      selected <- as.character(interaction(h_vals_print()[input$h_vals_rows_selected,1:2]))
+      shiny::updateSelectInput(session = session, inputId = "h_sel_analyt", selected = selected)
+    })
 
     # Plots & Print
     output$h_boxplot <- shiny::renderPlot({
       shiny::req(h_Data(), input$h_sel_analyt, input$h_precision, input$h_Fig_width)
       h_dat <- h_Data()
-      h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
+      h_dat <- h_dat[interaction(h_dat[,"analyte"], h_dat[,"H_type"])==input$h_sel_analyt,]
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
-      plot(h_dat)
-      omn <- round(mean(h_dat[,"value"],na.rm=T),input$h_precision)
-      osd <- round(stats::sd(h_dat[,"value"],na.rm=T),input$h_precision)
-      anp <- formatC(stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1],digits = 2, format = "e")
+      #browser()
+      #plot(h_dat)
+      omn <- round(mean(h_dat[,"value"],na.rm=T), input$h_precision)
+      osd <- round(stats::sd(h_dat[,"value"],na.rm=T), input$h_precision)
+      anp <- formatC(stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1], digits = 2, format = "e")
       graphics::par(mar=c(5,4,6,0)+0.1)
-      graphics::plot(x=c(1,length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
+      graphics::plot(x=c(0.75,0.25+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
       graphics::abline(h=omn, lty=2)
       graphics::abline(h=omn+c(-1,1)*osd, lty=2, col=grDevices::grey(0.8))
       graphics::boxplot(h_dat[,"value"] ~ h_dat[,"Flasche"], add=TRUE)
@@ -203,15 +225,53 @@ m_HomogeneityServer = function(id, homog, cert) {
       graphics::mtext(text = paste("ANOVA P =", anp), side = 3, line = 2.45, adj = 0)
     }, height=500, width=shiny::reactive({input$h_Fig_width}))
 
-    output$h_statement <- shiny::renderText({
+    output$h_statement2 <- shiny::renderUI({
       shiny::req(h_Data(), input$h_sel_analyt)
       ansd <- max(h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,c("s_bb","s_bb_min")])
       anp <- h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,"P"]
       if (anp<0.05) {
-        return(paste0("The tested items (Flasche) are significantly different (ANOVA P-value = ", pn(anp,2),"). Please check your method and model."))
+        return(
+          shiny::fluidRow(
+            shiny::HTML("The tested items (Flasche) are ", "<font color=\"#FF0000\"><b>significantly different</b></font>", "(ANOVA P-value = ", pn(anp,2), ").<p>Please check your method and data.")
+          )
+        )
       } else {
-        return(paste0("The tested items (Flasche) are not significantly different (ANOVA P-value = ", pn(anp,2), "). The uncertainty value for analyte ", input$h_sel_analyt, " was determined as ", pn(ansd), "."))
+        return(
+          shiny::fluidRow(
+            shiny::HTML("The tested items (Flasche) are ", "<font color=\"#00FF00\">not significantly different</font>", "(ANOVA P-value = ", pn(anp,2), ").<p>",
+                        "The uncertainty value for analyte ", input$h_sel_analyt
+            ),
+            shiny::actionLink(inputId = ns("hom_help_modal"), label = "was determined as"),
+            shiny::HTML("<b>", pn(ansd), "</b>.")
+          )
+        )
       }
+    })
+
+    shiny::observeEvent(input$hom_help_modal, {
+      shiny::req(h_vals_print(), input$h_sel_analyt)
+      #browser()
+      h <- h_vals_print()
+      i <- which(interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt)
+
+      shiny::showModal(
+        shiny::modalDialog(
+          shiny::HTML(
+            "<p>Using ANOVA on a one factor linear model we determined from N =", h[i,"N"], " containers with n =", h[i,"n"], "replicates each:",
+            "<p>Variance within containers (MS_within, s_w) =", h[i,"MSwithin"],
+            "<br>Variance between containers (MS_among, s_a) =", h[i,"MSamong"],
+            "<p>Using formula: sqrt(s_a-s_w)/mean the relative uncertainty (s_bb) =", h[i,"s_bb"],
+            "<br>and s_bb_min using: sqrt(s_w/n)*(2/(N*(n-1)))^(1/4))/mean =", h[i,"s_bb_min"],
+            "<p>The larger of both values, s_bb and s_bb_min, is transfered as uncertainty contribution",
+            "<p>Note: s_bb = 0 for s_a < s_w"
+          ),
+          footer = shiny::tagList(
+            shiny::modalButton("Ok")
+          ),
+          size = "m",
+          title = "Uncertainty calculation"
+        )
+      )
     })
 
     output$h_anova <- shiny::renderPrint({

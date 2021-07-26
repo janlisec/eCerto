@@ -26,29 +26,30 @@
 #'
 m_TransferHomogeneityUI = function(id) {
   shinyjs::disabled(
-
-    shiny::fluidRow(id = shiny::NS(id,"transferPanel"),
-             #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
-             p(id = NS(id,"element"), ""),
-             shiny::column(4,
-                           shiny::selectInput(
-                      inputId=shiny::NS(id,"h_transfer_H_type"),
-                      label="",
-                      selectize=TRUE,
-                      choices=NULL
-                    )
-             ),
-             #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
-             shiny::column(4,
-                           shiny::selectInput(inputId=shiny::NS(id,"h_transfer_ubb"),
-                                label="",
-                                selectize=TRUE,
-                                choices=NULL
-                    )
-             ),
-             shiny::column(4, shiny::actionButton(inputId = shiny::NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"))
+    shiny::fluidRow(
+      id = shiny::NS(id,"transferPanel"),
+      #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
+      shiny::p(id = shiny::NS(id,"element"), ""),
+      shiny::column(
+        width = 4,
+        shiny::selectInput(
+          inputId=shiny::NS(id,"h_transfer_H_type"),
+          label="",
+          selectize=TRUE,
+          choices=NULL
+        )
+      ),
+      #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
+      shiny::column(
+        width = 4,
+        shiny::selectInput(inputId=shiny::NS(id,"h_transfer_ubb"),
+          label="",
+          selectize=TRUE,
+          choices=NULL
+        )
+      ),
+      shiny::column(4, shiny::actionButton(inputId = shiny::NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"))
     )
-    
   )
 }
 
@@ -65,7 +66,7 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
       homogData()
     }
     ,{
-      # activate transfer panel only, when 
+      # activate transfer panel only, when
       # (1) materialtabelle was created after certification upload AND
       # (2) homogeneity data was uploaded AND
       # (3) materialtabelle contains at least one column with "U"
@@ -123,7 +124,7 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
       }
       return(cert_vals())
     })
-    
+
     return(return_reactive)
   })
 }
