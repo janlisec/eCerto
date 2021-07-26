@@ -260,8 +260,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # data <- dat()
       shiny::req(dat())
       message("CertificationServer: dat() changed; lab_statistics changed")
-      out <-
-        plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
+      out <- plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
           data.frame(
             "mean" = mean(x, na.rm = T),
             "sd" = stats::sd(x, na.rm = T),

@@ -17,16 +17,16 @@
 #' @return dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt
 #' @rdname mod_CertLoaded
 #' @export
-m_CertLoadedUI = function(id) {
+m_CertLoadedUI <- function(id) {
   shiny::tagList(
     # Cert Value Plot start
     shiny::column(
-      3,
+      width = 3,
       shiny::fluidRow(shiny::strong("Certified Value Plot")),
       shiny::fluidRow(shiny::uiOutput(shiny::NS(id, "flt_labs"))),
       shiny::fluidRow(
         shiny::column(
-          6,
+          width = 6,
           shiny::numericInput(
             inputId = shiny::NS(id, "Fig01_width"),
             label = "width",
@@ -34,7 +34,7 @@ m_CertLoadedUI = function(id) {
           )
         ),
         shiny::column(
-          6,
+          width = 6,
           shiny::numericInput(
             inputId = shiny::NS(id, "Fig01_height"),
             label = "height",
@@ -44,22 +44,22 @@ m_CertLoadedUI = function(id) {
       ),
       shiny::fluidRow(
         shiny::column(
-          6,
+          width = 6,
           shiny::strong("Download"),
           shiny::br(),
           shiny::downloadButton(outputId = 'Fig01', label = "Figure")
         )
       ),
-      shiny::fluidRow(shiny::column(6, shiny::strong("mean")),
-                      shiny::column(6, shiny::strong("sd"))),
+      shiny::fluidRow(shiny::column(width = 6, shiny::strong("mean")),
+                      shiny::column(width = 6, shiny::strong("sd"))),
       shiny::fluidRow(
-        shiny::column(6,
+        shiny::column(width = 6,
                shiny::textOutput(shiny::NS(id,"cert_mean"))),
-        shiny::column(6,
+        shiny::column(width = 6,
                shiny::textOutput(shiny::NS(id,"cert_sd")))
       ),
     ),
-    shiny::column(9, shiny::plotOutput(
+    shiny::column(width = 9, shiny::plotOutput(
       shiny::NS(id, "overview_CertValPlot"), inline = TRUE
     ))
   )
@@ -67,7 +67,7 @@ m_CertLoadedUI = function(id) {
 
 #' @rdname mod_CertLoaded
 #' @export
-m_CertLoadedServer = function(id, rv, apm, selected_tab) {
+m_CertLoadedServer <- function(id, rv, apm, selected_tab) {
   shiny::moduleServer(id, function(input, output, session) {
 
     filtered_labs <- shiny::reactiveVal(NULL)
@@ -75,14 +75,17 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
 
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
-    dat = shiny::reactive({
+    dat <- shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
       message("Cert_Load: dat-reactive invalidated")
-
-      cert.data = getValue(rv,c("Certifications","data")) # take the uploaded certification
+      cert.data <- getValue(rv,c("Certifications","data")) # take the uploaded certification
       # round input values
-      cert.data[, "value"] = round(cert.data[, "value"], current_analy()$precision)
+      #browser()
+      # @FK: Wenn ich einen Datensatz lade, dann läuft Shiny 2x hier durch (mit browser() geprüft) --> beim zweiten Mal ist
+      # current_analy()$precision == NULL und wirft daher einen Fehler
+      # habe diesen mit ifelse statement abgefangen (temporäre Lösung), sollte aber im reactive graph korrekt funktionieren
+      cert.data[, "value"] <- round(cert.data[, "value"], ifelse(is.null(current_analy()$precision), 4, current_analy()$precision))
       cert.data <- cert.data[cert.data[, "analyte"] %in% selected_tab(), ]
       cert.data <- cert.data[!(cert.data[, "ID"] %in% current_analy()$sample_filter), ]
       cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% filtered_labs()
