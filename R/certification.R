@@ -218,7 +218,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     #   #  return(NULL)
     #   #}
     # })
-
     # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is in Certification-UI, that's why it is here
     m_materialtabelleServer(
@@ -305,7 +304,18 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
       if("stats2" %in% input$certification_view)
         shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
-    })
+      if(!is.null(getValue(rv,c("Certifications","CertValPlot")))) {
+        if("boxplot" %in% input$certification_view) {
+          setValue(rv,c("Certifications","CertValPlot"),TRUE)
+        } else {
+            setValue(rv,c("Certifications","CertValPlot"),FALSE)
+          }
+      }
+      
+      })
+    
+
+    
 
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
