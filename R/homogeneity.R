@@ -256,15 +256,21 @@ m_HomogeneityServer = function(id, homog, cert) {
 
       shiny::showModal(
         shiny::modalDialog(
-          shiny::HTML(
-            "<p>Using ANOVA on a one factor linear model we determined from N =", h[i,"N"], " containers with n =", h[i,"n"], "replicates each:",
-            "<p>Variance within containers (MS_within, s_w) =", h[i,"MSwithin"],
-            "<br>Variance between containers (MS_among, s_a) =", h[i,"MSamong"],
-            "<p>Using formula: sqrt(s_a-s_w)/mean the relative uncertainty (s_bb) =", h[i,"s_bb"],
-            "<br>and s_bb_min using: sqrt(s_w/n)*(2/(N*(n-1)))^(1/4))/mean =", h[i,"s_bb_min"],
-            "<p>The larger of both values, s_bb and s_bb_min, is transfered as uncertainty contribution",
-            "<p>Note: s_bb = 0 for s_a < s_w"
-          ),
+        shiny::includeHTML(
+          rmarkdown::render(
+            system.file(package = "ecerto","help","uncertainty.Rmd")
+            )
+          
+        ),
+          # shiny::HTML(
+          #   "<p>Using ANOVA on a one factor linear model we determined from N =", h[i,"N"], " containers with n =", h[i,"n"], "replicates each:",
+          #   "<p>Variance within containers (MS_within, s_w) =", h[i,"MSwithin"],
+          #   "<br>Variance between containers (MS_among, s_a) =", h[i,"MSamong"],
+          #   "<p>Using formula: sqrt(s_a-s_w)/mean the relative uncertainty (s_bb) =", h[i,"s_bb"],
+          #   "<br>and s_bb_min using: sqrt(s_w/n)*(2/(N*(n-1)))^(1/4))/mean =", h[i,"s_bb_min"],
+          #   "<p>The larger of both values, s_bb and s_bb_min, is transfered as uncertainty contribution",
+          #   "<p>Note: s_bb = 0 for s_a < s_w"
+          # ),
           footer = shiny::tagList(
             shiny::modalButton("Ok")
           ),
