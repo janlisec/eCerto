@@ -116,13 +116,8 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         out(dat)
       }
       if(excelformat() == "Certifications") {
-        # in case it is Cerrification module and the input table has not been filtered 
-        # (columns of tab_flt contains File column), then ask if this is correct
-        if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab_flt[[1]]) -1 &
-           nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab_flt[[1]])
-        ) {
-          shinyalert::shinyalert(title = "Forgot select row and column?", text = "Certifications are same size than during Import. Please select row and column", type = "warning")
-         } else {
+        
+        uploadExcel = function(){
           
           # perform minimal validation tests
           if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
@@ -143,6 +138,22 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
           }
           )
           out(results)
+        }
+        
+        # in case it is Cerrification module and the input table has not been filtered 
+        # (columns of tab_flt contains File column), then ask if this is correct
+        if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab_flt[[1]]) -1 &
+           nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab_flt[[1]])
+        ) {
+          shinyalert::shinyalert(
+            title = "Forgot select row and column?", 
+            text = "You're trying to upload Certification data without selection of row and column. Are you sure to proceed?", 
+            showCancelButton = TRUE, 
+            showConfirmButton = TRUE,
+            callbackR = function(x) { if(x != FALSE) uploadExcel() }
+          )
+         } else {
+          uploadExcel()
   
         }
       }
