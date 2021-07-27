@@ -13,9 +13,9 @@ m_HomogeneityServer(id, homog, cert)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{homog}{= the Homogeneity table shiny::reactive({getValue(rv,"Homogeneity")})}
+\item{homog}{The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).}
 
-\item{cert}{= shiny::reactive({getValue(rv,"Certifications")})}
+\item{cert}{The Certification table - shiny::reactive({getValue(rv,"Certifications")}).}
 }
 \value{
 h_vals = The Homogeneity data (not the transferred ones yet)
@@ -25,4 +25,22 @@ h_vals = The Homogeneity data (not the transferred ones yet)
 }
 \details{
 not yet
+}
+\examples{
+if (interactive()) {
+shiny::shinyApp(
+ ui = shiny::fluidPage(
+   m_HomogeneityUI(id = "test")
+ ),
+ server = function(input, output, session) {
+   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+   m_HomogeneityServer(
+     id = "test",
+     homog = shiny::reactive({test_homog()}),
+     cert = shiny::reactive({test_certification()})
+   )
+ }
+)
+}
+
 }

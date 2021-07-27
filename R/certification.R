@@ -57,7 +57,7 @@ m_CertificationUI = function(id) {
       value = "loaded",
       shiny::fluidRow(
         shiny::column(
-          width=4,
+          width=3,
           shiny::wellPanel(
             shiny::checkboxGroupInput(
               inputId = shiny::NS(id,"certification_view"),
@@ -72,7 +72,7 @@ m_CertificationUI = function(id) {
           )
         ),
         # --- --- --- --- --- --- --- --- ---
-        shiny::column(width=8, shiny::wellPanel(m_analyteModuleUI(ns("analyteModule"))))
+        shiny::column(width=9, shiny::wellPanel(m_analyteModuleUI(ns("analyteModule"))))
         # --- --- --- --- --- --- --- --- ---
       ),
       shiny::conditionalPanel(
@@ -116,26 +116,26 @@ m_CertificationUI = function(id) {
         condition = "input.certification_view.indexOf('stats') > -1",
         ns = shiny::NS(id), # namespace of current module
         shiny::wellPanel(
-          shiny::fluidRow(
-            shiny::column(
-              width = 9,
-              shiny::strong("Statistics regarding lab means, lab variances and outlier detection")
-            ),
-            DT::dataTableOutput(ns("overview_stats"))
-          ),
+          shiny::strong("Tab.1 Statistics regarding lab variances and outlier detection"),
+          DT::dataTableOutput(ns("overview_stats"))
+          #shiny::div(style = 'width:900px;margin:auto', DT::DTOutput(ns("overview_stats"), width = "900px"))
         )
       ),
       # Stats2 (on Lab means)
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats2') > -1",
         ns = shiny::NS(id),
-        DT::dataTableOutput(ns("overview_mstats")),
-        shiny::hr(),
-        shiny::fluidRow(shiny::column(9, shiny::textOutput(outputId = ns("normality_statement")))),
-        shiny::conditionalPanel(
-          condition = "input.certification_view.indexOf('qqplot') > -1",
-          ns = shiny::NS(id),
-          shiny::plotOutput(ns("qqplot"))
+        shiny::wellPanel(
+          shiny::strong("Tab.2 Statistics regarding lab mean distribution"),
+          DT::dataTableOutput(ns("overview_mstats")),
+          htmltools::p(),
+          shiny::textOutput(outputId = ns("normality_statement")),
+          shiny::conditionalPanel(
+            condition = "input.certification_view.indexOf('qqplot') > -1",
+            ns = shiny::NS(id),
+            htmltools::p(),
+            shiny::plotOutput(ns("qqplot"))
+          )
         )
       ),
       # materialtabelle
@@ -282,7 +282,8 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
         "The data is",
         ifelse(KS_p < 0.05, " not ", " "),
         "normally distributed (KS_p=",
-        formatC(KS_p, format = "E", digits = 2),
+        #formatC(KS_p, format = "E", digits = 2),
+        ecerto::pn(KS_p),
         ")."
       )
       # getData("normality_statement")
@@ -308,12 +309,12 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
 
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
-    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+    }, options = list(dom = "t", autoWidth = TRUE, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
 
     # mStats
     output$overview_mstats <- DT::renderDataTable({
       mstats(data = dat(), precision = apm()[[selected_tab()]]$precision)
-    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+    }, options = list(dom = "t", autoWidth = TRUE, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
 
     output$qqplot <- shiny::renderPlot({
       shiny::req(lab_statistics())
