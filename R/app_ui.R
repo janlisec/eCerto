@@ -109,7 +109,7 @@ app_ui = function(){
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        shiny::includeHTML(system.file(package = "ecerto","help","help_start.html"))
+        shiny::includeCSS(system.file(package = "ecerto","help","help_start.html")) # currently includeCSS, since includeHTML blocking Navbar
       )
     )
   ) # end taglist

@@ -256,12 +256,12 @@ m_HomogeneityServer = function(id, homog, cert) {
 
       shiny::showModal(
         shiny::modalDialog(
+        shiny::withMathJax(
         shiny::includeHTML(
           rmarkdown::render(
-            system.file(package = "ecerto","help","uncertainty.Rmd")
-            )
-          
-        ),
+            system.file("help","uncertainty.Rmd",package = "ecerto")
+          )
+        )),
           # shiny::HTML(
           #   "<p>Using ANOVA on a one factor linear model we determined from N =", h[i,"N"], " containers with n =", h[i,"n"], "replicates each:",
           #   "<p>Variance within containers (MS_within, s_w) =", h[i,"MSwithin"],

@@ -42,6 +42,14 @@ m_materialtabelleUI <- function(id) {
     shiny::column(
       width = 2,
       shiny::strong("Material Certification"), shiny::br(),
+      # `pooling` bedeutet, das man cert_val nicht aus den Labormittelwerten
+      # schätzt, sondern aus allen Mess-Werten. Im Beispiel wäre n=15 ohne und
+      # n=10 mit Laborfilter. In Summe: für die korrekte Darstellung der
+      # Materialtabelle benötigen wir für jeden Analyten neben cert_val und
+      # cert_sd die Informationen zu 'pooling', 'S_flt' und 'L_flt', sowie die
+      # gewünschte 'precision'. (!S_flt ist relevant, wenn pooling==TRUE, denn
+      # hat der User ein einzelnes Sample gefiltert, dann ändert sich n auf
+      # n-1).
       shiny::checkboxInput(
         inputId = ns("pooling"),
         label = "pooling",

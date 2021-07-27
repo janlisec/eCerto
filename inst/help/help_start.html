@@ -159,7 +159,7 @@ pre code {
 
 
 
-<div id="header">
+<div id="section-header">
 
 
 
@@ -167,12 +167,12 @@ pre code {
 </div>
 
 
-<div id="help" class="section level1">
+<div id="section-help" class="section level1">
 <h1>Help</h1>
 </div>
-<div id="homogeneity" class="section level1">
+<div id="section-homogeneity" class="section level1">
 <h1>Homogeneity</h1>
-<div id="uncertainty" class="section level3">
+<div id="section-uncertainty" class="section level3">
 <h3>Uncertainty</h3>
 <p>Using ANOVA on a one factor linear model we determined from <code>N = h[i,N]</code> containers with <code>n = h[i,n]</code>replicates each:</p>
 <ul>
@@ -182,16 +182,18 @@ pre code {
 <p>Using formula: <span class="math display">\[\sqrt{s_a-s_w}/\text{mean}\]</span> the relative uncertainty <code>(s_bb) = h[i,s_bb]</code> and <code>s_bb_min</code> using: <span class="math display">\[\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4}/\text{mean}\]</span> <code>=h[i,s_bb_min]</code>. The larger of both values, <code>s_bb</code> and <code>s_bb_min</code>, is transfered as uncertainty contribution.</p>
 <p>Note: <code>s_bb = 0</code> for <code>s_a &lt; s_w</code></p>
 </div>
-<div id="materialtabelle" class="section level2">
+<div id="section-materialtabelle" class="section level2">
 <h2>Materialtabelle</h2>
-<p><code>pooling</code> bedeutet, das man cert_val nicht aus den Labormittelwerten schätzt, sondern aus allen Mess-Werten. Im Beispiel wäre n=15 ohne und n=10 mit Laborfilter. In Summe: für die korrekte Darstellung der Materialtabelle benötigen wir für jeden Analyten neben cert_val und cert_sd die Informationen zu ‘pooling’, ‘S_flt’ und ‘L_flt’, sowie die gewünschte ‘precision’. (!S_flt ist relevant, wenn pooling==TRUE, denn hat der User ein einzelnes Sample gefiltert, dann ändert sich n auf n-1).</p>
-<div id="parameter" class="section level3">
+<ul>
+<li><em>pooling</em> means that <code>cert_val</code> is not estimated from arithmetic average, but rather from all measured values. Example would it be <code>n=15</code> without and <code>n=10</code> with lab-filter.</li>
+</ul>
+<div id="section-parameter" class="section level3">
 <h3>Parameter</h3>
-<div id="com" class="section level4">
+<div id="section-com" class="section level4">
 <h4>com</h4>
-<p>com describes the <em>com</em>bined uncertainty from all U columns: <code>sqrt(sum(x ^ 2))</code></p>
+<p>com describes the <em>com</em>bined uncertainty from all U columns: <span class="math display">\[\sqrt{sum(x ^ 2)}\]</span></p>
 </div>
-<div id="n" class="section level4">
+<div id="section-n" class="section level4">
 <h4>n</h4>
 <p>n ist die Anzahl der für die mean-Berechnung verwendeten Werte. Beispiel: Wir haben für einen beliebigen Analyten 3 Labore mit je 5 Replikaten. Wir können <code>cert_mean</code> berechnen aus den 3 Mittelwerten der Labore (n=3). Wenn ein Labor gefiltert wird, dann wird es im Plot grau angezeigt aber für cert_mean nicht berücksichtigt (n=2). Beides gilt für den Fall pooling==FALSE.</p>
 </div>
@@ -221,7 +223,7 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function () {
-  window.buildTabsets("TOC");
+  window.buildTabsets("section-TOC");
 });
 
 $(document).ready(function () {
