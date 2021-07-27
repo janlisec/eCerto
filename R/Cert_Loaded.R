@@ -198,7 +198,7 @@ m_CertLoadedServer = function(id, rv, apm, selected_tab) {
     
     observe({
       CertValPlot_list = list(
-        "show" = FALSE,
+        "show" = TRUE,
         "fnc" = deparse(CertValPlot),
         "call" = str2lang('CertValPlot(data=data)'),
         "Fig01_width" = input$Fig01_width,

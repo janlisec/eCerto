@@ -207,18 +207,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       renewTabs(1)
     })
 
-    # only forward rData Upload after RData was uploaded
-    # rdataupload = shiny::reactive({
-    #   # shiny::req(getValue(rv,"Certifications"))
-    #   us = isolate(getValue(rv,c("Certifications","uploadsource")))
-    #   if(!is.null(us) && us=="RData") {
-    #     message("Certifications: forward RData to Materialtabelle")
-    #     return(getValue(rv,c("materialtabelle")))
-    #   } #else {
-    #   #  return(NULL)
-    #   #}
-    # })
-    
     # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is in Certification-UI, that's why it is here
     m_materialtabelleServer(
@@ -305,7 +293,17 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
       if("stats2" %in% input$certification_view)
         shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
-    })
+      if(!is.null(getValue(rv,c("Certifications","CertValPlot")))) {
+        if("boxplot" %in% input$certification_view) {
+          setValue(rv,c("Certifications","CertValPlot"),TRUE)
+        } else {
+            setValue(rv,c("Certifications","CertValPlot"),FALSE)
+          }
+      }
+      
+      })
+    
+
     
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
