@@ -24,14 +24,14 @@
 #'    m_CertificationUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'   rv = reactiveClass$new(init_rv()) # initiate persistent variables
-#'   observe({setValue(rv, c("Certifications","data"), test_ExcelUP()) })
-#'    observe({set_uploadsource(rv, "Certifications", uploadsource = "Excel") })
-#'   datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
+#'   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#'   shiny::observe({setValue(rv, c("Certifications","data"), test_ExcelUP()) })
+#'    shiny::observe({set_uploadsource(rv, "Certifications", uploadsource = "Excel") })
+#'   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
 #'    m_CertificationServer(
 #'      id = "test",
 #'      rv = rv,
-#'      apm.input = reactiveVal(),
+#'      apm.input = shiny::reactiveVal(),
 #'      datreturn = datreturn
 #'    )
 #'  }
@@ -153,11 +153,11 @@ m_CertificationUI = function(id) {
 
 #' @rdname mod_Certification
 #' @export
-m_CertificationServer = function(id, rv, apm.input, datreturn) {  
+m_CertificationServer = function(id, rv, apm.input, datreturn) {
   shiny::moduleServer(id, function(input, output, session) {
-    
-    uploadsource = reactiveVal(NULL)
-    observeEvent(getValue(rv,c("Certifications","uploadsource")),{
+
+    uploadsource <- shiny::reactiveVal(NULL)
+    shiny::observeEvent(getValue(rv,c("Certifications","uploadsource")),{
       o = getValue(rv,c("Certifications","uploadsource"))
       # assign upload source if (a) hasn't been assigned yet or (b), if not
       # null, has changed since the last time, for example because other data
@@ -166,39 +166,39 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
         uploadsource(o)
       }
     })
-    
+
     apm_return <- shiny::reactiveVal(NULL)
-    apm = reactiveVal()
-    rdataupload = reactiveVal()
-    renewTabs = shiny::reactiveVal(NULL)
+    apm <- shiny::reactiveVal()
+    rdataupload<- shiny::reactiveVal()
+    renewTabs <- shiny::reactiveVal(NULL)
     dat <- shiny::reactiveVal(NULL)
-    
+
     # temp
-    observeEvent(apm.input(),{
+    shiny::observeEvent(apm.input(),{
       message("---- apm.input! --------")
       apm(apm.input())
     })
-    
+
     shiny::observeEvent(getValue(rv,c("Certifications","data")), {
       message("Certification: Certification-data changed")
       shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
     })
-    
+
     # TODO isolate bringt eigentlich nix hier
-    observeEvent(uploadsource(),{
+    shiny::observeEvent(uploadsource(),{
       # when uploadsource changed, renew Analyte Tabs
       message("Certification: Uploadsource changed to ", isolate(getValue(rv,c('Certifications','uploadsource'))), "; initiate apm")
       # Creation of AnalyteParameterList.
       if(uploadsource()=="Excel") {
-        apm(analyte_parameter_list(isolate(getValue(rv,c("Certifications","data")))))
+        apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certifications","data")))))
       } else if(uploadsource()=="RData") {
         # only forward rData Upload after RData was uploaded
         message("Certifications: forward RData to Materialtabelle")
         rdataupload(getValue(rv,c("materialtabelle")))
-        if(!is.null(isolate(apm.input()))) { # RData contained "apm"
-          apm(isolate(apm.input())) #do.call(shiny::reactiveValues, apm.input())
+        if(!is.null(shiny::isolate(apm.input()))) { # RData contained "apm"
+          apm(shiny::isolate(apm.input())) #do.call(shiny::reactiveValues, apm.input())
         } else { # RData did not contain "apm" --> create
-          apm(analyte_parameter_list(isolate(getValue(rv,c("Certifications","data")))))
+          apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certifications","data")))))
         }
       } else {
         stop("unknown Upload Type")
@@ -207,6 +207,17 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       renewTabs(1)
     })
 
+    # only forward rData Upload after RData was uploaded
+    # rdataupload = shiny::reactive({
+    #   # shiny::req(getValue(rv,"Certifications"))
+    #   us = isolate(getValue(rv,c("Certifications","uploadsource")))
+    #   if(!is.null(us) && us=="RData") {
+    #     message("Certifications: forward RData to Materialtabelle")
+    #     return(getValue(rv,c("materialtabelle")))
+    #   } #else {
+    #   #  return(NULL)
+    #   #}
+    # })
     # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is in Certification-UI, that's why it is here
     m_materialtabelleServer(
@@ -217,10 +228,10 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     # --- --- --- --- --- --- --- --- --- --- ---
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
-    tablist = reactiveVal(NULL) # store created tabs; to be replaced
+    tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced
     selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
-    observeEvent(apm()[[isolate(selected_tab())]],{
+    shiny::observeEvent(apm()[[shiny::isolate(selected_tab())]],{
       message("Certifications: apm changed for ", isolate(selected_tab()))
       apm_return(apm())
       # message("app_server: apm changed, set rv.apm")
@@ -235,8 +246,8 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     )
     # --- --- --- --- --- --- --- --- --- --- ---
     # shiny::exportTestValues(CertLoadedServer.output = { try(dat()) }) # for shinytest
-    
-    
+
+
     # Calculates statistics for all available labs
     # formerly: lab_means()
     # Format example:
@@ -248,8 +259,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # data <- dat()
       shiny::req(dat())
       message("CertificationServer: dat() changed; lab_statistics changed")
-      out <-
-        plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
+      out <- plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
           data.frame(
             "mean" = mean(x, na.rm = T),
             "sd" = stats::sd(x, na.rm = T),
@@ -257,11 +267,11 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
           )
         }, .id = "Lab")
       rownames(out) <- out$Lab
-      
+
       return(out)
     })
-    
-    
+
+
     output$normality_statement <- shiny::renderText({
       l = lab_statistics()
       suppressWarnings(
@@ -276,18 +286,18 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       )
       # getData("normality_statement")
     })
-    
+
     shiny::observeEvent(dat(),{
       message("Certification: dat() changed, set datreturn.selectedAnalyteDataframe")
       ecerto::setValue(datreturn, "selectedAnalyteDataframe", dat())
     })
-    
+
     shiny::observeEvent(lab_statistics(),{
       message("Certification: lab_statistics() changed, set datreturn.lab_statistics")
       ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
     })
-    
-    
+
+
     # Box "QQ-Plot" clickable? Depends in state of Box above it
     shiny::observeEvent(input$certification_view, {
       shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
@@ -305,24 +315,25 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     
 
     
+
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
     }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-    
+
     # mStats
     output$overview_mstats <- DT::renderDataTable({
       mstats(data = dat(), precision = apm()[[selected_tab()]]$precision)
     }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-    
+
     output$qqplot <- shiny::renderPlot({
       shiny::req(lab_statistics())
       y <- lab_statistics()[, "mean"]
       stats::qqnorm(y = y)
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
-    
-    
-    
+
+
+
     #     ### LOADED END ###s
     #   } else {
     #     # else if nothing is loaded, keep Panel empty
@@ -330,7 +341,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     #   }
     # # }, ignoreInit = TRUE)
     # })
-    
+
     return(apm)
   })
 }

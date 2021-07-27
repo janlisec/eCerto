@@ -33,7 +33,7 @@ not yet
 }
 \examples{
 if (interactive()) {
-apm = reactiveVal()
+apm <- shiny::reactiveVal()
 df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
 apm(analyte_parameter_list(df))
 shiny::shinyApp(

@@ -98,7 +98,7 @@ init_rv = function() {
         "boxplot" = NULL,
         "opt" = NULL,
         "mstats" = NULL
-        
+
       ),
       "Homogeneity" = list(
         # upload
@@ -136,13 +136,13 @@ init_rv = function() {
 #' @export
 #'
 #' @examples
-#' apm = reactiveVal()
+#' apm <- shiny::reactiveVal()
 #' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
 #' apm(analyte_parameter_list(df))
-#' apm_tmp = isolate(apm())
+#' apm_tmp <- shiny::isolate(apm())
 #' apm_tmp[["A1"]]$confirmed = TRUE
 #' apm(apm_tmp)
-#' isolate(apm()[["A1"]]$confirmed) # TRUE
+#' shiny::isolate(apm()[["A1"]]$confirmed) # TRUE
 #'
 analyte_parameter_list = function(certification = NULL) {
   if(!is.null(certification)){
@@ -157,9 +157,9 @@ analyte_parameter_list = function(certification = NULL) {
     "confirmed" = FALSE # has the analyte manually been confirmed?
   )
   # l = list()
-  
+
   analytes = levels(certification[, "analyte"])
-  
+
   # create list with lists of all analytes (i.e. a nested list)
   a_param_list = rep(list(param_template), length(analytes))
   if(!is.null(certification)){

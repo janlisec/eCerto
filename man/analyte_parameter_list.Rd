@@ -20,12 +20,12 @@ which sample ids are available to be filtered at all and, for completion,
 the analyte name in case the list name fails
 }
 \examples{
-apm = reactiveVal()
+apm <- shiny::reactiveVal()
 df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
 apm(analyte_parameter_list(df))
-apm_tmp = isolate(apm())
+apm_tmp <- shiny::isolate(apm())
 apm_tmp[["A1"]]$confirmed = TRUE
 apm(apm_tmp)
-isolate(apm()[["A1"]]$confirmed) # TRUE
+shiny::isolate(apm()[["A1"]]$confirmed) # TRUE
 
 }
