@@ -8,9 +8,7 @@ from all measured values. Example would it be `n=15` without and `n=10` with lab
 
 ### Parameter
 
-#### com
-com describes the *com*bined uncertainty from all U columns: $$\sqrt{sum(x ^ 2)}$$
+- *com* describes the *com*bined uncertainty from all U columns: $$\sqrt{sum(x ^ 2)}$$
 
-#### n
-n ist die Anzahl der für die mean-Berechnung verwendeten Werte. Beispiel: Wir haben für einen beliebigen Analyten 3 Labore mit je 5 Replikaten. Wir können `cert_mean` berechnen aus den 3 Mittelwerten der Labore (n=3). Wenn ein Labor gefiltert wird, dann wird es im Plot grau angezeigt aber für cert_mean nicht berücksichtigt (n=2). Beides gilt für den Fall pooling==FALSE. 
-
+- *n* describes the amount of values used for calculting arithmetic average. Example: We have an arbitrary Analyte measured in three laboratories with five replicas each. We can calculate `cert_mean` from all three laboratory averages (`n=3`). If a laboratory was filtered, it will be grayed-out in the plot but not considered for `cert_mean` (`n=2`).
+Both is valid in case `pooling` was selected.

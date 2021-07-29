@@ -189,14 +189,10 @@ pre code {
 </ul>
 <div id="section-parameter" class="section level3">
 <h3>Parameter</h3>
-<div id="section-com" class="section level4">
-<h4>com</h4>
-<p>com describes the <em>com</em>bined uncertainty from all U columns: <span class="math display">\[\sqrt{sum(x ^ 2)}\]</span></p>
-</div>
-<div id="section-n" class="section level4">
-<h4>n</h4>
-<p>n ist die Anzahl der für die mean-Berechnung verwendeten Werte. Beispiel: Wir haben für einen beliebigen Analyten 3 Labore mit je 5 Replikaten. Wir können <code>cert_mean</code> berechnen aus den 3 Mittelwerten der Labore (n=3). Wenn ein Labor gefiltert wird, dann wird es im Plot grau angezeigt aber für cert_mean nicht berücksichtigt (n=2). Beides gilt für den Fall pooling==FALSE.</p>
-</div>
+<ul>
+<li><p><em>com</em> describes the <em>com</em>bined uncertainty from all U columns: <span class="math display">\[\sqrt{sum(x ^ 2)}\]</span></p></li>
+<li><p><em>n</em> describes the amount of values used for calculting arithmetic average. Example: We have an arbitrary Analyte measured in three laboratories with five replicas each. We can calculate <code>cert_mean</code> from all three laboratory averages (<code>n=3</code>). If a laboratory was filtered, it will be grayed-out in the plot but not considered for <code>cert_mean</code> (<code>n=2</code>). Both is valid in case <code>pooling</code> was selected.</p></li>
+</ul>
 </div>
 </div>
 </div>

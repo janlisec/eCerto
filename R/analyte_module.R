@@ -107,7 +107,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
         inputId = "tabs",
         selected =firstTab
       )
-      # set first selected Tab on TRUE
+      # set first selected Tab as conirmed
       analytes_tmp = isolate(apm())
       analytes_tmp[[firstTab]]$confirmed = TRUE
       apm(analytes_tmp)
