@@ -67,6 +67,12 @@ app_server = function(input, output, session) {
       
     }
   })
+  shiny::observeEvent(getValue(datreturn,"t_H"),{
+    shiny::updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "tP_certification")
+  })
   shiny::observeEvent(input$navbarpage, {
     # when Homogeneity is clicked but has no been uploaded yet --> change to
     # Upload page
@@ -129,20 +135,14 @@ app_server = function(input, output, session) {
   h_vals = m_HomogeneityServer(
     id = "Homogeneity",
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
-    cert = shiny::reactive({getValue(rv,"Certifications")})
+    cert = shiny::reactive({getValue(rv,"Certifications")}),
+    datreturn = datreturn
   )
 
   # --- --- --- --- --- --- --- --- --- --- ---
   .longtermstabilityServer("lts")
   # --- --- --- --- --- --- --- --- --- --- ---
 
-  trh = m_TransferHomogeneityServer(
-    id = "trH",
-    homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
-    matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
-    matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
-  )
-  # --- --- --- --- --- --- --- --- --- --- ---
 
   observeEvent(getValue(datreturn,"mater_table"),{
     message("app_server: datreturn.mater_table changed; set rv.materialtabelle")
@@ -150,15 +150,7 @@ app_server = function(input, output, session) {
              getValue(datreturn,"mater_table"))
   })
 
-  # to Certification page after Transfer of Homogeneity Data
-  shiny::observeEvent(trh(),{
-    message("app_server: trh() changed, set datreturn.t_H")
-    setValue(datreturn,"t_H",trh())
-      shiny::updateNavbarPage(
-        session = session,
-        inputId = "navbarpage",
-        selected = "tP_certification")
-  })
+
 
   # After Homogeneity values have been uploaded
   shiny::observeEvent(h_vals(),{

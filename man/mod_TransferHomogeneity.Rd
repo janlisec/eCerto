@@ -31,3 +31,22 @@ the possible columns of materialtable to transfer to.
 \details{
 not yet
 }
+\examples{
+if (interactive()) {
+shiny::shinyApp(
+ ui = shiny::fluidPage(
+   m_TransferHomogeneityUI(id = "test")
+ ),
+ server = function(input, output, session) {
+   datreturn = ecerto:::test_datreturn()
+   m_TransferHomogeneityServer(
+     id = "test",
+     homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
+     matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
+     matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+   )
+ }
+)
+}
+
+}

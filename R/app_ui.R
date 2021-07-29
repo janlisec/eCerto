@@ -85,7 +85,6 @@ app_ui = function(){
           title = "Homogeneity",
           icon = shiny::icon("angle-right"),
           value = "tP_homogeneity",
-          shiny::wellPanel(m_TransferHomogeneityUI("trH")),
           m_HomogeneityUI("Homogeneity")
         ),
         shiny::tabPanel(
