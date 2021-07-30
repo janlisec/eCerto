@@ -225,7 +225,7 @@ test_certification = function() {
 }
 
 test_ExcelUP = function() {
-  # After Upload of two Excel Files, what is saved in c(Certifications,data) and Input to Certifications
+  # After Upload of two Excel Files, what is saved in c(Certification,data) and Input to Certifications
   structure(list(ID = 1:24, Lab = c("L1", "L1", "L1", "L1", "L1", 
                                     "L1", "L1", "L1", "L1", "L1", "L1", "L1", "L2", "L2", "L2", "L2", 
                                     "L2", "L2", "L2", "L2", "L2", "L2", "L2", "L2"), analyte = structure(c(1L, 

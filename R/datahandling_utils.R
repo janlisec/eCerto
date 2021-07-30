@@ -19,8 +19,8 @@
 #' rv <- reactiveClass$new(init_rv())
 #' # Only run examples in interactive R sessions
 #' if (interactive()) {
-#'  setValue(rv, c("Certifications","data"), 5)
-#'  getValue(rv, c("Certifications","data")) # is 5?
+#'  setValue(rv, c("Certification","data"), 5)
+#'  getValue(rv, c("Certification","data")) # is 5?
 #'  setValue(rv, c("General","user"),"Franz")
 #'  getValue(rv, c("General","user"))
 #' }

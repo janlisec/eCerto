@@ -69,7 +69,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
 
       # append/prepend a tab for each analyte available
       for (a.name in names(isolate(apm()))) {
-        message("append Tab: ", a.name)
+        # message("append Tab: ", a.name)
         tablist_tmp <- c(tablist(), a.name) # add to tablist for removing later
         tablist(tablist_tmp)
         shiny::appendTab(
@@ -126,7 +126,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
 
     # change color of tab when selected by changing class
     markConfirmed = function(tab) {
-      message("color tab: ", tab)
+      # message("color tab: ", tab)
       # s = paste0("#",ns("tabs")," li a[data-value=",tab,"]")
       s = paste0(" li a[data-value=",tab,"]")
       shinyjs::addClass(

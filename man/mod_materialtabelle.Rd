@@ -13,7 +13,7 @@ m_materialtabelleServer(id, rdataUpload, datreturn)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{rdataUpload}{if uploaded via RData - reactive({rv$Certifications$materialtabelle})}
+\item{rdataUpload}{if uploaded via RData - reactive({rv$Certification$materialtabelle})}
 
 \item{datreturn}{the session data (R6) object (ID Lab analyte replicate  value unit S_flt L_flt)}
 }

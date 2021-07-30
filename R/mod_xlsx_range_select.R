@@ -9,12 +9,12 @@
 #' @details not yet
 #'
 #' @param id Module ID when called in a shiny app.
-#' @param x Shiny fileInput referencing excel file(s).
+#' @param current_file_input Shiny fileInput referencing excel file(s).
 #' @param sheet Number of the sheet to preview.
 #' @param excelformat Selected sub format as reactive string.
 #' @param silent Option to print or omit status messages.
 #'
-#' @return A reactiveValues list.
+#' @return A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt} (contains File column)
 #'
 #' @examples
 #' if (interactive()) {
@@ -40,7 +40,7 @@
 #'         shiny::selectInput(
 #'          inputId = "excelformat", 
 #'          label = "Modul parameter: excelformat", 
-#'          choices = c("Certifications","Homogeneity","Stability")
+#'          choices = c("Certification","Homogeneity","Stability")
 #'         )
 #'      ),
 #'      shiny::column(
@@ -79,9 +79,9 @@ xlsx_range_select_UI <- function(id) {
 
 #' @rdname xlsx_range_select
 #' @export
-xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::reactive({"Certifications"}), silent=TRUE) {
+xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"}), silent=FALSE) {
 
-  stopifnot(shiny::is.reactive(x))
+  stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))
   ns <- shiny::NS(id)
 
@@ -93,11 +93,11 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
     } #getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
 
     tab <- shiny::reactive({
-      shiny::req(x(), sheet())
+      shiny::req(current_file_input(), sheet())
       # use different modes of fnc_load_xlsx to import data depending on file type
-      if (!silent) message("xlsx_range_select_Server: reactive(tab): load ", nrow(x()), " files")
-      if (shiny::isolate(excelformat())=="Certifications") {
-        l <- lapply(x()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
+      if (!silent) message("xlsx_range_select_Server: reactive(tab): load ", nrow(current_file_input()), " files")
+      if (shiny::isolate(excelformat())=="Certification") {
+        l <- lapply(current_file_input()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
         shiny::validate(
           shiny::need(all(!sapply(l, is.null)),"uploaded Excel contain an empty one"),
           shiny::need(length(l)>=2,"less than 2 laboratory files uploaded. Upload more!")
@@ -106,7 +106,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
         test <- length(unique(sapply(l, nrow)))==1 && length(unique(sapply(l, ncol)))==1
         if (!test) { warning("xlsx_range_select_Server: Certification Excel Files contain different dimensions.") }
       } else {
-        l <- list(ecerto::fnc_load_xlsx(filepath = x()$datapath[1], sheet = sheet(), method="openxlsx"))
+        l <- list(ecerto::fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method="openxlsx"))
       }
       return(l)
     })
@@ -117,7 +117,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       if (!silent) 
         message("xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
       tab_param$tab <- tab()
-      tab_param$tab_upload = isolate(tab()) # table as during upload (for checking if row and column was selected)
+      tab_param$tab_upload = isolate(tab()) # unchanged table from upload (for checking if row and column was selected)
       tab_param$start_row <- 1
       tab_param$start_col <- 1
       tab_param$end_row <- nrow(tab()[[1]])
@@ -129,15 +129,19 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
                   tab_param$end_row)
     })
 
-    shiny::observeEvent(tab_param$tab,{
-      if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
-      if(!is.null(unlist(tab_param$tab))){
-        tab_param$tab_flt = tab_param$tab
-        for (i in 1:length(tab_param$tab_flt)) {
-          tab_param$tab_flt[[i]][["File"]] = rep(x()$name[i], nrow(tab_param$tab_flt[[i]]))
-        }
-      }
-    })
+    # # TODO Eventuell in ExcelUploadControl verschieben
+    # shiny::observeEvent(tab_param$tab,{
+    #   if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
+    #   if(!is.null(unlist(tab_param$tab))){
+    #     tab_param$tab_flt = tab_param$tab
+    #     for (i in 1:length(tab_param$tab_flt)) {
+    #       tab_param$tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_param$tab_flt[[i]]))
+    #     }
+    #   }
+    # })
+    
+    
+    
 
     # das Proxy der Tabelle, um sicherstellen zu können, dass immer nur 2 Zellen angewählt werden können (proxy version kann serverseitig manipuliert werden)
     uitab_proxy <- DT::dataTableProxy("uitab")
@@ -210,16 +214,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
       }
     })
 
-    # TODO Eventuell in ExcelUploadControl verschieben
-    shiny::observeEvent(tab_param$tab,{
-      if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
-      if(!is.null(unlist(tab_param$tab))){
-        tab_param$tab_flt = tab_param$tab
-        for (i in 1:length(tab_param$tab_flt)) {
-          tab_param$tab_flt[[i]][["File"]] = rep(x()$name[i], nrow(tab_param$tab_flt[[i]]))
-        }
-      }
-    })
+
 
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({
@@ -238,7 +233,7 @@ xlsx_range_select_Server <- function(id, x=NULL, sheet=NULL, excelformat=shiny::
 
     output$uitxt <- shiny::renderUI({
       shiny::req(tab())
-      str1 <- ifelse(is.null(x()), "", paste("You see a preview of File:", x()$name[1]))
+      str1 <- ifelse(is.null(current_file_input()), "", paste("You see a preview of File:", current_file_input()$name[1]))
       str2 <- "You may select 2 cells (top left and bottom right) by mouse click to specify a range."
       #str3 <- paste("Currently selected range:", paste0(LETTERS[tab_param$start_col], tab_param$start_row, ":", LETTERS[tab_param$end_col], tab_param$end_row))
       str3 <- paste("Currently selected range:", tab_param$rng)

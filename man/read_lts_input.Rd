@@ -15,5 +15,5 @@ read_lts_input(file = NULL, simplify = FALSE)
 Excel
 }
 \description{
-Read Excel function for Long-term-stability data.
+Reads Excel function for Long-term-stability data.
 }

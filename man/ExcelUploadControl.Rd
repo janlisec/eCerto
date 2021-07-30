@@ -33,7 +33,7 @@ if (interactive()) {
 shiny::shinyApp(
  ui = shiny::fluidPage(
    shiny::selectInput(inputId = "excelformat", label = "excelformat",
-     choices = c("Certifications","Homogeneity","Stability")),
+     choices = c("Certification","Homogeneity","Stability")),
    shiny::hr(),
    m_ExcelUploadControl_UI(id = "test")
  ),

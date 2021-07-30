@@ -10,7 +10,7 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param homog The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).
-#' @param cert The Certification table - shiny::reactive({getValue(rv,"Certifications")}).
+#' @param cert The Certification table - shiny::reactive({getValue(rv,"Certification")}).
 #' @param datreturn session-only reactiveValues --> for transfer Module
 #'
 #' @examples
@@ -39,13 +39,11 @@
 m_HomogeneityUI <- function(id) {
   shiny::tabsetPanel(
     id = shiny::NS(id, "HomogeneityPanel"),
-    type = "hidden",
-    # when nothing is loaded
+    type = "hidden", # when nothing is loaded
     shiny::tabPanel(
       title = "standby-Panel",
       value  = "standby",
-      "emtpy channel here, nix los"
-      #helpText("Example Table"), imageOutput("myImage08a", inline = TRUE)
+      "nothing has uploaded yet"
     ),
     # when something is loaded
     shiny::tabPanel(

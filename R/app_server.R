@@ -35,7 +35,7 @@ app_server = function(input, output, session) {
   
   # when Start Button was clicked
   shiny::observeEvent(input$link_to_start, {
-    to_startPage(session, value="Certifications")
+    to_startPage(session, value="Certification")
   })
   # when RData was uploaded
   shiny::observeEvent(upload_notif(),{
@@ -48,11 +48,11 @@ app_server = function(input, output, session) {
   }, ignoreNULL = TRUE)
   # when Excel was uploaded with LOAD-Button...
   shiny::observeEvent(ExcelUp(),{
-    message("app_server: Excel Upload, set rv.Data")
+    message("app_server: Excel Upload, set rv.Data; set rv.Uploadsource")
     ex_intern = isolate(excelformat())
     setValue(rv, c(ex_intern,"data"), ExcelUp())
-    set_uploadsource(rv, ex_intern, uploadsource = "Excel")
-    if(ex_intern == "Certifications"){
+    setValue(rv, c(ex_intern, "uploadsource"),value =  "Excel")
+    if(ex_intern == "Certification"){
       # message("observer: certification was uploaded")
       shiny::updateNavbarPage(
         session = session,
@@ -64,7 +64,10 @@ app_server = function(input, output, session) {
         inputId = "navbarpage",
         selected = "tP_homogeneity")
     } else if (ex_intern == "Stability") {
-      
+      shiny::updateNavbarPage(
+        session = session,
+        inputId = "navbarpage",
+        selected = "tP_Stability")
     }
   })
   shiny::observeEvent(getValue(datreturn,"t_H"),{
@@ -82,8 +85,8 @@ app_server = function(input, output, session) {
     }
     # ... same for Certification ...
     if (input$navbarpage == "tP_certification" &&
-        is.null(getValue(rv, c("Certifications","uploadsource"))) ) {
-      to_startPage(session, value="Certifications")
+        is.null(getValue(rv, c("Certification","uploadsource"))) ) {
+      to_startPage(session, value="Certification")
     }
     # ... and Stability
     if (input$navbarpage == "tP_Stability" &&
@@ -111,16 +114,11 @@ app_server = function(input, output, session) {
   })
 
 # Panels ------------------------------------------------------------------
-  apm.upload = eventReactive(getValue(rv,c("Certifications","uploadsource")),{
-    message("app_server: uploadsource changed")
-    if(getValue(rv,c("Certifications","uploadsource"))=="RData"){
-      getValue(rv,c("General","apm"))
-    }
-  })
+
   apm = m_CertificationServer(
     id = "certification", 
     rv = rv, 
-    apm.input =  apm.upload,
+    apm.input =  reactive({getValue(rv,c("General","apm"))}),
     datreturn = datreturn
   )
   
@@ -135,7 +133,7 @@ app_server = function(input, output, session) {
   h_vals = m_HomogeneityServer(
     id = "Homogeneity",
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
-    cert = shiny::reactive({getValue(rv,"Certifications")}),
+    cert = shiny::reactive({getValue(rv,"Certification")}),
     datreturn = datreturn
   )
 

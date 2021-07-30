@@ -11,7 +11,7 @@
 #'not yet
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param rdataUpload if uploaded via RData - reactive({rv$Certifications$materialtabelle})
+#' @param rdataUpload if uploaded via RData - reactive({rv$Certification$materialtabelle})
 #' @param datreturn the session data (R6) object (ID Lab analyte replicate  value unit S_flt L_flt)
 #'
 #'@return nothing

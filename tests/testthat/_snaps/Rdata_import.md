@@ -155,7 +155,7 @@
 ---
 
     Code
-      getValue(rv, "Certifications")
+      getValue(rv, "Certification")
     Output
       $data
            ID Lab analyte replicate   value unit S_flt L_flt
@@ -291,90 +291,6 @@
       
       $uploadsource
       [1] "RData"
-      
-      $lab_means
-      NULL
-      
-      $cert_mean
-      NULL
-      
-      $cert_sd
-      NULL
-      
-      $normality_statement
-      NULL
-      
-      $precision
-      NULL
-      
-      $data_kompakt
-      NULL
-      
-      $CertValPlot
-      $CertValPlot$show
-      [1] FALSE
-      
-      $CertValPlot$fnc
-       [1] "function (data = NULL) "                                                          
-       [2] "{"                                                                                
-       [3] "    data.stats <- plyr::ldply(split(data[, \"value\"], data[, \"Lab\"]), "        
-       [4] "        function(x) {"                                                            
-       [5] "            data.frame(MW = mean(x, na.rm = T), Median = stats::median(x, "       
-       [6] "                na.rm = T), SD = stats::sd(x, na.rm = T), n = sum(is.finite(x)))" 
-       [7] "        }, .id = \"Lab\")"                                                        
-       [8] "    data.stats <- data.frame(data.stats, Filter = sapply(split(data[, "           
-       [9] "        \"L_flt\"], data$Lab), all))"                                             
-      [10] "    data.stats <- data.stats[order(data.stats$MW), ]"                             
-      [11] "    graphics::par(mar = c(5, 4, 0, 0) + 0.2)"                                     
-      [12] "    plot(x = range(1:nrow(data.stats)), axes = F, y = range(c(data.stats$MW + "   
-      [13] "        data.stats$SD, data.stats$MW - data.stats$SD)), type = \"n\", "           
-      [14] "        main = \"\", ylab = paste0(unique(data[, \"analyte\"])[1], "              
-      [15] "            \" [\", unique(data[, \"unit\"])[1], \"]\"), xlab = \"Lab\", "        
-      [16] "        xlim = c(0.5, nrow(data.stats) + 0.5))"                                   
-      [17] "    graphics::axis(1, at = 1:nrow(data.stats), labels = data.stats$Lab)"          
-      [18] "    graphics::axis(2, las = 2)"                                                   
-      [19] "    graphics::abline(h = mean(data.stats$MW[!data.stats[, \"Filter\"]]), "        
-      [20] "        col = 3, lwd = 2)"                                                        
-      [21] "    graphics::abline(h = mean(data.stats$MW[!data.stats[, \"Filter\"]]) + "       
-      [22] "        c(-1, 1) * stats::sd(data.stats$MW[!data.stats[, \"Filter\"]]), "         
-      [23] "        lty = 2, col = grDevices::grey(0.8))"                                     
-      [24] "    graphics::segments(x0 = 1:nrow(data.stats), y0 = data.stats$MW - "            
-      [25] "        data.stats$SD, y1 = data.stats$MW + data.stats$SD)"                       
-      [26] "    lw <- 0.15"                                                                   
-      [27] "    graphics::segments(x0 = 1:nrow(data.stats) - lw, x1 = 1:nrow(data.stats) + "  
-      [28] "        lw, y0 = data.stats$MW - data.stats$SD)"                                  
-      [29] "    graphics::segments(x0 = 1:nrow(data.stats) - lw, x1 = 1:nrow(data.stats) + "  
-      [30] "        lw, y0 = data.stats$MW + data.stats$SD)"                                  
-      [31] "    graphics::symbols(x = 1:nrow(data.stats), y = data.stats$MW, "                
-      [32] "        circles = rep(lw, nrow(data.stats)), bg = c(3, grDevices::grey(0.8))[1 + "
-      [33] "            data.stats[, \"Filter\"]], add = T, inches = FALSE)"                  
-      [34] "    graphics::legend(x = \"topleft\", bty = \"n\", lty = c(1, 2), "               
-      [35] "        col = c(3, grDevices::grey(0.8)), legend = c(\"mean\", "                  
-      [36] "            \"sd\"))"                                                             
-      [37] "    graphics::box()"                                                              
-      [38] "}"                                                                                
-      
-      $CertValPlot$call
-      CertValPlot(data = data)
-      
-      $CertValPlot$Fig01_width
-      [1] 270
-      
-      $CertValPlot$Fig01_height
-      [1] 400
-      
-      
-      $stats
-      NULL
-      
-      $boxplot
-      NULL
-      
-      $opt
-      NULL
-      
-      $mstats
-      NULL
       
 
 ---

@@ -15,7 +15,7 @@ m_HomogeneityServer(id, homog, cert, datreturn)
 
 \item{homog}{The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).}
 
-\item{cert}{The Certification table - shiny::reactive({getValue(rv,"Certifications")}).}
+\item{cert}{The Certification table - shiny::reactive({getValue(rv,"Certification")}).}
 
 \item{datreturn}{session-only reactiveValues --> for transfer Module}
 }

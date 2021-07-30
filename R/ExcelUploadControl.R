@@ -20,7 +20,7 @@
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    shiny::selectInput(inputId = "excelformat", label = "excelformat",
-#'      choices = c("Certifications","Homogeneity","Stability")),
+#'      choices = c("Certification","Homogeneity","Stability")),
 #'    shiny::hr(),
 #'    m_ExcelUploadControl_UI(id = "test")
 #'  ),
@@ -76,7 +76,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         shinyjs::hideElement(id = "sheet_number")
         shinyjs::hideElement(id = "btn_load")
         current_file_input(NULL)
-        shiny::fileInput(multiple = excelformat()=="Certifications", inputId = shiny::NS(id,"excel_file"), label = "Select Excel (xlsx)", accept = "xlsx")
+        shiny::fileInput(multiple = excelformat()=="Certification", inputId = shiny::NS(id,"excel_file"), label = "Select Excel (xlsx)", accept = "xlsx")
       } else {
         shiny::HTML("<p style='color:red;'>Already uploaded</p>")
       }
@@ -93,9 +93,10 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
     })
     
     # --- --- --- --- --- --- --- --- --- ---
+    # Module to select rows and columns
     rv_xlsx_range_select <- xlsx_range_select_Server(
       id = "Upload",
-      x = current_file_input,
+      current_file_input = current_file_input,
       sheet = shiny::reactive({ input$sheet_number }),
       excelformat = excelformat
     )
@@ -105,26 +106,34 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
     
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
+      # Append File column
       message("ExcelUploadControl: Load-button clicked")
-      dat <- rv_xlsx_range_select$tab_flt
+      # tab_flt <- rv_xlsx_range_select$tab_flt
+      # if(!is.null(unlist(tab_param$tab))){
+        tab_flt = rv_xlsx_range_select$tab
+        for (i in 1:length(tab_flt)) {
+          tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_flt[[i]]))
+        }
+      # }
+      
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {
-        dat <- dat[[1]]
-        if (!"analyte" %in% colnames(dat)) message("m_ExcelUploadControl_Server: observeEvent(input$go): No column 'analyte' found in input file.")
-        if (!"value" %in% colnames(dat)) message("m_ExcelUploadControl_Server: observeEvent(input$go): No column 'value' found in input file.")
-        if (!is.numeric(dat[,"value"])) message("m_ExcelUploadControl_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
-        out(dat)
+        tab_flt <- tab_flt[[1]]
+        if (!"analyte" %in% colnames(tab_flt)) message("m_ExcelUploadControl_Server: observeEvent(input$go): No column 'analyte' found in input file.")
+        if (!"value" %in% colnames(tab_flt)) message("m_ExcelUploadControl_Server: observeEvent(input$go): No column 'value' found in input file.")
+        if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUploadControl_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
+        out(tab_flt)
       }
-      if(excelformat() == "Certifications") {
-        
+      if(excelformat() == "Certification") {
         uploadExcel = function(){
-          
           # perform minimal validation tests
-          if (!length(dat)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
+          if (!length(tab_flt)>=2) message("m_ExcelUploadControl_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
+          # Try-Catch any errors during upload and open a modal window if so
           results = tryCatch({
-            expr = combine_cert_data(df_list = dat)
+            expr = combine_cert_data(df_list = tab_flt)
           },
           error = function(errormessage) {
+            message("Excel-Upload: Error occured: ", errormessage)
             showModal(
               modalDialog(
                 title = "Something went wrong with Upload.",
@@ -140,10 +149,10 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
           out(results)
         }
         
-        # in case it is Cerrification module and the input table has not been filtered 
-        # (columns of tab_flt contains File column), then ask if this is correct
-        if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab_flt[[1]]) -1 &
-           nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab_flt[[1]])
+        # in case (a) it is Certification module and (b) the input table has not
+        # been filtered, then ask if this is correct
+        if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab[[1]]) &
+           nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab[[1]])
         ) {
           shinyalert::shinyalert(
             title = "Forgot select row and column?", 
@@ -154,11 +163,23 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
           )
          } else {
           uploadExcel()
-  
         }
       }
       if(excelformat() == "Stability") {
-        out(dat[[1]])
+        
+        test_format <- openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
+        # TODO Wie kann das erste If-Statement umgebaut werden, dass hier keine
+        # Excel hochgeladen wird?
+        if (ncol(test_format)>=3 && "KW" %in% colnames(test_format)) {
+          s_dat <- read_lts_input(file = input$s_input_file$datapath[1], simplify=TRUE)
+          colnames(s_dat)[colnames(s_dat)=="KW"] <- "analyte"
+        } else {
+          s_dat <- plyr::ldply(openxlsx::getSheetNames(file = input$s_input_file$datapath[1]), function(x) { 
+            cbind("analyte"=x, openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = x, detectDates=TRUE))
+          }, .id = NULL)
+        }
+        
+        out(tab_flt[[1]])
       }
       
     })

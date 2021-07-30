@@ -8,7 +8,7 @@
 \usage{
 m_CertLoadedUI(id)
 
-m_CertLoadedServer(id, rv, apm, selected_tab)
+m_CertLoadedServer(id, rv, apm, selected_tab, check)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}

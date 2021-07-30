@@ -1,9 +1,9 @@
 test_that("Boxplot-View toggled saved in rv", 
   code = {
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
-    observe({setValue(rv_test, c("Certifications","data"), test_ExcelUP()) })
-    observe({set_uploadsource(rv_test, "Certifications", uploadsource = "Excel") })
-    datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
+    shiny::isolate({ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_ExcelUP()) })
+    shiny::isolate({ecerto::setValue(rv_test, c("Certification","uploadsource"), uploadsource = "Excel") })
+    datreturn = ecerto::reactiveClass$new(init_datreturn()) # initiate runtime variables
     # suppressMessages(
       shiny::testServer(app = m_CertificationServer,
                         args = list(
@@ -14,7 +14,7 @@ test_that("Boxplot-View toggled saved in rv",
                         expr =  {
                           session$flushReact()
                           session$flushReact()
-                          print(getValue(rv,"Certifications"))
+                          print(getValue(rv,"Certification"))
                           print(input$certification_view)
                         }
       )

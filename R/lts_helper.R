@@ -101,7 +101,7 @@ plot_lts_data <- function(x=NULL, type=1) {
 
 #' @title read_lts_input.
 #'
-#' @description Read Excel function for Long-term-stability data.
+#' @description Reads Excel function for Long-term-stability data.
 #'
 #' @param file Path to Excel File
 #' @param simplify Try to simplify list of imported Excel files into data.frame
