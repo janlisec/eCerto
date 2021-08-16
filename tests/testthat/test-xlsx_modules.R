@@ -1,15 +1,5 @@
 local_edition(3)
-xlsx_test = list(
-  datapath = c(
-    system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
-    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
-    system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
-  ),
-  name = c(
-    "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
-    "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
-    "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
-)
+
 
 
 
@@ -17,19 +7,33 @@ xlsx_test = list(
 # Certification Test ------------------------------------------------------
 
 
-excelformat_test = shiny::reactiveVal("Certifications")
-# # test_that("Successful Upload test",code = {
-# shiny::testServer(
-#   app = m_ExcelUploadControl_Server,
-#   args = list(excelformat=excelformat_test, check = dat_test),
-#   expr =  {
-#     session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
-#     # expect_snapshot(out$tab)
-#     print(reactiveValuesToList(out))
-#
-#   }
-# )
-# # })
+
+test_that("Successful Upload test",code = {
+  excelformat_test = shiny::reactiveVal("Certification")
+  check = shiny::reactiveVal(TRUE)
+  xlsx_test = list(
+    datapath = c(
+      system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
+      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
+    ),
+    name = c(
+      "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
+      "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+      "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
+  )
+  shiny::testServer(
+    app = m_ExcelUploadControl_Server,
+    args = list(excelformat=excelformat_test, check = check),
+    expr =  {
+      session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
+      session$setInputs(go = "click")
+      print(out())
+      # expect_true("File" %in% colnames(out()[[1]]))
+      
+    }
+  )
+})
 
 
 
@@ -52,7 +56,7 @@ test_that("Successful Homogeneity Upload test",code = {
         session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
       # )
 
-      expect_snapshot(rv_xlsx_range_select$tab_flt)
+      # expect_snapshot(rv_xlsx_range_select$tab_flt)
       session$setInputs(go = "click")
       # expect_message(ex(), "go clicked")
       expect_snapshot(session$returned())

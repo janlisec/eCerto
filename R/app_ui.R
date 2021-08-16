@@ -85,7 +85,6 @@ app_ui = function(){
           title = "Homogeneity",
           icon = shiny::icon("angle-right"),
           value = "tP_homogeneity",
-          shiny::wellPanel(m_TransferHomogeneityUI("trH")),
           m_HomogeneityUI("Homogeneity")
         ),
         shiny::tabPanel(
@@ -109,12 +108,7 @@ app_ui = function(){
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        shiny::includeMarkdown(system.file(package = "ecerto","help","materialtabelle.md"))
-        # source(
-        #   file = "ui_tabPanel_help.R",
-        #   local = TRUE,
-        #   verbose = FALSE
-        # )$value
+        shiny::includeCSS(system.file(package = "ecerto","help","help_start.html")) # currently includeCSS, since includeHTML blocking Navbar
       )
     )
   ) # end taglist

@@ -69,7 +69,7 @@ init_rv = function() {
   rv <- do.call(
     shiny::reactiveValues,
     list(
-      "modules" = c("Certifications","Homogeneity","Stability"), # names of the modules; returned by rv$names
+      "modules" = c("Certification","Homogeneity","Stability"), # names of the modules; returned by rv$names
       "General" = list(
         # save
         "user" = NULL,
@@ -81,24 +81,31 @@ init_rv = function() {
       ),
       # materialtabelle
       "materialtabelle" = NULL,
-      "Certifications" = list(
-        # upload
+      # data input
+      "Certification" = list(
         "data" = NULL,
         "input_files" = NULL,
-        "uploadsource" = NULL,
-        # processing
+        "uploadsource" = NULL
+      ),
+      # processing
+      "Certification.processing" = list(
         "lab_means" = NULL,
         "cert_mean" = NULL,
         "cert_sd" = NULL,
         "normality_statement" = NULL,
         "precision" = NULL,
         "data_kompakt" = NULL,
-        "CertValPlot" = NULL,
+        "CertValPlot" = list(
+          "show" = NULL,
+          "fnc" = NULL,
+          "call" = NULL,
+          "Fig01_width" = NULL,
+          "Fig01_height" = NULL
+        ),
         "stats" = NULL,
         "boxplot" = NULL,
         "opt" = NULL,
         "mstats" = NULL
-
       ),
       "Homogeneity" = list(
         # upload
@@ -157,9 +164,9 @@ analyte_parameter_list = function(certification = NULL) {
     "confirmed" = FALSE # has the analyte manually been confirmed?
   )
   # l = list()
-
+  
   analytes = levels(certification[, "analyte"])
-
+  
   # create list with lists of all analytes (i.e. a nested list)
   a_param_list = rep(list(param_template), length(analytes))
   if(!is.null(certification)){

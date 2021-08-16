@@ -1,0 +1,7 @@
+# Homogeneity
+
+### Uncertainty
+
+```{r child = 'uncertainty.Rmd'}
+```
+

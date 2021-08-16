@@ -1,9 +1,8 @@
 # Successful Homogeneity Upload test
 
     Code
-      rv_xlsx_range_select$tab_flt
+      session$returned()
     Output
-      [[1]]
          analyte H_type Flasche     value  unit            File
       1       Fe radial       3 0.2897693  mM/L Homog_test.xlsx
       2       Fe radial      36 0.2967753  mM/L Homog_test.xlsx
@@ -95,5 +94,4 @@
       88      Mg  axial     325 0.2866047 mg/mL Homog_test.xlsx
       89      Mg  axial     351 0.2902880 mg/mL Homog_test.xlsx
       90      Mg  axial     397 0.2854040 mg/mL Homog_test.xlsx
-      
 

@@ -1,0 +1,13 @@
+Using ANOVA on a one factor linear model we determined from
+`N = h[i,N]` containers with `n = h[i,n]`replicates each:
+
+- Variance within containers `(MS_within, s_w) = h[i,MSwithin]`
+- Variance between containers `(MS_among, s_a) = h[i,MSamong]`
+
+Using formula:
+$$\sqrt{s_a-s_w}/\text{mean}$$
+the relative uncertainty `(s_bb) = h[i,s_bb]` and `s_bb_min` using: 
+$$\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4}/\text{mean}$$ 
+`=h[i,s_bb_min]`.  The larger of both values, `s_bb` and `s_bb_min`, is transfered as uncertainty contribution. 
+
+Note: `s_bb = 0` for `s_a < s_w`

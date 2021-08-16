@@ -1,0 +1,14 @@
+
+
+## Materialtabelle
+
+- *pooling* means that `cert_val` is not estimated from arithmetic average, but rather
+from all measured values. Example would it be `n=15` without and `n=10` with lab-filter.
+
+
+### Parameter
+
+- *com* describes the *com*bined uncertainty from all U columns: $$\sqrt{sum(x ^ 2)}$$
+
+- *n* describes the amount of values used for calculting arithmetic average. Example: We have an arbitrary Analyte measured in three laboratories with five replicas each. We can calculate `cert_mean` from all three laboratory averages (`n=3`). If a laboratory was filtered, it will be grayed-out in the plot but not considered for `cert_mean` (`n=2`).
+Both is valid in case `pooling` was selected.

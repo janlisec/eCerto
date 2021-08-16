@@ -155,7 +155,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             }
             # reset time_stamp with current $$ToDo think if this is really desirable
             setValue(rv,c("General","time_stamp"),Sys.time())
-            set_uploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
+            setValue(rv,c("Certification","uploadsource"),value = "RData")
             message("RDataImport: Non-legacy upload finished")
           } else {
             allgivenexpected = c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
@@ -168,25 +168,25 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
       } else {
         if ("Certification" %in% names(res) && !is.null(res$Certification)) {
           if (!silent) message("RDataImport_Server: Cert data transfered")
-          setValue(rv,c("Certifications","data"),res[["Certification"]][["data_input"]])
-          setValue(rv,c("Certifications","input_files"),res[["Certification"]][["input_files"]])
-          set_uploadsource(rv = rv, m = "Certifications",uploadsource = "RData")
+          setValue(rv,c("Certification","data"),res[["Certification"]][["data_input"]])
+          setValue(rv,c("Certification","input_files"),res[["Certification"]][["input_files"]])
+          setValue(rv,c("Certification","uploadsource"),value = "RData")
           # save
           setValue(rv,c("General","user"),res$Certification$user)
           setValue(rv,c("General","study_id"),res$Certification$study_id)
           # processing
-          setValue(rv,c("Certifications","lab_means"), res[["Certification"]][["lab_means"]])
-          setValue(rv,c("Certifications","cert_mean"),res[["Certification"]][["cert_mean"]])
-          setValue(rv,c("Certifications","cert_sd"),res[["Certification"]][["cert_sd"]])
-          setValue(rv,c("Certifications","normality_statement"),res[["Certification"]][["normality_statement"]])
-          setValue(rv,c("Certifications","precision"),res[["Certification"]][["precision"]])
+          setValue(rv,c("Certification.processing","lab_means"), res[["Certification"]][["lab_means"]])
+          setValue(rv,c("Certification.processing","cert_mean"),res[["Certification"]][["cert_mean"]])
+          setValue(rv,c("Certification.processing","cert_sd"),res[["Certification"]][["cert_sd"]])
+          setValue(rv,c("Certification.processing","normality_statement"),res[["Certification"]][["normality_statement"]])
+          setValue(rv,c("Certification.processing","precision"),res[["Certification"]][["precision"]])
 
-          setValue(rv,c("Certifications","data_kompakt"),res[["Certification"]][["data_kompakt"]])
-          setValue(rv,c("Certifications","CertValPlot"),res[["Certification"]][["CertValPlot"]])
-          setValue(rv,c("Certifications","stats"),res[["Certification"]][["stats"]])
-          setValue(rv,c("Certifications","boxplot"),res[["Certification"]][["boxplot"]])
-          setValue(rv,c("Certifications","opt"),res[["Certification"]][["opt"]])
-          setValue(rv,c("Certifications","mstats"),res[["Certification"]][["mstats"]])
+          setValue(rv,c("Certification.processing","data_kompakt"),res[["Certification"]][["data_kompakt"]])
+          setValue(rv,c("Certification.processing","CertValPlot"),res[["Certification"]][["CertValPlot"]])
+          setValue(rv,c("Certification.processing","stats"),res[["Certification"]][["stats"]])
+          setValue(rv,c("Certification.processing","boxplot"),res[["Certification"]][["boxplot"]])
+          setValue(rv,c("Certification.processing","opt"),res[["Certification"]][["opt"]])
+          setValue(rv,c("Certification.processing","mstats"),res[["Certification"]][["mstats"]])
           # materialtabelle
           setValue(rv,c("materialtabelle"),res[["Certification"]][["cert_vals"]])
         }

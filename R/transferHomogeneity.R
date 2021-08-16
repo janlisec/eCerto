@@ -18,11 +18,28 @@
 #' @param matTab_col_code columns of materialtabelle to be transferred to
 #' @param matTab_analytes available analytes of materialtabelle
 #'
-#'@return
-#'A reactive and one-column dataframe, containing the data to be merged.
+#' @return
+#' A reactive and one-column dataframe, containing the data to be merged.
 #'
 #' @rdname mod_TransferHomogeneity
 #' @export
+#' @examples 
+#' if (interactive()) {
+#' shiny::shinyApp(
+#'  ui = shiny::fluidPage(
+#'    m_TransferHomogeneityUI(id = "test")
+#'  ),
+#'  server = function(input, output, session) {
+#'    datreturn = ecerto:::test_datreturn()
+#'    m_TransferHomogeneityServer(
+#'      id = "test",
+#'      homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
+#'      matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
+#'      matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+#'    )
+#'  }
+#' )
+#' }
 #'
 m_TransferHomogeneityUI = function(id) {
   shinyjs::disabled(
@@ -59,13 +76,13 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
   shiny::moduleServer(id, function(input, output, session) {
 
     cert_vals = shiny::reactiveVal()
-
-
+    
     shiny::observeEvent({
       matTab_col_code()
       homogData()
     }
     ,{
+      
       # activate transfer panel only, when
       # (1) materialtabelle was created after certification upload AND
       # (2) homogeneity data was uploaded AND

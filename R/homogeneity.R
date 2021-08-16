@@ -10,7 +10,8 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param homog The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).
-#' @param cert The Certification table - shiny::reactive({getValue(rv,"Certifications")}).
+#' @param cert The Certification table - shiny::reactive({getValue(rv,"Certification")}).
+#' @param datreturn session-only reactiveValues --> for transfer Module
 #'
 #' @examples
 #' if (interactive()) {
@@ -20,10 +21,12 @@
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#'    datreturn = ecerto:::test_datreturn()
 #'    m_HomogeneityServer(
 #'      id = "test",
 #'      homog = shiny::reactive({test_homog()}),
-#'      cert = shiny::reactive({test_certification()})
+#'      cert = shiny::reactive({test_certification()}),
+#'      datreturn = datreturn
 #'    )
 #'  }
 #' )
@@ -36,18 +39,17 @@
 m_HomogeneityUI <- function(id) {
   shiny::tabsetPanel(
     id = shiny::NS(id, "HomogeneityPanel"),
-    type = "hidden",
-    # when nothing is loaded
+    type = "hidden", # when nothing is loaded
     shiny::tabPanel(
       title = "standby-Panel",
       value  = "standby",
-      "emtpy channel here, nix los"
-      #helpText("Example Table"), imageOutput("myImage08a", inline = TRUE)
+      "nothing has uploaded yet"
     ),
     # when something is loaded
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
+      shiny::wellPanel(m_TransferHomogeneityUI(shiny::NS(id,"trH"))),
       shiny::fluidRow(
         shiny::column(10, DT::dataTableOutput(shiny::NS(id,"h_vals"))),
         #  column(2,
@@ -88,7 +90,7 @@ m_HomogeneityUI <- function(id) {
 
 #' @rdname mod_Homogeneity
 #' @export
-m_HomogeneityServer = function(id, homog, cert) {
+m_HomogeneityServer = function(id, homog, cert, datreturn) {
   stopifnot(shiny::is.reactive(homog))
   stopifnot(shiny::is.reactive(cert))
 
@@ -105,11 +107,6 @@ m_HomogeneityServer = function(id, homog, cert) {
         shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standBy")
       }
     })
-    #if loaded (successfully), male area visible
-    # AGAIN: SUCCESSFULLY LOADED HERE!
-
-
-
     h_Data = shiny::reactive({
       h_dat = homog()[["data"]]
       h_dat[,"analyte"] <- factor(h_dat[,"analyte"])
@@ -256,15 +253,21 @@ m_HomogeneityServer = function(id, homog, cert) {
 
       shiny::showModal(
         shiny::modalDialog(
-          shiny::HTML(
-            "<p>Using ANOVA on a one factor linear model we determined from N =", h[i,"N"], " containers with n =", h[i,"n"], "replicates each:",
-            "<p>Variance within containers (MS_within, s_w) =", h[i,"MSwithin"],
-            "<br>Variance between containers (MS_among, s_a) =", h[i,"MSamong"],
-            "<p>Using formula: sqrt(s_a-s_w)/mean the relative uncertainty (s_bb) =", h[i,"s_bb"],
-            "<br>and s_bb_min using: sqrt(s_w/n)*(2/(N*(n-1)))^(1/4))/mean =", h[i,"s_bb_min"],
-            "<p>The larger of both values, s_bb and s_bb_min, is transfered as uncertainty contribution",
-            "<p>Note: s_bb = 0 for s_a < s_w"
-          ),
+        shiny::withMathJax(
+        shiny::includeHTML(
+          rmarkdown::render(
+            system.file("help","uncertainty.Rmd",package = "ecerto")
+          )
+        )),
+          # shiny::HTML(
+          #   "<p>Using ANOVA on a one factor linear model we determined from N =", h[i,"N"], " containers with n =", h[i,"n"], "replicates each:",
+          #   "<p>Variance within containers (MS_within, s_w) =", h[i,"MSwithin"],
+          #   "<br>Variance between containers (MS_among, s_a) =", h[i,"MSamong"],
+          #   "<p>Using formula: sqrt(s_a-s_w)/mean the relative uncertainty (s_bb) =", h[i,"s_bb"],
+          #   "<br>and s_bb_min using: sqrt(s_w/n)*(2/(N*(n-1)))^(1/4))/mean =", h[i,"s_bb_min"],
+          #   "<p>The larger of both values, s_bb and s_bb_min, is transfered as uncertainty contribution",
+          #   "<p>Note: s_bb = 0 for s_a < s_w"
+          # ),
           footer = shiny::tagList(
             shiny::modalButton("Ok")
           ),
@@ -281,7 +284,20 @@ m_HomogeneityServer = function(id, homog, cert) {
       stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))
     })
 
+    # --- --- --- --- --- --- --- --- --- --- ---
+    trh = m_TransferHomogeneityServer(
+      id = "trH",
+      homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
+      matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
+      matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+    )
+    # --- --- --- --- --- --- --- --- --- --- ---
+    # to Certification page after Transfer of Homogeneity Data
+    shiny::observeEvent(trh(),{
+      message("app_server: trh() changed, set datreturn.t_H")
+      setValue(datreturn,"t_H",trh())
 
+    })
     # Special UI
     # TODO
     # output$h_transfer_ubb <- shiny::renderUI({

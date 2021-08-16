@@ -1,9 +1,10 @@
-test_that("Successfull Upload Homogeneity only",code = {
+test_that("Successfull Upload Homogeneity",code = {
   homog = shiny::reactiveVal({ecerto:::test_homog()})
   shiny::testServer(app = ecerto::m_HomogeneityServer,
                     args = list(
                       homog = homog,
-                      cert = reactiveVal(NULL)
+                      cert = reactiveVal(NULL),
+                      datreturn = ecerto:::test_datreturn() 
                     ),
                     expr =  {
                       session$flushReact()
@@ -32,7 +33,8 @@ test_that("Successfull Upload Homogeneity and Certification",code = {
   shiny::testServer(app = ecerto::m_HomogeneityServer,
                     args = list(
                       homog = homog,
-                      cert = cert
+                      cert = cert,
+                      datreturn = ecerto:::test_datreturn() 
                     ),
                     expr =  {
                       session$setInputs(h_precision = 3)

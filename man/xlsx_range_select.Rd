@@ -10,16 +10,16 @@ xlsx_range_select_UI(id)
 
 xlsx_range_select_Server(
   id,
-  x = NULL,
+  current_file_input = NULL,
   sheet = NULL,
-  excelformat = shiny::reactive({     "Certifications" }),
-  silent = TRUE
+  excelformat = shiny::reactive({     "Certification" }),
+  silent = FALSE
 )
 }
 \arguments{
 \item{id}{Module ID when called in a shiny app.}
 
-\item{x}{Shiny fileInput referencing excel file(s).}
+\item{current_file_input}{Shiny fileInput referencing excel file(s).}
 
 \item{sheet}{Number of the sheet to preview.}
 
@@ -28,7 +28,7 @@ xlsx_range_select_Server(
 \item{silent}{Option to print or omit status messages.}
 }
 \value{
-A reactiveValues list.
+A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt} (contains File column)
 }
 \description{
 \code{xlsx_range_select} will provide a preview for an excel data file and allow the user to specify a range by mouse click(s).
@@ -60,7 +60,7 @@ shiny::shinyApp(
         shiny::selectInput(
          inputId = "excelformat", 
          label = "Modul parameter: excelformat", 
-         choices = c("Certifications","Homogeneity","Stability")
+         choices = c("Certification","Homogeneity","Stability")
         )
      ),
      shiny::column(

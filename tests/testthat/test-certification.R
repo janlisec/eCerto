@@ -1,22 +1,30 @@
-test_that("Boxplot-View toggled saved in rv", 
+test_that(
+  desc = "Boxplot-View toggled saved in rv", 
   code = {
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
-    observe({setValue(rv_test, c("Certifications","data"), test_ExcelUP()) })
-    observe({set_uploadsource(rv_test, "Certifications", uploadsource = "Excel") })
-    datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
-    # suppressMessages(
-      shiny::testServer(app = m_CertificationServer,
-                        args = list(
-                          rv = rv_test,
-                          apm.input = reactiveVal(),
-                          datreturn = datreturn
-                        ),
-                        expr =  {
-                          session$flushReact()
-                          session$flushReact()
-                          print(getValue(rv,"Certifications"))
-                          print(input$certification_view)
-                        }
+    # shiny::isolate({ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_ExcelUP()) })
+    # shiny::isolate({ecerto::setValue(rv_test, c("Certification","uploadsource"), "Excel") })
+    datreturn = ecerto::reactiveClass$new(init_datreturn()) # initiate runtime variables
+    suppressMessages(
+      shiny::testServer(
+        app = m_CertificationServer,
+        args = list(
+          rv = rv_test,
+          apm.input = reactiveVal(),
+          datreturn = datreturn
+        ),
+        expr =  {
+          ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_ExcelUP()) 
+          ecerto::setValue(rv, c("Certification","uploadsource"), "Excel") 
+          session$flushReact()
+          # testthat::expect_equal(input$certification_view,NULL)
+          session$setInputs(certification_view=c("boxplot","stats"))
+          # testthat::expect_equal(input$certification_view,c("boxplot","stats"))
+          testthat::expect_equal(
+            ecerto::getValue(rv,c("Certification.processing","CertValPlot","show")),
+            TRUE
+          )
+        }
       )
-    # )
-})
+    )
+  })

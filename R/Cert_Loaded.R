@@ -54,9 +54,9 @@ m_CertLoadedUI <- function(id) {
                       shiny::column(width = 6, shiny::strong("sd"))),
       shiny::fluidRow(
         shiny::column(width = 6,
-               shiny::textOutput(shiny::NS(id,"cert_mean"))),
+                      shiny::textOutput(shiny::NS(id,"cert_mean"))),
         shiny::column(width = 6,
-               shiny::textOutput(shiny::NS(id,"cert_sd")))
+                      shiny::textOutput(shiny::NS(id,"cert_sd")))
       ),
     ),
     shiny::column(width = 9, shiny::plotOutput(
@@ -67,19 +67,20 @@ m_CertLoadedUI <- function(id) {
 
 #' @rdname mod_CertLoaded
 #' @export
-m_CertLoadedServer <- function(id, rv, apm, selected_tab) {
+m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     filtered_labs <- shiny::reactiveVal(NULL)
     current_analy <- shiny::reactive({apm()[[selected_tab()]]})
-
+    
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
+      
       message("Cert_Load: dat-reactive invalidated")
-      cert.data <- getValue(rv,c("Certifications","data")) # take the uploaded certification
+      cert.data <- getValue(rv,c("Certification","data")) # take the uploaded certification
       # round input values
       #browser()
       # @FK: Wenn ich einen Datensatz lade, dann läuft Shiny 2x hier durch (mit browser() geprüft) --> beim zweiten Mal ist
@@ -107,13 +108,13 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab) {
       )
       return(cert.data)
     })
-
+    
     # BOXPLOT
     output$overview_boxplot <- shiny::renderPlot({
       #if (input$opt_show_files == "boxplot") {
       TestPlot(data = dat())
     })
-
+    
     # Filter laboraties (e.g. "L1")
     output$flt_labs <- shiny::renderUI({
       shiny::req(dat(), selected_tab())
@@ -131,41 +132,42 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab) {
         multiple = TRUE
       )
     })
+    
+    
+    shiny::observeEvent(check(), {
+      message("Cert_Loaded: Check() observeEvent")
+      us = getValue(rv,c("Certification","uploadsource"))
+        if (us=="RData" ) {
+          shiny::updateNumericInput(
+            session=session,
+            inputId = "Fig01_width",
+            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot","Fig01_width")))
+          )
+          shiny::updateNumericInput(
+            session=session,
+            inputId = "Fig01_height",
+            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot","Fig01_height")))
+          )
+          shiny::updateSelectizeInput(
+            session=session,
+            inputId = "flt_labs",
+            selected = shiny::isolate(getValue(rv, c("Certification.processing","opt")))[["flt_labs"]]
+          )
+          shiny::updateNumericInput(
+            session=session,
+            inputId = "Fig01_width",
+            value = 150 + 40 * length(levels(factor(shiny::isolate(getValue(rv, c("Certification","data")))[, "Lab"])))
+          )
 
-    shiny::observeEvent(getValue(rv,c("Certifications","uploadsource")), {
-
-      us <- getValue(rv,c("Certifications","uploadsource"))
-
-      if (!is.null(us) && us=="RData" ) {
-        shiny::updateNumericInput(
-          session=session,
-          inputId = "Fig01_width",
-          value = shiny::isolate(getValue(rv, c("Certifications","CertValPlot")))[["Fig01_width"]]
-        )
-        shiny::updateNumericInput(
-          session=session,
-          inputId = "Fig01_height",
-          value = shiny::isolate(getValue(rv, c("Certifications","CertValPlot")))[["Fig01_height"]]
-        )
-        shiny::updateSelectizeInput(
-          session=session,
-          inputId = "flt_labs",
-          selected = shiny::isolate(getValue(rv, c("Certifications","opt")))[["flt_labs"]]
-        )
-      }
-      shiny::updateNumericInput(
-        session=session,
-        inputId = "Fig01_width",
-        value = 150 + 40 * length(levels(factor(shiny::isolate(getValue(rv, c("Certifications","data")))[, "Lab"])))
-      )
-
-    }, ignoreNULL = TRUE)
-
+        }
+      
+    }, ignoreInit  = TRUE)
+    
     shiny::observeEvent(input$flt_labs,{
       message("Cert_load: lab filter: ", input$flt_labs)
       filtered_labs_tmp = filtered_labs()
       tmp <- dat()[dat()[, "analyte"] == selected_tab() &
-              is.finite(dat()[, "value"]), ]
+                     is.finite(dat()[, "value"]), ]
       n_labs <- length(levels(factor(tmp[, "Lab"])))
       if(length(input$flt_labs) < n_labs) {
         filtered_labs( input$flt_labs)
@@ -188,20 +190,20 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab) {
         apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp
         apm(apm_tmp)
       }
-
+      
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
-
+    
     output$cert_mean <- shiny::renderText({
       mt <- getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),]$mean
     })
-
+    
     output$cert_sd <- shiny::renderText({
       mt <- getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),"sd"]
     })
-
-
+    
+    
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       CertValPlot(data = dat())
@@ -210,18 +212,25 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab) {
     }), width = shiny::reactive({
       input$Fig01_width
     }))
-
-    shiny::observe({
-      CertValPlot_list = list(
+    
+    CertValPlot_list = shiny::reactive({
+      req(input$Fig01_width)
+      req(input$Fig01_height)
+      list(
         "show" = TRUE,
         "fnc" = deparse(CertValPlot),
         "call" = str2lang('CertValPlot(data=data)'),
         "Fig01_width" = input$Fig01_width,
         "Fig01_height" = input$Fig01_height
       )
-      setValue(rv,c("Certifications","CertValPlot"), CertValPlot_list)
     })
-
+    
+    observeEvent(CertValPlot_list(),{
+      message("CertValPlot_list changed; set rv.CertValPlot")
+      setValue(rv,c("Certification.processing","CertValPlot"), CertValPlot_list())
+      
+    }, ignoreInit = TRUE)
+    
     return(dat)
   })
 }
