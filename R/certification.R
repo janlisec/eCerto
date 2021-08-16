@@ -163,42 +163,36 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     uploadsource <- shiny::reactiveVal(NULL)
     check = shiny::reactiveVal(0)
     shiny::observeEvent(getValue(rv,c("Certification","uploadsource")),{
-      o = getValue(rv,c("Certification","uploadsource"))
+      o.upload = getValue(rv,c("Certification","uploadsource"))
       # assign upload source if (a) hasn't been assigned yet or (b), if not
       # null, has changed since the last time, for example because other data
       # source has been uploaded
-      if(is.null(uploadsource()) || uploadsource() != o ){
-        uploadsource(o)
-        if(o == "RData") {
-          message("Certification: Uploadsource has definitely changed")
-          apm(apm.input())
-          check(check() +1)
-        }
-      }
-    })
-    
-    # TODO isolate bringt eigentlich nix hier
-    # TODO da uploadsource() nirgendwo anders verwendet wird, könnte das folgende observeEvent auch in das vorherige eingebunden werden
-    shiny::observeEvent(uploadsource(),{
-      # when uploadsource changed, renew Analyte Tabs
-      message("Certification: Uploadsource changed to ", isolate(getValue(rv,c("Certification","uploadsource"))), "; initiate apm")
-      # Creation of AnalyteParameterList.
-      if(uploadsource()=="Excel") {
-        apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
-      } else if(uploadsource()=="RData") {
-        # only forward rData Upload after RData was uploaded
-        message("Certification: forward RData to Materialtabelle")
-        rdataupload(getValue(rv,c("materialtabelle")))
-        if(!is.null(shiny::isolate(apm()))) { # RData contained "apm"
-          apm(shiny::isolate(apm())) #do.call(shiny::reactiveValues, apm.input())
-        } else { # RData did not contain "apm" --> create
+      if(is.null(uploadsource()) || uploadsource() != o.upload ){
+        uploadsource(o.upload)
+        # when uploadsource changed, renew Analyte Tabs
+        message("Certification: Uploadsource changed to ", isolate(getValue(rv,c("Certification","uploadsource"))), "; initiate apm")
+        # Creation of AnalyteParameterList.
+        if(o.upload=="Excel") {
           apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
+        } else if(o.upload=="RData") {
+          # only forward rData Upload after RData was uploaded
+          message("Certification: forward RData to Materialtabelle")
+          rdataupload(getValue(rv,c("materialtabelle")))
+          if(!is.null(shiny::isolate(apm()))) { 
+            # RData contained "apm"
+            apm(apm.input())
+          } else { 
+            # RData did not contain "apm" --> create
+            apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
+          }
+        } else {
+          stop("unknown Upload Type")
         }
-      } else {
-        stop("unknown Upload Type")
+        check(check() +1 )
+        renewTabs(1) # give signal to renew tabs
+        # Change the UploadPanel to the --loaded-- version
+        shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
       }
-      message("... and renew TABS")
-      renewTabs(1)
     })
     
     apm_return <- shiny::reactiveVal(NULL)
@@ -213,11 +207,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     #   # apm(apm.input())
     # })
     
-    shiny::observeEvent(getValue(rv,c("Certification","data")), {
-      message("Certification: Certification data loaded. activate panel")
-      shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
-    })
-    
     # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is in Certification-UI, that's why it is here
     m_materialtabelleServer(
@@ -227,7 +216,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     )
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
-    tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced
+    tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced in future versions
     selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
     shiny::observeEvent(apm()[[shiny::isolate(selected_tab())]],{
@@ -292,20 +281,21 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     })
     
     
-    # Box "QQ-Plot" clickable? Depends in state of Box above it
+    
     shiny::observeEvent(input$certification_view, {
+      # Box "QQ-Plot" clickable? Depends in state of Box above it
       shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
       if("stats2" %in% input$certification_view) {
         shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
       }
+      # only change rv-object if CertValplot has changed
       show_Boxplot =  "boxplot" %in% input$certification_view
-      # only change rv if CertValplot has changed
       if(
-        !is.null(getValue(rv,c("Certification.processing","CertValPlot"))) &&
-        show_Boxplot != getValue(rv,c("Certification.processing","CertValPlot"))$show
+        is.null(getValue(rv,c("Certification.processing","CertValPlot","show"))) ||
+        show_Boxplot != getValue(rv,c("Certification.processing","CertValPlot","show"))
       ) {
         message("CERTIFICATION: SET Cert_ValPlot")
-        setValue(rv,c("Certification.processing","CertValPlot"),show_Boxplot)
+        setValue(rv,c("Certification.processing","CertValPlot","show"),show_Boxplot)
       }
     })
     

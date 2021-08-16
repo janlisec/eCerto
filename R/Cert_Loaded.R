@@ -135,17 +135,18 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
     
     
     shiny::observeEvent(check(), {
+      message("Cert_Loaded: Check() observeEvent")
       us = getValue(rv,c("Certification","uploadsource"))
         if (us=="RData" ) {
           shiny::updateNumericInput(
             session=session,
             inputId = "Fig01_width",
-            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot")))[["Fig01_width"]]
+            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot","Fig01_width")))
           )
           shiny::updateNumericInput(
             session=session,
             inputId = "Fig01_height",
-            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot")))[["Fig01_height"]]
+            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot","Fig01_height")))
           )
           shiny::updateSelectizeInput(
             session=session,

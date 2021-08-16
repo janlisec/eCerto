@@ -95,7 +95,13 @@ init_rv = function() {
         "normality_statement" = NULL,
         "precision" = NULL,
         "data_kompakt" = NULL,
-        "CertValPlot" = NULL,
+        "CertValPlot" = list(
+          "show" = NULL,
+          "fnc" = NULL,
+          "call" = NULL,
+          "Fig01_width" = NULL,
+          "Fig01_height" = NULL
+        ),
         "stats" = NULL,
         "boxplot" = NULL,
         "opt" = NULL,
