@@ -112,24 +112,27 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
     })
 
     return_reactive = shiny::eventReactive(input$h_transfer_ubb_button, {
-      shiny::req(
-        input$h_transfer_ubb,
-        input$h_transfer_H_type
-      )
+      # shiny::req(
+      #   input$h_transfer_ubb,
+      #   input$h_transfer_H_type
+      # )
       message("TRANSFER BUTTON clicked")
       h_vals <- homogData()
+      browser()
       cert_vals(
         stats::setNames(cert_vals(),
                         as.character(shiny::isolate(input$h_transfer_ubb)))
       )
+      
       for (i in 1:length(matTab_analytes())) {
-        # select cell of same analyte and Homogeneity type matTab()
+        # find and select materialtabelle-row of same analyte and Homogeneity
+        # type (matTab()) as chosen for Transfer
         j <-
           which(
             as.character(h_vals[, "analyte"]) == matTab_analytes()[i]
             & as.character(h_vals[, "H_type"]) == shiny::isolate(input$h_transfer_H_type)
           )
-        # if cell exists
+        # if row exists
         if (length(j) == 1) {
           c_name = which(matTab_col_code()[, "Name"] ==
                            shiny::isolate(input$h_transfer_ubb))
@@ -139,6 +142,7 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
           cert_vals(newDF)
         }
       }
+      
       return(cert_vals())
     })
 

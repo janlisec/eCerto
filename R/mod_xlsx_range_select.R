@@ -14,7 +14,7 @@
 #' @param excelformat Selected sub format as reactive string.
 #' @param silent Option to print or omit status messages.
 #'
-#' @return A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt} (contains File column)
+#' @return A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt}
 #'
 #' @examples
 #' if (interactive()) {
@@ -80,37 +80,48 @@ xlsx_range_select_UI <- function(id) {
 #' @rdname xlsx_range_select
 #' @export
 xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"}), silent=FALSE) {
-
+  
   stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))
   ns <- shiny::NS(id)
-
+  
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     
     getRngTxt <- function(sc=1, sr=1, ec=1, er=1) {
       paste0(LETTERS[sc], sr, ":", LETTERS[ec], er)
     } #getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
-
+    
     tab <- shiny::reactive({
       shiny::req(current_file_input(), sheet())
+      
       # use different modes of fnc_load_xlsx to import data depending on file type
       if (!silent) message("xlsx_range_select_Server: reactive(tab): load ", nrow(current_file_input()), " files")
       if (shiny::isolate(excelformat())=="Certification") {
         l <- lapply(current_file_input()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
         shiny::validate(
-          shiny::need(all(!sapply(l, is.null)),"uploaded Excel contain an empty one"),
+          shiny::need(all(!sapply(l, is.null)),"uploaded Excel files contain an empty one"),
           shiny::need(length(l)>=2,"less than 2 laboratory files uploaded. Upload more!")
         )
         # check if all tables have the same dimensions
         test <- length(unique(sapply(l, nrow)))==1 && length(unique(sapply(l, ncol)))==1
         if (!test) { warning("xlsx_range_select_Server: Certification Excel Files contain different dimensions.") }
+      } else if(shiny::isolate(excelformat())=="Stability") {
+        # for Stability, all sheets are loaded in Background 
+        l <- lapply(sheet(),function(x) {
+          ecerto::fnc_load_xlsx(
+            filepath = current_file_input()$datapath[1], 
+            sheet = x, 
+            method="openxlsx"
+            )
+        })
+        # TODO Tabelle nicht editierbar machen!
       } else {
         l <- list(ecerto::fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method="openxlsx"))
       }
       return(l)
     })
-
+    
     tab_param <- shiny::reactiveValues("tab"=NULL, "start_row"=1, "end_row"=1, "start_col"=1, "end_col"=1, "tab_flt"=matrix(1), "rng"="A1:A1")
     # event: upload of excel file(s)
     shiny::observeEvent(tab(), {
@@ -122,38 +133,24 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
       tab_param$start_col <- 1
       tab_param$end_row <- nrow(tab()[[1]])
       tab_param$end_col <- ncol(tab()[[1]])
-      tab_param$rng <-
+      tab_param$rng <- # for printing
         getRngTxt(tab_param$start_col,
                   tab_param$start_row,
                   tab_param$end_col,
                   tab_param$end_row)
     })
-
-    # # TODO Eventuell in ExcelUploadControl verschieben
-    # shiny::observeEvent(tab_param$tab,{
-    #   if (!silent) message("xlsx_range_select_Server: observeEvent(tab_param$tab): add File column")
-    #   if(!is.null(unlist(tab_param$tab))){
-    #     tab_param$tab_flt = tab_param$tab
-    #     for (i in 1:length(tab_param$tab_flt)) {
-    #       tab_param$tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_param$tab_flt[[i]]))
-    #     }
-    #   }
-    # })
     
-    
-    
-
     # das Proxy der Tabelle, um sicherstellen zu können, dass immer nur 2 Zellen angewählt werden können (proxy version kann serverseitig manipuliert werden)
     uitab_proxy <- DT::dataTableProxy("uitab")
-
+    
     # if rows and columns in the DT() have been selected
     shiny::observeEvent(input$uitab_cells_selected, {
       if (!silent) message("xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
       cs <- input$uitab_cells_selected
       check_cs <- function(x) {
         diff(range(x[,1]))>=1 && 
-        diff(range(x[,2]))>=1 && 
-        any(tab_param$start_col != min(x[,2]), tab_param$end_col != max(x[,2]), tab_param$start_row != min(cs[,1]), tab_param$end_row != max(cs[,1]))
+          diff(range(x[,2]))>=1 && 
+          any(tab_param$start_col != min(x[,2]), tab_param$end_col != max(x[,2]), tab_param$start_row != min(cs[,1]), tab_param$end_row != max(cs[,1]))
       }
       check_new_point <- function(x) {
         x[3,1]>=min(x[-3,1]) & x[3,1]<=max(x[-3,1]) & x[3,2]>=min(x[-3,2]) & x[3,2]<=max(x[-3,2])
@@ -213,9 +210,9 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
         }
       }
     })
-
-
-
+    
+    
+    
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({
       shiny::req(tab())
@@ -225,12 +222,12 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
         out <- apply(out, 2, substr, start=1, stop=10)
       }
       return(out)
-      },
-      #options=list("dom"="start_row", pageLength=nrow(tab()[[1]]),ordering=FALSE),
-      options = list("dom"="t", pageLength=nrow(tab()[[1]]),ordering=FALSE),
-      selection = list(target="cell", selectable=matrix(-1*c(1:nrow(tab()[[1]]), rep(0,nrow(tab()[[1]]))), ncol=2))
+    },
+    #options=list("dom"="start_row", pageLength=nrow(tab()[[1]]),ordering=FALSE),
+    options = list("dom"="t", pageLength=nrow(tab()[[1]]),ordering=FALSE),
+    selection = list(target="cell", selectable=matrix(-1*c(1:nrow(tab()[[1]]), rep(0,nrow(tab()[[1]]))), ncol=2))
     )
-
+    
     output$uitxt <- shiny::renderUI({
       shiny::req(tab())
       str1 <- ifelse(is.null(current_file_input()), "", paste("You see a preview of File:", current_file_input()$name[1]))
@@ -239,9 +236,9 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
       str3 <- paste("Currently selected range:", tab_param$rng)
       shiny::HTML(paste(str1, str2, str3, sep = '<br/>'))
     })
-
+    
     return(tab_param)
-
+    
   })
-
+  
 }

@@ -261,10 +261,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # get current lab statistics
     lab_statistics = shiny::reactive({ ecerto::getValue(datreturn,"lab_statistics") })
     
-    # Homogeneity transfer
-    shiny::observeEvent(getValue(datreturn,"t_H") ,{
-      if(!silent)message("materialtabelle: Homogenity Transfer")
-      transferred_array = ecerto::getValue(datreturn,"t_H")
+    merge_transfer = function(transferred_array) {
       mergeby = names(transferred_array)
       mater_table_tmp = mater_table()
       
@@ -279,8 +276,21 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       } else {
         stop("transferred number of columns should be 1 or 2")
       }
-      
+    }
+    
+    # Homogeneity Transfer
+    shiny::observeEvent(getValue(datreturn,"t_H") ,{
+      if(!silent)message("materialtabelle: Homogenity Transfer")
+      transferred_array = ecerto::getValue(datreturn,"t_H")
+      merge_transfer(transferred_array = transferred_array)
     }, ignoreNULL = TRUE)
+    
+    # Stability Transfer
+    shiny::observeEvent(getValue(datreturn,"t_S"), {
+      if(!silent)message("materialtabelle: Stability Transfer")
+      transferred_array = ecerto::getValue(datreturn,"t_S")
+      merge_transfer(transferred_array = transferred_array)
+    })
     
     # in case backup data
     shiny::observeEvent(rdataUpload(),{

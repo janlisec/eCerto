@@ -25,7 +25,7 @@
 #'  ),
 #'  server = function(input, output, session) {
 #'   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-#'   shiny::observe({setValue(rv, c("Certification","data"), test_ExcelUP()) })
+#'   shiny::observe({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
 #'    shiny::observe({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
 #'   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
 #'    m_CertificationServer(
@@ -156,6 +156,14 @@ m_CertificationUI = function(id) {
 m_CertificationServer = function(id, rv, apm.input, datreturn) {
   shiny::moduleServer(id, function(input, output, session) {
     
+    # TODO mit den ganzen reactiveVal aufräumen
+    apm_return <- shiny::reactiveVal(NULL)
+    apm <- shiny::reactiveVal()
+    rdataupload<- shiny::reactiveVal()
+    renewTabs <- shiny::reactiveVal(NULL)
+    dat <- shiny::reactiveVal(NULL)
+    
+    
     # Upload Notification. Since "uploadsource" is invalidated also when other
     # parameters within Certification are changed (because of the reactiveValues
     # thing), it has to be checked if it has changed value since the last change
@@ -169,10 +177,9 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # source has been uploaded
       if(is.null(uploadsource()) || uploadsource() != o.upload ){
         uploadsource(o.upload)
-        # when uploadsource changed, renew Analyte Tabs
         message("Certification: Uploadsource changed to ", isolate(getValue(rv,c("Certification","uploadsource"))), "; initiate apm")
-        # Creation of AnalyteParameterList.
         if(o.upload=="Excel") {
+          # Creation of AnalyteParameterList.
           apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
         } else if(o.upload=="RData") {
           # only forward rData Upload after RData was uploaded
@@ -195,11 +202,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       }
     })
     
-    apm_return <- shiny::reactiveVal(NULL)
-    apm <- shiny::reactiveVal()
-    rdataupload<- shiny::reactiveVal()
-    renewTabs <- shiny::reactiveVal(NULL)
-    dat <- shiny::reactiveVal(NULL)
+
     
     # # temp
     # shiny::observeEvent(apm.input(),{

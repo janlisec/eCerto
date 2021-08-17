@@ -31,7 +31,6 @@ fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ..
   # isolate reactive variables if provided
   if (shiny::is.reactive(filepath)) filepath <- shiny::isolate(filepath)
   if (shiny::is.reactive(sheet)) sheet <- shiny::isolate(sheet)
-
   # make some tests
   if(!file.exists(filepath))  {warning("Invalid file; File-Path does not exist"); return(NULL)}
   if(!any(grep("[Xx][Ll][Ss][Xx]", tools::file_ext(filepath)))) {warning("Invalid file; Please upload a .xlsx file"); return(NULL)}

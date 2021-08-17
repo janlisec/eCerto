@@ -285,7 +285,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     })
 
     # --- --- --- --- --- --- --- --- --- --- ---
-    trh = m_TransferHomogeneityServer(
+    t_H = m_TransferHomogeneityServer(
       id = "trH",
       homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
       matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
@@ -293,9 +293,9 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     )
     # --- --- --- --- --- --- --- --- --- --- ---
     # to Certification page after Transfer of Homogeneity Data
-    shiny::observeEvent(trh(),{
-      message("app_server: trh() changed, set datreturn.t_H")
-      setValue(datreturn,"t_H",trh())
+    shiny::observeEvent(t_H(),{
+      message("app_server: t_H() changed, set datreturn.t_H")
+      setValue(datreturn,"t_H",t_H())
 
     })
     # Special UI

@@ -50,17 +50,41 @@ test_that("Successful Homogeneity Upload test",code = {
   dat_test <- shiny::reactiveVal(FALSE)
   
   shiny::testServer(app = m_ExcelUploadControl_Server,
-    args = list(excelformat=excelformat_test, check = dat_test),
-    expr =  {
-      # suppressMessages(
-        session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
-      # )
-
-      # expect_snapshot(rv_xlsx_range_select$tab_flt)
-      session$setInputs(go = "click")
-      # expect_message(ex(), "go clicked")
-      expect_snapshot(session$returned())
-    }
+                    args = list(excelformat=excelformat_test, check = dat_test),
+                    expr =  {
+                      # suppressMessages(
+                      session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
+                      # )
+                      
+                      # expect_snapshot(rv_xlsx_range_select$tab_flt)
+                      session$setInputs(go = "click")
+                      # expect_message(ex(), "go clicked")
+                      expect_snapshot(session$returned())
+                    }
   )
 })
 
+test_that("Successful Stability Upload test",code = {
+  xlsx_test2 = list(
+    datapath = system.file(package = "ecerto", "extdata","Stability_Testdata.xlsx"),
+    name = "Stability_Testdata.xlsx"
+  )
+  excelformat_test = shiny::reactiveVal("Stability")
+  dat_test <- shiny::reactiveVal(FALSE)
+  suppressMessages(
+    shiny::testServer(app = m_ExcelUploadControl_Server,
+                      args = list(excelformat=excelformat_test, check = dat_test),
+                      expr =  {
+                        # suppressMessages(
+                        session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
+                        # )
+                        
+                        # expect_snapshot(rv_xlsx_range_select$tab_flt)
+                        session$setInputs(go = "click")
+                        # expect_message(ex(), "go clicked")
+                        # expect_snapshot(session$returned())
+                        expect_equal(session$returned(),ecerto:::test_Stability_Excel())
+                      }
+    )
+  )
+})

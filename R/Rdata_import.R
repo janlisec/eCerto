@@ -73,7 +73,7 @@ m_RDataImport_UI <- function(id) {
 #' @export
 m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FALSE) {
   stopifnot(R6::is.R6(rv))
-  stopifnot(shiny::is.reactivevalues(rv$get()))
+  # stopifnot(shiny::is.reactivevalues(rv$get()))
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -81,6 +81,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
     
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
+      
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
       shiny::validate(
         shiny::need(tolower(file.type) == "rdata","Only RData allowed."),
@@ -97,7 +98,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
     }, ignoreNULL = TRUE)
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
-    shiny::observeEvent(rdata(),{
+    shiny::observeEvent(rdata(), {
       ttt = sapply(rv$names(), function(x) {!is.null(getValue(rv,c(x,"uploadsource")))},simplify = "array")
       if(any(ttt)){
         showModal(
@@ -127,10 +128,10 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
       removeModal()
     })
     
-    shiny::observeEvent(continue(),{
+    shiny::observeEvent(continue(), {
       # whereami::cat_where(where = "RData_import: RData uploaded", color = "grey")
       res <- rdata()
-
+      
       if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE))) 
         {
         # Non-legacy upload #####
@@ -138,16 +139,20 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         if ( res$General$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
           resnames <- listNames(l = res, maxDepth = 2) # names(unlist(res, recursive = FALSE))
-          rvnames <- listNames(shiny::reactiveValuesToList(rv$get()),2) # names(unlist(shiny::reactiveValuesToList(rv$get()), recursive = FALSE))
-
-          
+          rvnames <-listNames(
+            sapply(rv$get(), function(x) {
+                if(is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+              })
+          )
           if (all(resnames %in% rvnames)) {
             # Transfer list elements
             # $$ToDo$$ one might provide a warning to the user in case he will
             # overwrite non empty fields i.e. he did load Stab data and now
             # reads an RData backup which already contains Stab data
-            
-            for (i in names(res)) {
+            message("RDataImport: Non-legacy upload started")
+            browser()
+            # strsplit(resnames,split = ".", fixed = TRUE)
+            for (i in resnames) {
               # for (j in names(res[[i]])) {
               #   setValue(rv, c(i,j), res[[i]][[j]])
               # }
@@ -156,6 +161,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             # reset time_stamp with current $$ToDo think if this is really desirable
             setValue(rv,c("General","time_stamp"),Sys.time())
             setValue(rv,c("Certification","uploadsource"),value = "RData")
+            browser()
             message("RDataImport: Non-legacy upload finished")
           } else {
             allgivenexpected = c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
@@ -166,6 +172,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         }
         # Legacy upload
       } else {
+        message("RDataImport: Legacy upload started")
         if ("Certification" %in% names(res) && !is.null(res$Certification)) {
           if (!silent) message("RDataImport_Server: Cert data transfered")
           setValue(rv,c("Certification","data"),res[["Certification"]][["data_input"]])
@@ -215,6 +222,8 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
 
 
     shiny::observeEvent(getValue(rv,c("General", "user")) , {
+      
+      # browser()
       # if (!silent) whereami::cat_where(whereami::whereami(),color = "blue")
       shiny::updateTextInput(
         session = session,

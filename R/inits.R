@@ -9,6 +9,7 @@ init_datreturn = function() {
     h_vals = NULL,                      # values from Homogeneity-module materialtabelle via .TransferHomogeneity
     mater_table = NULL,                 # *READ-ONLY* material table, formerly 'cert_vals'
     t_H = NULL,                         # when Homogeneity is transferred
+    t_S = NULL,                         # When Stability is transferred
     lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
   )
 }
@@ -66,11 +67,10 @@ init_materialTabelle <- function(analytes) {
 #'
 #' @examples rv = init_rv()
 init_rv = function() {
-  rv <- do.call(
-    shiny::reactiveValues,
+  rv <- 
     list(
       "modules" = c("Certification","Homogeneity","Stability"), # names of the modules; returned by rv$names
-      "General" = list(
+      "General" = shiny::reactiveValues(
         # save
         "user" = NULL,
         "study_id" = NULL,
@@ -82,13 +82,13 @@ init_rv = function() {
       # materialtabelle
       "materialtabelle" = NULL,
       # data input
-      "Certification" = list(
+      "Certification" = shiny::reactiveValues(
         "data" = NULL,
         "input_files" = NULL,
         "uploadsource" = NULL
       ),
       # processing
-      "Certification.processing" = list(
+      "Certification.processing" = shiny::reactiveValues(
         "lab_means" = NULL,
         "cert_mean" = NULL,
         "cert_sd" = NULL,
@@ -107,7 +107,7 @@ init_rv = function() {
         "opt" = NULL,
         "mstats" = NULL
       ),
-      "Homogeneity" = list(
+      "Homogeneity" = shiny::reactiveValues(
         # upload
         "data" = NULL, # formerly h_dat
         "uploadsource" = NULL,
@@ -118,14 +118,14 @@ init_rv = function() {
         "h_precision" = NULL,
         "h_Fig_width" = NULL
       ),
-      "Stability" = list(
+      "Stability" = shiny::reactiveValues(
         "file" = NULL,
         "data" = NULL,
         "uploadsource" = NULL,
         "s_vals" = NULL
       )
     )
-  )
+  
 }
 
 #' Analyte Parameter List (apm)

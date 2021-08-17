@@ -94,26 +94,33 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
     
     # --- --- --- --- --- --- --- --- --- ---
     # Module to select rows and columns
+    sheetnumber = shiny::reactive({
+      req(input$sheet_number)
+      switch (excelformat(),
+        "Certification" = input$sheet_number,
+        "Homogeneity" = input$sheet_number,
+        "Stability" = 1:length(ecerto::load_sheetnames(input$excel_file$datapath))
+      )
+    })
     rv_xlsx_range_select <- xlsx_range_select_Server(
       id = "Upload",
       current_file_input = current_file_input,
-      sheet = shiny::reactive({ input$sheet_number }),
+      sheet = sheetnumber,
       excelformat = excelformat
     )
     # --- --- --- --- --- --- --- --- --- ---                     
     
     out <- shiny::reactiveVal()
-    
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
       # Append File column
       message("ExcelUploadControl: Load-button clicked")
       # tab_flt <- rv_xlsx_range_select$tab_flt
       # if(!is.null(unlist(tab_param$tab))){
-        tab_flt = rv_xlsx_range_select$tab
-        for (i in 1:length(tab_flt)) {
-          tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_flt[[i]]))
-        }
+      tab_flt = rv_xlsx_range_select$tab
+      for (i in 1:length(tab_flt)) {
+        tab_flt[[i]][["File"]] = rep(rv_xlsx_range_select$filenames[i], nrow(tab_flt[[i]]))
+      }
       # }
       
       # perform minimal validation checks
@@ -148,7 +155,6 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
           )
           out(results)
         }
-        
         # in case (a) it is Certification module and (b) the input table has not
         # been filtered, then ask if this is correct
         if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab[[1]]) &
@@ -161,25 +167,36 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
             showConfirmButton = TRUE,
             callbackR = function(x) { if(x != FALSE) uploadExcel() }
           )
-         } else {
+        } else {
           uploadExcel()
         }
       }
       if(excelformat() == "Stability") {
-        
-        test_format <- openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
-        # TODO Wie kann das erste If-Statement umgebaut werden, dass hier keine
-        # Excel hochgeladen wird?
+        test_format <- tab_flt[[1]] # openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
+        # TODO @Jan wie kann man das besser hier einbauen?
         if (ncol(test_format)>=3 && "KW" %in% colnames(test_format)) {
-          s_dat <- read_lts_input(file = input$s_input_file$datapath[1], simplify=TRUE)
+          s_dat <- read_lts_input(
+            file = input$excel_file$datapath[1], 
+            simplify=TRUE)
           colnames(s_dat)[colnames(s_dat)=="KW"] <- "analyte"
         } else {
-          s_dat <- plyr::ldply(openxlsx::getSheetNames(file = input$s_input_file$datapath[1]), function(x) { 
-            cbind("analyte"=x, openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = x, detectDates=TRUE))
-          }, .id = NULL)
+          sheetnames = ecerto::load_sheetnames(input$excel_file$datapath[1])
+          s_dat = plyr::ldply(
+            sheetnumber(), 
+            function(x) {
+              cbind(
+                "analyte"= sheetnames[x], 
+                tab_flt[[x]]
+              )
+            })
         }
-        
-        out(tab_flt[[1]])
+        # s_dat = getValue(rv,c("Stability","data"))
+        validate(need(c("analyte","Value","Date") %in% colnames(s_dat), "No all required input columns found in input file."))
+        validate(need(is.numeric(s_dat[,"Value"]), "Column 'Value' in input file contains non-numeric values."))
+        if (class(s_dat[,"Date"])!="Date") { s_dat[,"Date"] <- as.Date.character(s_dat[,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d")) }
+        validate(need(class(s_dat[,"Date"])=="Date", "Sorry, could not convert column 'Date' into correct format."))
+        s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
+        out(s_dat)
       }
       
     })

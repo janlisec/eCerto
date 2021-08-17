@@ -91,7 +91,7 @@ app_ui = function(){
           title = "Stability",
           icon = shiny::icon("angle-right"),
           value = "tP_Stability",
-          shiny::verbatimTextOutput("stab")
+          m_StabilityUI("Stability")
         )
       ),
       # eCerto Ende

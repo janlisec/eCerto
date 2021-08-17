@@ -43,7 +43,7 @@ reactiveClass = R6::R6Class(
     #' @return A new 'reactiveClass' object.
     initialize = function(rv){
       # message("Initiate R6 object")
-      stopifnot(shiny::is.reactivevalues(rv))
+      # stopifnot(shiny::is.reactivevalues(rv))
       private$reactive_data = rv
     },
     

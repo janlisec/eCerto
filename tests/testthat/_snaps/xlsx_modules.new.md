@@ -3,95 +3,95 @@
     Code
       session$returned()
     Output
-         analyte H_type Flasche     value  unit            File
-      1       Fe radial       3 0.2897693  mM/L Homog_test.xlsx
-      2       Fe radial      36 0.2967753  mM/L Homog_test.xlsx
-      3       Fe radial      62 0.3075952  mM/L Homog_test.xlsx
-      4       Fe radial      78 0.3006643  mM/L Homog_test.xlsx
-      5       Fe radial     109 0.2981130  mM/L Homog_test.xlsx
-      6       Fe radial     144 0.3018592  mM/L Homog_test.xlsx
-      7       Fe radial     162 0.3051646  mM/L Homog_test.xlsx
-      8       Fe  axial     200 0.2934924  mM/L Homog_test.xlsx
-      9       Fe  axial     225 0.2369928  mM/L Homog_test.xlsx
-      10      Fe  axial     239 0.2990771  mM/L Homog_test.xlsx
-      11      Fe  axial     256 0.2916479  mM/L Homog_test.xlsx
-      12      Fe  axial     295 0.2981732  mM/L Homog_test.xlsx
-      13      Fe  axial     325 0.3033135  mM/L Homog_test.xlsx
-      14      Fe  axial     351 0.3084570  mM/L Homog_test.xlsx
-      15      Fe  axial     397 0.2988461  mM/L Homog_test.xlsx
-      16      Fe radial       3 0.2938025  mM/L Homog_test.xlsx
-      17      Fe radial      36 0.2913924  mM/L Homog_test.xlsx
-      18      Fe radial      62 0.2910948  mM/L Homog_test.xlsx
-      19      Fe radial      78 0.2835857  mM/L Homog_test.xlsx
-      20      Fe radial     109 0.2985147  mM/L Homog_test.xlsx
-      21      Fe radial     144 0.2884778  mM/L Homog_test.xlsx
-      22      Fe radial     162 0.2940975  mM/L Homog_test.xlsx
-      23      Fe  axial     200 0.2865534  mM/L Homog_test.xlsx
-      24      Fe  axial     225 0.2940975  mM/L Homog_test.xlsx
-      25      Fe  axial     239 0.2965681  mM/L Homog_test.xlsx
-      26      Fe  axial     256 0.2907160  mM/L Homog_test.xlsx
-      27      Fe  axial     295 0.2911270  mM/L Homog_test.xlsx
-      28      Fe  axial     325 0.2884299  mM/L Homog_test.xlsx
-      29      Fe  axial     351 0.2839751  mM/L Homog_test.xlsx
-      30      Fe  axial     397 0.2967776  mM/L Homog_test.xlsx
-      31      Fe radial       3 0.2777090  mM/L Homog_test.xlsx
-      32      Fe radial      36 0.2886654  mM/L Homog_test.xlsx
-      33      Fe radial      62 0.2948648  mM/L Homog_test.xlsx
-      34      Fe radial      78 0.2924766  mM/L Homog_test.xlsx
-      35      Fe radial     109 0.2794004  mM/L Homog_test.xlsx
-      36      Fe radial     144 0.2918912  mM/L Homog_test.xlsx
-      37      Fe radial     162 0.2875026  mM/L Homog_test.xlsx
-      38      Fe  axial     200 0.2895977  mM/L Homog_test.xlsx
-      39      Fe  axial     225 0.2874214  mM/L Homog_test.xlsx
-      40      Fe  axial     239 0.2900750  mM/L Homog_test.xlsx
-      41      Fe  axial     256 0.2998802  mM/L Homog_test.xlsx
-      42      Fe  axial     295 0.2839409  mM/L Homog_test.xlsx
-      43      Fe  axial     325 0.2866047  mM/L Homog_test.xlsx
-      44      Fe  axial     351 0.2902880  mM/L Homog_test.xlsx
-      45      Fe  axial     397 0.2854040  mM/L Homog_test.xlsx
-      46      Mg radial       3 0.2897693 mg/mL Homog_test.xlsx
-      47      Mg radial      36 0.2967753 mg/mL Homog_test.xlsx
-      48      Mg radial      62 0.3075952 mg/mL Homog_test.xlsx
-      49      Mg radial      78 0.3006643 mg/mL Homog_test.xlsx
-      50      Mg radial     109 0.2981130 mg/mL Homog_test.xlsx
-      51      Mg radial     144 0.3018592 mg/mL Homog_test.xlsx
-      52      Mg radial     162 0.3051646 mg/mL Homog_test.xlsx
-      53      Mg  axial     200 0.2934924 mg/mL Homog_test.xlsx
-      54      Mg  axial     225 0.2369928 mg/mL Homog_test.xlsx
-      55      Mg  axial     239 0.2990771 mg/mL Homog_test.xlsx
-      56      Mg  axial     256 0.2916479 mg/mL Homog_test.xlsx
-      57      Mg  axial     295 0.2981732 mg/mL Homog_test.xlsx
-      58      Mg  axial     325 0.3033135 mg/mL Homog_test.xlsx
-      59      Mg  axial     351 0.3084570 mg/mL Homog_test.xlsx
-      60      Mg  axial     397 0.2988461 mg/mL Homog_test.xlsx
-      61      Mg radial       3 0.2938025 mg/mL Homog_test.xlsx
-      62      Mg radial      36 0.2913924 mg/mL Homog_test.xlsx
-      63      Mg radial      62 0.2910948 mg/mL Homog_test.xlsx
-      64      Mg radial      78 0.2835857 mg/mL Homog_test.xlsx
-      65      Mg radial     109 0.2985147 mg/mL Homog_test.xlsx
-      66      Mg radial     144 0.2884778 mg/mL Homog_test.xlsx
-      67      Mg radial     162 0.3040194 mg/mL Homog_test.xlsx
-      68      Mg  axial     200 0.2865534 mg/mL Homog_test.xlsx
-      69      Mg  axial     225 0.2940975 mg/mL Homog_test.xlsx
-      70      Mg  axial     239 0.2965681 mg/mL Homog_test.xlsx
-      71      Mg  axial     256 0.2907160 mg/mL Homog_test.xlsx
-      72      Mg  axial     295 0.2911270 mg/mL Homog_test.xlsx
-      73      Mg  axial     325 0.2884299 mg/mL Homog_test.xlsx
-      74      Mg  axial     351 0.2839751 mg/mL Homog_test.xlsx
-      75      Mg  axial     397 0.2967776 mg/mL Homog_test.xlsx
-      76      Mg radial       3 0.2777090 mg/mL Homog_test.xlsx
-      77      Mg radial      36 0.2886654 mg/mL Homog_test.xlsx
-      78      Mg radial      62 0.2948648 mg/mL Homog_test.xlsx
-      79      Mg radial      78 0.2924766 mg/mL Homog_test.xlsx
-      80      Mg radial     109 0.2794004 mg/mL Homog_test.xlsx
-      81      Mg radial     144 0.2918912 mg/mL Homog_test.xlsx
-      82      Mg radial     162 0.2875026 mg/mL Homog_test.xlsx
-      83      Mg  axial     200 0.2895977 mg/mL Homog_test.xlsx
-      84      Mg  axial     225 0.2874214 mg/mL Homog_test.xlsx
-      85      Mg  axial     239 0.2900750 mg/mL Homog_test.xlsx
-      86      Mg  axial     256 0.2998802 mg/mL Homog_test.xlsx
-      87      Mg  axial     295 0.2839409 mg/mL Homog_test.xlsx
-      88      Mg  axial     325 0.2866047 mg/mL Homog_test.xlsx
-      89      Mg  axial     351 0.2902880 mg/mL Homog_test.xlsx
-      90      Mg  axial     397 0.2854040 mg/mL Homog_test.xlsx
+         analyte H_type Flasche     value  unit
+      1       Fe radial       3 0.2897693  mM/L
+      2       Fe radial      36 0.2967753  mM/L
+      3       Fe radial      62 0.3075952  mM/L
+      4       Fe radial      78 0.3006643  mM/L
+      5       Fe radial     109 0.2981130  mM/L
+      6       Fe radial     144 0.3018592  mM/L
+      7       Fe radial     162 0.3051646  mM/L
+      8       Fe  axial     200 0.2934924  mM/L
+      9       Fe  axial     225 0.2369928  mM/L
+      10      Fe  axial     239 0.2990771  mM/L
+      11      Fe  axial     256 0.2916479  mM/L
+      12      Fe  axial     295 0.2981732  mM/L
+      13      Fe  axial     325 0.3033135  mM/L
+      14      Fe  axial     351 0.3084570  mM/L
+      15      Fe  axial     397 0.2988461  mM/L
+      16      Fe radial       3 0.2938025  mM/L
+      17      Fe radial      36 0.2913924  mM/L
+      18      Fe radial      62 0.2910948  mM/L
+      19      Fe radial      78 0.2835857  mM/L
+      20      Fe radial     109 0.2985147  mM/L
+      21      Fe radial     144 0.2884778  mM/L
+      22      Fe radial     162 0.2940975  mM/L
+      23      Fe  axial     200 0.2865534  mM/L
+      24      Fe  axial     225 0.2940975  mM/L
+      25      Fe  axial     239 0.2965681  mM/L
+      26      Fe  axial     256 0.2907160  mM/L
+      27      Fe  axial     295 0.2911270  mM/L
+      28      Fe  axial     325 0.2884299  mM/L
+      29      Fe  axial     351 0.2839751  mM/L
+      30      Fe  axial     397 0.2967776  mM/L
+      31      Fe radial       3 0.2777090  mM/L
+      32      Fe radial      36 0.2886654  mM/L
+      33      Fe radial      62 0.2948648  mM/L
+      34      Fe radial      78 0.2924766  mM/L
+      35      Fe radial     109 0.2794004  mM/L
+      36      Fe radial     144 0.2918912  mM/L
+      37      Fe radial     162 0.2875026  mM/L
+      38      Fe  axial     200 0.2895977  mM/L
+      39      Fe  axial     225 0.2874214  mM/L
+      40      Fe  axial     239 0.2900750  mM/L
+      41      Fe  axial     256 0.2998802  mM/L
+      42      Fe  axial     295 0.2839409  mM/L
+      43      Fe  axial     325 0.2866047  mM/L
+      44      Fe  axial     351 0.2902880  mM/L
+      45      Fe  axial     397 0.2854040  mM/L
+      46      Mg radial       3 0.2897693 mg/mL
+      47      Mg radial      36 0.2967753 mg/mL
+      48      Mg radial      62 0.3075952 mg/mL
+      49      Mg radial      78 0.3006643 mg/mL
+      50      Mg radial     109 0.2981130 mg/mL
+      51      Mg radial     144 0.3018592 mg/mL
+      52      Mg radial     162 0.3051646 mg/mL
+      53      Mg  axial     200 0.2934924 mg/mL
+      54      Mg  axial     225 0.2369928 mg/mL
+      55      Mg  axial     239 0.2990771 mg/mL
+      56      Mg  axial     256 0.2916479 mg/mL
+      57      Mg  axial     295 0.2981732 mg/mL
+      58      Mg  axial     325 0.3033135 mg/mL
+      59      Mg  axial     351 0.3084570 mg/mL
+      60      Mg  axial     397 0.2988461 mg/mL
+      61      Mg radial       3 0.2938025 mg/mL
+      62      Mg radial      36 0.2913924 mg/mL
+      63      Mg radial      62 0.2910948 mg/mL
+      64      Mg radial      78 0.2835857 mg/mL
+      65      Mg radial     109 0.2985147 mg/mL
+      66      Mg radial     144 0.2884778 mg/mL
+      67      Mg radial     162 0.3040194 mg/mL
+      68      Mg  axial     200 0.2865534 mg/mL
+      69      Mg  axial     225 0.2940975 mg/mL
+      70      Mg  axial     239 0.2965681 mg/mL
+      71      Mg  axial     256 0.2907160 mg/mL
+      72      Mg  axial     295 0.2911270 mg/mL
+      73      Mg  axial     325 0.2884299 mg/mL
+      74      Mg  axial     351 0.2839751 mg/mL
+      75      Mg  axial     397 0.2967776 mg/mL
+      76      Mg radial       3 0.2777090 mg/mL
+      77      Mg radial      36 0.2886654 mg/mL
+      78      Mg radial      62 0.2948648 mg/mL
+      79      Mg radial      78 0.2924766 mg/mL
+      80      Mg radial     109 0.2794004 mg/mL
+      81      Mg radial     144 0.2918912 mg/mL
+      82      Mg radial     162 0.2875026 mg/mL
+      83      Mg  axial     200 0.2895977 mg/mL
+      84      Mg  axial     225 0.2874214 mg/mL
+      85      Mg  axial     239 0.2900750 mg/mL
+      86      Mg  axial     256 0.2998802 mg/mL
+      87      Mg  axial     295 0.2839409 mg/mL
+      88      Mg  axial     325 0.2866047 mg/mL
+      89      Mg  axial     351 0.2902880 mg/mL
+      90      Mg  axial     397 0.2854040 mg/mL
 

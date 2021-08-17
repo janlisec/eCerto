@@ -307,7 +307,7 @@ to_startPage = function(session, value="Certification") {
 listNames = function(l, maxDepth = 2) {
   n = 0
   listNames_rec = function(l, n) {
-    if(!is.list(l) | is.data.frame(l) | n>=2) TRUE
+    if(!is.list(l) | is.data.frame(l) | n>=maxDepth) TRUE
     else { 
       n = n + 1
       # print(n)
@@ -316,5 +316,6 @@ listNames = function(l, maxDepth = 2) {
   }
   
   n = names(unlist(listNames_rec(l, n)))
+  # n = names(listNames_rec(l, n))
   return(n)
 }

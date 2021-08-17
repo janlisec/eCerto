@@ -28,7 +28,7 @@ xlsx_range_select_Server(
 \item{silent}{Option to print or omit status messages.}
 }
 \value{
-A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt} (contains File column)
+A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt}
 }
 \description{
 \code{xlsx_range_select} will provide a preview for an excel data file and allow the user to specify a range by mouse click(s).

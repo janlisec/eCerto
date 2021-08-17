@@ -136,7 +136,8 @@ app_server = function(input, output, session) {
     cert = shiny::reactive({getValue(rv,"Certification")}),
     datreturn = datreturn
   )
-
+  m_StabilityServer(id = "Stability", rv = rv, datreturn = datreturn)
+  
   # --- --- --- --- --- --- --- --- --- --- ---
   .longtermstabilityServer("lts")
   # --- --- --- --- --- --- --- --- --- --- ---
