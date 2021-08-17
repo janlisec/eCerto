@@ -103,7 +103,6 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
       # )
       message("TRANSFER BUTTON clicked")
       h_vals <- homogData()
-      browser()
       cert_vals(
         stats::setNames(cert_vals(),
                         as.character(shiny::isolate(input$h_transfer_ubb)))

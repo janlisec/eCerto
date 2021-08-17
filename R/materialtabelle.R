@@ -280,16 +280,24 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     
     # Homogeneity Transfer
     shiny::observeEvent(getValue(datreturn,"t_H") ,{
-      if(!silent)message("materialtabelle: Homogenity Transfer")
-      transferred_array = ecerto::getValue(datreturn,"t_H")
-      merge_transfer(transferred_array = transferred_array)
+      # can't just set Value to NULL because setValue doesn't accept it
+      if(getValue(datreturn,"t_H")  != "new") {
+        if(!silent)message("materialtabelle: Homogenity Transfer")
+        transferred_array = ecerto::getValue(datreturn,"t_H")
+        merge_transfer(transferred_array = transferred_array)
+        setValue(datreturn,"t_H", "new")
+      }
     }, ignoreNULL = TRUE)
     
     # Stability Transfer
     shiny::observeEvent(getValue(datreturn,"t_S"), {
-      if(!silent)message("materialtabelle: Stability Transfer")
-      transferred_array = ecerto::getValue(datreturn,"t_S")
-      merge_transfer(transferred_array = transferred_array)
+      # can't just set Value to NULL because setValue doesn't accept it
+      if(getValue(datreturn,"t_H")  != "new") {
+        if(!silent)message("materialtabelle: Stability Transfer")
+        transferred_array = ecerto::getValue(datreturn,"t_S")
+        merge_transfer(transferred_array = transferred_array)
+        setValue(datreturn,"t_H", "new")
+      }
     })
     
     # in case backup data
