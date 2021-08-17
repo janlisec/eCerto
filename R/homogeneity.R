@@ -49,9 +49,10 @@ m_HomogeneityUI <- function(id) {
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      shiny::wellPanel(m_TransferHomogeneityUI(shiny::NS(id,"trH"))),
+      #shiny::wellPanel(m_TransferHomogeneityUI(shiny::NS(id,"trH"))),
       shiny::fluidRow(
         shiny::column(10, DT::dataTableOutput(shiny::NS(id,"h_vals"))),
+        shiny::column(2, m_TransferHomogeneityUI(shiny::NS(id,"trH")))
         #  column(2,
         # #  conditionalPanel(
         # #   condition="output.c_fileUploaded_message != ''",
