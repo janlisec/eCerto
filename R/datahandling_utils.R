@@ -89,8 +89,8 @@ laboratory_dataframe = function(x) {
     )
 
   return(x2)
-  
-  
+
+
 }
 
 #' Loads names of Excel sheets
@@ -206,19 +206,22 @@ roundMT = function(value,precision = NULL) {
 #' otherwise
 #'
 #' @param n numeric vector
-#' @param p precision after the decimal sign
+#' @param p requested precision after the decimal sign
 #'
 #' @return numbers formatted
 #' @rdname datahandling_utils
+#' @example
+#' pn(n=c(1.23456, NA, 0, 0.00001))
 #' @export
 pn <- function(n=NULL, p=4L) {
   # n : numeric vector
   # p : precision after the decimal sign
-  # output : numbers formatted in same width as character using scientific notation for numbers < precision and rounding to precision otherwise
+  # output : numbers formatted in identical width as character using scientific notation for numbers < p and rounding to p otherwise
   if (any(is.finite(n))) {
-    w <- max(nchar(round(n)))+p+1 # determine maximum width required
-    o <- sprintf(paste0("%*.", p, "f"), w, n)
-    s <- round(n,p)==0 # requires scientific notation
+    w <- max(nchar(round(n)), na.rm=TRUE)+p+1 # determine maximum width required
+    o <- rep(paste(rep(" ", w), collapse=""), length(n))
+    o[is.finite(n)] <- sprintf(paste0("%*.", p, "f"), w, n[is.finite(n)])
+    s <- is.finite(n) && round(n,p)==0 & n>0 # requires scientific notation
     if (any(s)) o[which(s)] <- sprintf(paste0("%*.", max(c(p-4,1)), "E"), w, n[which(s)])
     return(o)
   } else {
@@ -289,7 +292,7 @@ to_startPage = function(session, value="Certification") {
   )
 }
 
-#' names of nested list elements, but ignore data.frame column names. 
+#' names of nested list elements, but ignore data.frame column names.
 #' Refer to https://stackoverflow.com/q/68453593/6946122
 #'
 #' @param l nested list
@@ -308,13 +311,13 @@ listNames = function(l, maxDepth = 2) {
   n = 0
   listNames_rec = function(l, n) {
     if(!is.list(l) | is.data.frame(l) | n>=2) TRUE
-    else { 
+    else {
       n = n + 1
       # print(n)
       lapply(l, listNames_rec, n)
     }
   }
-  
+
   n = names(unlist(listNames_rec(l, n)))
   return(n)
 }

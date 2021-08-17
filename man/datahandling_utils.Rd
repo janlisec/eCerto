@@ -58,7 +58,7 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 
 \item{n}{numeric vector}
 
-\item{p}{precision after the decimal sign}
+\item{p}{requested precision after the decimal sign}
 
 \item{r}{the reactive containing the data frame to be updated}
 
