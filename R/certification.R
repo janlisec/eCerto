@@ -302,12 +302,12 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
 
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
-    }, options = list(dom = "t", autoWidth = TRUE, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+    }, options = list(dom = "t", pageLength=100, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
 
     # mStats
     output$overview_mstats <- DT::renderDataTable({
       mstats(data = dat(), precision = apm()[[selected_tab()]]$precision)
-    }, options = list(dom = "t", autoWidth = TRUE, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+    }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
 
     output$qqplot <- shiny::renderPlot({
       shiny::req(lab_statistics())
