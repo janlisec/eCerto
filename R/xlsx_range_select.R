@@ -225,13 +225,22 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
     },
     #options=list("dom"="start_row", pageLength=nrow(tab()[[1]]),ordering=FALSE),
     options = list("dom"="t", pageLength=nrow(tab()[[1]]),ordering=FALSE),
-    selection = list(target="cell", selectable=matrix(-1*c(1:nrow(tab()[[1]]), rep(0,nrow(tab()[[1]]))), ncol=2))
+    # editable = ifelse(excelformat()=="Stability",FALSE,TRUE),
+    selection = if(excelformat()=="Stability"){
+      "none"
+    } else {
+      list(target="cell", selectable=matrix(-1*c(1:nrow(tab()[[1]]), rep(0,nrow(tab()[[1]]))), ncol=2))
+    }
     )
     
     output$uitxt <- shiny::renderUI({
       shiny::req(tab())
       str1 <- ifelse(is.null(current_file_input()), "", paste("You see a preview of File:", current_file_input()$name[1]))
-      str2 <- "You may select 2 cells (top left and bottom right) by mouse click to specify a range."
+      if(excelformat()=="Stability") {
+        str2 = ""
+      } else {
+        str2 <- "You may select 2 cells (top left and bottom right) by mouse click to specify a range."
+      }
       #str3 <- paste("Currently selected range:", paste0(LETTERS[tab_param$start_col], tab_param$start_row, ":", LETTERS[tab_param$end_col], tab_param$end_row))
       str3 <- paste("Currently selected range:", tab_param$rng)
       shiny::HTML(paste(str1, str2, str3, sep = '<br/>'))
