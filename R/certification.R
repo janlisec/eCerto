@@ -57,7 +57,7 @@ m_CertificationUI = function(id) {
       value = "loaded",
       shiny::fluidRow(
         shiny::column(
-          width=4,
+          width=3,
           shiny::wellPanel(
             shiny::checkboxGroupInput(
               inputId = shiny::NS(id,"certification_view"),
@@ -72,7 +72,7 @@ m_CertificationUI = function(id) {
           )
         ),
         # --- --- --- --- --- --- --- --- ---
-        shiny::column(width=8, shiny::wellPanel(m_analyteModuleUI(ns("analyteModule"))))
+        shiny::column(width=9, shiny::wellPanel(m_analyteModuleUI(ns("analyteModule"))))
         # --- --- --- --- --- --- --- --- ---
       ),
       shiny::conditionalPanel(
@@ -116,26 +116,26 @@ m_CertificationUI = function(id) {
         condition = "input.certification_view.indexOf('stats') > -1",
         ns = shiny::NS(id), # namespace of current module
         shiny::wellPanel(
-          shiny::fluidRow(
-            shiny::column(
-              width = 9,
-              shiny::strong("Statistics regarding lab means, lab variances and outlier detection")
-            ),
-            DT::dataTableOutput(ns("overview_stats"))
-          ),
+          shiny::strong("Tab.1 Statistics regarding lab variances and outlier detection"),
+          DT::dataTableOutput(ns("overview_stats"))
+          #shiny::div(style = 'width:900px;margin:auto', DT::DTOutput(ns("overview_stats"), width = "900px"))
         )
       ),
       # Stats2 (on Lab means)
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats2') > -1",
         ns = shiny::NS(id),
-        DT::dataTableOutput(ns("overview_mstats")),
-        shiny::hr(),
-        shiny::fluidRow(shiny::column(9, shiny::textOutput(outputId = ns("normality_statement")))),
-        shiny::conditionalPanel(
-          condition = "input.certification_view.indexOf('qqplot') > -1",
-          ns = shiny::NS(id),
-          shiny::plotOutput(ns("qqplot"))
+        shiny::wellPanel(
+          shiny::strong("Tab.2 Statistics regarding lab mean distribution"),
+          DT::dataTableOutput(ns("overview_mstats")),
+          htmltools::p(),
+          shiny::textOutput(outputId = ns("normality_statement")),
+          shiny::conditionalPanel(
+            condition = "input.certification_view.indexOf('qqplot') > -1",
+            ns = shiny::NS(id),
+            htmltools::p(),
+            shiny::plotOutput(ns("qqplot"))
+          )
         )
       ),
       # materialtabelle
@@ -155,7 +155,7 @@ m_CertificationUI = function(id) {
 #' @export
 m_CertificationServer = function(id, rv, apm.input, datreturn) {
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     # TODO mit den ganzen reactiveVal aufräumen
     apm_return <- shiny::reactiveVal(NULL)
     apm <- shiny::reactiveVal()
@@ -185,10 +185,10 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
           # only forward rData Upload after RData was uploaded
           message("Certification: forward RData to Materialtabelle")
           rdataupload(getValue(rv,c("materialtabelle")))
-          if(!is.null(shiny::isolate(apm()))) { 
+          if(!is.null(shiny::isolate(apm()))) {
             # RData contained "apm"
             apm(apm.input())
-          } else { 
+          } else {
             # RData did not contain "apm" --> create
             apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
           }
@@ -201,15 +201,13 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
         shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
       }
     })
-    
 
-    
     # # temp
     # shiny::observeEvent(apm.input(),{
     #   # message("---- apm.input! --------")
     #   # apm(apm.input())
     # })
-    
+
     # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is in Certification-UI, that's why it is here
     m_materialtabelleServer(
@@ -235,7 +233,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       check = check
     )
     # --- --- --- --- --- --- --- --- --- --- ---
-    
+
     # Calculates statistics for all available labs
     # formerly: lab_means()
     # Format example:
@@ -257,8 +255,8 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       rownames(out) <- out$Lab
       return(out)
     })
-    
-    
+
+
     output$normality_statement <- shiny::renderText({
       l = lab_statistics()
       suppressWarnings(
@@ -268,23 +266,24 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
         "The data is",
         ifelse(KS_p < 0.05, " not ", " "),
         "normally distributed (KS_p=",
-        formatC(KS_p, format = "E", digits = 2),
+        #formatC(KS_p, format = "E", digits = 2),
+        ecerto::pn(KS_p),
         ")."
       )
     })
-    
+
     shiny::observeEvent(dat(),{
       message("Certification: dat() changed, set datreturn.selectedAnalyteDataframe")
       ecerto::setValue(datreturn, "selectedAnalyteDataframe", dat())
     })
-    
+
     shiny::observeEvent(lab_statistics(),{
       message("Certification: lab_statistics() changed, set datreturn.lab_statistics")
       ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
     })
-    
-    
-    
+
+
+
     shiny::observeEvent(input$certification_view, {
       # Box "QQ-Plot" clickable? Depends in state of Box above it
       shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
@@ -301,23 +300,23 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
         setValue(rv,c("Certification.processing","CertValPlot","show"),show_Boxplot)
       }
     })
-    
+
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
-    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-    
+    }, options = list(dom = "t", pageLength=100, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+
     # mStats
     output$overview_mstats <- DT::renderDataTable({
       mstats(data = dat(), precision = apm()[[selected_tab()]]$precision)
-    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-    
+    }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+
     output$qqplot <- shiny::renderPlot({
       shiny::req(lab_statistics())
       y <- lab_statistics()[, "mean"]
       stats::qqnorm(y = y)
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
-    
+
     return(apm)
   })
 }

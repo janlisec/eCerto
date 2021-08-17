@@ -58,7 +58,7 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 
 \item{n}{numeric vector}
 
-\item{p}{precision after the decimal sign}
+\item{p}{requested precision after the decimal sign}
 
 \item{r}{the reactive containing the data frame to be updated}
 
@@ -108,4 +108,5 @@ if (interactive()) {
   set_uploadsource(rv,"Certification","Excel")
 }
 roundMT(34.3434,3)
+pn(n=c(1.23456, NA, 0, 0.00001))
 }

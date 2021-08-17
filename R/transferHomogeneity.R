@@ -23,7 +23,7 @@
 #'
 #' @rdname mod_TransferHomogeneity
 #' @export
-#' @examples 
+#' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
@@ -45,27 +45,12 @@ m_TransferHomogeneityUI = function(id) {
   shinyjs::disabled(
     shiny::fluidRow(
       id = shiny::NS(id,"transferPanel"),
-      #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
       shiny::p(id = shiny::NS(id,"element"), ""),
-      shiny::column(
-        width = 4,
-        shiny::selectInput(
-          inputId=shiny::NS(id,"h_transfer_H_type"),
-          label="",
-          selectize=TRUE,
-          choices=NULL
-        )
-      ),
-      #fluidRow(HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
-      shiny::column(
-        width = 4,
-        shiny::selectInput(inputId=shiny::NS(id,"h_transfer_ubb"),
-          label="",
-          selectize=TRUE,
-          choices=NULL
-        )
-      ),
-      shiny::column(4, shiny::actionButton(inputId = shiny::NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"))
+      shiny::fluidRow(shiny::column(11, shiny::HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), offset = 1)),
+      shiny::fluidRow(shiny::column(11, shiny::selectInput(inputId=shiny::NS(id,"h_transfer_H_type"), label="", selectize=TRUE, choices=NULL), offset = 1)),
+      shiny::fluidRow(shiny::column(11, shiny::HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), offset = 1)),
+      shiny::fluidRow(shiny::column(11, shiny::selectInput(inputId=shiny::NS(id,"h_transfer_ubb"), label="", selectize=TRUE, choices=NULL), offset = 1)),
+      shiny::fluidRow(shiny::column(11, shiny::actionButton(inputId = shiny::NS(id,"h_transfer_ubb_button"), label = "Transfer Now!"), offset = 1))
     )
   )
 }
@@ -76,13 +61,13 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
   shiny::moduleServer(id, function(input, output, session) {
 
     cert_vals = shiny::reactiveVal()
-    
+
     shiny::observeEvent({
       matTab_col_code()
       homogData()
     }
     ,{
-      
+
       # activate transfer panel only, when
       # (1) materialtabelle was created after certification upload AND
       # (2) homogeneity data was uploaded AND

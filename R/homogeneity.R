@@ -49,9 +49,10 @@ m_HomogeneityUI <- function(id) {
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      shiny::wellPanel(m_TransferHomogeneityUI(shiny::NS(id,"trH"))),
+      #shiny::wellPanel(m_TransferHomogeneityUI(shiny::NS(id,"trH"))),
       shiny::fluidRow(
         shiny::column(10, DT::dataTableOutput(shiny::NS(id,"h_vals"))),
+        shiny::column(2, m_TransferHomogeneityUI(shiny::NS(id,"trH")))
         #  column(2,
         # #  conditionalPanel(
         # #   condition="output.c_fileUploaded_message != ''",
@@ -107,28 +108,45 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
         shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standBy")
       }
     })
-    h_Data = shiny::reactive({
-      h_dat = homog()[["data"]]
+
+    h_Data <- shiny::reactive({
+      req(homog()[["data"]])
+      # this is the local version of the homology data
+      # whatever range is loaded from excel can be checked and transformed in here
+      #browser()
+      h_dat <- homog()[["data"]]
+      # rename if if first column is not named 'analyte' and convert to factor
+      colnames(h_dat)[1] <- "analyte"
       h_dat[,"analyte"] <- factor(h_dat[,"analyte"])
-      shiny::validate(shiny::need("Flasche" %in% colnames(h_dat), "No column 'Flasche' found in input file."))
+      # ensure that there is a second column 'H_type' and convert to factor
+      if (ncol(h_dat)==4) {
+        h_dat <- cbind(h_dat[,1,drop=FALSE], data.frame("H_type"=gl(n = 1, k = nrow(h_dat), labels = "hom")), h_dat[,2:4])
+      } else {
+        colnames(h_dat)[2] <- "H_type"
+        h_dat[,"H_type"] <- factor(h_dat[,"H_type"])
+      }
+      # ensure that there is a third column 'Flasche' and convert to factor
+      colnames(h_dat)[3] <- "Flasche"
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
-      shiny::validate(shiny::need("H_type" %in% colnames(h_dat), "No column 'H_type' found in input file."))
-      h_dat[,"H_type"] <- factor(h_dat[,"H_type"])
       return(h_dat)
     })
 
-    newh_vals =  shiny::reactive({
+    newh_vals <- shiny::reactive({
       plyr::ldply(split(h_Data(), h_Data()[,"analyte"]), function(y) {
         plyr::ldply(split(y, y[,"H_type"]), function(x) {
-          anm <- stats::anova(stats::lm(value ~ Flasche, data=x))
-          MSamong <- anm[1,"Mean Sq"]
-          MSwithin <- anm[2,"Mean Sq"]
-          mn <- mean(sapply(split(x[,"value"],x[,"Flasche"]),mean,na.rm=T),na.rm=T)
-          n <- round(mean(table(as.character(x[,"Flasche"]))))
-          N <- length(unique(x[,"Flasche"]))
-          s_bb <- ifelse(MSamong>MSwithin, sqrt((MSamong-MSwithin)/n), 0)/mn
-          s_bb_min <- (sqrt(MSwithin/n)*(2/(N*(n-1)))^(1/4))/mn
-          data.frame("mean"=mn, "n"=n, "N"=N, "MSamong"=MSamong, "MSwithin"=MSwithin, "P"=anm$Pr[1], "s_bb"=s_bb, "s_bb_min"=s_bb_min)
+          if (nrow(x)>=2) {
+            anm <- stats::anova(stats::lm(value ~ Flasche, data=x))
+            MSamong <- anm[1,"Mean Sq"]
+            MSwithin <- anm[2,"Mean Sq"]
+            mn <- mean(sapply(split(x[,"value"],x[,"Flasche"]),mean,na.rm=T),na.rm=T)
+            n <- round(mean(table(as.character(x[,"Flasche"]))))
+            N <- length(unique(x[,"Flasche"]))
+            s_bb <- ifelse(MSamong>MSwithin, sqrt((MSamong-MSwithin)/n), 0)/mn
+            s_bb_min <- (sqrt(MSwithin/n)*(2/(N*(n-1)))^(1/4))/mn
+            return(data.frame("mean"=mn, "n"=n, "N"=N, "MSamong"=MSamong, "MSwithin"=MSwithin, "P"=anm$Pr[1], "s_bb"=s_bb, "s_bb_min"=s_bb_min))
+          } else {
+            return(data.frame("mean"=NA, "n"=0, "N"=0, "MSamong"=0, "MSwithin"=0, "P"=0, "s_bb"=0, "s_bb_min"=0))
+          }
         }, .id="H_type")
       }, .id="analyte")
     })
@@ -177,9 +195,8 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       shiny::req(h_Data())
       c_Data = cert
       h_vals_print <- h_vals()
-
-      for (i in c("mean","MSamong","MSwithin","P","s_bb","s_bb_min")) {
-        h_vals_print[,i] <- ecerto::pn(h_vals_print[,i], input$h_precision)
+      for (cn in c("mean","MSamong","MSwithin","P","s_bb","s_bb_min")) {
+        h_vals_print[,cn] <- ecerto::pn(h_vals_print[,cn], input$h_precision)
       }
       if (!is.null(c_Data()$data)) {
         mater_table <- c_Data()$data
@@ -213,7 +230,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       osd <- round(stats::sd(h_dat[,"value"],na.rm=T), input$h_precision)
       anp <- formatC(stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1], digits = 2, format = "e")
       graphics::par(mar=c(5,4,6,0)+0.1)
-      graphics::plot(x=c(0.75,0.25+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
+      graphics::plot(x=c(0.6,0.4+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
       graphics::abline(h=omn, lty=2)
       graphics::abline(h=omn+c(-1,1)*osd, lty=2, col=grDevices::grey(0.8))
       graphics::boxplot(h_dat[,"value"] ~ h_dat[,"Flasche"], add=TRUE)
