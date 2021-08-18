@@ -316,8 +316,6 @@ listNames = function(l, maxDepth = 2) {
       lapply(l, listNames_rec, n)
     }
   }
-
   n = names(unlist(listNames_rec(l, n)))
-  # n = names(listNames_rec(l, n))
   return(n)
 }

@@ -139,6 +139,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         if ( res$General$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
           resnames <- listNames(l = res, maxDepth = 2) # names(unlist(res, recursive = FALSE))
+          browser()
           rvnames <-listNames(
             sapply(rv$get(), function(x) {
                 if(is.reactivevalues(x)) shiny::reactiveValuesToList(x)
@@ -182,18 +183,18 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           setValue(rv,c("General","user"),res$Certification$user)
           setValue(rv,c("General","study_id"),res$Certification$study_id)
           # processing
-          setValue(rv,c("Certification.processing","lab_means"), res[["Certification"]][["lab_means"]])
-          setValue(rv,c("Certification.processing","cert_mean"),res[["Certification"]][["cert_mean"]])
-          setValue(rv,c("Certification.processing","cert_sd"),res[["Certification"]][["cert_sd"]])
-          setValue(rv,c("Certification.processing","normality_statement"),res[["Certification"]][["normality_statement"]])
-          setValue(rv,c("Certification.processing","precision"),res[["Certification"]][["precision"]])
+          setValue(rv,c("Certification_processing","lab_means"), res[["Certification"]][["lab_means"]])
+          setValue(rv,c("Certification_processing","cert_mean"),res[["Certification"]][["cert_mean"]])
+          setValue(rv,c("Certification_processing","cert_sd"),res[["Certification"]][["cert_sd"]])
+          setValue(rv,c("Certification_processing","normality_statement"),res[["Certification"]][["normality_statement"]])
+          setValue(rv,c("Certification_processing","precision"),res[["Certification"]][["precision"]])
 
-          setValue(rv,c("Certification.processing","data_kompakt"),res[["Certification"]][["data_kompakt"]])
-          setValue(rv,c("Certification.processing","CertValPlot"),res[["Certification"]][["CertValPlot"]])
-          setValue(rv,c("Certification.processing","stats"),res[["Certification"]][["stats"]])
-          setValue(rv,c("Certification.processing","boxplot"),res[["Certification"]][["boxplot"]])
-          setValue(rv,c("Certification.processing","opt"),res[["Certification"]][["opt"]])
-          setValue(rv,c("Certification.processing","mstats"),res[["Certification"]][["mstats"]])
+          setValue(rv,c("Certification_processing","data_kompakt"),res[["Certification"]][["data_kompakt"]])
+          setValue(rv,c("Certification_processing","CertValPlot"),res[["Certification"]][["CertValPlot"]])
+          setValue(rv,c("Certification_processing","stats"),res[["Certification"]][["stats"]])
+          setValue(rv,c("Certification_processing","boxplot"),res[["Certification"]][["boxplot"]])
+          setValue(rv,c("Certification_processing","opt"),res[["Certification"]][["opt"]])
+          setValue(rv,c("Certification_processing","mstats"),res[["Certification"]][["mstats"]])
           # materialtabelle
           setValue(rv,c("materialtabelle"),res[["Certification"]][["cert_vals"]])
         }

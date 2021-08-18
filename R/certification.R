@@ -293,11 +293,11 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # only change rv-object if CertValplot has changed
       show_Boxplot =  "boxplot" %in% input$certification_view
       if(
-        is.null(getValue(rv,c("Certification.processing","CertValPlot","show"))) ||
-        show_Boxplot != getValue(rv,c("Certification.processing","CertValPlot","show"))
+        is.null(getValue(rv,c("Certification_processing","CertValPlot","show"))) ||
+        show_Boxplot != getValue(rv,c("Certification_processing","CertValPlot","show"))
       ) {
         message("CERTIFICATION: SET Cert_ValPlot")
-        setValue(rv,c("Certification.processing","CertValPlot","show"),show_Boxplot)
+        setValue(rv,c("Certification_processing","CertValPlot","show"),show_Boxplot)
       }
     })
 

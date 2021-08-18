@@ -141,17 +141,17 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
           shiny::updateNumericInput(
             session=session,
             inputId = "Fig01_width",
-            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot","Fig01_width")))
+            value = shiny::isolate(getValue(rv, c("Certification_processing","CertValPlot","Fig01_width")))
           )
           shiny::updateNumericInput(
             session=session,
             inputId = "Fig01_height",
-            value = shiny::isolate(getValue(rv, c("Certification.processing","CertValPlot","Fig01_height")))
+            value = shiny::isolate(getValue(rv, c("Certification_processing","CertValPlot","Fig01_height")))
           )
           shiny::updateSelectizeInput(
             session=session,
             inputId = "flt_labs",
-            selected = shiny::isolate(getValue(rv, c("Certification.processing","opt")))[["flt_labs"]]
+            selected = shiny::isolate(getValue(rv, c("Certification_processing","opt")))[["flt_labs"]]
           )
           shiny::updateNumericInput(
             session=session,
@@ -227,7 +227,7 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
     
     observeEvent(CertValPlot_list(),{
       message("CertValPlot_list changed; set rv.CertValPlot")
-      setValue(rv,c("Certification.processing","CertValPlot"), CertValPlot_list())
+      setValue(rv,c("Certification_processing","CertValPlot"), CertValPlot_list())
       
     }, ignoreInit = TRUE)
     

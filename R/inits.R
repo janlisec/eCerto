@@ -88,7 +88,7 @@ init_rv = function() {
         "uploadsource" = NULL
       ),
       # processing
-      "Certification.processing" = shiny::reactiveValues(
+      "Certification_processing" = shiny::reactiveValues(
         "lab_means" = NULL,
         "cert_mean" = NULL,
         "cert_sd" = NULL,

@@ -19,8 +19,8 @@
 #' rv$a <- 2
 #' shiny:::flushReact()
 #' test <- reactiveClass$new(ecerto:::init_rv())
-#' ecerto::getValue(test, c("Certification.processing","data"))
-#' shiny::observeEvent(ecerto::getValue(test, "Certification.processing")$data, {
+#' ecerto::getValue(test, c("Certification_processing","data"))
+#' shiny::observeEvent(ecerto::getValue(test, "Certification_processing")$data, {
 #'   message("Certification$data changed:", ecerto::getValue(test, "Certification")$data)
 #' })
 #' ecerto::setValue(test, c("Certification","data"), 5)
