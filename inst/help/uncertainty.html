@@ -167,13 +167,11 @@ pre code {
 </div>
 
 
-<p>Using ANOVA on a one factor linear model we determined from <code>N = h[i,N]</code> containers with <code>n = h[i,n]</code>replicates each:</p>
-<ul>
-<li>Variance within containers <code>(MS_within, s_w) = h[i,MSwithin]</code></li>
-<li>Variance between containers <code>(MS_among, s_a) = h[i,MSamong]</code></li>
-</ul>
-<p>Using formula: <span class="math display">\[\sqrt{s_a-s_w}/\text{mean}\]</span> the relative uncertainty <code>(s_bb) = h[i,s_bb]</code> and <code>s_bb_min</code> using: <span class="math display">\[\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4}/\text{mean}\]</span> <code>=h[i,s_bb_min]</code>. The larger of both values, <code>s_bb</code> and <code>s_bb_min</code>, is transfered as uncertainty contribution.</p>
-<p>Note: <code>s_bb = 0</code> for <code>s_a &lt; s_w</code></p>
+<p>Conducting the analysis of variance (ANOVA) on a one factor linear model we determined from <span class="math inline">\(N\)</span> bottles/containers with <span class="math inline">\(n\)</span> replicates each the variance within bottles <span class="math inline">\(s_w\)</span> (MS_within) and the variance between bottles <span class="math inline">\(s_a\)</span> (MS_among). Together with the overall mean vlaue <span class="math inline">\(\mu\)</span> (mean of all <span class="math inline">\(N\)</span> bottle means), we now can compute two relative uncertainties between bottles:</p>
+<p><span class="math display">\[s_{bb}={\sqrt{s_a-s_w} \over \mu}\]</span></p>
+<p>and</p>
+<p><span class="math display">\[s_{bb, min}={\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4} \over \mu}\]</span> The larger of both values, <span class="math inline">\(s_{bb}\)</span> and <span class="math inline">\(s_{bb,min}\)</span>, is transfered as uncertainty contribution to the column in the material table selected by the user.</p>
+<p><strong>Note</strong>: <span class="math inline">\(s_{bb}=0\)</span> for <span class="math inline">\(s_a&lt;s_w\)</span>.</p>
 
 
 

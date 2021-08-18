@@ -228,7 +228,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       #plot(h_dat)
       omn <- round(mean(h_dat[,"value"],na.rm=T), input$h_precision)
       osd <- round(stats::sd(h_dat[,"value"],na.rm=T), input$h_precision)
-      anp <- formatC(stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1], digits = 2, format = "e")
+      anp <- pn(stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1], 2)
       graphics::par(mar=c(5,4,6,0)+0.1)
       graphics::plot(x=c(0.6,0.4+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
       graphics::abline(h=omn, lty=2)
@@ -263,31 +263,16 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     })
 
     shiny::observeEvent(input$hom_help_modal, {
-      shiny::req(h_vals_print(), input$h_sel_analyt)
       #browser()
-      h <- h_vals_print()
-      i <- which(interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt)
-
+      modal_html <- shiny::withMathJax(shiny::includeHTML(
+        rmarkdown::render(input = system.file("help","uncertainty.Rmd", package = "ecerto"))
+      ))
       shiny::showModal(
         shiny::modalDialog(
-        shiny::withMathJax(
-        shiny::includeHTML(
-          rmarkdown::render(
-            system.file("help","uncertainty.Rmd",package = "ecerto")
-          )
-        )),
-          # shiny::HTML(
-          #   "<p>Using ANOVA on a one factor linear model we determined from N =", h[i,"N"], " containers with n =", h[i,"n"], "replicates each:",
-          #   "<p>Variance within containers (MS_within, s_w) =", h[i,"MSwithin"],
-          #   "<br>Variance between containers (MS_among, s_a) =", h[i,"MSamong"],
-          #   "<p>Using formula: sqrt(s_a-s_w)/mean the relative uncertainty (s_bb) =", h[i,"s_bb"],
-          #   "<br>and s_bb_min using: sqrt(s_w/n)*(2/(N*(n-1)))^(1/4))/mean =", h[i,"s_bb_min"],
-          #   "<p>The larger of both values, s_bb and s_bb_min, is transfered as uncertainty contribution",
-          #   "<p>Note: s_bb = 0 for s_a < s_w"
-          # ),
-          footer = shiny::tagList(
-            shiny::modalButton("Ok")
-          ),
+          #@FK: Der in issue # 66 beschribene Fehler tritt nur auf, wenn man modal_html übergibt, bei HTML("bla") funktioniert alles
+          #HTML("bla"),
+          modal_html,
+          footer = shiny::tagList(shiny::modalButton("Ok")),
           size = "m",
           title = "Uncertainty calculation"
         )
