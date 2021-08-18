@@ -139,7 +139,6 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         if ( res$General$dataformat_version=="2021-05-27") {
           # rv should contain all variables from uploaded res
           resnames <- listNames(l = res, maxDepth = 2) # names(unlist(res, recursive = FALSE))
-          browser()
           rvnames <-listNames(
             sapply(rv$get(), function(x) {
                 if(is.reactivevalues(x)) shiny::reactiveValuesToList(x)
@@ -151,9 +150,8 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             # overwrite non empty fields i.e. he did load Stab data and now
             # reads an RData backup which already contains Stab data
             message("RDataImport: Non-legacy upload started")
-            browser()
             # strsplit(resnames,split = ".", fixed = TRUE)
-            for (i in resnames) {
+            for (i in strsplit(resnames,split = ".", fixed = TRUE)) {
               # for (j in names(res[[i]])) {
               #   setValue(rv, c(i,j), res[[i]][[j]])
               # }
@@ -162,7 +160,6 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             # reset time_stamp with current $$ToDo think if this is really desirable
             setValue(rv,c("General","time_stamp"),Sys.time())
             setValue(rv,c("Certification","uploadsource"),value = "RData")
-            browser()
             message("RDataImport: Non-legacy upload finished")
           } else {
             allgivenexpected = c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
@@ -223,8 +220,6 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
 
 
     shiny::observeEvent(getValue(rv,c("General", "user")) , {
-      
-      # browser()
       # if (!silent) whereami::cat_where(whereami::whereami(),color = "blue")
       shiny::updateTextInput(
         session = session,
