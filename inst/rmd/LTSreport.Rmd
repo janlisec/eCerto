@@ -72,12 +72,12 @@ U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI
 
 **RM Informations**
 
-|                              |                                                                                                         |
-|------------------------------|---------------------------------------------------------------------------------------------------------|
-| Name:                        | **`r d[,"RM"]`**                                                                                        |
-| Property:                    | **`r paste0(d[,"KW_Def"], " (", d[,"KW"],")")`**                                                        |
-| Certified Value:             | **`r paste(d[,"CertVal"], "±",  d[,"U"], "/", 100*d[,"Coef_of_Var"], "rel. [%] (1s)", d[,"KW_Unit"])`** |
-| Number of accepted datasets: | **`r d[,"acc_Datasets"]`**                                                                              |
+|                              |                                                                                                                        |
+|------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| Name:                        | **`r d[,"RM"]`**                                                                                                       |
+| Property:                    | **`r paste0(d[,"KW_Def"], " (", d[,"KW"],")")`**                                                                       |
+| Certified Value:             | **`r paste(d[,"CertVal"], "±",  d[,"U"], "/", 100*d[,"Coef_of_Var"], "rel. [%] (", d[,"U_Def"], ")", d[,"KW_Unit"])`** |
+| Number of accepted datasets: | **`r d[,"acc_Datasets"]`**                                                                                             |
 
 **Statistical Information monitoring (LTS)**
 
