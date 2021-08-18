@@ -69,26 +69,24 @@ m_CertLoadedUI <- function(id) {
 #' @export
 m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     filtered_labs <- shiny::reactiveVal(NULL)
-    current_analy <- shiny::reactive({apm()[[selected_tab()]]})
-    
+    #cur_anal <- shiny::reactive({apm()[[selected_tab()]]})
+
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
-      
+      cur_anal <- shiny::reactive({apm()[[selected_tab()]]})
+
       message("Cert_Load: dat-reactive invalidated")
       cert.data <- getValue(rv,c("Certification","data")) # take the uploaded certification
       # round input values
-      #browser()
-      # @FK: Wenn ich einen Datensatz lade, dann läuft Shiny 2x hier durch (mit browser() geprüft) --> beim zweiten Mal ist
-      # current_analy()$precision == NULL und wirft daher einen Fehler
-      # habe diesen mit ifelse statement abgefangen (temporäre Lösung), sollte aber im reactive graph korrekt funktionieren
-      cert.data[, "value"] <- round(cert.data[, "value"], ifelse(is.null(current_analy()$precision), 4, current_analy()$precision))
+      if (is.null(cur_anal()$precision)) browser()
+      cert.data[, "value"] <- round(cert.data[, "value"], cur_anal()$precision)
       cert.data <- cert.data[cert.data[, "analyte"] %in% selected_tab(), ]
-      cert.data <- cert.data[!(cert.data[, "ID"] %in% current_analy()$sample_filter), ]
+      cert.data <- cert.data[!(cert.data[, "ID"] %in% cur_anal()$sample_filter), ]
       cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% filtered_labs()
       # adjust factor levels
       cert.data[, "Lab"] <- factor(cert.data[, "Lab"])
@@ -100,21 +98,21 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
             sapply(split(cert.data[, "value"], cert.data[, "Lab"]), length) < 2
           ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
         shiny::need(
-          is.numeric(current_analy()$precision) &&
-            current_analy()$precision >= 0 &&
-            current_analy()$precision <= 6,
+          is.numeric(cur_anal()$precision) &&
+            cur_anal()$precision >= 0 &&
+            cur_anal()$precision <= 6,
           message = "please check precision value: should be numeric and between 0 and 6"
         )
       )
       return(cert.data)
     })
-    
+
     # BOXPLOT
     output$overview_boxplot <- shiny::renderPlot({
       #if (input$opt_show_files == "boxplot") {
       TestPlot(data = dat())
     })
-    
+
     # Filter laboraties (e.g. "L1")
     output$flt_labs <- shiny::renderUI({
       shiny::req(dat(), selected_tab())
@@ -132,8 +130,8 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
         multiple = TRUE
       )
     })
-    
-    
+
+
     shiny::observeEvent(check(), {
       message("Cert_Loaded: Check() observeEvent")
       us = getValue(rv,c("Certification","uploadsource"))
@@ -158,52 +156,58 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
             inputId = "Fig01_width",
             value = 150 + 40 * length(levels(factor(shiny::isolate(getValue(rv, c("Certification","data")))[, "Lab"])))
           )
-
         }
-      
     }, ignoreInit  = TRUE)
-    
+
     shiny::observeEvent(input$flt_labs,{
-      message("Cert_load: lab filter: ", input$flt_labs)
-      filtered_labs_tmp = filtered_labs()
-      tmp <- dat()[dat()[, "analyte"] == selected_tab() &
-                     is.finite(dat()[, "value"]), ]
-      n_labs <- length(levels(factor(tmp[, "Lab"])))
-      if(length(input$flt_labs) < n_labs) {
-        filtered_labs( input$flt_labs)
-        apm_tmp = apm()
-        apm_tmp[[selected_tab()]]$lab_filter = input$flt_labs
-        apm(apm_tmp)
-      } else {
-        # if not valid --> reset
-        shinyalert::shinyalert(
-          title = "Too many labs filtered",
-          text = "You can not filter all labs."
-        )
-        # currently a bit hacky. since just giving filtered_labs_tmp would not
-        # trigger the reactive, first reset to the first and then give the
-        # actual filtered labs
-        apm_tmp = apm()
-        apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp[1]
-        apm(apm_tmp)
-        apm_tmp = apm()
-        apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp
-        apm(apm_tmp)
+      # don't perform any update on apm() if variables are similar
+      # without this if statement apm() was changed on initial load and L_flt list item was deleted
+      if (!identical(sort(filtered_labs()),sort(input$flt_labs))) {
+        message("Cert_load: lab filter: ", input$flt_labs)
+        filtered_labs_tmp = filtered_labs()
+        tmp <- dat()[dat()[, "analyte"] == selected_tab() & is.finite(dat()[, "value"]), ]
+        n_labs <- length(levels(factor(tmp[, "Lab"])))
+        if(length(input$flt_labs) < n_labs) {
+          filtered_labs(input$flt_labs)
+          apm_tmp <- apm()
+          # L_flt list item was deleted because NULL can not be assigned to a list element in the standard way
+          if (is.null(input$flt_labs)) {
+            apm_tmp[[selected_tab()]]["lab_filter"] <- list(NULL)
+          } else {
+            apm_tmp[[selected_tab()]]$lab_filter <- input$flt_labs
+          }
+          apm(apm_tmp)
+        } else {
+          # if not valid --> reset
+          shinyalert::shinyalert(
+            title = "Too many labs filtered",
+            text = "You can not filter all labs."
+          )
+          # currently a bit hacky. since just giving filtered_labs_tmp would not
+          # trigger the reactive, first reset to the first and then give the
+          # actual filtered labs
+          apm_tmp = apm()
+          apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp[1]
+          apm(apm_tmp)
+          apm_tmp = apm()
+          apm_tmp[[selected_tab()]]$lab_filter = filtered_labs_tmp
+          apm(apm_tmp)
+        }
       }
-      
+
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
-    
+
     output$cert_mean <- shiny::renderText({
       mt <- getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),]$mean
     })
-    
+
     output$cert_sd <- shiny::renderText({
       mt <- getValue(rv,c("materialtabelle"))
       mt[mt$analyte==selected_tab(),"sd"]
     })
-    
-    
+
+
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       CertValPlot(data = dat())
@@ -212,10 +216,10 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
     }), width = shiny::reactive({
       input$Fig01_width
     }))
-    
-    CertValPlot_list = shiny::reactive({
-      req(input$Fig01_width)
-      req(input$Fig01_height)
+
+    CertValPlot_list <- shiny::reactive({
+      shiny::req(input$Fig01_width)
+      shiny::req(input$Fig01_height)
       list(
         "show" = TRUE,
         "fnc" = deparse(CertValPlot),
@@ -224,13 +228,12 @@ m_CertLoadedServer <- function(id, rv, apm, selected_tab, check) {
         "Fig01_height" = input$Fig01_height
       )
     })
-    
-    observeEvent(CertValPlot_list(),{
+
+    shiny::observeEvent(CertValPlot_list(),{
       message("CertValPlot_list changed; set rv.CertValPlot")
       setValue(rv,c("Certification_processing","CertValPlot"), CertValPlot_list())
-      
     }, ignoreInit = TRUE)
-    
+
     return(dat)
   })
 }

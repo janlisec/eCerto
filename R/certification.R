@@ -162,8 +162,8 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     rdataupload<- shiny::reactiveVal()
     renewTabs <- shiny::reactiveVal(NULL)
     dat <- shiny::reactiveVal(NULL)
-    
-    
+
+
     # Upload Notification. Since "uploadsource" is invalidated also when other
     # parameters within Certification are changed (because of the reactiveValues
     # thing), it has to be checked if it has changed value since the last change
@@ -282,8 +282,6 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
     })
 
-
-
     shiny::observeEvent(input$certification_view, {
       # Box "QQ-Plot" clickable? Depends in state of Box above it
       shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
@@ -299,7 +297,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
         message("CERTIFICATION: SET Cert_ValPlot")
         setValue(rv,c("Certification_processing","CertValPlot","show"),show_Boxplot)
       }
-    })
+    }, ignoreInit = TRUE)
 
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)

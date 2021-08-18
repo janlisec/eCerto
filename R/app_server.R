@@ -8,10 +8,8 @@
 #' @export
 app_server = function(input, output, session) {
 
-  
   rv = reactiveClass$new(init_rv()) # initiate persistent variables
   datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
-  
 
   # Certification, Homogeneity, Stability -----------------------------------
   excelformat = shiny::reactive({input$moduleSelect})
@@ -20,7 +18,6 @@ app_server = function(input, output, session) {
                     choices = rv$names(),
                     selected = rv$names()[1]
   )
-
 
 # Upload Controller -------------------------------------------------------
 
@@ -32,7 +29,7 @@ app_server = function(input, output, session) {
   upload_notif = m_RDataImport_Server("Rdata", rv)
 
 # page turners (and more) -------------------------------------------------------------
-  
+
   # when Start Button was clicked
   shiny::observeEvent(input$link_to_start, {
     to_startPage(session, value="Certification")
@@ -44,12 +41,12 @@ app_server = function(input, output, session) {
       session = session,
       inputId = "navbarpage",
       selected = "tP_certification")
-    
+
   }, ignoreNULL = TRUE)
   # when Excel was uploaded with LOAD-Button...
   shiny::observeEvent(ExcelUp(),{
     message("app_server: Excel Upload, set rv.Data; set rv.Uploadsource")
-    ex_intern = isolate(excelformat())
+    ex_intern = shiny::isolate(excelformat())
     setValue(rv, c(ex_intern,"data"), ExcelUp())
     setValue(rv, c(ex_intern, "uploadsource"),value =  "Excel")
     if(ex_intern == "Certification"){
@@ -94,42 +91,43 @@ app_server = function(input, output, session) {
       to_startPage(session, value="Stability")
     }
   })
-  
+
 
 # Restart App -------------------------------------------------------------
   # Open confirmation dialog
-  observeEvent(input$session_restart, {
-    showModal(modalDialog(
+  shiny::observeEvent(input$session_restart, {
+    shiny::showModal(shiny::modalDialog(
       easyClose = FALSE,
       title="Sure you want to restart the session?",
       "This will erase all non-saved inputs!",
-      footer = tagList(actionButton("confirmRestart", "Restart"),
-                       modalButton("Cancel")
+      footer = shiny::tagList(
+        shiny::actionButton("confirmRestart", "Restart"),
+        shiny::modalButton("Cancel")
       )
     ))
   })
-  observeEvent(input$confirmRestart, {
+  shiny::observeEvent(input$confirmRestart, {
     session$reload()
     removeModal()
   })
 
 # Panels ------------------------------------------------------------------
 
-  apm = m_CertificationServer(
-    id = "certification", 
-    rv = rv, 
-    apm.input =  reactive({getValue(rv,c("General","apm"))}),
+  apm <- m_CertificationServer(
+    id = "certification",
+    rv = rv,
+    apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
     datreturn = datreturn
   )
-  
+
   # whenever the analyte parameter like lab filter, sample filter etc are changed
-  observeEvent(apm(),{
+  shiny::observeEvent(apm(), {
     message("app_server: apm changed, set rv.apm")
     setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
   }, ignoreNULL = TRUE)
-  
+
   # --- --- --- --- --- --- --- --- --- --- ---
-  
+
   h_vals = m_HomogeneityServer(
     id = "Homogeneity",
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
@@ -137,16 +135,15 @@ app_server = function(input, output, session) {
     datreturn = datreturn
   )
   m_StabilityServer(id = "Stability", rv = rv, datreturn = datreturn)
-  
+
   # --- --- --- --- --- --- --- --- --- --- ---
   .longtermstabilityServer("lts")
   # --- --- --- --- --- --- --- --- --- --- ---
 
 
-  observeEvent(getValue(datreturn,"mater_table"),{
+  shiny::observeEvent(getValue(datreturn,"mater_table"),{
     message("app_server: datreturn.mater_table changed; set rv.materialtabelle")
-    setValue(rv,c("materialtabelle"),
-             getValue(datreturn,"mater_table"))
+    setValue(rv,c("materialtabelle"), getValue(datreturn,"mater_table"))
   })
 
 
@@ -156,5 +153,5 @@ app_server = function(input, output, session) {
     message("app_server: h_vals() changed, set datreturn.h_vals")
     setValue(datreturn, "h_vals", h_vals())
   },ignoreInit = TRUE)
-  
+
 }
