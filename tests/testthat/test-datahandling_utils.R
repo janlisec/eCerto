@@ -67,3 +67,31 @@ testthat::test_that("getValue: empty key should return reactive thing",{
   k = c("a1","b1") # keys
   expect_equal(class(ecerto::getValue(lz,NULL)),"reactivevalues")
 })
+
+
+
+# Merging ------------------------------------------------------------------
+
+testthat::test_that("Merge does not overwrite with 0", {
+  df = data.frame(a = rep(0, 4), b = c(0,0,10,0))
+  vec = data.frame(b = c(1,0,0,0))
+  res = merge_transfer(df = df, vec = vec)
+  res_exp = structure(list(a = c(0, 0, 0, 0), b = c(1, 0, 10, 0)), row.names = c(NA, -4L), class = "data.frame")
+  expect_equal(res,res_exp)  
+  })
+
+testthat::test_that("Merge does overwrite a non-zero value with vector value", {
+  df = data.frame(a = rep(0, 4), b = c(5,0,10,0))
+  vec = data.frame(b = c(1,0,0,0))
+  res = merge_transfer(df = df, vec = vec)
+  res_exp = structure(list(a = c(0, 0, 0, 0), b = c(1, 0, 10, 0)), row.names = c(NA, -4L), class = "data.frame")
+  expect_equal(res,res_exp)  
+})
+
+testthat::test_that("Error expected bymerge_transfer for non-existing column", {
+  df = data.frame(a = rep(0,4), b = c(0,0,10,0))
+  vec = data.frame(c = c(1,0,0,0))
+  expect_error(merge_transfer(df = df, vec = vec))  
+})
+
+# TODO Test where column name differs from it's ID

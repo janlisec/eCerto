@@ -261,30 +261,14 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # get current lab statistics
     lab_statistics = shiny::reactive({ ecerto::getValue(datreturn,"lab_statistics") })
     
-    merge_transfer = function(transferred_array) {
-      mergeby = names(transferred_array)
-      mater_table_tmp = mater_table()
-      
-      if(length(mergeby)==2){
-        # in case column name differs from it's ID
-        mater_table_tmp[,mergeby[2]] = transferred_array[2]
-        mater_table(mater_table_tmp)
-      } else if(length(mergeby)==1) {
-        # in case column name is equal to it's ID
-        mater_table_tmp[,mergeby] = transferred_array
-        mater_table(mater_table_tmp)
-      } else {
-        stop("transferred number of columns should be 1 or 2")
-      }
-    }
     
     # Homogeneity Transfer
     shiny::observeEvent(getValue(datreturn,"t_H") ,{
       # can't just set Value to NULL because setValue doesn't accept it
       if(getValue(datreturn,"t_H")  != "new") {
         if(!silent)message("materialtabelle: Homogenity Transfer")
-        transferred_array = ecerto::getValue(datreturn,"t_H")
-        merge_transfer(transferred_array = transferred_array)
+        mater_table_tmp = merge_transfer(df = mater_table(), vec =  ecerto::getValue(datreturn,"t_H"))
+        mater_table(mater_table_tmp)
         setValue(datreturn,"t_H", "new")
       }
     }, ignoreNULL = TRUE)
@@ -294,8 +278,9 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # can't just set Value to NULL because setValue doesn't accept it
       if(getValue(datreturn,"t_H")  != "new") {
         if(!silent)message("materialtabelle: Stability Transfer")
-        transferred_array = ecerto::getValue(datreturn,"t_S")
-        merge_transfer(transferred_array = transferred_array)
+        mater_table_tmp = merge_transfer(
+          df = mater_table(), vec =  ecerto::getValue(datreturn,"t_S"))
+        mater_table(mater_table_tmp)
         setValue(datreturn,"t_H", "new")
       }
     })
