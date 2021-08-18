@@ -1,13 +1,10 @@
-Using ANOVA on a one factor linear model we determined from
-`N = h[i,N]` containers with `n = h[i,n]`replicates each:
+Conducting the analysis of variance (ANOVA) on a one factor linear model we determined from $N$ bottles/containers with $n$ replicates each the variance within bottles $s_w$ (MS_within) and the variance between bottles $s_a$ (MS_among). Together with the overall mean vlaue $\mu$ (mean of all $N$ bottle means), we now can compute two relative uncertainties between bottles:
 
-- Variance within containers `(MS_within, s_w) = h[i,MSwithin]`
-- Variance between containers `(MS_among, s_a) = h[i,MSamong]`
+$$s_{bb}={\sqrt{s_a-s_w} \over \mu}$$
 
-Using formula:
-$$\sqrt{s_a-s_w}/\text{mean}$$
-the relative uncertainty `(s_bb) = h[i,s_bb]` and `s_bb_min` using: 
-$$\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4}/\text{mean}$$ 
-`=h[i,s_bb_min]`.  The larger of both values, `s_bb` and `s_bb_min`, is transfered as uncertainty contribution. 
+and
 
-Note: `s_bb = 0` for `s_a < s_w`
+$$s_{bb, min}={\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4} \over \mu}$$ 
+The larger of both values, $s_{bb}$ and $s_{bb,min}$, is transfered as uncertainty contribution to the column in the material table selected by the user. 
+
+**Note**: $s_{bb}=0$ for $s_a<s_w$.
