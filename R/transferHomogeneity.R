@@ -14,9 +14,9 @@
 #'not yet
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param homogData reactive of Homogeneity data, if present.
-#' @param matTab_col_code columns of materialtabelle to be transferred to
-#' @param matTab_analytes available analytes of materialtabelle
+#' @param homogData Homogeneity data, if present (reactive).
+#' @param matTab_col_code Columns of materialtabelle to be transferred to (reactive).
+#' @param matTab_analytes Available analytes of materialtabelle (reactive).
 #'
 #' @return
 #' A reactive and one-column dataframe, containing the data to be merged.
@@ -30,12 +30,12 @@
 #'    m_TransferHomogeneityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    datreturn = ecerto:::test_datreturn()
+#'    datreturn <- ecerto:::test_datreturn()
 #'    m_TransferHomogeneityServer(
 #'      id = "test",
-#'      homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
-#'      matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
-#'      matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+#'      homogData = shiny::reactive({ecerto::getValue(datreturn,"h_vals")}),
+#'      matTab_col_code = shiny::reactive({attr(ecerto::getValue(datreturn,"mater_table"), "col_code")}),
+#'      matTab_analytes = shiny::reactive({as.character(ecerto::getValue(datreturn,"mater_table")[, "analyte"])})
 #'    )
 #'  }
 #' )
@@ -96,37 +96,31 @@ m_TransferHomogeneityServer = function(id, homogData, matTab_col_code, matTab_an
 
     })
 
-    return_reactive = shiny::eventReactive(input$h_transfer_ubb_button, {
+    return_reactive <- shiny::eventReactive(input$h_transfer_ubb_button, {
       # shiny::req(
       #   input$h_transfer_ubb,
       #   input$h_transfer_H_type
       # )
       message("TRANSFER BUTTON clicked")
       h_vals <- homogData()
-      cert_vals(
-        stats::setNames(cert_vals(),
-                        as.character(shiny::isolate(input$h_transfer_ubb)))
-      )
-      
+      cert_vals(stats::setNames(cert_vals(), as.character(shiny::isolate(input$h_transfer_ubb))))
+
       for (i in 1:length(matTab_analytes())) {
         # find and select materialtabelle-row of same analyte and Homogeneity
         # type (matTab()) as chosen for Transfer
-        j <-
-          which(
+        j <- which(
             as.character(h_vals[, "analyte"]) == matTab_analytes()[i]
             & as.character(h_vals[, "H_type"]) == shiny::isolate(input$h_transfer_H_type)
           )
         # if row exists
         if (length(j) == 1) {
-          c_name = which(matTab_col_code()[, "Name"] ==
-                           shiny::isolate(input$h_transfer_ubb))
+          c_name = which(matTab_col_code()[, "Name"] == shiny::isolate(input$h_transfer_ubb))
           newDF = cert_vals()
-          newDF[i, matTab_col_code()[c_name, "ID"]] <-
-            max(h_vals[j, c("s_bb", "s_bb_min")])
+          newDF[i, matTab_col_code()[c_name, "ID"]] <- max(h_vals[j, c("s_bb", "s_bb_min")])
           cert_vals(newDF)
         }
       }
-      
+
       return(cert_vals())
     })
 
