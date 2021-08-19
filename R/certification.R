@@ -185,7 +185,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
           # only forward rData Upload after RData was uploaded
           message("Certification: forward RData to Materialtabelle")
           rdataupload(getValue(rv,c("materialtabelle")))
-          if(!is.null(shiny::isolate(apm()))) {
+          if(!is.null(shiny::isolate(apm.input()))) {
             # RData contained "apm"
             apm(apm.input())
           } else {

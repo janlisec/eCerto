@@ -93,7 +93,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
                 shiny::numericInput(
                   inputId =ns(paste0("precision",a.name)),
                   label = "Precision",
-                  value = 4
+                  value =  isolate(apm())[[a.name]]$precision
                 )
               ),
             ),
