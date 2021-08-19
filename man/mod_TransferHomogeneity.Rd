@@ -13,11 +13,11 @@ m_TransferHomogeneityServer(id, homogData, matTab_col_code, matTab_analytes)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{homogData}{reactive of Homogeneity data, if present.}
+\item{homogData}{Homogeneity data, if present (reactive).}
 
-\item{matTab_col_code}{columns of materialtabelle to be transferred to}
+\item{matTab_col_code}{Columns of materialtabelle to be transferred to (reactive).}
 
-\item{matTab_analytes}{available analytes of materialtabelle}
+\item{matTab_analytes}{Available analytes of materialtabelle (reactive).}
 }
 \value{
 A reactive and one-column dataframe, containing the data to be merged.
@@ -38,12 +38,12 @@ shiny::shinyApp(
    m_TransferHomogeneityUI(id = "test")
  ),
  server = function(input, output, session) {
-   datreturn = ecerto:::test_datreturn()
+   datreturn <- ecerto:::test_datreturn()
    m_TransferHomogeneityServer(
      id = "test",
-     homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
-     matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
-     matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+     homogData = shiny::reactive({ecerto::getValue(datreturn,"h_vals")}),
+     matTab_col_code = shiny::reactive({attr(ecerto::getValue(datreturn,"mater_table"), "col_code")}),
+     matTab_analytes = shiny::reactive({as.character(ecerto::getValue(datreturn,"mater_table")[, "analyte"])})
    )
  }
 )
