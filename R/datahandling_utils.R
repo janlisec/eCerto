@@ -210,7 +210,7 @@ roundMT = function(value,precision = NULL) {
 #'
 #' @return numbers formatted
 #' @rdname datahandling_utils
-#' @examples pn(n=c(1.23456, NA, 0, 0.00001))
+#' @examples pn(n=c(1.23456, NA, 0, 0.00001, -0.00001))
 #' @export
 pn <- function(n=NULL, p=4L) {
   # n : numeric vector
@@ -220,7 +220,7 @@ pn <- function(n=NULL, p=4L) {
     w <- max(nchar(round(n)), na.rm=TRUE)+p+1 # determine maximum width required
     o <- rep(paste(rep(" ", w), collapse=""), length(n))
     o[is.finite(n)] <- sprintf(paste0("%*.", p, "f"), w, n[is.finite(n)])
-    s <- is.finite(n) && round(n,p)==0 & n>0 # requires scientific notation
+    s <- is.finite(n) & round(n,p)==0 & abs(n)>0 # requires scientific notation
     if (any(s)) o[which(s)] <- sprintf(paste0("%*.", max(c(p-4,1)), "E"), w, n[which(s)])
     return(o)
   } else {
@@ -310,7 +310,7 @@ listNames = function(l, maxDepth = 2) {
   n = 0
   listNames_rec = function(l, n) {
     if(!is.list(l) | is.data.frame(l) | n>=maxDepth) TRUE
-    else { 
+    else {
       n = n + 1
       # print(n)
       lapply(l, listNames_rec, n)
@@ -331,7 +331,7 @@ listNames = function(l, maxDepth = 2) {
 #' @return The new data frame
 #' @export
 #'
-#' @examples 
+#' @examples
 #'df = data.frame(a = rep(0,4), b = c(0,0,10,0))
 #'vec = data.frame(b = c(1,0,0,0))
 #'merge_transfer(df = df, vec = vec)
