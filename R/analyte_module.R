@@ -21,9 +21,7 @@
 #' @export
 #' @examples
 #' if (interactive()) {
-#' apm <- shiny::reactiveVal()
 #' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
-#' apm(analyte_parameter_list(df))
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'  shinyjs::useShinyjs(),
@@ -32,7 +30,7 @@
 #'  server = function(input, output, session) {
 #'    m_analyteServer(
 #'      id = "test",
-#'      apm = apm,
+#'      apm = shiny::reactiveVal(analyte_parameter_list(df)),
 #'      renewTab = reactiveVal(1),
 #'      tablist = reactiveVal()
 #'    )
@@ -141,7 +139,6 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       }
     })
 
-
     shiny::observeEvent(selected_tab(),{
       if(!selected_tab() %in% confirmedTabs()) {
         ct = confirmedTabs()
@@ -152,7 +149,6 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       analytes_tmp[[selected_tab()]]$confirmed = TRUE
       apm(analytes_tmp)
     },ignoreInit = TRUE, ignoreNULL = TRUE)
-
 
 
     # update precision
