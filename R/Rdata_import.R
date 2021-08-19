@@ -248,11 +248,19 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
 
     # DOWNLOAD
     output$ecerto_backup <- shiny::downloadHandler(
+      
       filename = function() {
-        paste0(ifelse(is.null(getValue(rv,c("General","study_id"))), "TEST", getValue(rv,c("General","study_id"))), '.RData')
+        paste0(
+          ifelse(
+            test = is.null(getValue(rv,c("General","study_id"))),
+            yes =  "TEST",
+            no =  getValue(rv,c("General","study_id")))
+          , '.RData')
       },
       content = function(file) {
-        res <- shiny::reactiveValuesToList(getValue(rv))
+        res <- sapply(rv$get(), function(x) {
+          if(is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+        })
         res$General$dataformat_version = "2021-05-27"
         save(res, file = file)
       },
