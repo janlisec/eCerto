@@ -108,5 +108,5 @@ if (interactive()) {
   set_uploadsource(rv,"Certification","Excel")
 }
 roundMT(34.3434,3)
-pn(n=c(1.23456, NA, 0, 0.00001))
+pn(n=c(1.23456, NA, 0, 0.00001, -0.00001))
 }

@@ -1,5 +1,5 @@
 test_that(
-  desc = "Boxplot-View toggled saved in rv", 
+  desc = "Boxplot-View toggled saved in rv",
   code = {
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
     # shiny::isolate({ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_Certification_Excel()) })
@@ -14,14 +14,14 @@ test_that(
           datreturn = datreturn
         ),
         expr =  {
-          ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_Certification_Excel()) 
-          ecerto::setValue(rv, c("Certification","uploadsource"), "Excel") 
+          ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_Certification_Excel())
+          ecerto::setValue(rv, c("Certification","uploadsource"), "Excel")
           session$flushReact()
           # testthat::expect_equal(input$certification_view,NULL)
           session$setInputs(certification_view=c("boxplot","stats"))
           # testthat::expect_equal(input$certification_view,c("boxplot","stats"))
           testthat::expect_equal(
-            ecerto::getValue(rv,c("Certification.processing","CertValPlot","show")),
+            ecerto::getValue(rv,c("Certification_processing","CertValPlot","show")),
             TRUE
           )
         }

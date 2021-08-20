@@ -92,6 +92,12 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
     # define table as reactiveVal to update it at different places within the module
     mater_table <- shiny::reactiveVal(NULL)
+    observeEvent(getValue(datreturn, "mater_table"), {
+      if (!identical(mater_table(), getValue(datreturn, "mater_table"))) {
+        #browser()
+        mater_table(getValue(datreturn, "mater_table"))
+      }
+    })
 
     # create and test precision2. Since it hasn't created yet use try(), see https://github.com/rstudio/shinytest/issues/350
     precision2 <- 4
