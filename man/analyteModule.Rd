@@ -33,9 +33,7 @@ not yet
 }
 \examples{
 if (interactive()) {
-apm <- shiny::reactiveVal()
 df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
-apm(analyte_parameter_list(df))
 shiny::shinyApp(
  ui = shiny::fluidPage(
  shinyjs::useShinyjs(),
@@ -44,7 +42,7 @@ shiny::shinyApp(
  server = function(input, output, session) {
    m_analyteServer(
      id = "test",
-     apm = apm,
+     apm = shiny::reactiveVal(analyte_parameter_list(df)),
      renewTab = reactiveVal(1),
      tablist = reactiveVal()
    )

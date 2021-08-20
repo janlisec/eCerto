@@ -88,7 +88,7 @@ testthat::test_that("Merge does overwrite a non-zero value with vector value", {
   expect_equal(res,res_exp)  
 })
 
-testthat::test_that("Error expected bymerge_transfer for non-existing column", {
+testthat::test_that("Error expected by merge_transfer for non-existing column", {
   df = data.frame(a = rep(0,4), b = c(0,0,10,0))
   vec = data.frame(c = c(1,0,0,0))
   expect_error(merge_transfer(df = df, vec = vec))  
