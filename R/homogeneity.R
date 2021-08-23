@@ -37,8 +37,9 @@
 #' @export
 
 m_HomogeneityUI <- function(id) {
+  ns <- shiny::NS(id)
   shiny::tabsetPanel(
-    id = shiny::NS(id, "HomogeneityPanel"),
+    id = ns( "HomogeneityPanel"),
     type = "hidden", # when nothing is loaded
     shiny::tabPanel(
       title = "standby-Panel",
@@ -49,38 +50,29 @@ m_HomogeneityUI <- function(id) {
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      #shiny::wellPanel(m_TransferHomogeneityUI(shiny::NS(id,"trH"))),
+      #shiny::wellPanel(m_TransferHomogeneityUI(ns("trH"))),
       shiny::fluidRow(
-        shiny::column(10, DT::dataTableOutput(shiny::NS(id,"h_vals"))),
-        shiny::column(2, m_TransferHomogeneityUI(shiny::NS(id,"trH")))
-        #  column(2,
-        # #  conditionalPanel(
-        # #   condition="output.c_fileUploaded_message != ''",
-        # shiny::fluidRow(shiny::HTML("<p style=margin-bottom:-2%;><strong>Transfer s_bb of H_type</strong></p>"), align="right"),
-        # shiny::fluidRow(shiny::uiOutput("h_transfer_H_type")),
-        # shiny::fluidRow(shiny::HTML("<p style=margin-bottom:-2%;><strong>to Certification table column</strong></p>"), align="right"),
-        # shiny::fluidRow(shiny::uiOutput("h_transfer_ubb")),
-        # shiny::fluidRow(shiny::actionButton(inputId = "h_transfer_ubb_button", label = "Transfer Now!"), align="right")
-        # )
+        shiny::column(10, DT::dataTableOutput(ns("h_vals"))),
+        shiny::column(2, m_TransferUUI(ns("h_transfer")))
       ),
       shiny::hr(),
       shiny::fluidRow(
         shiny::column(
           width = 3,
-          DT::dataTableOutput(shiny::NS(id,"h_overview_stats"))
+          DT::dataTableOutput(ns("h_overview_stats"))
         ),
         shiny::column(
           width = 7,
           shiny::fluidRow(
-            shiny::plotOutput(shiny::NS(id,"h_boxplot"), inline=TRUE),
-            shiny::uiOutput(shiny::NS(id,"h_statement2"))
+            shiny::plotOutput(ns("h_boxplot"), inline=TRUE),
+            shiny::uiOutput(ns("h_statement2"))
           )
         ),
         shiny::column(
           width = 2,
-          shiny::uiOutput(shiny::NS(id,"h_sel_analyt")),
-          shiny::numericInput(inputId=shiny::NS(id,"h_Fig_width"), label="Figure Width", value=650),
-          shiny::numericInput(inputId=shiny::NS(id,"h_precision"), label="Precision", value=4),
+          shiny::uiOutput(ns("h_sel_analyt")),
+          shiny::numericInput(inputId=ns("h_Fig_width"), label="Figure Width", value=650),
+          shiny::numericInput(inputId=ns("h_precision"), label="Precision", value=4),
           shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
           shiny::downloadButton('h_Report', label="Download")
         )
@@ -191,9 +183,9 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       return(tab)
     }, options = list(paging = FALSE, searching = FALSE), rownames=NULL, selection = "none")
 
-    h_vals_print = shiny::reactive({
+    h_vals_print <- shiny::reactive({
       shiny::req(h_Data())
-      c_Data = cert
+      c_Data <- cert
       h_vals_print <- h_vals()
       for (cn in c("mean","MSamong","MSwithin","P","s_bb","s_bb_min")) {
         h_vals_print[,cn] <- ecerto::pn(h_vals_print[,cn], input$h_precision)
@@ -213,9 +205,8 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
 
 
     shiny::observeEvent(input$h_vals_rows_selected, {
-      #browser()
-      selected <- as.character(interaction(h_vals_print()[input$h_vals_rows_selected,1:2]))
-      shiny::updateSelectInput(session = session, inputId = "h_sel_analyt", selected = selected)
+      sel <- as.character(interaction(h_vals_print()[input$h_vals_rows_selected,1:2]))
+      shiny::updateSelectInput(session = session, inputId = "h_sel_analyt", selected = sel)
     })
 
     # Plots & Print
@@ -244,22 +235,20 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       ansd <- max(h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,c("s_bb","s_bb_min")])
       anp <- h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,"P"]
       if (anp<0.05) {
-        return(
-          shiny::fluidRow(
-            shiny::HTML("The tested items (Flasche) are ", "<font color=\"#FF0000\"><b>significantly different</b></font>", "(ANOVA P-value = ", pn(anp,2), ").<p>Please check your method and data.")
-          )
-        )
+        h2 <- "<font color=\"#FF0000\"><b>significantly different</b></font>"
+        h4 <- "<b>Please check your method and data!</b>"
       } else {
-        return(
-          shiny::fluidRow(
-            shiny::HTML("The tested items (Flasche) are ", "<font color=\"#00FF00\">not significantly different</font>", "(ANOVA P-value = ", pn(anp,2), ").<p>",
-                        "The uncertainty value for analyte ", input$h_sel_analyt
-            ),
-            shiny::actionLink(inputId = ns("hom_help_modal"), label = "was determined as"),
-            shiny::HTML("<b>", pn(ansd), "</b>.")
-          )
-        )
+        h2 <- "<font color=\"#00FF00\">not significantly different</font>"
+        h4 <- ""
       }
+      return(
+        shiny::fluidRow(
+          shiny::HTML("The tested items (Flasche) are ", h2, "(ANOVA P-value = ", pn(anp,2), ").<p>",
+                      "The uncertainty value for analyte ", input$h_sel_analyt),
+          shiny::actionLink(inputId = ns("hom_help_modal"), label = "was determined as"),
+          shiny::HTML("<b>", pn(ansd), "</b>.<p>"), h4
+        )
+      )
     })
 
     shiny::observeEvent(input$hom_help_modal, {
@@ -287,42 +276,31 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     })
 
     # --- --- --- --- --- --- --- --- --- --- ---
-    t_H = m_TransferHomogeneityServer(
-      id = "trH",
-      homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
-      matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
-      matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+    # t_H = m_TransferHomogeneityServer(
+    #   id = "trH",
+    #   homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
+    #   matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
+    #   matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
+    # )
+    # # --- --- --- --- --- --- --- --- --- --- ---
+    # # to Certification page after Transfer of Homogeneity Data
+    # shiny::observeEvent(t_H(),{
+    #   message("app_server: t_H() changed, set datreturn.t_H")
+    #   setValue(datreturn,"t_H",t_H())
+    # })
+
+    h_transfer_U <- m_TransferUServer(
+      id = "h_transfer",
+      dat = shiny::reactive({h_vals()}),
+      mat_tab = shiny::reactive({ecerto::getValue(datreturn, "mater_table")})
     )
-    # --- --- --- --- --- --- --- --- --- --- ---
-    # to Certification page after Transfer of Homogeneity Data
-    shiny::observeEvent(t_H(),{
-      message("app_server: t_H() changed, set datreturn.t_H")
-      setValue(datreturn,"t_H",t_H())
-
-    })
-    # Special UI
-    # TODO
-    # output$h_transfer_ubb <- shiny::renderUI({
-    #   shiny::validate(shiny::need(input$sel_analyt, message = "please upload certification data first"))
-    #   shiny::req(cert())
-    #   shiny::selectInput(
-    #     inputId=session$ns("h_transfer_ubb"),
-    #     label="",
-    #     selectize=TRUE,
-    #     choices=attr(cert(), "col_code")[substr(attr(cert(), "col_code")[,"ID"],1,1)=="U","Name"]
-    #   )
-    # })
-
-    output$h_transfer_H_type <- shiny::renderUI({
-      shiny::req(h_Data())
-      shiny::selectInput(inputId=session$ns("h_transfer_H_type"), label="", selectize=TRUE, choices=levels(h_vals()[,"H_type"]))
-    })
-
-
-
-    # })
+    shiny::observeEvent(h_transfer_U$changed, {
+      message("Homogeneity: observeEvent(h_transfer_U)")
+      ecerto::setValue(datreturn, "mater_table", h_transfer_U$value)
+    }, ignoreInit = TRUE)
 
     return(h_vals)
+
   })
 }
 
