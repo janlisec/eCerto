@@ -108,7 +108,7 @@ app_server = function(input, output, session) {
   })
   shiny::observeEvent(input$confirmRestart, {
     session$reload()
-    removeModal()
+    shiny::removeModal()
   })
 
 # Panels ------------------------------------------------------------------

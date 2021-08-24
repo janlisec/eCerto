@@ -77,11 +77,11 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    continue = reactiveVal(NULL) # NULL -> don't continue
-    
+    continue <- shiny::reactiveVal(NULL) # NULL -> don't continue
+
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
-      
+
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
       shiny::validate(
         shiny::need(tolower(file.type) == "rdata","Only RData allowed."),
@@ -101,13 +101,13 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
     shiny::observeEvent(rdata(), {
       ttt = sapply(rv$names(), function(x) {!is.null(getValue(rv,c(x,"uploadsource")))},simplify = "array")
       if(any(ttt)){
-        showModal(
-          modalDialog(
+        shiny::showModal(
+          shiny::modalDialog(
             title = "Existent data",
             htmltools::HTML("Modul(s) <u>", paste(names(ttt[ttt==TRUE]),collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
-            footer = tagList(
-              actionButton(shiny::NS(id,"cancel"), "Cancel"),
-              actionButton(shiny::NS(id,"overwrite"), "Overwrite", class = "btn btn-danger")
+            footer = shiny::tagList(
+              shiny::actionButton(shiny::NS(id,"cancel"), "Cancel"),
+              shiny::actionButton(shiny::NS(id,"overwrite"), "Overwrite", class = "btn btn-danger")
             )
           )
         )
@@ -115,24 +115,24 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         continue(TRUE)
       }
     })
-    
+
     # the observers from before
     # shall be overwritten?
-    observeEvent(input$overwrite, {
+    shiny::observeEvent(input$overwrite, {
       continue(TRUE)
-      showNotification("Overwritten")
-      removeModal()
+      shiny::showNotification("Overwritten")
+      shiny::removeModal()
     })
     # shall be cancelled?
-    observeEvent(input$cancel, {
-      removeModal()
+    shiny::observeEvent(input$cancel, {
+      shiny::removeModal()
     })
-    
+
     shiny::observeEvent(continue(), {
       # whereami::cat_where(where = "RData_import: RData uploaded", color = "grey")
       res <- rdata()
-      
-      if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE))) 
+
+      if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE)))
         {
         # Non-legacy upload #####
         # import functions for defined data_format schemes
@@ -141,7 +141,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           resnames <- listNames(l = res, maxDepth = 2) # names(unlist(res, recursive = FALSE))
           rvnames <-listNames(
             sapply(rv$get(), function(x) {
-                if(is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+                if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
               })
           )
           if (all(resnames %in% rvnames)) {
@@ -216,7 +216,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         setValue(rv,c("General","time_stamp"),Sys.time())
       }
       },ignoreNULL = TRUE)
-    
+
 
 
     shiny::observeEvent(getValue(rv,c("General", "user")) , {
@@ -241,14 +241,14 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
     shiny::observeEvent(input$user, {
       setValue(rv,c("General","user"),input$user)
     })
-    
+
     shiny::observeEvent(input$study_id, {
       setValue(rv,c("General","study_id"),input$study_id)
     })
 
     # DOWNLOAD
     output$ecerto_backup <- shiny::downloadHandler(
-      
+
       filename = function() {
         paste0(
           ifelse(
@@ -259,7 +259,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
       },
       content = function(file) {
         res <- sapply(rv$get(), function(x) {
-          if(is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+          if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
         })
         res$General$dataformat_version = "2021-05-27"
         save(res, file = file)

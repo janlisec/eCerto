@@ -14,8 +14,8 @@
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- ecerto::reactiveClass$new(ecerto::init_rv()) # initiate persistent variables
-#'    isolate({ecerto::setValue(rv, c("Stability","data"), ecerto:::test_Stability_Excel() )})
-#'    isolate({ecerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
+#'    shiny::isolate({ecerto::setValue(rv, c("Stability","data"), ecerto:::test_Stability_Excel() )})
+#'    shiny::isolate({ecerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
 #'    datreturn <- ecerto:::test_datreturn()
 #'    m_StabilityServer(
 #'      id = "test",
@@ -82,11 +82,11 @@ m_StabilityServer = function(id, rv, datreturn) {
       if(is.null(uploadsource()) || uploadsource() != o.upload ){
         uploadsource(o.upload)
         shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
-        message("Stability: Uploadsource changed to ", isolate(ecerto::getValue(rv,c("Stability","uploadsource"))))
+        message("Stability: Uploadsource changed to ", shiny::isolate(ecerto::getValue(rv,c("Stability","uploadsource"))))
         #browser()
         s_dat <- ecerto::getValue(rv,c("Stability","data"))
         s_vals <- plyr::ldply(split(s_dat, s_dat[,"analyte"]), function(x) {
-          x_lm <- lm(Value ~ Date, data=x)
+          x_lm <- shiny::lm(Value ~ Date, data=x)
           mon_diff <- max(ecerto::mondf(x[,"Date"]))
           x_slope <- summary(x_lm)$coefficients[2,1:2]
           data.frame("mon_diff"=mon_diff, "slope"=x_slope[1], "SE_slope"=x_slope[2], "U_Stab"=abs(x_slope[1]*x_slope[2]))
@@ -126,13 +126,13 @@ m_StabilityServer = function(id, rv, datreturn) {
 
     # Tables
     output$s_overview <- DT::renderDataTable({
-      req(s_Data(), input$s_sel_analyte)
+      shiny::req(s_Data(), input$s_sel_analyte)
       s <- ecerto::getValue(rv,c("Stability","data"))
       s[s[,"analyte"]==input$s_sel_analyte,c("Date","Value")]
     }, options = list(paging = TRUE, searching = FALSE), rownames=NULL)
 
     output$s_vals <- DT::renderDataTable({
-        req(s_Data())
+        shiny::req(s_Data())
         s_vals <- ecerto::getValue(rv, c("Stability","s_vals"))
         for (i in c("slope","SE_slope","U_Stab")) {
           s_vals[,i] <- ecerto::pn(s_vals[,i], 4)

@@ -24,8 +24,8 @@ shiny::shinyApp(
  ),
  server = function(input, output, session) {
    rv <- ecerto::reactiveClass$new(ecerto::init_rv()) # initiate persistent variables
-   isolate({ecerto::setValue(rv, c("Stability","data"), ecerto:::test_Stability_Excel() )})
-   isolate({ecerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
+   shiny::isolate({ecerto::setValue(rv, c("Stability","data"), ecerto:::test_Stability_Excel() )})
+   shiny::isolate({ecerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
    datreturn <- ecerto:::test_datreturn()
    m_StabilityServer(
      id = "test",

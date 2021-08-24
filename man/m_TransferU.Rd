@@ -7,6 +7,12 @@
 \title{m_TransferU}
 \usage{
 m_TransferUUI(id)
+
+m_TransferUServer(
+  id,
+  dat = shiny::reactive({     NULL }),
+  mat_tab = shiny::reactive({     NULL })
+)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}

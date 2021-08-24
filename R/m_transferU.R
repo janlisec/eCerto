@@ -45,7 +45,7 @@ m_TransferUUI = function(id) {
   shiny::uiOutput(shiny::NS(id, "transfer"))
 }
 
-#' @rdname mod_TransferHomogeneity
+#' @rdname m_TransferU
 #' @export
 m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny::reactive({NULL})) {
 
