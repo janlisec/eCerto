@@ -1,10 +1,6 @@
-#'BAMTool
-#'Modul: Zertifizierung
-#'Lab stats
-#'data : data table
-#'
-#' @param data
-#' @param precision
+#' @description BAMTool, Modul: Zertifizierung, Lab stats
+#' @param data Table with columns 'Lab' and 'value'.
+#' @param precision Rounding precision.
 #' @noRd
 Stats <- function(data = NULL, precision = 4) {
   lab_means <-
@@ -29,12 +25,8 @@ Stats <- function(data = NULL, precision = 4) {
   return(out[order(out[, "mean"]), ])
 }
 
-#'BAMTool
-#'Modul: Zertifizierung
-#'Scheffe's multiple t-test
-#'data : data table
-#'
-#' @param data
+#' @description BAMTool, Modul: Zertifizierung, Scheffe's multiple t-test
+#' @param data Table with columns 'Lab' and 'value'.
 #' @noRd
 Scheffe <- function(data=NULL) {
   return(data.frame(
@@ -44,14 +36,8 @@ Scheffe <- function(data=NULL) {
   )
 }
 
-#' Title
-#' BAMTool
-#' Modul: Zertifizierung
-#' Dixon
-#'
-#' @param lab_means data.frame
-#'
-#' @return
+#' @description BAMTool, Modul: Zertifizierung, Dixon Test
+#' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Dixon <- function(lab_means=NULL) {
   out <- data.frame("Dixon_p"=rep(NA,nrow(lab_means)), row.names=row.names(lab_means))
@@ -63,12 +49,8 @@ Dixon <- function(lab_means=NULL) {
   return(out)
 }
 
-#'BAMTool
-#'Modul: Zertifizierung
-#'Grubbs
-#'lab_means : data.frame
-#'
-#' @param lab_means
+#' @description BAMTool, Modul: Zertifizierung, Grubbs Test
+#' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Grubbs <- function(lab_means = NULL) {
   out <-
@@ -118,12 +100,8 @@ Grubbs <- function(lab_means = NULL) {
   return(out)
 }
 
-#'BAMTool
-#'Modul: Zertifizierung
-#'Nalimov test
-#'lab_means : data table
-#'
-#' @param lab_means
+#' @description BAMTool, Modul: Zertifizierung, Nalimov Test
+#' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Nalimov <- function(lab_means=NULL) {
   nalimov_crit <- structure(list(f = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 100L, 200L, 300L, 400L, 500L, 600L, 700L, 800L, 1000L),
@@ -140,7 +118,6 @@ Nalimov <- function(lab_means=NULL) {
 
   return(data.frame(
     "Nalimov"=sapply(cval, function(x) {
-      #l <- which.max(nalimov_crit[,"f"]<=(nrow(lab_means)-2))
       l <- max(which(nalimov_crit[,"f"]<=(nrow(lab_means)-2)))
       ifelse(x<nalimov_crit[l,"a_05"], ".", ifelse(x>=nalimov_crit[l,"a_01"], ".01", ".05"))
     }),
@@ -149,12 +126,8 @@ Nalimov <- function(lab_means=NULL) {
   )
 }
 
-#'BAMTool
-#'Modul: Zertifizierung
-#'Cochran test
-#'data : data table
-#'
-#' @param data
+#' @description BAMTool, Modul: Zertifizierung, Cochran Test
+#' @param data Table with columns 'Lab' and 'value'.
 #' @noRd
 Cochran <- function(data=NULL) {
   vars <- sapply(split(data[,"value"], data[,"Lab"]), stats::var, na.rm=T)
@@ -184,12 +157,9 @@ Cochran <- function(data=NULL) {
   return(out)
 }
 
-#'BAMTool
-#'Modul: Zertifizierung
-#'data : data table
-#'
-#' @param data
-#' @param precision
+#' @description BAMTool, Modul: Zertifizierung, Lab-mean stats
+#' @param data Table with columns 'Lab' and 'value'.
+#' @param precision Rounding precision.
 #' @noRd
 mstats <- function(data=NULL, precision=4) {
   lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
