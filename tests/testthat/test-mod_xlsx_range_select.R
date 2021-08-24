@@ -47,66 +47,70 @@ test_that(
 
 # Test 2: Upload RData even though Excel was expected ------------------------------------------------------------------
 
-test_that("Throws error because RData was uploaded, but Excel was expected",code = {
-  fn2 <- shiny::reactiveVal(structure(list(
-    name = c(
-      "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
-      "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
-      "SR3_Fe_v26chs.RData"),
-    size = c(27926L, 27617L, 9944L),
-    type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-             ""),
-    datapath = c(
-      system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
-      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
-      system.file(package = "ecerto","extdata","SR3_Fe_v26chs.RData"))
-  ),
-  row.names = c(NA,-3L),
-  class = "data.frame"
-  ))
-  sheetNo <- shiny::reactiveVal(1)
+test_that(
+  desc = "Throws error because RData was uploaded, but Excel was expected",
+  code = {
+    fn2 <- shiny::reactiveVal(structure(list(
+      name = c(
+        "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
+        "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+        "SR3_Fe_v26chs.RData"),
+      size = c(27926L, 27617L, 9944L),
+      type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+               ""),
+      datapath = c(
+        system.file(package = "ecerto", "extdata", "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
+        system.file(package = "ecerto", "extdata", "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+        system.file(package = "ecerto", "extdata", "SR3_Fe_v26chs.RData"))
+    ),
+    row.names = c(NA,-3L),
+    class = "data.frame"
+    ))
+    sheetNo <- shiny::reactiveVal(1)
 
-  shiny::testServer(
-    app = ecerto::xlsx_range_select_Server,
-    args =  list(current_file_input = fn2,sheet=sheetNo), {
-      expect_warning(
-        expect_error(tab(),"uploaded Excel contain an empty one"),
-        "Invalid file; Please upload a .xlsx file")
-    }
-  )
-})
+    shiny::testServer(
+      app = ecerto::xlsx_range_select_Server,
+      args = list(current_file_input = fn2,sheet = sheetNo), {
+        #browser()
+        expect_warning(
+          expect_error(tab(),"uploaded Excel files contain an empty one"),
+          "Invalid file; Please upload a .xlsx file")
+      }
+    )
+  }
+)
 
 
 # Test 3: One empty Excel -----------------------------------------------------
+test_that(
+  desc = "Throws error when one file is uploaded which is Empty Excel",
+  code = {
+    fn3 <- shiny::reactiveVal(structure(
+      list(
+        name = c("EmptyExcel.xlsx","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
+        size = 10780L,
+        type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        datapath = c(
+          system.file(package = "ecerto", "extdata", "EmptyExcel.xlsx"),
+          system.file(package = "ecerto", "extdata", "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx")
+        )
+      ),
+      class = "data.frame",
+      row.names = c(NA,-1L)
+    ))
+    sheetNo <- shiny::reactiveVal(1)
 
-
-
-test_that("Throws error when one file is uploaded which is Empty Excel",code = {
-  fn3 <- shiny::reactiveVal(structure(
-    list(
-      name = c("EmptyExcel.xlsx","Ergebnisblatt_BAM-M321_Aleris Koblenz_m.xlsx"),
-      size = 10780L,
-      type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      datapath = c(
-        system.file(package = "ecerto", "extdata","EmptyExcel.xlsx"),
-        system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx")
+    suppressMessages(
+      shiny::testServer(
+        app = xlsx_range_select_Server,
+        args = list(current_file_input = fn3, sheet = sheetNo), {
+          expect_error(tab(), "uploaded Excel files contain an empty one")
+        }
       )
-    ),
-    class = "data.frame",
-    row.names = c(NA,-1L)
-  ))
-  sheetNo <- shiny::reactiveVal(1)
-
-  suppressMessages(
-    shiny::testServer(
-      app = xlsx_range_select_Server,
-      args = list(current_file_input = fn3, sheet = sheetNo), {
-        expect_error(tab(), "uploaded Excel contain an empty one")
-      }
     )
-  )
-})
+  }
+)
 
 # Test: Only one Certification Error ------------------------------------------------------------------
 
