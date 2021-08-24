@@ -20,12 +20,12 @@ test_that(
 
                # because time_stamp changes every runtime, exclude it for testing as follows
                bbb <- getValue(rv,"General")
-               #browser()
+               bbb <- sapply(names(bbb)[!names(bbb) %in% "time_stamp"], function(x) {bbb[[x]]})
                #expect_snapshot(bbb()[!names(bbb) %in% "time_stamp"])
-               expect_snapshot(bbb$"time_stamp")
-               expect_snapshot(getValue(rv,"Certification"))
-               expect_snapshot(getValue(rv,"Homogeneity"))
-               expect_snapshot(getValue(rv,"Stability"))
+               expect_snapshot(bbb)
+               expect_snapshot(shiny::reactiveValuesToList(getValue(rv,"Certification")))
+               expect_snapshot(shiny::reactiveValuesToList(getValue(rv,"Homogeneity")))
+               expect_snapshot(shiny::reactiveValuesToList(getValue(rv,"Stability")))
       }
     )
   )

@@ -65,44 +65,48 @@ test_that(
 
 # Test 3: Pooling on/off --------------------------------------------------
 test_that(
-  desc = "Pooling on/off switch can be set and yields previous results",
+  desc = "Pooling on/off switch can be set and changes 'n' in mat_tab",
   code = {
     testthat::local_edition(3)
     test_datreturn <- ecerto:::test_datreturn()
     suppressMessages(shiny::testServer(
       app = ecerto::m_materialtabelleServer,
-      args = list(rdataUpload = shiny::reactive({NULL}), datreturn=test_datreturn), {
-       session$setInputs(pooling=FALSE)
-       expect_snapshot(mater_table())
-       session$setInputs(pooling=TRUE)
-       expect_snapshot(mater_table())
+      args = list(rdataUpload = shiny::reactive({NULL}), datreturn=test_datreturn),
+      expr = {
+        session$setInputs(pooling=FALSE)
+        expect_equal(mater_table()[1,"n"], 3L)
+        expect_snapshot(mater_table())
+        session$setInputs(pooling=TRUE)
+        expect_equal(mater_table()[1,"n"], 9L)
+        expect_snapshot(mater_table())
       }
     ))
   }
 )
 
-# Test 4: Homogeneity Transfer ---------------------
-test_that(
-  desc = "Transfer into column 'U3' successful",
-  code = {
-    test_datreturn <- ecerto:::test_datreturn()
-    transfer <- structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
-    com_check <- c(0.0398172599441121, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)
-    U3_check <- c(0, 0.015535927030583, 0, 0, 0.015535927030583, 0, 0, 0, 0,0, 0)
-    U_check <- c(0.0796345198882242, 0.031071854061166, 0, 0, 0.031071854061166,0, 0, 0, 0, 0, 0)
-    suppressMessages(
-      shiny::testServer(
-        ecerto::m_materialtabelleServer,
-        args = list(rdataUpload = shiny::reactive({NULL}), datreturn=test_datreturn), {
-          session$setInputs(pooling=FALSE)
-          setValue(datreturn, "t_H", transfer)
-          session$flushReact()
-          expect_equal(mater_table()[,"com"], com_check)
-          expect_equal(mater_table()[,"U3"], U3_check)
-          expect_equal(mater_table()[,"U"], U_check)
-        })
-    )
-})
+# @FK --> Transfer funktioniert jetzt anders und "t_H" kann m.E. raus
+# # Test 4: Homogeneity Transfer ---------------------
+# test_that(
+#   desc = "Transfer into column 'U3' successful",
+#   code = {
+#     test_datreturn <- ecerto:::test_datreturn()
+#     transfer <- structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
+#     com_check <- c(0.0398172599441121, 0.015535927030583, 0, 0, 0.015535927030583,0, 0, 0, 0, 0, 0)
+#     U3_check <- c(0, 0.015535927030583, 0, 0, 0.015535927030583, 0, 0, 0, 0,0, 0)
+#     U_check <- c(0.0796345198882242, 0.031071854061166, 0, 0, 0.031071854061166,0, 0, 0, 0, 0, 0)
+#     suppressMessages(
+#       shiny::testServer(
+#         ecerto::m_materialtabelleServer,
+#         args = list(rdataUpload = shiny::reactive({NULL}), datreturn=test_datreturn), {
+#           session$setInputs(pooling=FALSE)
+#           setValue(datreturn, "t_H", transfer)
+#           session$flushReact()
+#           expect_equal(mater_table()[,"com"], com_check)
+#           expect_equal(mater_table()[,"U3"], U3_check)
+#           expect_equal(mater_table()[,"U"], U_check)
+#         })
+#     )
+# })
 
 # Test 5: Homogeneity Transfer ---------------------
 test_that("Lab filter",code = {

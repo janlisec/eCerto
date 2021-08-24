@@ -3,12 +3,19 @@
 \name{mod_Stability}
 \alias{mod_Stability}
 \alias{m_StabilityUI}
+\alias{m_StabilityServer}
 \title{STABILITY MODULE}
 \usage{
 m_StabilityUI(id)
+
+m_StabilityServer(id, rv, datreturn)
 }
 \arguments{
 \item{id}{Id when called in module.}
+
+\item{rv}{reactiveClass object.}
+
+\item{datreturn}{reactiveClass object.}
 }
 \value{
 Will return UI and Server logic for the stability tab.

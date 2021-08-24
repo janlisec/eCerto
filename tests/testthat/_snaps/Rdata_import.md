@@ -1,7 +1,7 @@
 # Successful RData (version 26) Upload
 
     Code
-      bbb[!names(bbb) %in% "time_stamp"]
+      bbb
     Output
       $user
       [1] "FK4"
@@ -155,8 +155,14 @@
 ---
 
     Code
-      getValue(rv, "Certification")
+      shiny::reactiveValuesToList(getValue(rv, "Certification"))
     Output
+      $input_files
+      NULL
+      
+      $uploadsource
+      [1] "RData"
+      
       $data
            ID Lab analyte replicate   value unit S_flt L_flt
       1     1  L1      Si         1 0.05040 0.05 FALSE FALSE
@@ -286,18 +292,18 @@
       125 125  L3      Cr         6 0.05420 0.05 FALSE FALSE
       126 126  L3      Ni         6 0.05040 0.05 FALSE FALSE
       
-      $input_files
-      NULL
-      
-      $uploadsource
-      [1] "RData"
-      
 
 ---
 
     Code
-      getValue(rv, "Homogeneity")
+      shiny::reactiveValuesToList(getValue(rv, "Homogeneity"))
     Output
+      $h_file
+      NULL
+      
+      $h_sel_analyt
+      NULL
+      
       $data
          analyte H_type Flasche     value  unit            File
       1       Fe radial       3 0.2897693  mM/L Homog_Test.xlsx
@@ -391,19 +397,13 @@
       89      Mg  axial     351 0.2902880 mg/mL Homog_Test.xlsx
       90      Mg  axial     397 0.2854040 mg/mL Homog_Test.xlsx
       
+      $h_precision
+      NULL
+      
       $uploadsource
       [1] "Excel"
       
-      $h_file
-      NULL
-      
       $h_vals
-      NULL
-      
-      $h_sel_analyt
-      NULL
-      
-      $h_precision
       NULL
       
       $h_Fig_width
@@ -413,9 +413,9 @@
 ---
 
     Code
-      getValue(rv, "Stability")
+      shiny::reactiveValuesToList(getValue(rv, "Stability"))
     Output
-      $file
+      $s_vals
       NULL
       
       $data
@@ -424,7 +424,7 @@
       $uploadsource
       NULL
       
-      $s_vals
+      $file
       NULL
       
 

@@ -27,7 +27,7 @@
 #' }
 #'
 
-m_StabilityUI = function(id) {
+m_StabilityUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::tabsetPanel(
@@ -65,7 +65,11 @@ m_StabilityUI = function(id) {
   )
 }
 
-m_StabilityServer = function(id, rv, datreturn) {
+#' @rdname mod_Stability
+#' @param rv reactiveClass object.
+#' @param datreturn reactiveClass object.
+#' @export
+m_StabilityServer <- function(id, rv, datreturn) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
