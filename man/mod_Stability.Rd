@@ -8,10 +8,10 @@
 m_StabilityUI(id)
 }
 \arguments{
-\item{id}{}
+\item{id}{Id when called in module.}
 }
 \value{
-
+Will return UI and Server logic for the stability tab.
 }
 \description{
 STABILITY MODULE

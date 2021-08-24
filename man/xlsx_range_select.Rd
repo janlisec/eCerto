@@ -42,31 +42,31 @@ shiny::shinyApp(
  ui = shiny::fluidPage(
    shiny::fluidRow(
      shiny::column(
-      3, 
+      3,
       shiny::fileInput(
-       inputId = "x", 
-       label = "Modul parameter: x", 
-       accept = "xlsx", 
+       inputId = "x",
+       label = "Modul parameter: x",
+       accept = "xlsx",
        multiple =TRUE
      )),
      shiny::column(
-       3, 
+       3,
        shiny::numericInput(
         inputId = "sheet", label = "Modul parameter: sheet", value = 1
        )
      ),
      shiny::column(
-        3, 
+        3,
         shiny::selectInput(
-         inputId = "excelformat", 
-         label = "Modul parameter: excelformat", 
+         inputId = "excelformat",
+         label = "Modul parameter: excelformat",
          choices = c("Certification","Homogeneity","Stability")
         )
      ),
      shiny::column(
-       3, 
+       3,
        shiny::selectInput(
-         inputId = "silent", 
+         inputId = "silent",
          label = "Modul parameter: silent", choices = c("TRUE","FALSE")
        )
      )

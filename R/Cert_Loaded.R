@@ -13,6 +13,7 @@
 #' @param rv Reactive R6 object containing all trial data.
 #' @param apm reactiveVal with analyte parameter.
 #' @param selected_tab currently selected tab (==analyte), for example "Si" or "Cu" etc.
+#' @param check Trigger events after a change of uploadsource(??).
 #'
 #' @return dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt
 #' @rdname mod_CertLoaded

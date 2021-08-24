@@ -177,7 +177,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       # source has been uploaded
       if(is.null(uploadsource()) || uploadsource() != o.upload ){
         uploadsource(o.upload)
-        message("Certification: Uploadsource changed to ", isolate(getValue(rv,c("Certification","uploadsource"))), "; initiate apm")
+        message("Certification: Uploadsource changed to ", shiny::isolate(getValue(rv,c("Certification","uploadsource"))), "; initiate apm")
         if(o.upload=="Excel") {
           # Creation of AnalyteParameterList.
           apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
@@ -221,7 +221,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
     shiny::observeEvent(apm()[[shiny::isolate(selected_tab())]],{
-      message("Certification: apm changed for ", isolate(selected_tab()))
+      message("Certification: apm changed for ", shiny::isolate(selected_tab()))
       apm_return(apm())
     })
     # --- --- --- --- --- --- --- --- --- --- ---

@@ -1,9 +1,9 @@
 #' @title STABILITY MODULE
 #' @name mod_Stability
 #'
-#' @param id
+#' @param id Id when called in module.
 #'
-#' @return
+#' @return Will return UI and Server logic for the stability tab.
 #' @export
 #'
 #' @examples
@@ -86,7 +86,7 @@ m_StabilityServer = function(id, rv, datreturn) {
         #browser()
         s_dat <- ecerto::getValue(rv,c("Stability","data"))
         s_vals <- plyr::ldply(split(s_dat, s_dat[,"analyte"]), function(x) {
-          x_lm <- shiny::lm(Value ~ Date, data=x)
+          x_lm <- stats::lm(Value ~ Date, data=x)
           mon_diff <- max(ecerto::mondf(x[,"Date"]))
           x_slope <- summary(x_lm)$coefficients[2,1:2]
           data.frame("mon_diff"=mon_diff, "slope"=x_slope[1], "SE_slope"=x_slope[2], "U_Stab"=abs(x_slope[1]*x_slope[2]))
@@ -145,7 +145,7 @@ m_StabilityServer = function(id, rv, datreturn) {
         }
         return(s_vals)
       },
-      options = list(dom = "t", pageLength=isolate(nrow(ecerto::getValue(rv,c("Stability","s_vals"))))),
+      options = list(dom = "t", pageLength=shiny::isolate(nrow(ecerto::getValue(rv,c("Stability","s_vals"))))),
       selection = list(mode="single", target="row"), rownames=NULL
     )
 
@@ -189,7 +189,7 @@ m_StabilityServer = function(id, rv, datreturn) {
       # Convert to format used in LTS modul
       # load SD and U from certification if available
       CertVal <- mean(s[l,"Value"], na.rm=T)
-      U <- 2*sd(s[l,"Value"], na.rm=T)
+      U <- 2*stats::sd(s[l,"Value"], na.rm=T)
       U_Def <- "2s"
       if (!is.null(input$s_sel_dev)) { # !is.null(input$sel_analyt) &
         cert_vals <- ecerto::getValue(datreturn,"mater_table")

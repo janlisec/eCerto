@@ -38,7 +38,7 @@
 #' @export
 #'
 m_ExcelUploadControl_UI <- function(id) {
-  
+
   shiny::tagList(
     # control elements
     shiny::fluidRow(
@@ -55,11 +55,11 @@ m_ExcelUploadControl_UI <- function(id) {
 #' @export
 
 m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
-  
+
   stopifnot(shiny::is.reactive(excelformat))
-  
+
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     output$btn_load <- shiny::renderUI({
       shiny::fluidRow(
         shiny::strong("Click to load"),
@@ -67,7 +67,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         shiny::actionButton(inputId = shiny::NS(id, "go"), label = "LOAD")
       )
     })
-    
+
     current_file_input <- shiny::reactiveVal(NULL)
     # Excel-File-Input und Sheet-number
     output$excel_file <- shiny::renderUI({
@@ -81,7 +81,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         shiny::HTML("<p style='color:red;'>Already uploaded</p>")
       }
     })
-    
+
     shiny::observeEvent(input$excel_file, {
       sheetnames <- ecerto::load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
@@ -91,11 +91,11 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       shinyjs::showElement(id = "btn_load")
       current_file_input(input$excel_file)
     })
-    
+
     # --- --- --- --- --- --- --- --- --- ---
     # Module to select rows and columns
     sheetnumber = shiny::reactive({
-      req(input$sheet_number)
+      shiny::req(input$sheet_number)
       switch (excelformat(),
         "Certification" = input$sheet_number,
         "Homogeneity" = input$sheet_number,
@@ -108,8 +108,8 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       sheet = sheetnumber,
       excelformat = excelformat
     )
-    # --- --- --- --- --- --- --- --- --- ---                     
-    
+    # --- --- --- --- --- --- --- --- --- ---
+
     out <- shiny::reactiveVal()
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
@@ -122,7 +122,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         tab_flt[[i]][["File"]] = rep(rv_xlsx_range_select$filenames[i], nrow(tab_flt[[i]]))
       }
       # }
-      
+
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {
         tab_flt <- tab_flt[[1]]
@@ -141,11 +141,11 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
           },
           error = function(errormessage) {
             message("Excel-Upload: Error occured: ", errormessage)
-            showModal(
-              modalDialog(
+            shiny::showModal(
+              shiny::modalDialog(
                 title = "Something went wrong with Upload.",
                 paste(
-                  "Check for example the selected rows and columns\n", 
+                  "Check for example the selected rows and columns\n",
                   errormessage
                 )
               )
@@ -161,9 +161,9 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
            nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab[[1]])
         ) {
           shinyalert::shinyalert(
-            title = "Forgot select row and column?", 
-            text = "You're trying to upload Certification data without selection of row and column. Are you sure to proceed?", 
-            showCancelButton = TRUE, 
+            title = "Forgot select row and column?",
+            text = "You're trying to upload Certification data without selection of row and column. Are you sure to proceed?",
+            showCancelButton = TRUE,
             showConfirmButton = TRUE,
             callbackR = function(x) { if(x != FALSE) uploadExcel() }
           )
@@ -176,29 +176,29 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         # TODO @Jan wie kann man das besser hier einbauen?
         if (ncol(test_format)>=3 && "KW" %in% colnames(test_format)) {
           s_dat <- read_lts_input(
-            file = input$excel_file$datapath[1], 
+            file = input$excel_file$datapath[1],
             simplify=TRUE)
           colnames(s_dat)[colnames(s_dat)=="KW"] <- "analyte"
         } else {
           sheetnames = ecerto::load_sheetnames(input$excel_file$datapath[1])
           s_dat = plyr::ldply(
-            sheetnumber(), 
+            sheetnumber(),
             function(x) {
               cbind(
-                "analyte"= sheetnames[x], 
+                "analyte"= sheetnames[x],
                 tab_flt[[x]]
               )
             })
         }
         # s_dat = getValue(rv,c("Stability","data"))
-        validate(need(c("analyte","Value","Date") %in% colnames(s_dat), "No all required input columns found in input file."))
-        validate(need(is.numeric(s_dat[,"Value"]), "Column 'Value' in input file contains non-numeric values."))
+        shiny::validate(shiny::need(c("analyte","Value","Date") %in% colnames(s_dat), "No all required input columns found in input file."))
+        shiny::validate(shiny::need(is.numeric(s_dat[,"Value"]), "Column 'Value' in input file contains non-numeric values."))
         if (class(s_dat[,"Date"])!="Date") { s_dat[,"Date"] <- as.Date.character(s_dat[,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d")) }
-        validate(need(class(s_dat[,"Date"])=="Date", "Sorry, could not convert column 'Date' into correct format."))
+        shiny::validate(shiny::need(class(s_dat[,"Date"])=="Date", "Sorry, could not convert column 'Date' into correct format."))
         s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
         out(s_dat)
       }
-      
+
     })
     return(out)
   })

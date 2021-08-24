@@ -1,9 +1,12 @@
-#' Initiates a reactiveValues object used for session-only and
-#' module-to-materialtabelle content
+#' @title init_datreturn.
+#'
+#' @description \code{init_datreturn} Initiates a reactiveValues object used for
+#' session-only and module-to-materialtabelle content
 #'
 #' @return datreturn
+#' @export
 #'
-init_datreturn = function() {
+init_datreturn <- function() {
   shiny::reactiveValues(
     selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
     h_vals = NULL,                      # values from Homogeneity-module materialtabelle via .TransferHomogeneity
@@ -67,7 +70,7 @@ init_materialTabelle <- function(analytes) {
 #'
 #' @examples rv = init_rv()
 init_rv = function() {
-  rv <- 
+  rv <-
     list(
       "modules" = c("Certification","Homogeneity","Stability"), # names of the modules; returned by rv$names
       "General" = shiny::reactiveValues(
@@ -125,7 +128,7 @@ init_rv = function() {
         "s_vals" = NULL
       )
     )
-  
+
 }
 
 #' Analyte Parameter List (apm)
@@ -164,9 +167,9 @@ analyte_parameter_list = function(certification = NULL) {
     "confirmed" = FALSE # has the analyte manually been confirmed?
   )
   # l = list()
-  
+
   analytes = levels(certification[, "analyte"])
-  
+
   # create list with lists of all analytes (i.e. a nested list)
   a_param_list = rep(list(param_template), length(analytes))
   if(!is.null(certification)){

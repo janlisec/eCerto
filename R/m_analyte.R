@@ -48,6 +48,7 @@ m_analyteUI = function(id){
 }
 
 #' @rdname m_analyte
+#' @importFrom purrr '%>%'
 #' @export
 m_analyteServer = function(id, apm, renewTabs, tablist) {
   stopifnot(shiny::is.reactive(apm))
@@ -59,6 +60,16 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
     })
 
     confirmedTabs <- shiny::reactiveVal()
+
+    # change color of tab when selected by changing class
+    markConfirmed <- function(tab) {
+      # message("color tab: ", tab)
+      # s = paste0("#",ns("tabs")," li a[data-value=",tab,"]")
+      s = paste0(" li a[data-value=",tab,"]")
+      shinyjs::addClass(
+        selector = s,
+        class = "selct")
+    }
 
     shiny::observeEvent(renewTabs(),{
       message("m_analyte: Renew Tabs")
@@ -113,16 +124,6 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       analytes_tmp <- shiny::isolate(apm())
       analytes_tmp[[firstTab]]$confirmed <- TRUE
       apm(analytes_tmp)
-
-      # change color of tab when selected by changing class
-      markConfirmed <- function(tab) {
-        # message("color tab: ", tab)
-        # s = paste0("#",ns("tabs")," li a[data-value=",tab,"]")
-        s = paste0(" li a[data-value=",tab,"]")
-        shinyjs::addClass(
-          selector = s,
-          class = "selct")
-      }
 
       # Make confirmed Tabs (geht auch bestimmt schöner mit map() oder so)
       l <- c()

@@ -2,8 +2,7 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{listNames}
 \alias{listNames}
-\title{names of nested list elements, but ignore data.frame column names.
-Refer to https://stackoverflow.com/q/68453593/6946122}
+\title{listNames}
 \usage{
 listNames(l, maxDepth = 2)
 }
@@ -13,11 +12,11 @@ listNames(l, maxDepth = 2)
 \item{maxDepth}{the maximum depth, the names of list should be returned}
 }
 \value{
-
+Provides names of nested list elements, but ignores data.frame column names.
+Refer to https://stackoverflow.com/q/68453593/6946122
 }
 \description{
-names of nested list elements, but ignore data.frame column names.
-Refer to https://stackoverflow.com/q/68453593/6946122
+listNames
 }
 \examples{
 a = list(

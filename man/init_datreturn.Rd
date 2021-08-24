@@ -2,8 +2,7 @@
 % Please edit documentation in R/inits.R
 \name{init_datreturn}
 \alias{init_datreturn}
-\title{Initiates a reactiveValues object used for session-only and
-module-to-materialtabelle content}
+\title{init_datreturn.}
 \usage{
 init_datreturn()
 }
@@ -11,6 +10,6 @@ init_datreturn()
 datreturn
 }
 \description{
-Initiates a reactiveValues object used for session-only and
-module-to-materialtabelle content
+\code{init_datreturn} Initiates a reactiveValues object used for
+session-only and module-to-materialtabelle content
 }

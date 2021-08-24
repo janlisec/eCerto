@@ -102,7 +102,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     })
 
     h_Data <- shiny::reactive({
-      req(homog()[["data"]])
+      shiny::req(homog()[["data"]])
       # this is the local version of the homology data
       # whatever range is loaded from excel can be checked and transformed in here
       #browser()

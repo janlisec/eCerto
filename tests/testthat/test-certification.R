@@ -4,7 +4,7 @@ test_that(
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
     # shiny::isolate({ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_Certification_Excel()) })
     # shiny::isolate({ecerto::setValue(rv_test, c("Certification","uploadsource"), "Excel") })
-    datreturn = ecerto::reactiveClass$new(init_datreturn()) # initiate runtime variables
+    datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn()) # initiate runtime variables
     suppressMessages(
       shiny::testServer(
         app = m_CertificationServer,
@@ -20,6 +20,7 @@ test_that(
           # testthat::expect_equal(input$certification_view,NULL)
           session$setInputs(certification_view=c("boxplot","stats"))
           # testthat::expect_equal(input$certification_view,c("boxplot","stats"))
+          #browser()
           testthat::expect_equal(
             ecerto::getValue(rv,c("Certification_processing","CertValPlot","show")),
             TRUE
@@ -27,4 +28,5 @@ test_that(
         }
       )
     )
-  })
+  }
+)

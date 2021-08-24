@@ -92,7 +92,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
     # define table as reactiveVal to update it at different places within the module
     mater_table <- shiny::reactiveVal(NULL)
-    observeEvent(getValue(datreturn, "mater_table"), {
+    shiny::observeEvent(getValue(datreturn, "mater_table"), {
       if (!identical(mater_table(), getValue(datreturn, "mater_table"))) {
         #browser()
         mater_table(getValue(datreturn, "mater_table"))
@@ -349,7 +349,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # in case mater table has been initiated...
     # shiny::observeEvent(sAnData(),{
     shiny::observe({
-      req(sAnData())
+      shiny::req(sAnData())
       if(!is.null(mater_table())) {
         #browser()
         if (!silent) message("materialtabelleServer: update initiated for ", sAnData()[1,"analyte"])

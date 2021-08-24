@@ -18,6 +18,8 @@ m_CertLoadedServer(id, rv, apm, selected_tab, check)
 \item{apm}{reactiveVal with analyte parameter.}
 
 \item{selected_tab}{currently selected tab (==analyte), for example "Si" or "Cu" etc.}
+
+\item{check}{Trigger events after a change of uploadsource(??).}
 }
 \value{
 dat, which is data frame with ID, Lab, analyte, replicate, value, unit, S_flt, L_flt

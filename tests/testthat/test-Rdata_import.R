@@ -18,17 +18,17 @@ test_that(
                expect_equal(sort(rv$names()),c("Certification", "Homogeneity", "Stability" ))
                expect_equal(getValue(rv, c("General","user")),"FK4")
 
-               # because time_stamp changes every runtime, exclude it for testing
-               # as follows
-               
-               bbb = getValue(rv,"General")
-               expect_snapshot(bbb[!names(bbb) %in% "time_stamp"])
+               # because time_stamp changes every runtime, exclude it for testing as follows
+               bbb <- getValue(rv,"General")
+               #browser()
+               #expect_snapshot(bbb()[!names(bbb) %in% "time_stamp"])
+               expect_snapshot(bbb$"time_stamp")
                expect_snapshot(getValue(rv,"Certification"))
                expect_snapshot(getValue(rv,"Homogeneity"))
                expect_snapshot(getValue(rv,"Stability"))
-
-               }
-  ))
+      }
+    )
+  )
 })
 
 test_that(

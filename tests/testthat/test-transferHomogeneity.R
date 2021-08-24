@@ -1,30 +1,5 @@
 
 
-
-# Test 1 ---------------------------------------------------------------
-
-# dr = init_datreturn()
-#
-# test_that("Button not able to click before init of materialtable",code = {
-#   shiny::testServer(.TransferHomogeneityServer,
-#              args = list(datreturn=dr), {
-#                print(input$h_transfer_ubb_button)
-#                # expect_message(
-#                #   session$flushReact(), "add File column")
-#                # # has File been added correctly after Upload
-#                # expect_true("File" %in% colnames(rv$tab_flt[[1]]))
-#                #
-#                # # set rows and columns selection
-#                # suppressMessages(
-#                #   session$setInputs(uitab_cells_selected = cells_selected)
-#                # )
-#                # session$flushReact()
-#                # expect_snapshot(rv$tab_flt)
-#                # expect_equal(rv$end_col,6)
-#              }
-#   )
-# })
-
 homogData  = structure(
   list(
     analyte = structure(
@@ -140,19 +115,19 @@ test_that("Transfer successful", code = {
       # session$flushReact()
       session$setInputs(h_transfer_ubb = "U3", h_transfer_H_type =
                           "axial")
-      
+
       expect_equal(input$h_transfer_ubb, "U3")
       #expect_message(
       session$setInputs(h_transfer_ubb_button = "click")
       # ,"TRANSFER BUTTON clicked")
       # session$flushReact()
-      
+
       expect_equal(
         session$returned(),
         structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,
                               0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
       )
-      
+
       #session$returned()
     }
   )
@@ -172,14 +147,14 @@ test_that("Transfer not possible with values not set", code = {
     {
       expect_equal(levels(homogData()[, "H_type"]), c("axial", "radial"))
       session$setInputs(h_transfer_ubb = "U3")# , h_transfer_H_type = "axial"
-      
+
       expect_equal(input$h_transfer_ubb, "U3")
       session$setInputs(h_transfer_ubb_button = "click")
-      
+
       expect_error(return_reactive())
       # expect_equal(
       #   session$returned(),
-      #   structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583, 
+      #   structure(list(U3 = c(0, 0.015535927030583, 0, 0, 0.015535927030583,
       #                         0, 0, 0, 0, 0, 0)), row.names = c(NA, -11L), class = "data.frame")
       # )
       #session$returned()

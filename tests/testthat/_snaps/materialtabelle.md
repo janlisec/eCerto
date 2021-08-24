@@ -52,7 +52,7 @@
       10      Sc     NA   1.0000     NA NA         NA 0.00000000 2 0.00000000
       11      Sn     NA   1.0000     NA NA         NA 0.00000000 2 0.00000000
 
-# Pooling on/off
+# Pooling on/off switch can be set and yields previous results
 
     Code
       mater_table()

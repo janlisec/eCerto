@@ -291,13 +291,14 @@ to_startPage = function(session, value="Certification") {
   )
 }
 
-#' names of nested list elements, but ignore data.frame column names.
-#' Refer to https://stackoverflow.com/q/68453593/6946122
+#' @title listNames
 #'
 #' @param l nested list
 #' @param maxDepth the maximum depth, the names of list should be returned
 #'
-#' @return
+#' @return Provides names of nested list elements, but ignores data.frame column names.
+#' Refer to https://stackoverflow.com/q/68453593/6946122
+#'
 #' @export
 #'
 #' @examples
@@ -306,7 +307,7 @@ to_startPage = function(session, value="Certification") {
 #'  c = NULL,
 #'  df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4)))
 #' listNames(a,2) # [1] "b.df1" "b.e"   "c"     "df2"
-listNames = function(l, maxDepth = 2) {
+listNames <- function(l, maxDepth = 2) {
   n = 0
   listNames_rec = function(l, n) {
     if(!is.list(l) | is.data.frame(l) | n>=maxDepth) TRUE
@@ -337,11 +338,11 @@ listNames = function(l, maxDepth = 2) {
 #'merge_transfer(df = df, vec = vec)
 merge_transfer = function(df, vec) {
   stopifnot(nrow(df)==nrow(vec))
-  mergeby = names(vec)
+  mergeby <- names(vec)
   if(length(mergeby)==2){
     # in case column name differs from it's ID: take second element
-    vec = vec[2]
-    mergeby = mergby[2]
+    vec <- vec[2]
+    mergeby <- mergeby[2]
   # } else if(length(mergeby)==1) {
   #   # in case column name is equal to it's ID
   #   df[df[mergeby]==0,mergeby] = vec[df[mergeby]==0,mergeby]
