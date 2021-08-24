@@ -72,7 +72,7 @@ m_CertificationUI = function(id) {
           )
         ),
         # --- --- --- --- --- --- --- --- ---
-        shiny::column(width=9, shiny::wellPanel(m_analyteModuleUI(ns("analyteModule"))))
+        shiny::column(width=9, shiny::wellPanel(m_analyteUI(ns("analyteModule"))))
         # --- --- --- --- --- --- --- --- ---
       ),
       shiny::conditionalPanel(
