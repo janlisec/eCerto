@@ -1,6 +1,6 @@
 # Help
 
-```{r child = 'Homogeneity.Rmd'}
+```{r child = 'homogeneity.Rmd'}
 ```
 
 ```{r child = 'materialtabelle.Rmd'}
