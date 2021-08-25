@@ -27,7 +27,8 @@ Imports:
     tidyxl,
     plyr,
     R6,
-    purrr
+    purrr,
+    htmltools
 Suggests: 
     testthat (>= 3.0.0),
     shinytest,

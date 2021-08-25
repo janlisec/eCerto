@@ -53,7 +53,7 @@ app_ui = function(){
           shiny::fluidRow(
             shiny::column(
               width = 3,
-              
+
               shiny::wellPanel(m_RDataImport_UI("Rdata")),
             ),
             shiny::column(
@@ -108,7 +108,8 @@ app_ui = function(){
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        shiny::includeCSS(system.file(package = "ecerto","help","help_start.html")) # currently includeCSS, since includeHTML blocking Navbar
+        #shiny::includeCSS(system.file(package = "ecerto","rmd","help_start.html")) # currently includeCSS, since includeHTML blocking Navbar
+        shiny::includeCSS(ecerto::fnc_get_local_file("help_start.html", copy_to_tempdir = FALSE))
       )
     )
   ) # end taglist

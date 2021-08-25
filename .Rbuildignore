@@ -3,3 +3,6 @@
 ^data$
 ^source$
 ^LICENSE\.md$
+^\.github$
+^shiny_bookmarks$
+^\.gitlab$
