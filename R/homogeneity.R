@@ -255,7 +255,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       #browser()
       modal_html <- shiny::withMathJax(shiny::includeHTML(
         #rmarkdown::render(input = system.file("rmd", "uncertainty.Rmd", package = "ecerto"))
-        ecerto::fnc_get_local_file("uncertainty.Rmd", copy_to_tempdir = FALSE)
+        ecerto::fnc_get_local_file("uncertainty.html", copy_to_tempdir = FALSE)
       ))
       shiny::showModal(
         shiny::modalDialog(

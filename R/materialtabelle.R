@@ -343,6 +343,13 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
              )), precision2))
     })
+    
+    observeEvent(cert_mean(),{
+      setValue(datreturn, "cert_mean",cert_mean())
+    })
+    observeEvent(cert_sd(),{
+      setValue(datreturn, "cert_sd",cert_sd())
+    })
 
     # when an Analyte-tab was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
@@ -365,7 +372,6 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
           analyterow = sAnData()[1,"analyte"],
           value = cert_sd()
         )
-
         n <- ifelse(
           test = input$pooling,
           yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% lab_filter()), "n"]),

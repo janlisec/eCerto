@@ -13,8 +13,10 @@ init_datreturn <- function() {
     mater_table = NULL,                 # *READ-ONLY* material table, formerly 'cert_vals'
     t_H = NULL,                         # when Homogeneity is transferred
     t_S = NULL,                         # When Stability is transferred
-    lab_statistics = NULL               # lab statistics (mean,sd) for materialtabelle
-  )
+    lab_statistics = NULL,               # lab statistics (mean,sd) for materialtabelle
+    cert_mean = NULL,
+    cert_sd = NULL
+    )
 }
 
 #' Initializes material table for materialtabelle module

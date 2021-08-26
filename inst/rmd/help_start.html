@@ -159,7 +159,7 @@ pre code {
 
 
 
-<div id="header">
+<div id="section-header">
 
 
 
@@ -167,12 +167,12 @@ pre code {
 </div>
 
 
-<div id="help" class="section level1">
+<div id="section-help" class="section level1">
 <h1>Help</h1>
 </div>
-<div id="homogeneity" class="section level1">
+<div id="section-homogeneity" class="section level1">
 <h1>Homogeneity</h1>
-<div id="uncertainty" class="section level3">
+<div id="section-uncertainty" class="section level3">
 <h3>Uncertainty</h3>
 <p>Conducting the analysis of variance (ANOVA) on a one factor linear model we determined from <span class="math inline">\(N\)</span> bottles/containers with <span class="math inline">\(n\)</span> replicates each the variance within bottles <span class="math inline">\(s_w\)</span> (MS_within) and the variance between bottles <span class="math inline">\(s_a\)</span> (MS_among). Together with the overall mean vlaue <span class="math inline">\(\mu\)</span> (mean of all <span class="math inline">\(N\)</span> bottle means), we now can compute two relative uncertainties between bottles:</p>
 <p><span class="math display">\[s_{bb}={\sqrt{s_a-s_w} \over \mu}\]</span></p>
@@ -180,12 +180,12 @@ pre code {
 <p><span class="math display">\[s_{bb, min}={\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4} \over \mu}\]</span> The larger of both values, <span class="math inline">\(s_{bb}\)</span> and <span class="math inline">\(s_{bb,min}\)</span>, is transfered as uncertainty contribution to the column in the material table selected by the user.</p>
 <p><strong>Note</strong>: <span class="math inline">\(s_{bb}=0\)</span> for <span class="math inline">\(s_a&lt;s_w\)</span>.</p>
 </div>
-<div id="materialtabelle" class="section level2">
+<div id="section-materialtabelle" class="section level2">
 <h2>Materialtabelle</h2>
 <ul>
 <li><em>pooling</em> means that <code>cert_val</code> is not estimated from arithmetic average, but rather from all measured values. Example would it be <code>n=15</code> without and <code>n=10</code> with lab-filter.</li>
 </ul>
-<div id="parameter" class="section level3">
+<div id="section-parameter" class="section level3">
 <h3>Parameter</h3>
 <ul>
 <li><p><em>com</em> describes the <em>com</em>bined uncertainty from all U columns: <span class="math display">\[\sqrt{sum(x ^ 2)}\]</span></p></li>
@@ -217,7 +217,7 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function () {
-  window.buildTabsets("TOC");
+  window.buildTabsets("section-TOC");
 });
 
 $(document).ready(function () {

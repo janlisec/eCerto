@@ -143,7 +143,7 @@ app_server = function(input, output, session) {
 
   shiny::observeEvent(getValue(datreturn,"mater_table"),{
     message("app_server: datreturn.mater_table changed; set rv.materialtabelle")
-    setValue(rv,c("materialtabelle"), getValue(datreturn,"mater_table"))
+    setValue(rv,"materialtabelle", getValue(datreturn,"mater_table"))
   })
 
 

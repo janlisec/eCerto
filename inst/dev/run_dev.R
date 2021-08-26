@@ -7,10 +7,11 @@ rm(list = ls(all.names = TRUE)) # clean environment
 devtools::document('.') # create NAMESPACE and man
 devtools::load_all('.') # load package
 # options(shiny.reactlog=TRUE)
-# rmarkdown::render(
-#   system.file("help","help_start.Rmd",package = "ecerto"),
-#   runtime = "shiny"
-# )
+rmarkdown::render(
+  fnc_get_local_file("help_start.Rmd",copy_to_tempdir = FALSE), # if TRUE, it can't find dependent RMDs
+  runtime = "shiny",
+  quiet = TRUE
+)
 # options(shiny.trace = TRUE)
 options(app.prod = FALSE) # TRUE = production mode, FALSE = development mode
 shiny::runApp('inst/app') # run the main app
