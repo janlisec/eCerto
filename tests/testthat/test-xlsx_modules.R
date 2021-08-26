@@ -39,20 +39,16 @@ test_that(
     )
     excelformat_test = shiny::reactiveVal("Homogeneity")
     dat_test <- shiny::reactiveVal(FALSE)
-
-    shiny::testServer(
-      app = m_ExcelUploadControl_Server,
-      args = list(excelformat=excelformat_test, check = dat_test),
-      expr =  {
-        # suppressMessages(
-        session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
-        # )
-
-        # expect_snapshot(rv_xlsx_range_select$tab_flt)
-        session$setInputs(go = "click")
-        # expect_message(ex(), "go clicked")
-        expect_snapshot(session$returned())
-      }
+    suppressMessages(
+      shiny::testServer(
+        app = m_ExcelUploadControl_Server,
+        args = list(excelformat=excelformat_test, check = dat_test),
+        expr =  {
+          session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
+          session$setInputs(go = "click")
+          expect_equal(is.null(session$returned()),FALSE)
+        }
+      )
     )
   }
 )
@@ -68,14 +64,8 @@ test_that("Successful Stability Upload test",code = {
     shiny::testServer(app = m_ExcelUploadControl_Server,
                       args = list(excelformat=excelformat_test, check = dat_test),
                       expr =  {
-                        # suppressMessages(
                         session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
-                        # )
-
-                        # expect_snapshot(rv_xlsx_range_select$tab_flt)
                         session$setInputs(go = "click")
-                        # expect_message(ex(), "go clicked")
-                        # expect_snapshot(session$returned())
                         expect_equal(session$returned(),ecerto:::test_Stability_Excel())
                       }
     )

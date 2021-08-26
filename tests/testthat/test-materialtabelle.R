@@ -15,7 +15,9 @@ test_that(
           expect_equal(colnames(mater_table()), c("analyte", "mean", "cert_val", "sd", "n", "char", "com", "k", "U"))
           expect_equal(cert_sd(), 0.0034)
           expect_equal(cert_mean(), 0.0493)
-          expect_snapshot(mater_table())
+          expect_equal(mater_table()$U,c(0.079635,rep(0,10)),tolerance = 1e-5)
+          expect_equal(mater_table()$char, c(0.03981726,rep(NA,10)), tolerance = 1e-5)
+          expect_equal(mater_table()$com,c(0.03981726 ,rep(0,10)),tolerance = 1e-5)
         }
       )
     )
@@ -49,20 +51,21 @@ test_that(
         args = list(rdataUpload = shiny::reactive({NULL}), datreturn = test_datreturn),
         expr = {
           testthat::local_edition(3)
-          # session$flushReact()
-          # expect_message('.',"materialTabelle - update initiated for: Si")
           expect_null(mater_table()["mean","Fe"])
           session$setInputs(pooling=FALSE)
-          expect_snapshot(mater_table())
           datreturn$set("selectedAnalyteDataframe", Fe)
-          # datreturn$selectedAnalyteDataframe = Fe
           session$flushReact()
-          expect_snapshot(mater_table())
+          expect_equal(nrow(mater_table()), 11)
+          expect_equal(colnames(mater_table()), c("analyte", "mean", "cert_val", "sd", "n", "char", "com", "k", "U"))
+          expect_equal(cert_sd(), 0.0020)
+          expect_equal(cert_mean(), 0.0516)
+          expect_equal(mater_table()$U,c(0.079635,0.04475583,rep(0,9)),tolerance = 1e-5)
+          expect_equal(mater_table()$char, c(0.039817,0.022378,rep(NA,9)), tolerance = 1e-5)
+          expect_equal(mater_table()$com,c(0.03981726,0.02237792, rep(0,9)),tolerance = 1e-5)
         }
       )
     )
-})
-
+  })
 # Test 3: Pooling on/off --------------------------------------------------
 test_that(
   desc = "Pooling on/off switch can be set and changes 'n' in mat_tab",
@@ -75,10 +78,13 @@ test_that(
       expr = {
         session$setInputs(pooling=FALSE)
         expect_equal(mater_table()[1,"n"], 3L)
-        expect_snapshot(mater_table())
         session$setInputs(pooling=TRUE)
         expect_equal(mater_table()[1,"n"], 9L)
-        expect_snapshot(mater_table())
+        expect_equal(cert_sd(), 0.0032)
+        expect_equal(mater_table()$n[1], 9)
+        expect_equal(mater_table()$char[1], 0.02163624, tolerance = 1e-5)
+        expect_equal(mater_table()$com[1], 0.02163624, tolerance = 1e-5)
+        expect_equal(mater_table()$U[1], 0.04327248, tolerance = 1e-5)
       }
     ))
   }
@@ -144,5 +150,5 @@ test_that("Lab filter",code = {
                                        ID = character(0), Name = character(0)), row.names = integer(0), class = "data.frame"), row.names = 1L, class = "data.frame")
         expect_equal(actual_Si,expected_Si)
       })
-    )
+  )
 })

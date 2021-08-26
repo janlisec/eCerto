@@ -6,43 +6,24 @@ test_that(
     fn1 = ecerto:::test_mod_xlsx_range()
     sheetNo <- shiny::reactiveVal(1)
     cells_selected <- matrix(c(7,1,16,6), ncol = 2, byrow = TRUE)
-
-    shiny::testServer(
-      app = ecerto::xlsx_range_select_Server,
-      args = list(current_file_input = fn1, sheet = sheetNo),
-      {
-        suppressMessages(session$flushReact())
-        # set rows and columns selection
-        suppressMessages(session$setInputs(uitab_cells_selected = cells_selected))
-        session$flushReact()
-        expect_snapshot(tab_param$tab_flt)
-        expect_equal(tab_param$end_col,6)
-      }
+    suppressMessages(
+      shiny::testServer(
+        app = ecerto::xlsx_range_select_Server,
+        args = list(current_file_input = fn1, sheet = sheetNo),
+        {
+          suppressMessages(session$flushReact())
+          # set rows and columns selection
+          suppressMessages(session$setInputs(uitab_cells_selected = cells_selected))
+          session$flushReact()
+          expect_equal(length(tab_param$tab), 3)  # contains three lists
+          expect_equal(tab_param$end_col,6)
+        }
+      )
     )
   }
 )
 
-# # Test 1.2 File column after cell selection
-# test_that(
-#   desc = "File column is appended for Certification after cell selection",
-#   code = {
-#     fn1 = ecerto:::test_mod_xlsx_range()
-#     sheetNo <- shiny::reactiveVal(1)
-#     cells_selected <- matrix(c(7,1,16,6), ncol = 2, byrow = TRUE)
-#     shiny::testServer(
-#       app = xlsx_range_select_Server,
-#       args = list(current_file_input = fn1, sheet = sheetNo), {
-#         suppressMessages(session$flushReact())
-#         # set rows and columns selection
-#         suppressMessages(
-#           session$setInputs(uitab_cells_selected = cells_selected))
-#         session$flushReact()
-#         # has File been added correctly after cell selection
-#         expect_true("File" %in% colnames(tab_param$tab_flt[[1]]))
-#       }
-#     )
-#   }
-# )
+
 
 
 # Test 2: Upload RData even though Excel was expected ------------------------------------------------------------------
@@ -68,15 +49,16 @@ test_that(
     class = "data.frame"
     ))
     sheetNo <- shiny::reactiveVal(1)
-
-    shiny::testServer(
-      app = ecerto::xlsx_range_select_Server,
-      args = list(current_file_input = fn2,sheet = sheetNo), {
-        #browser()
-        expect_warning(
-          expect_error(tab(),"uploaded Excel files contain an empty one"),
-          "Invalid file; Please upload a .xlsx file")
-      }
+    suppressMessages(
+      shiny::testServer(
+        app = ecerto::xlsx_range_select_Server,
+        args = list(current_file_input = fn2,sheet = sheetNo), {
+          #browser()
+          expect_warning(
+            expect_error(tab(),"uploaded Excel files contain an empty one"),
+            "Invalid file; Please upload a .xlsx file")
+        }
+      )
     )
   }
 )
@@ -100,7 +82,7 @@ test_that(
       row.names = c(NA,-1L)
     ))
     sheetNo <- shiny::reactiveVal(1)
-
+    
     suppressMessages(
       shiny::testServer(
         app = xlsx_range_select_Server,
