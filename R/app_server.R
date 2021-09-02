@@ -15,8 +15,8 @@ app_server = function(input, output, session) {
   excelformat = shiny::reactive({input$moduleSelect})
   shiny::updateSelectInput(inputId = "moduleSelect",
                     session = session,
-                    choices = rv$names(),
-                    selected = rv$names()[1]
+                    choices = getValue(rv,"modules"),
+                    selected = getValue(rv,"modules")[1]
   )
 
 # Upload Controller -------------------------------------------------------
@@ -153,5 +153,13 @@ app_server = function(input, output, session) {
     message("app_server: h_vals() changed, set datreturn.h_vals")
     setValue(datreturn, "h_vals", h_vals())
   },ignoreInit = TRUE)
+  
+  shiny::observeEvent(input$moduleUploadHelp, {
+    switch (excelformat(),
+      "Homogeneity" = help_the_user("homogeneity_dataupload", modal=TRUE),
+      "Stability" = help_the_user("stability_dataupload", modal=TRUE)
+    )
+    
+  })
 
 }

@@ -26,7 +26,7 @@
 #'  rdataUpload <- reactive({res[[1]][["cert_vals"]]})
 #'  datreturn <- ecerto:::test_datreturn()
 #'  m_materialtabelleServer(id = "test", rdataUpload=rdataUpload, datreturn=datreturn);
-#'   #observeEvent(out(), {print(out())})
+#'   observe({ecerto::getValue(datreturn,"selectedAnalyteDataframe")})
 #'  }
 #' )
 #' }
@@ -41,7 +41,7 @@ m_materialtabelleUI <- function(id) {
   shiny::fluidRow(
     shiny::column(
       width = 2,
-      shiny::strong("Material Certification"), shiny::br(),
+      shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Material Certification")), shiny::br(),
       # `pooling` bedeutet, das man cert_val nicht aus den Labormittelwerten
       # schätzt, sondern aus allen Mess-Werten. Im Beispiel wäre n=15 ohne und
       # n=10 mit Laborfilter. In Summe: für die korrekte Darstellung der
@@ -94,7 +94,6 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     mater_table <- shiny::reactiveVal(NULL)
     shiny::observeEvent(getValue(datreturn, "mater_table"), {
       if (!identical(mater_table(), getValue(datreturn, "mater_table"))) {
-        #browser()
         mater_table(getValue(datreturn, "mater_table"))
       }
     })
@@ -346,10 +345,10 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     
     observeEvent(cert_mean(),{
       setValue(datreturn, "cert_mean",cert_mean())
-    })
+    }, ignoreInit = TRUE)
     observeEvent(cert_sd(),{
       setValue(datreturn, "cert_sd",cert_sd())
-    })
+    }, ignoreInit = TRUE)
 
     # when an Analyte-tab was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
@@ -358,7 +357,6 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     shiny::observe({
       shiny::req(sAnData())
       if(!is.null(mater_table())) {
-        #browser()
         if (!silent) message("materialtabelleServer: update initiated for ", sAnData()[1,"analyte"])
         ecerto::update_reactivecell(
           r = mater_table,
@@ -431,7 +429,6 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     )
 
     shiny::observeEvent(input$matreport_rows_selected, {
-      #browser()
       # Possibly we can omit the analyte_tabs in the future and allow the user to select analytes
       # based on the row selection in the mat_table.
       # to achieve this we would need to manipulate the R6 object (datreturn) and ensure that
@@ -452,6 +449,9 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # update 'mater_table'
       mater_table(mt)
     })
-
+    
+    observeEvent(input$materheadline, {
+      help_the_user("materialtabelle")
+    })
   })
 }

@@ -253,20 +253,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
 
     shiny::observeEvent(input$hom_help_modal, {
       #browser()
-      modal_html <- shiny::withMathJax(shiny::includeHTML(
-        #rmarkdown::render(input = system.file("rmd", "uncertainty.Rmd", package = "ecerto"))
-        ecerto::fnc_get_local_file("uncertainty.html", copy_to_tempdir = FALSE)
-      ))
-      shiny::showModal(
-        shiny::modalDialog(
-          #@FK: Der in issue # 66 beschribene Fehler tritt nur auf, wenn man modal_html übergibt, bei HTML("bla") funktioniert alles
-          #HTML("bla"),
-          modal_html,
-          footer = shiny::tagList(shiny::modalButton("Ok")),
-          size = "m",
-          title = "Uncertainty calculation"
-        )
-      )
+      help_the_user("uncertainty", modal = TRUE)
     })
 
     output$h_anova <- shiny::renderPrint({

@@ -1,0 +1,8 @@
+# Stability
+
+```{r child = 'stability_dataupload.Rmd'}
+```
+
+### Output
+
+The uncertainty contribution of the stability measurements U_Stab is calculated for each analyte based on formulaand is transfered to the materials table of the certification module in case that an analyte of matching name is found.

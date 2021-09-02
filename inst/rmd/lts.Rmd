@@ -1,0 +1,8 @@
+# LTS
+
+```{r child = 'lts_dataupload.Rmd'}
+```
+
+### Output
+
+The Tool calculates the expected life time of a reference material in two steps (i) by calculating a linear model for the measurement data (y = m*x + n, time expressed in month) and (ii) by correcting the measurement data w.r.t. the certified value using the obtained 'n' before using the obtained 'm' to estimate the timepoint when y is exceeding the range of CetVal+-U.

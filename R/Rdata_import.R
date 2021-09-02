@@ -99,7 +99,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
     shiny::observeEvent(rdata(), {
-      ttt = sapply(rv$names(), function(x) {!is.null(getValue(rv,c(x,"uploadsource")))},simplify = "array")
+      ttt = sapply(getValue(rv,"modules"), function(x) {!is.null(getValue(rv,c(x,"uploadsource")))},simplify = "array")
       if(any(ttt)){
         shiny::showModal(
           shiny::modalDialog(

@@ -92,8 +92,7 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
       current_file_input(input$excel_file)
     })
 
-    # --- --- --- --- --- --- --- --- --- ---
-    # Module to select rows and columns
+
     sheetnumber = shiny::reactive({
       shiny::req(input$sheet_number)
       switch (excelformat(),
@@ -102,6 +101,8 @@ m_ExcelUploadControl_Server <- function(id, excelformat, check, silent=FALSE) {
         "Stability" = 1:length(ecerto::load_sheetnames(input$excel_file$datapath))
       )
     })
+    # --- --- --- --- --- --- --- --- --- ---
+    # Module to select rows and columns
     rv_xlsx_range_select <- xlsx_range_select_Server(
       id = "Upload",
       current_file_input = current_file_input,

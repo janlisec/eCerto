@@ -36,7 +36,7 @@ shiny::shinyApp(
  rdataUpload <- reactive({res[[1]][["cert_vals"]]})
  datreturn <- ecerto:::test_datreturn()
  m_materialtabelleServer(id = "test", rdataUpload=rdataUpload, datreturn=datreturn);
-  #observeEvent(out(), {print(out())})
+  observe({ecerto::getValue(datreturn,"selectedAnalyteDataframe")})
  }
 )
 }

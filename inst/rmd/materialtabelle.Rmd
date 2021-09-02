@@ -1,6 +1,4 @@
-
-
-## Materialtabelle
+# Materialtabelle
 
 - *pooling* means that `cert_val` is not estimated from arithmetic average, but rather
 from all measured values. Example would it be `n=15` without and `n=10` with lab-filter.

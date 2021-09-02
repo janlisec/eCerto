@@ -1,5 +1,16 @@
 # Homogeneity
 
+```{r child = 'homogeneity_dataupload.Rmd'}
+```
+
+### Statistics
+
+The uncertainty contribution of the Homogeneity measurements `U_bb` is calculated for each analyte based on formula and is transfered to the materials table of the certification module in case that an analyte of matching name is found.
+
+### Report
+
+Figures and tables can currently be exported in a HTML format.
+
 ### Uncertainty
 
 ```{r child = 'uncertainty.Rmd'}

@@ -49,7 +49,10 @@ test_datreturn = function() {
         s_bb_min = c(0.015535927030583, 0.0100532811338686, 0.015535927030583, 0.0102229805818161)), class = "data.frame", row.names = c(NA, -4L)
     ),
     t_H = NULL,
-    t_S = NULL
+    t_S = NULL,
+    lab_statistics = NULL,
+    cert_mean = NULL,
+    cert_sd = NULL
   )
   datreturn1 = do.call(shiny::reactiveValues, datreturnList)
   datreturn1 = reactiveClass$new(datreturn1)

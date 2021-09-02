@@ -74,7 +74,7 @@ init_materialTabelle <- function(analytes) {
 init_rv = function() {
   rv <-
     list(
-      "modules" = c("Certification","Homogeneity","Stability"), # names of the modules; returned by rv$names
+      "modules" = c("Certification","Homogeneity","Stability"), # names of the modules
       "General" = shiny::reactiveValues(
         # save
         "user" = NULL,
