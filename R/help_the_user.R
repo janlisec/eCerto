@@ -1,11 +1,11 @@
 #' Help Window: opens a modal with respective Help text for users
 #'
 #' @param filename name of the file as string (if necessary, containing also path)
+#' @param format whether the file is html or rmd (default)
+#' @param modal shall the modal window be opened (TRUE is default)
 #'
-#' @return
+#' @return returns the help text as HTML (currently produces errors when used)
 #' @export
-#'
-#' @examples
 #' 
 #' 
 help_the_user = function(filename, format = "rmd", modal=TRUE) {

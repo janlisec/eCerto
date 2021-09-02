@@ -23,7 +23,7 @@
       ns = ns, # namespace of current module
       shiny::fileInput(
         inputId = ns("LTS_input_file"),
-        label = actionLink(inputId = ns("InputHelp"),"Import Excel/RData File"),
+        label = shiny::actionLink(inputId = ns("InputHelp"),"Import Excel/RData File"),
         multiple = FALSE,
         accept = c("xls","xlsx","RData")
       ),
@@ -375,7 +375,7 @@
     )
     
     shiny::observeEvent(input$InputHelp, {
-      help_window("lts_dataupload", modal = TRUE)
+      help_the_user("lts_dataupload", modal = TRUE)
     })
     
   })

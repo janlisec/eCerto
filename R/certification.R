@@ -26,9 +26,10 @@
 #'  server = function(input, output, session) {
 #'   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
 #'   shiny::observe({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
-#'    shiny::observe({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
+#'   shiny::observe({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
 #'   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
-#'    m_CertificationServer(
+#'  
+#'  m_CertificationServer(
 #'      id = "test",
 #'      rv = rv,
 #'      apm.input = shiny::reactiveVal(),
@@ -85,7 +86,12 @@ m_CertificationUI = function(id) {
             width = 10, 
             shiny::column(
               width = 3,
-              shiny::fluidRow(shiny::strong("Certified Value Plot")),
+              shiny::fluidRow(shiny::strong(
+                shiny::actionLink(
+                  inputId = ns("certifiedValuePlot_link"),
+                  label = "Certified Value Plot"
+                )
+              )),
               shiny::fluidRow(shiny::uiOutput(shiny::NS(id, "flt_labs"))),
               shiny::fluidRow(
                 shiny::column(
@@ -163,7 +169,7 @@ m_CertificationUI = function(id) {
         ns = shiny::NS(id), # namespace of current module
         shiny::wellPanel(
           shiny::strong(
-            actionLink(
+            shiny::actionLink(
               inputId = ns("stat_link"),
               label = "Tab.1 Statistics regarding lab variances and outlier detection"
             )
@@ -178,7 +184,7 @@ m_CertificationUI = function(id) {
         ns = shiny::NS(id),
         shiny::wellPanel(
           shiny::strong(
-            actionLink(
+            shiny::actionLink(
               inputId = ns("stat2_link"),
               label = "Tab.2 Statistics regarding lab mean distribution"
             )
@@ -410,6 +416,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
     
+    
     output$cert_mean <- shiny::renderText({
       getValue(datreturn,"cert_mean")
     })
@@ -538,11 +545,14 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
     
-    observeEvent(input$stat_link,{
+    shiny::observeEvent(input$stat_link,{
       help_the_user("certification_laboratoryStatistics")
     })
-    observeEvent(input$stat2_link,{
+    shiny::observeEvent(input$stat2_link,{
       help_the_user("certification_meanDistribution")
+    })
+    shiny::observeEvent(input$certifiedValuePlot_link, {
+      help_the_user("certification_boxplot")
     })
 
     return(apm)

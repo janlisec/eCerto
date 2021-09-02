@@ -13,7 +13,7 @@ test_that(
         args = list(rv = rv_test),
         expr = {
           session$setInputs(in_file_ecerto_backup = rdat)
-          expect_equal(sort(rv$names()),c("Certification", "Homogeneity", "Stability" ))
+          expect_equal(sort(ecerto::getValue(rv,"modules")),c("Certification", "Homogeneity", "Stability" ))
           expect_equal(ecerto::getValue(rv, c("General","user")),"FK4")
           # because time_stamp changes every runtime, exclude it for testing as follows
           general <- ecerto::getValue(rv,"General")
@@ -21,12 +21,8 @@ test_that(
           expect_equal(is.null(general$dataformat_version), FALSE)
           expect_equal(is.null(getValue(rv,c("Certification","data"))), FALSE)
           expect_equal(is.null(getValue(rv,c("Homogeneity","data"))), FALSE)
-          expect_equal(is.null(getValue(rv,c("Stability","data"))), FALSE)
-          
-          # expect_snapshot(shiny::reactiveValuesToList(getValue(rv,"Certification")))
-          # expect_snapshot(shiny::reactiveValuesToList(getValue(rv,"Homogeneity")))
-          # expect_snapshot(shiny::reactiveValuesToList(getValue(rv,"Stability")))
-        }
+          # expect_equal(is.null(getValue(rv,c("Stability","data"))), FALSE)
+          }
       )
     )
   })

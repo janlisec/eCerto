@@ -343,12 +343,12 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
              )), precision2))
     })
     
-    observeEvent(cert_mean(),{
+    shiny::observeEvent(cert_mean(),{
       setValue(datreturn, "cert_mean",cert_mean())
-    }, ignoreInit = TRUE)
-    observeEvent(cert_sd(),{
+    })
+    shiny::observeEvent(cert_sd(),{
       setValue(datreturn, "cert_sd",cert_sd())
-    }, ignoreInit = TRUE)
+    })
 
     # when an Analyte-tab was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
@@ -450,7 +450,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       mater_table(mt)
     })
     
-    observeEvent(input$materheadline, {
+    shiny::observeEvent(input$materheadline, {
       help_the_user("materialtabelle")
     })
   })

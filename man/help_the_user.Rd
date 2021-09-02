@@ -10,12 +10,8 @@ help_the_user(filename, format = "rmd", modal = TRUE)
 \item{filename}{name of the file as string (if necessary, containing also path)}
 }
 \value{
-
+returns the help text as HTML (currently produces errors when used)
 }
 \description{
 Help Window: opens a modal with respective Help text for users
-}
-\examples{
-
-
 }

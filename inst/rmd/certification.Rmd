@@ -35,11 +35,9 @@ again.
 ```
 
 
-### Certified value calculation and vizualization of the currently selected analyte
+```{r child = 'certification_boxplot.Rmd'}
+```
 
-Lab means and distribution is depicted in a standard graphic layout which can be exported as vector graphic (PDF) for further editing. Labs which have been identified as outliers above can be excluded from the overall mean calculation. This decision has to be made by the user, eCerto will not remove an outlier lab automatically.
-
-![Certified Value Plot](Data_Stats03.png)
 
 ### Export Reports of the currently selected analyte or the certified values of all analytes
 A report of the above analysis (single analyte) or for the material (all analytes) can be generated and exported in different formats.
