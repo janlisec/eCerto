@@ -162,7 +162,12 @@ m_CertificationUI = function(id) {
         condition = "input.certification_view.indexOf('stats') > -1",
         ns = shiny::NS(id), # namespace of current module
         shiny::wellPanel(
-          shiny::strong("Tab.1 Statistics regarding lab variances and outlier detection"),
+          shiny::strong(
+            actionLink(
+              inputId = ns("stat_link"),
+              label = "Tab.1 Statistics regarding lab variances and outlier detection"
+            )
+          ),
           DT::dataTableOutput(ns("overview_stats"))
           #shiny::div(style = 'width:900px;margin:auto', DT::DTOutput(ns("overview_stats"), width = "900px"))
         )
@@ -172,7 +177,12 @@ m_CertificationUI = function(id) {
         condition = "input.certification_view.indexOf('stats2') > -1",
         ns = shiny::NS(id),
         shiny::wellPanel(
-          shiny::strong("Tab.2 Statistics regarding lab mean distribution"),
+          shiny::strong(
+            actionLink(
+              inputId = ns("stat2_link"),
+              label = "Tab.2 Statistics regarding lab mean distribution"
+            )
+          ),
           DT::dataTableOutput(ns("overview_mstats")),
           htmltools::p(),
           shiny::textOutput(outputId = ns("normality_statement")),
@@ -527,6 +537,13 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       stats::qqnorm(y = y)
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
+    
+    observeEvent(input$stat_link,{
+      help_the_user("certification_laboratoryStatistics")
+    })
+    observeEvent(input$stat2_link,{
+      help_the_user("certification_meanDistribution")
+    })
 
     return(apm)
   })

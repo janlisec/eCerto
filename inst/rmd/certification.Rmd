@@ -28,40 +28,12 @@ starts once files have been selected via 'Browse'-button.
 i.e. you can not add additional files later on but would have to start all over
 again.
 
-### Laboratory statistics to identify potentially outliers for lab means and/or
-lab variances
-For the selected analyte various statistical tests regarding lab means and
-variance will be performed according to ISO 17025 and outlying values will be
-indicated if observed at the .05 and .01 level respectively.
+```{r child = 'certification_laboratoryStatistics.Rmd'}
+```
 
-![Laboratory statistics example](Data_Stats01.png)
+```{r child = 'certification_meanDistribution.Rmd'}
+```
 
-eCerto uses functions available for the statistical software environment R.
-Details regarding the conducted statistical test (implementation, parameters) can be found using the following links:
-
-* [Scheffe](https://rdrr.io/cran/agricolae/man/scheffe.test.html)
-* [Dixon](https://rdrr.io/cran/outliers/man/dixon.test.html)
-* [Grubbs](https://rdrr.io/cran/outliers/man/grubbs.test.html)
-* [Nalimov](http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html)
-* [Cochran](https://rdrr.io/cran/outliers/man/cochran.test.html)
-
-### Statistics on the lab means distribution
-The distribution of lab means is evaluated using a variety of recommended tests. Normality is tested using the KS-Test.
-
-**Note!** Some tests need a minimum number of replicates and will not yield a
-result if this criteria is not met (i.e. Agostino).
-
-![Statistics regarding overall mean distribution](Data_Stats02.png)
-
-Details regarding the conducted statistical test can be found using the following links:
-
-- [Bartlett](https://rdrr.io/cran/stats/man/bartlett.test.html)
-- [ANOVA](https://rdrr.io/cran/stats/man/anova.html)
-- [KS](https://rdrr.io/cran/stats/man/ks.test.html)
-- [Skewness](https://rdrr.io/cran/moments/man/skewness.html)
-- [Agostino](https://rdrr.io/cran/moments/man/agostino.test.html)
-- [Kurtosis](https://rdrr.io/cran/moments/man/kurtosis.html)
-- [Anscombe](https://rdrr.io/cran/moments/man/anscombe.test.html)
 
 ### Certified value calculation and vizualization of the currently selected analyte
 
