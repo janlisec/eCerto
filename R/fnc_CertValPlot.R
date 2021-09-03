@@ -14,8 +14,13 @@ CertValPlot <- function(data=NULL) {
   data.stats <- plyr::ldply(split(data[,"value"], data[,"Lab"]), function(x) {data.frame("MW"=mean(x,na.rm=T), "Median"= stats::median(x,na.rm=T), "SD"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
   data.stats <- data.frame(data.stats, "Filter"=sapply(split(data[,"L_flt"], data$Lab), all))
   data.stats <- data.stats[order(data.stats$MW),]
-  graphics::par(mar=c(5,4,0,0)+0.2)
-  plot(x=range(1:nrow(data.stats)), axes=F, y=range(c(data.stats$MW+data.stats$SD, data.stats$MW-data.stats$SD)), type="n", main="", ylab=paste0(unique(data[,"analyte"])[1], " [",unique(data[,"unit"])[1],"]"), xlab="Lab", xlim=c(0.5,nrow(data.stats)+0.5))
+  ylab <- paste0(unique(data[,"analyte"])[1], " [",unique(data[,"unit"])[1],"]")
+  graphics::par(mar=c(5,6,0,0)+0.2)
+  plot(x=range(1:nrow(data.stats)), y=range(c(data.stats$MW+data.stats$SD, data.stats$MW-data.stats$SD)), type="n", ann=FALSE, axes=FALSE, xlim=c(0.5,nrow(data.stats)+0.5))
+  graphics::title(xlab="Lab")
+  # compute number of lines we need to reserve fo the axis numbers
+  lh <- max(graphics::strwidth(graphics::axTicks(2),units = "inch"))/graphics::strheight("0",units = "inch")
+  graphics::title(ylab=ylab, line=1.25+0.75*lh)
   graphics::axis(1, at=1:nrow(data.stats), labels = data.stats$Lab)
   graphics::axis(2, las=2)
   graphics::abline(h=mean(data.stats$MW[!data.stats[,"Filter"]]), col=3, lwd=2)
