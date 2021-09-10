@@ -116,7 +116,7 @@ app_server = function(input, output, session) {
    m_CertificationServer(
     id = "certification",
     rv = rv,
-    apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
+    # apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
     datreturn = datreturn
   )
 

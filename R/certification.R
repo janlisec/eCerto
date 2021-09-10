@@ -12,7 +12,6 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv the whole R6 object
-#' @param apm.input analyteParameterList, when uploaded from RData (reactive)
 #' @param datreturn the session data object
 #'
 #' @return nothing
@@ -215,7 +214,7 @@ m_CertificationUI = function(id) {
 
 #' @rdname mod_Certification
 #' @export
-m_CertificationServer = function(id, rv, apm.input, datreturn) {
+m_CertificationServer = function(id, rv, datreturn) {
   shiny::moduleServer(id, function(input, output, session) {
 
     apm <- shiny::reactiveVal() # what will be returned by the module
@@ -240,16 +239,16 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
           # Creation of AnalyteParameterList.
           apm(
             analyte_parameter_list(
-              shiny::isolate(getValue(
-                rv, c("Certification", "data")
-          ))))
+              shiny::isolate(
+                getValue(rv, c("Certification", "data"))
+          )))
         } else if(o.upload=="RData") {
           # only forward rData Upload after RData was uploaded
           message("Certification: forward RData to Materialtabelle")
           rdataupload(getValue(rv,c("materialtabelle")))
-          if(!is.null(shiny::isolate(apm.input()))) {
+          if(!is.null(getValue(rv,c("General","apm")))) {
             # RData contains element "apm"
-            apm(apm.input())
+            apm(getValue(rv,c("General","apm")))
           } else {
             # RData did not contain "apm" --> create
             apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
@@ -534,7 +533,7 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
 
     # whenever the analyte parameter like lab filter, sample filter etc are changed
     shiny::observeEvent(apm(), {
-      message("app_server: apm changed, set rv.apm")
+      message("certification: apm changed, set rv.apm")
       setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
     }, ignoreNULL = TRUE)
     

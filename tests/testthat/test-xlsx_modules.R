@@ -16,7 +16,7 @@ test_that("Successful Upload test",code = {
       "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
   )
   shiny::testServer(
-    app = m_ExcelUploadControl_Server,
+    app = m_ExcelUpload_Server,
     args = list(excelformat=excelformat_test, check = check),
     expr =  {
       session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
@@ -41,7 +41,7 @@ test_that(
     dat_test <- shiny::reactiveVal(FALSE)
     suppressMessages(
       shiny::testServer(
-        app = m_ExcelUploadControl_Server,
+        app = m_ExcelUpload_Server,
         args = list(excelformat=excelformat_test, check = dat_test),
         expr =  {
           session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
@@ -61,7 +61,7 @@ test_that("Successful Stability Upload test",code = {
   excelformat_test = shiny::reactiveVal("Stability")
   dat_test <- shiny::reactiveVal(FALSE)
   suppressMessages(
-    shiny::testServer(app = m_ExcelUploadControl_Server,
+    shiny::testServer(app = m_ExcelUpload_Server,
                       args = list(excelformat=excelformat_test, check = dat_test),
                       expr =  {
                         session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection

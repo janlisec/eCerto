@@ -20,7 +20,7 @@ m_CertificationServer(id, rv, apm.input, datreturn)
 \item{datreturn}{the session data object}
 }
 \value{
-analyte parameter
+nothing
 }
 \description{
 \code{m_CertificationServer} is the module for handling the
