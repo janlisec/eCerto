@@ -66,7 +66,7 @@ app_ui = function(){
                     width = "50%"
                   
               ),
-                m_ExcelUploadControl_UI("excelfile")
+                m_ExcelUpload_UI("excelfile")
               )
             )
           )

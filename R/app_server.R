@@ -21,7 +21,7 @@ app_server = function(input, output, session) {
 
 # Upload Controller -------------------------------------------------------
 
-  ExcelUp <- m_ExcelUploadControl_Server(
+  ExcelUp <- m_ExcelUpload_Server(
     id = "excelfile",
     excelformat = excelformat,
     check = shiny::reactive({is.null(getValue(rv, c(excelformat(),"uploadsource")) )})
