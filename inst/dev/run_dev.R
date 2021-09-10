@@ -4,14 +4,5 @@ suppressWarnings(lapply(paste('package:', names(sessionInfo()$otherPkgs), sep = 
 rm(list = ls(all.names = TRUE)) # clean environment
 devtools::document('.') # create NAMESPACE and man
 devtools::load_all('.') # load package
-# options(shiny.reactlog=TRUE)
-# rmarkdown::render(
-#   fnc_get_local_file(
-#     x = "help_start.Rmd",
-#     copy_to_tempdir = FALSE # don't TRUE, or it can't find dependent RMDs
-#     ),
-#   quiet = TRUE
-# )
-# options(shiny.trace = TRUE)
 options(app.prod = FALSE) # TRUE = production mode, FALSE = development mode
 shiny::runApp('inst/app') # run the main app

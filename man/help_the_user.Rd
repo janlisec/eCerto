@@ -8,6 +8,10 @@ help_the_user(filename, format = "rmd", modal = TRUE)
 }
 \arguments{
 \item{filename}{name of the file as string (if necessary, containing also path)}
+
+\item{format}{whether the file is html or rmd (default)}
+
+\item{modal}{shall the modal window be opened (TRUE is default)}
 }
 \value{
 returns the help text as HTML (currently produces errors when used)
