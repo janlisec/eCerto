@@ -15,7 +15,7 @@
 #' @param apm.input analyteParameterList, when uploaded from RData (reactive)
 #' @param datreturn the session data object
 #'
-#' @return analyte parameter
+#' @return nothing
 #'
 #' @examples
 #' if (interactive()) {
@@ -238,13 +238,17 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
         message("Certification: Uploadsource changed to ", shiny::isolate(getValue(rv,c("Certification","uploadsource"))), "; initiate apm")
         if(o.upload=="Excel") {
           # Creation of AnalyteParameterList.
-          apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
+          apm(
+            analyte_parameter_list(
+              shiny::isolate(getValue(
+                rv, c("Certification", "data")
+          ))))
         } else if(o.upload=="RData") {
           # only forward rData Upload after RData was uploaded
           message("Certification: forward RData to Materialtabelle")
           rdataupload(getValue(rv,c("materialtabelle")))
           if(!is.null(shiny::isolate(apm.input()))) {
-            # RData contained "apm"
+            # RData contains element "apm"
             apm(apm.input())
           } else {
             # RData did not contain "apm" --> create
@@ -271,9 +275,11 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
     tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced in future versions
-    selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
-   # --- --- --- --- --- --- --- --- --- --- ---
+    selected_tab <-
+      ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
+    # --- --- --- --- --- --- --- --- --- --- ---
 
+    current_apm <- reactive({apm()[[selected_tab()]]})
     filtered_labs <- shiny::reactiveVal(NULL)
 
     # this data.frame contains the following columns for each analyte:
@@ -281,14 +287,14 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     dat <- shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
-      cur_anal <- apm()[[selected_tab()]]
+      
       
       message("Cert_Load: dat-reactive invalidated")
       cert.data <- getValue(rv,c("Certification","data")) # take the uploaded certification
       # round input values
-      cert.data[, "value"] <- round(cert.data[, "value"], cur_anal$precision)
+      cert.data[, "value"] <- round(cert.data[, "value"], current_apm()$precision)
       cert.data <- cert.data[cert.data[, "analyte"] %in% selected_tab(), ]
-      cert.data <- cert.data[!(cert.data[, "ID"] %in% cur_anal$sample_filter), ]
+      cert.data <- cert.data[!(cert.data[, "ID"] %in% current_apm()$sample_filter), ]
       cert.data[, "L_flt"] <- cert.data[, "Lab"] %in% filtered_labs()
       # adjust factor levels
       cert.data[, "Lab"] <- factor(cert.data[, "Lab"])
@@ -300,9 +306,9 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
             sapply(split(cert.data[, "value"], cert.data[, "Lab"]), length) < 2
           ))[1], "has less than 2 replicates left. Drop an ID filter if necessary.")),
         shiny::need(
-          is.numeric(cur_anal$precision) &&
-            cur_anal$precision >= 0 &&
-            cur_anal$precision <= 6,
+          is.numeric(current_apm()$precision) &&
+            current_apm()$precision >= 0 &&
+            current_apm()$precision <= 6,
           message = "please check precision value: should be numeric and between 0 and 6"
         )
       )
@@ -317,11 +323,10 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     # Filter laboratories (e.g. "L1")
     output$flt_labs <- shiny::renderUI({
       shiny::req(dat(), selected_tab())
-      # analytelist$analytes[[i]]$lab_filter
       tmp <- dat()
       tmp <- tmp[tmp[, "analyte"] == selected_tab() & is.finite(tmp[, "value"]), ]
       choices <- levels(factor(tmp[, "Lab"]))
-      selected = apm()[[selected_tab()]]$lab_filter
+      selected = current_apm()$lab_filter
       shiny::selectizeInput(
         inputId = session$ns("flt_labs"),
         label = "Filter Labs",
@@ -502,12 +507,12 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
     }, ignoreInit = TRUE)
 
     output$overview_stats <- DT::renderDataTable({
-      Stats(data = dat(), precision = apm()[[selected_tab()]]$precision)
+      Stats(data = dat(), precision = current_apm()$precision)
     }, options = list(dom = "t", pageLength=100, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
 
     # mStats
     output$overview_mstats <- DT::renderDataTable({
-      mstats(data = dat(), precision = apm()[[selected_tab()]]$precision)
+      mstats(data = dat(), precision = current_apm()$precision)
     }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
 
     output$qqplot <- shiny::renderPlot({
@@ -527,6 +532,12 @@ m_CertificationServer = function(id, rv, apm.input, datreturn) {
       help_the_user("certification_boxplot")
     })
 
-    return(apm)
+    # whenever the analyte parameter like lab filter, sample filter etc are changed
+    shiny::observeEvent(apm(), {
+      message("app_server: apm changed, set rv.apm")
+      setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
+    }, ignoreNULL = TRUE)
+    
+    
   })
 }

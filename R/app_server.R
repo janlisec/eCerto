@@ -113,18 +113,14 @@ app_server = function(input, output, session) {
 
 # Panels ------------------------------------------------------------------
 
-  apm <- m_CertificationServer(
+   m_CertificationServer(
     id = "certification",
     rv = rv,
     apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
     datreturn = datreturn
   )
 
-  # whenever the analyte parameter like lab filter, sample filter etc are changed
-  shiny::observeEvent(apm(), {
-    message("app_server: apm changed, set rv.apm")
-    setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
-  }, ignoreNULL = TRUE)
+
 
   # --- --- --- --- --- --- --- --- --- --- ---
 
