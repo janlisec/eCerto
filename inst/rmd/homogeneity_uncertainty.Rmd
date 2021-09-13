@@ -10,4 +10,4 @@ $$s_{bb, min}={\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4} \over \mu}$$
 
 The larger of both values, $s_{bb}$ and $s_{bb,min}$, is transfered as uncertainty contribution to the column in the material table selected by the user. 
 
-***Note***: $s_{bb}=0$ for $s_{a} < s{_w}$
+***Note!*** $s_{bb}=0$ for $s_{a} < s{_w}$

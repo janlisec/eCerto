@@ -153,13 +153,14 @@ app_server = function(input, output, session) {
     message("app_server: h_vals() changed, set datreturn.h_vals")
     setValue(datreturn, "h_vals", h_vals())
   },ignoreInit = TRUE)
-  
+
   shiny::observeEvent(input$moduleUploadHelp, {
     switch (excelformat(),
+      "Certification" = help_the_user("certification_dataupload", modal=TRUE),
       "Homogeneity" = help_the_user("homogeneity_dataupload", modal=TRUE),
       "Stability" = help_the_user("stability_dataupload", modal=TRUE)
     )
-    
+
   })
 
 }

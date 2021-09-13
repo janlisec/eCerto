@@ -1,10 +1,11 @@
 ---
-title: "Ecerto help"
+title: "BAM tools help page"
 output:
   html_document:
     toc: true
 ---
 
+# eCerto (Certification statistics)
 
 ```{r child = 'certification.Rmd'}
 ```
@@ -17,6 +18,8 @@ output:
 
 ```{r child = 'materialtabelle.Rmd'}
 ```
+
+# Long Term Stability (LTS)
 
 ```{r child = 'lts.Rmd'}
 ```

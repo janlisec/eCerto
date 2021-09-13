@@ -43,10 +43,19 @@ m_StabilityUI <- function(id) {
         title = "active-Panel",
         value = "loaded",
         shiny::fluidRow(
-          shiny::column(width = 10, DT::dataTableOutput(ns("s_vals"))),
+          shiny::column(
+            width = 10,
+            shiny::strong(
+              shiny::actionLink(
+                inputId = ns("tab_link"),
+                label = "Tab.1 Stability - calculation of uncertainty contribution"
+              )
+            ),
+            DT::dataTableOutput(ns("s_vals"))
+          ),
           shiny::column(width = 2, m_TransferUUI(id = ns("s_transfer")))
         ),
-        shiny::hr(),
+        shiny::p(),
         shiny::fluidRow(
           shiny::column(width = 4, DT::dataTableOutput(ns("s_overview"))),
           shiny::column(
@@ -72,6 +81,10 @@ m_StabilityUI <- function(id) {
 m_StabilityServer <- function(id, rv, datreturn) {
 
   shiny::moduleServer(id, function(input, output, session) {
+
+    shiny::observeEvent(input$tab_link,{
+      help_the_user("stability_uncertainty")
+    })
 
     # Upload Notification. Since "uploadsource" is invalidated also when other
     # parameters within Stability are changed (because of the reactiveValues

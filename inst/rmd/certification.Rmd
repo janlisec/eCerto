@@ -1,32 +1,13 @@
-# Certification
+## Certification
+
 ### User/Study information and data backup/retrieval
 For the eCerto module of the software you should provide a user name and trial
 id which will be stored together with your data ('Save Current Analysis').
 Previous analyses can be read from a backup file and contain all input data,
 parameters set during analysis and results.
-### Data upload from Excel for a new analysis
-To process a new analysis, please collect all data which should be retuned in
-pre-defined Excel-Files by your certification trial partners and stored within
-one folder. Pre-defined means that the analytical results are at the same
-position within each file (table name, row and column range) and that one file
-per laboratory exists.
 
-**Note!** "Header row should be specified but will not be evaluated. eCerto
-assumes the first and second column to contain analyte names and units
-respectively and replicate measurements of this analyte in all remaining
-columns.",
-
-**Note!** Filenames will be stored for reference but imported labs will be
-consecutively numbered. In the example below you would import data from table
-'Tabelle1' located in Range A1:D5, containing 2 replicate measurements of 4
-different analytes measured in &deg;C. Instead of the table name you could as
-well provide a number specifying the sheet number in your excel files (in this
-case you could input '1' as only one sheet is contained in the file). The Upload
-starts once files have been selected via 'Browse'-button.
-
-**Note!** "Currently, eCerto needs to load all Excel-result files in one step,
-i.e. you can not add additional files later on but would have to start all over
-again.
+```{r child = 'certification_dataupload.Rmd'}
+```
 
 ```{r child = 'certification_laboratoryStatistics.Rmd'}
 ```
@@ -37,7 +18,6 @@ again.
 
 ```{r child = 'certification_boxplot.Rmd'}
 ```
-
 
 ### Export Reports of the currently selected analyte or the certified values of all analytes
 A report of the above analysis (single analyte) or for the material (all analytes) can be generated and exported in different formats.

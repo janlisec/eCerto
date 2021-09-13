@@ -52,10 +52,19 @@ m_HomogeneityUI <- function(id) {
       value = "loaded",
       #shiny::wellPanel(m_TransferHomogeneityUI(ns("trH"))),
       shiny::fluidRow(
-        shiny::column(10, DT::dataTableOutput(ns("h_vals"))),
+        shiny::column(
+          width = 10,
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("tab_link"),
+              label = "Tab.1 Homogeneity - calculation of uncertainty contribution"
+            )
+          ),
+          DT::dataTableOutput(ns("h_vals"))
+        ),
         shiny::column(2, m_TransferUUI(ns("h_transfer")))
       ),
-      shiny::hr(),
+      shiny::p(),
       shiny::fluidRow(
         shiny::column(
           width = 3,
@@ -91,6 +100,10 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
 
     ns <- shiny::NS(id)
     h_vals = shiny::reactiveVal(NULL)
+
+    shiny::observeEvent(input$tab_link,{
+      help_the_user("homogeneity_uncertainty")
+    })
 
     shiny::observeEvent(homog(), {
       if(!is.null(homog())){
@@ -181,7 +194,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       tab <- h_means()
       for (i in c("mean","sd")) { tab[,i] <- pn(tab[,i], input$h_precision) }
       return(tab)
-    }, options = list(paging = FALSE, searching = FALSE), rownames=NULL, selection = "none")
+    }, options = list(paging = TRUE, searching = FALSE), rownames=NULL, selection = "none")
 
     h_vals_print <- shiny::reactive({
       shiny::req(h_Data())
@@ -252,8 +265,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     })
 
     shiny::observeEvent(input$hom_help_modal, {
-      #browser()
-      help_the_user("uncertainty", modal = TRUE)
+      help_the_user("homogeneity_uncertainty")
     })
 
     output$h_anova <- shiny::renderPrint({
