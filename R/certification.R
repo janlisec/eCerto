@@ -62,19 +62,18 @@ m_CertificationUI = function(id) {
             shiny::checkboxGroupInput(
               inputId = ns("certification_view"),
               label = "Select View:",
-              choices = c("boxplot"="boxplot",
-                          "Statistics 1" = "stats",
-                          "Statistics 2" = "stats2",
+              choices = c("Outlier Tests" = "stats",
+                          "Lab-Means Tests" = "stats2",
                           "QQ-Plot" = "qqplot",
-                          "material table" = "mt"),
+                          "Certified Values Plot"="boxplot",
+                          "Material table" = "mt"),
               selected = c("boxplot","mt")
             )
           )
         ),
-        # --- --- --- --- --- --- --- --- ---
+        # Analyte Modul
         shiny::column(width=7, shiny::wellPanel(m_analyteUI(ns("analyteModule")))),
-        # --- --- --- --- --- --- --- --- ---
-        ##### Download-Teil
+        # Download-Teil
         shiny::column(
           width = 3,
           shiny::wellPanel(
@@ -97,80 +96,14 @@ m_CertificationUI = function(id) {
                 align = "right",
                 shiny::downloadButton('MaterialReport', label = "Material")
               )
-            )#,
-            #shiny::fluidRow(
-            #  shiny::checkboxInput(inputId = ns("show_code"), label = "Show Code in Report")
-            #)
+            )
           )
-        )
-      ),
-      shiny::conditionalPanel(
-        # check if checkBoxes are marked for material table
-        condition = "input.certification_view.indexOf('boxplot') > -1",
-        ns = shiny::NS(id), # namespace of current module,
-        shiny::fluidRow(
-          # --- --- --- --- --- --- ---
-          shiny::column(
-            width = 2,
-            shiny::strong(
-              shiny::actionLink(
-                inputId = ns("certifiedValuePlot_link"),
-                label = "Certified Value Plot"
-              )
-            ),
-            shiny::uiOutput(ns("flt_labs")),
-            shiny::fluidRow(
-              shiny::column(
-                width = 6,
-                shiny::numericInput(
-                  inputId = ns("Fig01_width"),
-                  label = "width",
-                  value = 400
-                )
-              ),
-              shiny::column(
-                width = 6,
-                shiny::numericInput(
-                  inputId = ns("Fig01_height"),
-                  label = "height",
-                  value = 400
-                )
-              )
-            ),
-            shiny::fluidRow(
-              shiny::column(
-                width = 6,
-                shiny::strong("Download"),
-                shiny::br(),
-                shiny::downloadButton(outputId = 'Fig01', label = "Figure")
-              ),
-              shiny::column(
-                width = 6,
-                # shiny::strong(""),
-                # shiny::br(),
-                shiny::checkboxInput(inputId = ns("annotate_id"), label = "Show IDs", value = FALSE)
-              )
-            ),
-            shiny::p(),
-            shiny::fluidRow(
-              shiny::column(width = 6, shiny::strong("mean")),
-              shiny::column(width = 6, shiny::strong("sd"))
-            ),
-            shiny::fluidRow(
-              shiny::column(width = 6, shiny::textOutput(ns("cert_mean"))),
-              shiny::column(width = 6, shiny::textOutput(ns("cert_sd")))
-            ),
-          ),
-          shiny::column(width = 10, shiny::plotOutput(
-            ns("overview_CertValPlot"), inline = TRUE
-          ))
-          #shiny::wellPanel(shiny::fluidRow(m_CertLoadedUI(ns("loaded"))))
         )
       ),
       # Stats (on Lab distributions)
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats') > -1",
-        ns = shiny::NS(id), # namespace of current module
+        ns = ns, # namespace of current module
         shiny::strong(
           shiny::actionLink(
             inputId = ns("stat_link"),
@@ -198,6 +131,65 @@ m_CertificationUI = function(id) {
           ns = shiny::NS(id),
           shiny::plotOutput(ns("qqplot")),
           htmltools::p()
+        )
+      ),
+      shiny::conditionalPanel(
+        condition = "input.certification_view.indexOf('boxplot') > -1",
+        ns = shiny::NS(id), # namespace of current module,
+        shiny::fluidRow(
+          # --- --- --- --- --- --- ---
+          shiny::column(
+            width = 2,
+            shiny::strong(
+              shiny::actionLink(
+                inputId = ns("certifiedValuePlot_link"),
+                label = "Fig.1 Certified Value Plot"
+              )
+            ),
+            shiny::uiOutput(ns("flt_labs")),
+            shiny::fluidRow(
+              shiny::column(
+                width = 6,
+                shiny::numericInput(
+                  inputId = ns("Fig01_width"),
+                  label = "width",
+                  value = 400
+                )
+              ),
+              shiny::column(
+                width = 6,
+                shiny::numericInput(
+                  inputId = ns("Fig01_height"),
+                  label = "height",
+                  value = 400
+                )
+              )
+            ),
+            shiny::fluidRow(
+              shiny::column(
+                width = 6,
+                shiny::strong("Download"),
+                shiny::br(),
+                shiny::downloadButton(outputId = ns('Fig01'), label = "Figure")
+              ),
+              shiny::column(
+                width = 6,
+                shiny::checkboxInput(inputId = ns("annotate_id"), label = "Show IDs", value = FALSE)
+              )
+            ),
+            shiny::p(),
+            shiny::fluidRow(
+              shiny::column(width = 6, shiny::strong("mean")),
+              shiny::column(width = 6, shiny::strong("sd"))
+            ),
+            shiny::fluidRow(
+              shiny::column(width = 6, shiny::textOutput(ns("cert_mean"))),
+              shiny::column(width = 6, shiny::textOutput(ns("cert_sd")))
+            ),
+          ),
+          shiny::column(width = 10, shiny::plotOutput(
+            ns("overview_CertValPlot"), inline = TRUE
+          ))
         )
       ),
       # materialtabelle
@@ -312,12 +304,6 @@ m_CertificationServer = function(id, rv, datreturn) {
       )
       return(cert.data)
     })
-
-    # BOXPLOT
-    output$overview_boxplot <- shiny::renderPlot({
-      TestPlot(data = dat())
-    })
-
 
     # Filter laboratories (e.g. "L1")
     output$flt_labs <- shiny::renderUI({
@@ -443,6 +429,18 @@ m_CertificationServer = function(id, rv, datreturn) {
       setValue(rv,c("Certification_processing","CertValPlot"), CertValPlot_list())
     }, ignoreInit = TRUE)
 
+    # FIGURE DOWNLOAD
+    output$Fig01 <- shiny::downloadHandler(
+      filename = function() {
+        paste0(getValue(rv, c("General","study_id")), "_", current_apm()$analytename, "_Fig01.pdf")
+      },
+      content = function(file) {
+        pdf(file = file, width = input$Fig01_width/72, height = input$Fig01_height/72)
+          CertValPlot(data = dat(), annotate_id=input$annotate_id)
+        dev.off()
+      },
+      contentType = "image/pdf"
+    )
 
     # Calculates statistics for all available labs
     # formerly: lab_means()
@@ -451,7 +449,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     # L1 0.04551667 0.0012560520 6
     # L2 0.05150000 0.0007563068 6
     # L3 0.05126667 0.0004926121 6
-    lab_statistics = shiny::reactive({
+    lab_statistics <- shiny::reactive({
       # data <- dat()
       shiny::req(dat())
       message("Certification: dat() changed; change lab_statistics")
@@ -466,9 +464,8 @@ m_CertificationServer = function(id, rv, datreturn) {
       return(out)
     })
 
-
     output$normality_statement <- shiny::renderText({
-      l = lab_statistics()
+      l <- lab_statistics()
       suppressWarnings(
         KS_p <- stats::ks.test(x = l$mean, y = "pnorm", mean = mean(l$mean), sd = stats::sd(l$mean))$p.value
       )
