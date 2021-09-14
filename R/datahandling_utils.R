@@ -69,7 +69,7 @@ getValue = function(df, key=NULL) {
 #' @export
 laboratory_dataframe = function(x) {
   stopifnot(!shiny::is.reactive(x))
-
+  
   x2 = as.data.frame(x)
   x2_sub =  x2[,!names(x2) %in% c(names(x2[,c(1,2)]),"Species","File")]
   flt <- apply(x2_sub, 1, function(y) {any(is.finite(as.numeric(y)))})
@@ -86,11 +86,11 @@ laboratory_dataframe = function(x) {
     "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
     "value"=as.numeric(unlist(dat)),
     "unit"=as.character(rep(unit,times=ncol(dat)))
-    )
-
+  )
+  
   return(x2)
-
-
+  
+  
 }
 
 #' Loads names of Excel sheets
@@ -110,7 +110,7 @@ load_sheetnames = function(filepath){
       return(NULL)
     }
   })
-
+  
   if(length(unique(a))!=1) {
     shinyalert::shinyalert(
       title = "Different sheetnames",
@@ -144,12 +144,12 @@ crop_dataframes <- function(dfs, cols, rows) {
     stop("order of elements wrong")
   if(!is.numeric(cols) | !is.numeric(rows))
     stop("rows and column index are not numerics")
-
+  
   if(!inherits(dfs,"list")){
     warning("data frame is not a list")
     dfs <- list(dfs)
   }
-
+  
   r <- lapply(dfs, function(y) {
     y[rows,cols]
   })
@@ -176,10 +176,22 @@ crop_dataframes <- function(dfs, cols, rows) {
 set_uploadsource = function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
   stopifnot(uploadsource %in% c("RData","Excel"))
-  setValue(rv,c(m,"uploadsource"),uploadsource)
+  # Has RData been uploaded before?
+  if(uploadsource=="RData"){
+    u = getValue(rv,c(m,"uploadsource"))
+    if(!is.null(u) && startsWith(u, "RData")) {
+      no = as.numeric(gsub("RData-", "", u)) # what number was last upload
+    } else {
+      # if previous was Excel, restart
+      no = 0
+    }
+    uploadsource = paste0("RData-", no + 1)
+    
+  }
+  setValue(rv,c(m,"uploadsource"), uploadsource)
   # rv$set(c(m,"uploadsource"),uploadsource)
   # rv[[m]][["uploadsource"]] = uploadsource
-
+  
 }
 
 
@@ -240,7 +252,7 @@ pn <- function(n=NULL, p=4L) {
 #' @rdname datahandling_utils
 #' @export
 update_reactivecell = function(r,colname,analyterow = NULL,value) {
-
+  
   if(!is.data.frame(r()))
     stop("r is not a data frame")
   if(!colname %in% colnames(r()))
@@ -253,7 +265,7 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
     warning("value to be inserted is not scalar, i.e. more than one. Take only first!")
     value = value[1]
   }
-
+  
   # message("reactivecell: Update ",  deparse(substitute(r())), "; column: ", colname)
   # extract original row to be edit into variable (1/3)
   df = r()
@@ -262,17 +274,17 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
   } else {
     newRow = df[df[["analyte"]]==analyterow,]
   }
-
+  
   # edit cell (2/3)
   newRow[[colname]] = value
-
+  
   # update (3/3)
   if(is.null(analyterow)){
     df = newRow
   } else {
     df[df[["analyte"]]==analyterow,] = newRow
   }
-
+  
   r(df)
 }
 
@@ -343,9 +355,9 @@ merge_transfer = function(df, vec) {
     # in case column name differs from it's ID: take second element
     vec <- vec[2]
     mergeby <- mergeby[2]
-  # } else if(length(mergeby)==1) {
-  #   # in case column name is equal to it's ID
-  #   df[df[mergeby]==0,mergeby] = vec[df[mergeby]==0,mergeby]
+    # } else if(length(mergeby)==1) {
+    #   # in case column name is equal to it's ID
+    #   df[df[mergeby]==0,mergeby] = vec[df[mergeby]==0,mergeby]
   } else if(length(mergeby)!=1) {
     stop("transferred number of columns should be 1 or 2")
   }

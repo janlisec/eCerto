@@ -67,10 +67,6 @@ m_materialtabelleUI <- function(id) {
                       shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "110%")
         ),
       ),
-      # shiny::fluidRow(
-      #   # shiny::column(width = 6, shiny::actionButton(inputId = ns("c_remF"), label = "Rem F", width = "100%")),
-      #   shiny::column(width = 6, shiny::actionButton(inputId = ns("c_remU"), label = "Rem U", width = "100%"))
-      # ),
       shiny::helpText(
         "In this interactive table you can add columns of correction factors of the mean as well as uncertainty contributions.",
         shiny::tags$br(),
@@ -103,7 +99,6 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # shiny::exportTestValues(precision2 = { try(precision2) })
 
     # helper function to remove unused user columns
-    # @ Jan: ich würde die Funktion gerne auch auslagern um Tests zu schreiben. OK?
     remove_unused_cols <- function(mt=NULL) {
       # strip unused F and U columns from 'mater_table'
       cc <- attr(mt, "col_code")

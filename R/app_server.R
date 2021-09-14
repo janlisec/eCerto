@@ -21,7 +21,7 @@ app_server = function(input, output, session) {
 
 # Upload Controller -------------------------------------------------------
 
-  ExcelUp <- m_ExcelUploadControl_Server(
+  ExcelUp <- m_ExcelUpload_Server(
     id = "excelfile",
     excelformat = excelformat,
     check = shiny::reactive({is.null(getValue(rv, c(excelformat(),"uploadsource")) )})
@@ -48,7 +48,7 @@ app_server = function(input, output, session) {
     message("app_server: Excel Upload, set rv.Data; set rv.Uploadsource")
     ex_intern = shiny::isolate(excelformat())
     setValue(rv, c(ex_intern,"data"), ExcelUp())
-    setValue(rv, c(ex_intern, "uploadsource"),value =  "Excel")
+    setValue(rv, c(ex_intern, "uploadsource"), value = "Excel")
     if(ex_intern == "Certification"){
       # message("observer: certification was uploaded")
       shiny::updateNavbarPage(
@@ -113,18 +113,14 @@ app_server = function(input, output, session) {
 
 # Panels ------------------------------------------------------------------
 
-  apm <- m_CertificationServer(
+   m_CertificationServer(
     id = "certification",
     rv = rv,
-    apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
+    # apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
     datreturn = datreturn
   )
 
-  # whenever the analyte parameter like lab filter, sample filter etc are changed
-  shiny::observeEvent(apm(), {
-    message("app_server: apm changed, set rv.apm")
-    setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
-  }, ignoreNULL = TRUE)
+
 
   # --- --- --- --- --- --- --- --- --- --- ---
 

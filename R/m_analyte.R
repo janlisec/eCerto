@@ -15,7 +15,7 @@
 #' @param renewTabs The order, to delete and renew Tabs, for example when new data is uploaded
 #' @param tablist list of current tabs (temporarily, see https://git.bam.de/fkress/ecerto/-/issues/46)
 #'
-#' @return the currently selected tab and Other parameter via apm reactiveValues()
+#' @return the currently selected tab as character (e.g. "Si") and Other parameter via apm reactiveValues()
 #'
 #' @rdname m_analyte
 #' @export
@@ -120,7 +120,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
         inputId = "tabs",
         selected =firstTab
       )
-      # set first selected Tab as conirmed
+      # set first selected Tab as confirmed
       analytes_tmp <- shiny::isolate(apm())
       analytes_tmp[[firstTab]]$confirmed <- TRUE
       apm(analytes_tmp)
@@ -160,7 +160,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       shiny::req(selected_tab())
       message("m_analyte: Precision change")
       analytes_tmp <- shiny::isolate(apm())
-      if(!is.null(input[[paste0("precision",selected_tab())]]))
+      if(!is.null(input[[paste0("precision", selected_tab())]]))
         analytes_tmp[[selected_tab()]]$precision = input[[paste0("precision",selected_tab())]]
       apm(analytes_tmp)
     })

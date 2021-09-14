@@ -20,7 +20,7 @@ m_analyteServer(id, apm, renewTabs, tablist)
 \item{tablist}{list of current tabs (temporarily, see https://git.bam.de/fkress/ecerto/-/issues/46)}
 }
 \value{
-the currently selected tab and Other parameter via apm reactiveValues()
+the currently selected tab as character (e.g. "Si") and Other parameter via apm reactiveValues()
 }
 \description{
 \code{m_analyte} Module for organizing the analyte panel, which

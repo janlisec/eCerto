@@ -8,19 +8,17 @@
 \usage{
 m_CertificationUI(id)
 
-m_CertificationServer(id, rv, apm.input, datreturn)
+m_CertificationServer(id, rv, datreturn)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
 \item{rv}{the whole R6 object}
 
-\item{apm.input}{analyteParameterList, when uploaded from RData (reactive)}
-
 \item{datreturn}{the session data object}
 }
 \value{
-analyte parameter
+nothing
 }
 \description{
 \code{m_CertificationServer} is the module for handling the

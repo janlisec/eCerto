@@ -329,9 +329,9 @@ pre code {
 <p><strong><em>Note!</em></strong> <code>pooling</code> means that calculations in the material table (<code>mean</code>, <code>sd</code> and uncertainty columns) are not based on the lab means, but rather on all measured values. This is justified when the between lab variance is <strong>ToDo</strong>. Selecting this option will also affect <code>n</code> being either the number of labs or the number of finite data points.</p>
 <p>Table column descriptions:</p>
 <ul>
-<li><code>mean</code> and <code>sd</code> give the arithmetric mean and standard deviation for this analyte (dependent on <code>pooling</code>)</li>
 <li><code>char</code> describes the <em>char</em>acteristic uncertainty <strong>ToDo</strong></li>
-<li><em>n</em> describes the amount of values used for calculting arithmetic average. Example: We have an arbitrary Analyte measured in three laboratories with five replicas each. We can calculate <code>cert_mean</code> from all three laboratory averages (<code>n=3</code>). If a laboratory was filtered, it will be grayed-out in the plot but not considered for <code>cert_mean</code> (<code>n=2</code>).</li>
+<li><code>mean</code> and <code>sd</code> give the arithmetric mean and standard deviation for this analyte (dependent on <code>pooling</code>)</li>
+<li><code>n</code> describes the amount of values used for calculting arithmetic average. Example: We have an arbitrary Analyte measured in three laboratories with five replicas each. We can calculate <code>cert_mean</code> from all three laboratory averages (<code>n=3</code>). If a laboratory was filtered, it will be grayed-out in the plot but not considered for <code>cert_mean</code> (<code>n=2</code>).</li>
 <li><code>F</code> columns can be added and will be used to modify <code>mean</code> by multiplication yielding <code>cert_val</code> <span class="math inline">\(cert\_val=mean*F\)</span></li>
 <li><code>U</code> columns can be added and may contain relative uncertainty contributions (e.g. from homogeneity or stability modules)</li>
 <li><code>com</code> describes the <em>com</em>bined uncertainty from all U columns: <span class="math inline">\(\sqrt{sum(x ^ 2)}\)</span></li>

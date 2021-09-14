@@ -150,16 +150,20 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             # overwrite non empty fields i.e. he did load Stab data and now
             # reads an RData backup which already contains Stab data
             message("RDataImport: Non-legacy upload started")
-            # strsplit(resnames,split = ".", fixed = TRUE)
             for (i in strsplit(resnames,split = ".", fixed = TRUE)) {
-              # for (j in names(res[[i]])) {
-              #   setValue(rv, c(i,j), res[[i]][[j]])
-              # }
-              setValue(rv,i,res[[i]])
+              
+              # set uploadsource to "RData" if something was uploaded in saved RData
+              if(i[length(i)] == "uploadsource" && !is.null(res[[i]])) {
+                set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")
+              } else {
+                # if current element to-be-inserted is not "uploadsource",
+                # proceed
+                setValue(rv,i,res[[i]])
+              }
             }
-            # reset time_stamp with current $$ToDo think if this is really desirable
-            setValue(rv,c("General","time_stamp"),Sys.time())
-            setValue(rv,c("Certification","uploadsource"),value = "RData")
+            # reset time_stamp with current 
+            # $$ToDo think if this is really desirable
+            setValue(rv,c("General","time_stamp"), Sys.time())
             message("RDataImport: Non-legacy upload finished")
           } else {
             allgivenexpected = c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
@@ -175,7 +179,8 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           if (!silent) message("RDataImport_Server: Cert data transfered")
           setValue(rv,c("Certification","data"),res[["Certification"]][["data_input"]])
           setValue(rv,c("Certification","input_files"),res[["Certification"]][["input_files"]])
-          setValue(rv,c("Certification","uploadsource"),value = "RData")
+          # setValue(rv,c("Certification","uploadsource"),value = "RData")
+          set_uploadsource(rv = rv, m = "Certification", uploadsource = "RData")
           # save
           setValue(rv,c("General","user"),res$Certification$user)
           setValue(rv,c("General","study_id"),res$Certification$study_id)
@@ -215,6 +220,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
         }
         setValue(rv,c("General","time_stamp"),Sys.time())
       }
+      continue(NULL)
       },ignoreNULL = TRUE)
 
 
