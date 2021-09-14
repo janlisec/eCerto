@@ -131,7 +131,7 @@ m_CertificationUI = function(id) {
               shiny::NS(id, "overview_CertValPlot"), inline = TRUE
             ))
             #shiny::wellPanel(shiny::fluidRow(m_CertLoadedUI(ns("loaded"))))
-
+            
           ),
           # --- --- --- --- --- --- ---
           ##### Download-Teil
@@ -167,14 +167,14 @@ m_CertificationUI = function(id) {
         condition = "input.certification_view.indexOf('stats') > -1",
         ns = shiny::NS(id), # namespace of current module
         #shiny::wellPanel(
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("stat_link"),
-              label = "Tab.1 Statistics regarding lab variances and outlier detection"
-            )
-          ),
-          DT::dataTableOutput(ns("overview_stats"))
-          #shiny::div(style = 'width:900px;margin:auto', DT::DTOutput(ns("overview_stats"), width = "900px"))
+        shiny::strong(
+          shiny::actionLink(
+            inputId = ns("stat_link"),
+            label = "Tab.1 Statistics regarding lab variances and outlier detection"
+          )
+        ),
+        DT::dataTableOutput(ns("overview_stats"))
+        #shiny::div(style = 'width:900px;margin:auto', DT::DTOutput(ns("overview_stats"), width = "900px"))
         #)
       ),
       # Stats2 (on Lab means)
@@ -182,22 +182,22 @@ m_CertificationUI = function(id) {
         condition = "input.certification_view.indexOf('stats2') > -1",
         ns = shiny::NS(id),
         #shiny::wellPanel(
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("stat2_link"),
-              label = "Tab.2 Statistics regarding lab mean distribution"
-            )
-          ),
-          DT::dataTableOutput(ns("overview_mstats")),
-          htmltools::p(),
-          shiny::textOutput(outputId = ns("normality_statement")),
-          shiny::conditionalPanel(
-            condition = "input.certification_view.indexOf('qqplot') > -1",
-            ns = shiny::NS(id),
-            htmltools::p(),
-            shiny::plotOutput(ns("qqplot")),
-            htmltools::p()
+        shiny::strong(
+          shiny::actionLink(
+            inputId = ns("stat2_link"),
+            label = "Tab.2 Statistics regarding lab mean distribution"
           )
+        ),
+        DT::dataTableOutput(ns("overview_mstats")),
+        htmltools::p(),
+        shiny::textOutput(outputId = ns("normality_statement")),
+        shiny::conditionalPanel(
+          condition = "input.certification_view.indexOf('qqplot') > -1",
+          ns = shiny::NS(id),
+          htmltools::p(),
+          shiny::plotOutput(ns("qqplot")),
+          htmltools::p()
+        )
         #)
       ),
       # materialtabelle
@@ -217,11 +217,11 @@ m_CertificationUI = function(id) {
 #' @export
 m_CertificationServer = function(id, rv, datreturn) {
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     apm <- shiny::reactiveVal() # what will be returned by the module
     rdataupload<- shiny::reactiveVal() # forwarded to materialtabelle
     renewTabs <- shiny::reactiveVal(NULL) # command to renew Tabs in analyte-tabs module
-
+    
     # Upload Notification. Since "uploadsource" is invalidated also when other
     # parameters within Certification are changed (because of the reactiveValues
     # thing), it has to be checked if it has changed value since the last change
@@ -235,15 +235,14 @@ m_CertificationServer = function(id, rv, datreturn) {
       # source has been uploaded
       if(is.null(uploadsource()) || uploadsource() != o.upload ){
         uploadsource(o.upload)
-        message("Certification: Uploadsource changed to ", shiny::isolate(getValue(rv,c("Certification","uploadsource"))), "; initiate apm")
+        message("Certification: Uploadsource changed to ", o.upload, "; initiate apm")
         if(o.upload=="Excel") {
           # Creation of AnalyteParameterList.
           apm(
             analyte_parameter_list(
-              shiny::isolate(
-                getValue(rv, c("Certification", "data"))
-          )))
-        } else if(o.upload=="RData") {
+              getValue(rv, c("Certification", "data"))
+            ))
+        } else if(startsWith(o.upload, "RData")) {
           # only forward rData Upload after RData was uploaded
           message("Certification: forward RData to Materialtabelle")
           rdataupload(getValue(rv,c("materialtabelle")))
@@ -252,21 +251,21 @@ m_CertificationServer = function(id, rv, datreturn) {
             apm(getValue(rv,c("General","apm")))
           } else {
             # RData did not contain "apm" --> create
-            apm(analyte_parameter_list(shiny::isolate(getValue(rv,c("Certification","data")))))
+            apm(analyte_parameter_list(getValue(rv,c("Certification","data"))))
           }
         } else {
           stop("unknown Upload Type")
         }
         UpdateInputs(UpdateInputs() +1 )
-        renewTabs(1) # give signal to renew tabs
+        renewTabs(1) # give a signal to renew tabs
         # Change the UploadPanel to the --loaded-- version
         shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
       }
     })
-
-
+    
+    
     # --- --- --- --- --- --- --- --- --- --- ---
-    # Materialtabelle is in Certification-UI, that's why it is here
+    # Materialtabelle is embedded in Certification-UI, that's why it is here
     m_materialtabelleServer(
       id = "mat_cert",
       rdataUpload = rdataupload,
@@ -278,17 +277,17 @@ m_CertificationServer = function(id, rv, datreturn) {
     selected_tab <-
       ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
-
-    current_apm <- reactive({apm()[[selected_tab()]]})
-
+    
+    current_apm <- shiny::reactive({apm()[[selected_tab()]]})
+    
     filtered_labs <- shiny::reactiveVal(NULL)
-
+    
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
-
+      
       message("Cert_Load: dat-reactive invalidated")
       cert.data <- getValue(rv,c("Certification","data")) # take the uploaded certification
       # round input values
@@ -314,12 +313,12 @@ m_CertificationServer = function(id, rv, datreturn) {
       )
       return(cert.data)
     })
-
+    
     # BOXPLOT
     output$overview_boxplot <- shiny::renderPlot({
       TestPlot(data = dat())
     })
-
+    
     
     # Filter laboratories (e.g. "L1")
     output$flt_labs <- shiny::renderUI({
@@ -339,13 +338,16 @@ m_CertificationServer = function(id, rv, datreturn) {
     
     shiny::observeEvent(UpdateInputs(), {
       message("certification: UpdateInputs() observeEvent")
-
+      
       us = getValue(rv,c("Certification","uploadsource"))
-      if (us=="RData" ) {
+      if (startsWith(us,"RData") ) {
         shiny::updateNumericInput(
           session=session,
           inputId = "Fig01_width",
-          value = shiny::isolate(getValue(rv, c("Certification_processing","CertValPlot","Fig01_width")))
+          value = getValue(
+            rv, 
+            c("Certification_processing","CertValPlot","Fig01_width")
+          )
         )
         shiny::updateNumericInput(
           session=session,
@@ -364,7 +366,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         )
       }
     }, ignoreInit  = TRUE)
-
+    
     shiny::observeEvent(input$flt_labs,{
       # don't perform any update on apm() if variables are same
       # without this if statement apm() was changed on initial load and L_flt-list-item was deleted
@@ -400,7 +402,7 @@ m_CertificationServer = function(id, rv, datreturn) {
           apm(apm_tmp)
         }
       }
-
+      
       
     },
     # NULL should NOT be ignored, otherwise the LAST lab can't get deselected.
@@ -410,12 +412,12 @@ m_CertificationServer = function(id, rv, datreturn) {
     output$cert_mean <- shiny::renderText({
       getValue(datreturn,"cert_mean")
     })
-
+    
     output$cert_sd <- shiny::renderText({
       getValue(datreturn,"cert_sd")
     })
-
-
+    
+    
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       CertValPlot(data = dat())
@@ -424,7 +426,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     }), width = shiny::reactive({
       input$Fig01_width
     }))
-
+    
     CertValPlot_list <- shiny::reactive({
       shiny::req(input$Fig01_width)
       shiny::req(input$Fig01_height)
@@ -436,13 +438,13 @@ m_CertificationServer = function(id, rv, datreturn) {
         "Fig01_height" = input$Fig01_height
       )
     })
-
+    
     shiny::observeEvent(CertValPlot_list(),{
       message("CertValPlot_list changed; set rv.CertValPlot")
       setValue(rv,c("Certification_processing","CertValPlot"), CertValPlot_list())
     }, ignoreInit = TRUE)
-
-
+    
+    
     # Calculates statistics for all available labs
     # formerly: lab_means()
     # Format example:
@@ -464,8 +466,8 @@ m_CertificationServer = function(id, rv, datreturn) {
       rownames(out) <- out$Lab
       return(out)
     })
-
-
+    
+    
     output$normality_statement <- shiny::renderText({
       l = lab_statistics()
       suppressWarnings(
@@ -480,17 +482,17 @@ m_CertificationServer = function(id, rv, datreturn) {
         ")."
       )
     })
-
+    
     shiny::observeEvent(dat(),{
       message("Certification: dat() changed, set datreturn.selectedAnalyteDataframe")
       ecerto::setValue(datreturn, "selectedAnalyteDataframe", dat())
     })
-
+    
     shiny::observeEvent(lab_statistics(),{
       message("Certification: lab_statistics() changed, set datreturn.lab_statistics")
       ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
     })
-
+    
     shiny::observeEvent(input$certification_view, {
       # Box "QQ-Plot" clickable? Depends in state of Box above it
       shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
@@ -507,23 +509,23 @@ m_CertificationServer = function(id, rv, datreturn) {
         setValue(rv,c("Certification_processing","CertValPlot","show"),show_Boxplot)
       }
     }, ignoreInit = TRUE)
-
+    
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = current_apm()$precision)
     }, options = list(dom = "t", pageLength=100, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
-
+    
     # mStats
     output$overview_mstats <- DT::renderDataTable({
       mstats(data = dat(), precision = current_apm()$precision)
     }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
-
+    
     output$qqplot <- shiny::renderPlot({
       shiny::req(lab_statistics())
       y <- lab_statistics()[, "mean"]
       stats::qqnorm(y = y)
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
-
+    
     shiny::observeEvent(input$stat_link,{
       help_the_user("certification_laboratoryStatistics")
     })
@@ -533,11 +535,11 @@ m_CertificationServer = function(id, rv, datreturn) {
     shiny::observeEvent(input$certifiedValuePlot_link, {
       help_the_user("certification_boxplot")
     })
-
+    
     # whenever the analyte parameter like lab filter, sample filter etc are changed
     shiny::observeEvent(apm(), {
       message("certification: apm changed, set rv.apm")
-      setValue(rv,c("General","apm"), apm()) # getValue(rv,c("General","apm"))
+      setValue(rv,c("General","apm"), apm())
     }, ignoreNULL = TRUE)
     
     

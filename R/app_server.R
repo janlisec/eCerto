@@ -48,7 +48,7 @@ app_server = function(input, output, session) {
     message("app_server: Excel Upload, set rv.Data; set rv.Uploadsource")
     ex_intern = shiny::isolate(excelformat())
     setValue(rv, c(ex_intern,"data"), ExcelUp())
-    setValue(rv, c(ex_intern, "uploadsource"),value =  "Excel")
+    setValue(rv, c(ex_intern, "uploadsource"), value = "Excel")
     if(ex_intern == "Certification"){
       # message("observer: certification was uploaded")
       shiny::updateNavbarPage(
