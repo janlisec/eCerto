@@ -508,7 +508,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         message("CERTIFICATION: SET Cert_ValPlot")
         setValue(rv,c("Certification_processing","CertValPlot","show"),show_Boxplot)
       }
-    }, ignoreInit = TRUE)
+    })
     
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = current_apm()$precision)
