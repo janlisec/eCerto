@@ -67,7 +67,7 @@ app_server = function(input, output, session) {
         selected = "tP_Stability")
     }
   })
-  shiny::observeEvent(getValue(datreturn,"t_H"),{
+  shiny::observeEvent(getValue(datreturn,"transfer"),{
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",

@@ -262,6 +262,7 @@ m_StabilityServer <- function(id, rv, datreturn) {
     shiny::observeEvent(s_transfer_U$changed, {
       message("Stability: observeEvent(s_transfer_U)")
       ecerto::setValue(datreturn, "mater_table", s_transfer_U$value)
+      setValue(datreturn, "transfer", 1) # trigger panel change in app_server
     }, ignoreInit = TRUE)
 
   })

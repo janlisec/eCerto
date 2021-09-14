@@ -11,8 +11,7 @@ init_datreturn <- function() {
     selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
     h_vals = NULL,                      # values from Homogeneity-module materialtabelle via .TransferHomogeneity
     mater_table = NULL,                 # *READ-ONLY* material table, formerly 'cert_vals'
-    t_H = NULL,                         # when Homogeneity is transferred
-    t_S = NULL,                         # When Stability is transferred
+    transfer = NULL,                    # when transfer was clicked (just to change the panel to Certification)
     lab_statistics = NULL,               # lab statistics (mean,sd) for materialtabelle
     cert_mean = NULL,
     cert_sd = NULL

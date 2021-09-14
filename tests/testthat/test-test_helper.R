@@ -3,5 +3,7 @@ test_that(
   code =  {
     datreturn_test <- ecerto:::test_datreturn()
     datreturn_init = reactiveClass$new(init_datreturn())
-    expect_equal(isolate({datreturn_init$names()}), isolate({datreturn_test$names()}))
+    expect_equal(
+      sort(shiny::isolate({datreturn_init$names()})), 
+      sort(shiny::isolate({datreturn_test$names()})))
 })
