@@ -1,11 +1,8 @@
-### Statistics on the lab means distribution
-The distribution of lab means is evaluated using a variety of recommended tests. Normality is tested using the KS-Test.
+### Statistics on the distribution of lab means
 
-**Note!** Some tests need a minimum number of replicates and will not yield a
-result if this criteria is not met (i.e. Agostino).
+The distribution of lab means is evaluated using a variety of recommended tests. Normality of the distribution is tested using the KS-Test. Besides `mean` and `sd` the robust alternatives `median` and `MAD`are provided. Columns which end on `_p` provide P-values of the respective tests. Skewness and Kurtosis are computed additionally and grouped with their respective tests (Agostino and Anscombe).
 
 ![Statistics regarding overall mean distribution](Data_Stats02.png)
-
 
 
 Details regarding the conducted statistical test can be found using the following links:
@@ -17,3 +14,5 @@ Details regarding the conducted statistical test can be found using the followin
 - [Agostino](https://rdrr.io/cran/moments/man/agostino.test.html)
 - [Kurtosis](https://rdrr.io/cran/moments/man/kurtosis.html)
 - [Anscombe](https://rdrr.io/cran/moments/man/anscombe.test.html)
+
+***Note!*** Some tests need a minimum number of replicates and will not yield a result if this criteria is not met (i.e. Agostino).

@@ -8,14 +8,12 @@
 \usage{
 m_CertificationUI(id)
 
-m_CertificationServer(id, rv, apm.input, datreturn)
+m_CertificationServer(id, rv, datreturn)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
 \item{rv}{the whole R6 object}
-
-\item{apm.input}{analyteParameterList, when uploaded from RData (reactive)}
 
 \item{datreturn}{the session data object}
 }
@@ -41,7 +39,7 @@ shiny::shinyApp(
   shiny::observe({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
   shiny::observe({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
- 
+
  m_CertificationServer(
      id = "test",
      rv = rv,

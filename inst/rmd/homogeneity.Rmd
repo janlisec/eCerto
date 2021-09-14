@@ -1,4 +1,4 @@
-# Homogeneity
+## Homogeneity
 
 ```{r child = 'homogeneity_dataupload.Rmd'}
 ```
@@ -11,8 +11,5 @@ The uncertainty contribution of the Homogeneity measurements `U_bb` is calculate
 
 Figures and tables can currently be exported in a HTML format.
 
-### Uncertainty
-
-```{r child = 'uncertainty.Rmd'}
+```{r child = 'homogeneity_uncertainty.Rmd'}
 ```
-
