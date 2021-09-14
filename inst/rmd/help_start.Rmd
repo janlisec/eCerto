@@ -7,6 +7,9 @@ output:
 
 # eCerto (Certification statistics)
 
+```{r child = 'ecerto_home.Rmd'}
+```
+
 ```{r child = 'certification.Rmd'}
 ```
 
