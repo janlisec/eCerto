@@ -2,7 +2,11 @@
 
 The material table combines all data collected within a certification trial to provide for each measured entity within the certified material the certified mean `cert_val` and the certified uncertainty `U`.
 
+![Materialtabelle](Data_Stats04.png)
+
 ***Note!*** Only for analytes which have been visually inspected by the user certified values will be transfered to this table to ensure that inspection took place. 
+
+Several columns of the material table can be edited by the user by clicking in an individual cell and entering a new value.
 
 ***Note!*** `pooling` means that calculations in the material table (`mean`, `sd` and uncertainty columns) are not based on the lab means, but rather on all measured values. This is justified when the between lab variance is **ToDo**. Selecting this option will also affect `n` being either the number of labs or the number of finite data points.
 
