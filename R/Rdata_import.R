@@ -33,9 +33,10 @@ m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::wellPanel(
+      shiny::strong("Load"),
       shiny::fileInput(
         inputId = ns("in_file_ecerto_backup"),
-        label = "Load Previous Analysis",
+        label = "Select Previous Analysis",
         multiple = FALSE,
         accept = c("RData")
       ),
@@ -49,7 +50,7 @@ m_RDataImport_UI <- function(id) {
           shiny::textInput(
             inputId = ns("user"),
             label = "User",
-            value = "FK"
+            value = "Jan Lisec"
           )
         ),
         shiny::column(
@@ -151,7 +152,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             # reads an RData backup which already contains Stab data
             message("RDataImport: Non-legacy upload started")
             for (i in strsplit(resnames,split = ".", fixed = TRUE)) {
-              
+
               # set uploadsource to "RData" if something was uploaded in saved RData
               if(i[length(i)] == "uploadsource" && !is.null(res[[i]])) {
                 set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")
@@ -161,7 +162,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
                 setValue(rv,i,res[[i]])
               }
             }
-            # reset time_stamp with current 
+            # reset time_stamp with current
             # $$ToDo think if this is really desirable
             setValue(rv,c("General","time_stamp"), Sys.time())
             message("RDataImport: Non-legacy upload finished")
@@ -264,8 +265,9 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           , '.RData')
       },
       content = function(file) {
+        #browser()
         res <- sapply(rv$get(), function(x) {
-          if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+          if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x) else x
         })
         res$General$dataformat_version = "2021-05-27"
         save(res, file = file)
