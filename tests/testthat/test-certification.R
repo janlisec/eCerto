@@ -63,12 +63,12 @@ test_that(
 # )
 
 test_that(
-  desc = "RData Upload working",
+  desc = "RData Upload for apm saved in variable",
   code = {
     test_apm = analyte_parameter_list(ecerto:::test_Certification_Excel())
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
      datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn()) # initiate runtime variables
-    # suppressMessages(
+    suppressMessages(
       shiny::testServer(
         app = m_CertificationServer,
         args = list(
@@ -79,16 +79,10 @@ test_that(
           ecerto::setValue(rv_test, c("General","apm"), test_apm)
           ecerto::setValue(rv, c("Certification","uploadsource"), "RData")
           session$flushReact()
-          # testthat::expect_equal(input$certification_view,NULL)
-          # session$setInputs(flt_labs = "L2", selected_tab("Si"))
-          # session$flushReact()
-          print(apm())
-          # testthat::expect_equal(
-          #   ecerto::getValue(rv,c("Certification_processing","CertValPlot","show")),
-          #   TRUE
-          # )
+          expect_equal(apm(), getValue(rv_test, c("General","apm")))
+
         }
       )
-    # )
+    )
   }
 )
