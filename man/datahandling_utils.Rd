@@ -101,7 +101,7 @@ if (interactive()) {
  getValue(rv, c("General","user"))
 }
 datreturn <- ecerto:::test_datreturn()
-shiny::isolate(ecerto::getValue(datreturn, "t_H"))
+shiny::isolate(ecerto::getValue(datreturn, "selectedAnalyteDataframe"))
 ecerto:::crop_dataframes(iris,2:3,5:6)
 if (interactive()) {
   rv = init_rv()
