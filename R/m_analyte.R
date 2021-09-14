@@ -158,21 +158,23 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
     # update precision
     shiny::observe({
       shiny::req(selected_tab())
-      message("m_analyte: Precision change")
       analytes_tmp <- shiny::isolate(apm())
-      if(!is.null(input[[paste0("precision", selected_tab())]]))
-        analytes_tmp[[selected_tab()]]$precision = input[[paste0("precision",selected_tab())]]
-      apm(analytes_tmp)
+      if (!identical(input[[paste0("precision",selected_tab())]], analytes_tmp[[selected_tab()]]$precision)) {
+        message("m_analyte: Precision change")
+        analytes_tmp[[selected_tab()]]$precision <- input[[paste0("precision",selected_tab())]]
+        apm(analytes_tmp)
+      }
     })
 
     # update flt_samples (the sample filter)
     shiny::observe({
       shiny::req(selected_tab())
-      message("m_analyte: flt_samples change")
       analytes_tmp <- shiny::isolate(apm())
-      if(!is.null(input[[paste0("flt_samples",selected_tab())]]))
-        analytes_tmp[[selected_tab()]]$sample_filter = input[[paste0("flt_samples",selected_tab())]]
-      apm(analytes_tmp)
+      if (!identical(input[[paste0("flt_samples",selected_tab())]], analytes_tmp[[selected_tab()]]$sample_filter)) {
+        message("m_analyte: flt_samples change")
+        analytes_tmp[[selected_tab()]]$sample_filter <- input[[paste0("flt_samples",selected_tab())]]
+        apm(analytes_tmp)
+      }
     })
 
     return(selected_tab) # module returns currently selected analyte-tab

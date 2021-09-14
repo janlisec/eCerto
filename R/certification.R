@@ -259,7 +259,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         UpdateInputs(UpdateInputs() +1 )
         renewTabs(1) # give a signal to renew tabs
         # Change the UploadPanel to the --loaded-- version
-        shiny::updateTabsetPanel(session = session,"certificationPanel", selected = "loaded")
+        shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "loaded")
       }
     })
 
@@ -274,8 +274,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
     tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced in future versions
-    selected_tab <-
-      ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
+    selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
 
     current_apm <- shiny::reactive({apm()[[selected_tab()]]})
