@@ -7,7 +7,9 @@
 CertValPlot(data = NULL, annotate_id = FALSE)
 }
 \arguments{
-\item{data}{data.frame containing columns 'value', 'Lab' and 'Filter'.}
+\item{data}{data.frame containing columns 'value', 'Lab' and 'L_flt'.}
+
+\item{annotate_id}{T/F to overlay the plot with ID as text if column 'ID' is present.}
 }
 \value{
 A specific type of boxplot.
@@ -16,5 +18,11 @@ A specific type of boxplot.
 \code{CertValPlot} will generate a certified values plot.
 }
 \details{
-not yet
+Individual samples have been stripped from the data frame upfront.
+}
+\examples{
+data <- data.frame("ID"=1:20, "value"=rnorm(20), "analyte"="X", "Lab"=gl(2,10), "L_flt"=FALSE)
+CertValPlot(data=data)
+CertValPlot(data=data, annotate_id=TRUE)
+
 }
