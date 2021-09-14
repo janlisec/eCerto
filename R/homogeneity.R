@@ -297,6 +297,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     shiny::observeEvent(h_transfer_U$changed, {
       message("Homogeneity: observeEvent(h_transfer_U)")
       ecerto::setValue(datreturn, "mater_table", h_transfer_U$value)
+      setValue(datreturn, "transfer", 1) # trigger panel change in app_server
     }, ignoreInit = TRUE)
 
     return(h_vals)

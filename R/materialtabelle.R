@@ -262,28 +262,28 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     lab_statistics = shiny::reactive({ ecerto::getValue(datreturn,"lab_statistics") })
 
 
-    # Homogeneity Transfer
-    shiny::observeEvent(getValue(datreturn,"t_H") ,{
-      # can't just set Value to NULL because setValue doesn't accept it
-      if(getValue(datreturn,"t_H")  != "new") {
-        if(!silent)message("materialtabelle: Homogenity Transfer")
-        mater_table_tmp = merge_transfer(df = mater_table(), vec =  ecerto::getValue(datreturn,"t_H"))
-        mater_table(mater_table_tmp)
-        setValue(datreturn,"t_H", "new")
-      }
-    }, ignoreNULL = TRUE)
+    # # Homogeneity Transfer
+    # shiny::observeEvent(getValue(datreturn,"t_H") ,{
+    #   # can't just set Value to NULL because setValue doesn't accept it
+    #   if(getValue(datreturn,"t_H")  != "new") {
+    #     if(!silent)message("materialtabelle: Homogenity Transfer")
+    #     mater_table_tmp = merge_transfer(df = mater_table(), vec =  ecerto::getValue(datreturn,"t_H"))
+    #     mater_tFable(mater_table_tmp)
+    #     setValue(datreturn,"t_H", "new")
+    #   }
+    # }, ignoreNULL = TRUE)
 
     # Stability Transfer
-    shiny::observeEvent(getValue(datreturn,"t_S"), {
-      # can't just set Value to NULL because setValue doesn't accept it
-      if(getValue(datreturn,"t_H")  != "new") {
-        if(!silent)message("materialtabelle: Stability Transfer")
-        mater_table_tmp = merge_transfer(
-          df = mater_table(), vec =  ecerto::getValue(datreturn,"t_S"))
-        mater_table(mater_table_tmp)
-        setValue(datreturn,"t_H", "new")
-      }
-    })
+    # shiny::observeEvent(getValue(datreturn,"t_S"), {
+    #   # can't just set Value to NULL because setValue doesn't accept it
+    #   if(getValue(datreturn,"t_H")  != "new") {
+    #     if(!silent)message("materialtabelle: Stability Transfer")
+    #     mater_table_tmp = merge_transfer(
+    #       df = mater_table(), vec =  ecerto::getValue(datreturn,"t_S"))
+    #     mater_table(mater_table_tmp)
+    #     setValue(datreturn,"t_H", "new")
+    #   }
+    # })
 
     # in case backup data
     shiny::observeEvent(rdataUpload(),{

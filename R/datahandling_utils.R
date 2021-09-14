@@ -48,7 +48,7 @@ setValue = function(df,key,value){
 #' @rdname datahandling_utils
 #' @examples
 #' datreturn <- ecerto:::test_datreturn()
-#' shiny::isolate(ecerto::getValue(datreturn, "t_H"))
+#' shiny::isolate(ecerto::getValue(datreturn, "selectedAnalyteDataframe"))
 getValue = function(df, key=NULL) {
   if(R6::is.R6(df)){
     return(df$get(key))
@@ -331,41 +331,4 @@ listNames <- function(l, maxDepth = 2) {
   }
   n = names(unlist(listNames_rec(l, n)))
   return(n)
-}
-
-
-#' Merges a transferred column into the materialtabelle. If a value in the
-#' column is exceeded by the transfer, it is overwritten. Otherwise, all other
-#' values of the column and vector are combined.
-#'
-#' @param df The data frame to transfer into
-#' @param vec The transferred array (column) as dataframe
-#'
-#' @return The new data frame
-#' @export
-#'
-#' @examples
-#'df = data.frame(a = rep(0,4), b = c(0,0,10,0))
-#'vec = data.frame(b = c(1,0,0,0))
-#'merge_transfer(df = df, vec = vec)
-merge_transfer = function(df, vec) {
-  stopifnot(nrow(df)==nrow(vec))
-  mergeby <- names(vec)
-  if(length(mergeby)==2){
-    # in case column name differs from it's ID: take second element
-    vec <- vec[2]
-    mergeby <- mergeby[2]
-    # } else if(length(mergeby)==1) {
-    #   # in case column name is equal to it's ID
-    #   df[df[mergeby]==0,mergeby] = vec[df[mergeby]==0,mergeby]
-  } else if(length(mergeby)!=1) {
-    stop("transferred number of columns should be 1 or 2")
-  }
-  # merge magic
-  # positions in vector/data.frame to overwrite: Either (1) data.frame contains
-  # a 0 and can be replaced or (2) both data.frame and vector contain values at
-  # that position --> can be replaced too in the data.frame
-  overwrite_indices = df[mergeby]==0 | df[mergeby] != 0 & vec[mergeby] != 0
-  df[overwrite_indices,mergeby] = vec[overwrite_indices,mergeby]
-  return(df)
 }

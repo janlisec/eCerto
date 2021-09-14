@@ -48,8 +48,7 @@ test_datreturn = function() {
         s_bb = c(0, 0, 0, 0),
         s_bb_min = c(0.015535927030583, 0.0100532811338686, 0.015535927030583, 0.0102229805818161)), class = "data.frame", row.names = c(NA, -4L)
     ),
-    t_H = NULL,
-    t_S = NULL,
+    transfer = NULL,
     lab_statistics = NULL,
     cert_mean = NULL,
     cert_sd = NULL
