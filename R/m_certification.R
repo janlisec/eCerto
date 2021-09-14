@@ -245,7 +245,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         } else if(startsWith(o.upload, "RData")) {
           # only forward rData Upload after RData was uploaded
           message("Certification: forward RData to Materialtabelle")
-          rdataupload(getValue(rv,c("materialtabelle")))
+          rdataupload(getValue(rv,"materialtabelle"))
           if(!is.null(getValue(rv,c("General","apm")))) {
             # RData contains element "apm"
             apm(getValue(rv,c("General","apm")))
