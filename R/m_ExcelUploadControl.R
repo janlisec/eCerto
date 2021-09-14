@@ -47,7 +47,7 @@ m_ExcelUpload_UI <- function(id) {
       shiny::column(6, align="right", shiny::uiOutput(outputId = shiny::NS(id,"btn_load")))
     ),
     # preview table
-    ecerto::xlsx_range_select_UI(shiny::NS(id,"Upload")),
+    ecerto::m_xlsx_range_select_UI(shiny::NS(id,"Upload")),
   )
 }
 
@@ -103,7 +103,7 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
     })
     # --- --- --- --- --- --- --- --- --- ---
     # Module to select rows and columns
-    rv_xlsx_range_select <- xlsx_range_select_Server(
+    rv_xlsx_range_select <- m_xlsx_range_select_Server(
       id = "Upload",
       current_file_input = current_file_input,
       sheet = sheetnumber,

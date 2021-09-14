@@ -14,7 +14,7 @@
 #' @param rdataUpload if uploaded via RData - reactive({rv$Certification$materialtabelle})
 #' @param datreturn the session data (R6) object (ID Lab analyte replicate  value unit S_flt L_flt)
 #'
-#'@return nothing
+#'@return nothing directly
 #'
 #'@examples
 #' if (interactive()) {

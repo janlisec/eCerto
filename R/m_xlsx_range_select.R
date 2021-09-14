@@ -1,6 +1,6 @@
 #' @name xlsx_range_select
-#' @aliases xlsx_range_select_UI
-#' @aliases xlsx_range_select_Server
+#' @aliases m_xlsx_range_select_UI
+#' @aliases m_xlsx_range_select_Server
 #'
 #' @title A module to preview and select a range from a XLSX File.
 #'
@@ -52,10 +52,10 @@
 #'      )
 #'    ),
 #'    shiny::hr(),
-#'    xlsx_range_select_UI(id = "test")
+#'    m_xlsx_range_select_UI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'   out <- xlsx_range_select_Server(
+#'   out <- m_xlsx_range_select_Server(
 #'     id = "test",
 #'     x = reactive({input$x}),
 #'     sheet = reactive({input$sheet}),
@@ -69,7 +69,7 @@
 #' @rdname xlsx_range_select
 #' @export
 
-xlsx_range_select_UI <- function(id) {
+m_xlsx_range_select_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::uiOutput(outputId = ns('uitxt')),
@@ -79,7 +79,7 @@ xlsx_range_select_UI <- function(id) {
 
 #' @rdname xlsx_range_select
 #' @export
-xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"}), silent=FALSE) {
+m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"}), silent=FALSE) {
 
   stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))
@@ -96,7 +96,7 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
       shiny::req(current_file_input(), sheet())
 
       # use different modes of fnc_load_xlsx to import data depending on file type
-      if (!silent) message("xlsx_range_select_Server: reactive(tab): load ", nrow(current_file_input()), " files")
+      if (!silent) message("m_xlsx_range_select_Server: reactive(tab): load ", nrow(current_file_input()), " files")
       if (shiny::isolate(excelformat())=="Certification") {
         l <- lapply(current_file_input()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
         shiny::validate(
@@ -105,7 +105,7 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
         )
         # check if all tables have the same dimensions
         test <- length(unique(sapply(l, nrow)))==1 && length(unique(sapply(l, ncol)))==1
-        if (!test) { warning("xlsx_range_select_Server: Certification Excel Files contain different dimensions.") }
+        if (!test) { warning("m_xlsx_range_select_Server: Certification Excel Files contain different dimensions.") }
       } else if(shiny::isolate(excelformat())=="Stability") {
         # for Stability, all sheets are loaded in Background
         l <- lapply(sheet(),function(x) {
@@ -126,7 +126,7 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
     # event: upload of excel file(s)
     shiny::observeEvent(tab(), {
       if (!silent)
-        message("xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
+        message("m_xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
       tab_param$tab <- tab()
       tab_param$tab_upload <- shiny::isolate(tab()) # unchanged table from upload (for checking if row and column was selected)
       tab_param$start_row <- 1
@@ -145,7 +145,7 @@ xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, ex
 
     # if rows and columns in the DT() have been selected
     shiny::observeEvent(input$uitab_cells_selected, {
-      if (!silent) message("xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
+      if (!silent) message("m_xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
       cs <- input$uitab_cells_selected
       check_cs <- function(x) {
         diff(range(x[,1]))>=1 &&
