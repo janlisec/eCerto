@@ -198,7 +198,7 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
           setValue(rv,c("Certification_processing","opt"),res[["Certification"]][["opt"]])
           setValue(rv,c("Certification_processing","mstats"),res[["Certification"]][["mstats"]])
           # materialtabelle
-          setValue(rv,c("materialtabelle"),res[["Certification"]][["cert_vals"]])
+          setValue(rv,"materialtabelle",res[["Certification"]][["cert_vals"]])
         }
         if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
           if (!silent) message("RDataImport_Server: Homog data transfered")
