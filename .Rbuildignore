@@ -6,3 +6,5 @@
 ^\.github$
 ^shiny_bookmarks$
 ^\.gitlab$
+^app\.R$
+^rsconnect$
