@@ -72,11 +72,11 @@ m_CertificationUI = function(id) {
           )
         ),
         # --- --- --- --- --- --- --- --- ---
-        shiny::column(width=8, shiny::wellPanel(m_analyteUI(ns("analyteModule")))),
+        shiny::column(width=7, shiny::wellPanel(m_analyteUI(ns("analyteModule")))),
         # --- --- --- --- --- --- --- --- ---
         ##### Download-Teil
         shiny::column(
-          width = 2,
+          width = 3,
           shiny::wellPanel(
             shiny::fluidRow(shiny::strong("Download Report")),
             shiny::fluidRow(
@@ -88,16 +88,19 @@ m_CertificationUI = function(id) {
               )
             ),
             shiny::fluidRow(
-              shiny::column(width = 6, align = "center", shiny::downloadButton('FinalReport', label = "Analyte")),
               shiny::column(
                 width = 6,
-                align = "center",
+                align = "left",
+                shiny::downloadButton('FinalReport', label = "Analyte")),
+              shiny::column(
+                width = 6,
+                align = "right",
                 shiny::downloadButton('MaterialReport', label = "Material")
               )
-            ),
-            shiny::fluidRow(
-              shiny::checkboxInput(inputId = ns("show_code"), label = "Show Code in Report")
-            )
+            )#,
+            #shiny::fluidRow(
+            #  shiny::checkboxInput(inputId = ns("show_code"), label = "Show Code in Report")
+            #)
           )
         )
       ),
@@ -140,6 +143,12 @@ m_CertificationUI = function(id) {
                 shiny::strong("Download"),
                 shiny::br(),
                 shiny::downloadButton(outputId = 'Fig01', label = "Figure")
+              ),
+              shiny::column(
+                width = 6,
+                # shiny::strong(""),
+                # shiny::br(),
+                shiny::checkboxInput(inputId = ns("annotate_id"), label = "Show IDs", value = FALSE)
               )
             ),
             shiny::p(),
@@ -153,7 +162,7 @@ m_CertificationUI = function(id) {
             ),
           ),
           shiny::column(width = 10, shiny::plotOutput(
-            ns( "overview_CertValPlot"), inline = TRUE
+            ns("overview_CertValPlot"), inline = TRUE
           ))
           #shiny::wellPanel(shiny::fluidRow(m_CertLoadedUI(ns("loaded"))))
         )
@@ -162,7 +171,6 @@ m_CertificationUI = function(id) {
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats') > -1",
         ns = shiny::NS(id), # namespace of current module
-        #shiny::wellPanel(
         shiny::strong(
           shiny::actionLink(
             inputId = ns("stat_link"),
@@ -170,8 +178,6 @@ m_CertificationUI = function(id) {
           )
         ),
         DT::dataTableOutput(ns("overview_stats"))
-        #shiny::div(style = 'width:900px;margin:auto', DT::DTOutput(ns("overview_stats"), width = "900px"))
-        #)
       ),
       # Stats2 (on Lab means)
       shiny::conditionalPanel(
@@ -414,7 +420,7 @@ m_CertificationServer = function(id, rv, datreturn) {
 
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
-      CertValPlot(data = dat())
+      CertValPlot(data = dat(), annotate_id=input$annotate_id)
     }, height = shiny::reactive({
       input$Fig01_height
     }), width = shiny::reactive({

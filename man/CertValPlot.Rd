@@ -4,7 +4,7 @@
 \alias{CertValPlot}
 \title{CertValPlot.}
 \usage{
-CertValPlot(data = NULL)
+CertValPlot(data = NULL, annotate_id = FALSE)
 }
 \arguments{
 \item{data}{data.frame containing columns 'value', 'Lab' and 'Filter'.}

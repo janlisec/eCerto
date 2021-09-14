@@ -10,13 +10,16 @@
 #'
 #'@export
 
-CertValPlot <- function(data=NULL) {
+CertValPlot <- function(data=NULL, annotate_id=FALSE) {
   data.stats <- plyr::ldply(split(data[,"value"], data[,"Lab"]), function(x) {data.frame("MW"=mean(x,na.rm=T), "Median"= stats::median(x,na.rm=T), "SD"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
   data.stats <- data.frame(data.stats, "Filter"=sapply(split(data[,"L_flt"], data$Lab), all))
   data.stats <- data.stats[order(data.stats$MW),]
   ylab <- paste0(unique(data[,"analyte"])[1], " [",unique(data[,"unit"])[1],"]")
   graphics::par(mar=c(5,6,0,0)+0.2)
-  plot(x=range(1:nrow(data.stats)), y=range(c(data.stats$MW+data.stats$SD, data.stats$MW-data.stats$SD)), type="n", ann=FALSE, axes=FALSE, xlim=c(0.5,nrow(data.stats)+0.5))
+  # y range is minimized dependent if Sample-IDs are shown or not
+  y_range <- range(c(data.stats$MW+data.stats$SD, data.stats$MW-data.stats$SD))
+  if (annotate_id) y_range <- range(data[,"value"], na.rm=TRUE)
+  plot(x=range(1:nrow(data.stats)), y=y_range, type="n", ann=FALSE, axes=FALSE, xlim=c(0.5,nrow(data.stats)+0.5))
   graphics::title(xlab="Lab")
   # compute number of lines we need to reserve fo the axis numbers
   lh <- max(graphics::strwidth(graphics::axTicks(2),units = "inch"))/graphics::strheight("0",units = "inch")
@@ -31,5 +34,9 @@ CertValPlot <- function(data=NULL) {
   graphics::segments(x0=1:nrow(data.stats)-lw, x1=1:nrow(data.stats)+lw, y0=data.stats$MW+data.stats$SD)
   graphics::symbols(x=1:nrow(data.stats), y=data.stats$MW, circles=rep(lw,nrow(data.stats)), bg=c(3, grDevices::grey(0.8))[1+data.stats[,"Filter"]], add=T, inches=FALSE)
   graphics::legend(x="topleft", bty="n", lty=c(1,2), col = c(3, grDevices::grey(0.8)), legend = c("mean", "sd"))
+  if (annotate_id) {
+    tmp_x <- sapply(data[,"Lab"], function(x) { which(data.stats[,"Lab"]==x) })
+    graphics::text(x = jitter(tmp_x, amount = 0.25), y = data[,"value"], label=data[,"ID"], col=4)
+  }
   graphics::box()
 }

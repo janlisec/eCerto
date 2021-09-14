@@ -10,7 +10,6 @@ app_ui = function(){
     shinyalert::useShinyalert(),
     shiny::navbarPage(
       id = "navbarpage",
-
       title = shiny::div(
         class = "verticalhorizontal",
         shiny::img(
@@ -22,15 +21,13 @@ app_ui = function(){
         shiny::em("ecerto"),
         position = "relative"
       ),
-
+      selected = "eCerto",
       shiny::tabPanel(
         "Home",
         shiny::sidebarPanel(width = 3,
-          # shiny::wellPanel(
             shiny::strong("Restart Session"),
             shiny::br(),
             shiny::actionButton(inputId = "session_restart", label = "Restart")
-          # )
         ),
         shiny::mainPanel(
           shiny::h1("Introducing eCerto"),
@@ -49,11 +46,9 @@ app_ui = function(){
         shiny::tabPanel(
           id = "start",
           title = "Start",
-
           shiny::fluidRow(
             shiny::column(
               width = 3,
-
               shiny::wellPanel(m_RDataImport_UI("Rdata")),
             ),
             shiny::column(
@@ -64,7 +59,7 @@ app_ui = function(){
                     choices = NULL,
                     label = shiny::actionLink(inputId = "moduleUploadHelp",label = "Module"),
                     width = "50%"
-                  
+
               ),
                 m_ExcelUpload_UI("excelfile")
               )
@@ -77,9 +72,6 @@ app_ui = function(){
           value = "tP_certification",
           icon = shiny::icon("angle-right"),
           m_CertificationUI("certification"),
-          # wellPanel(
-          #   .materialtabelleUI("mat_cert")
-          # )
         ),
         shiny::tabPanel(
           id = "homog_tab",
@@ -110,7 +102,7 @@ app_ui = function(){
         icon = shiny::icon("angle-right"),
         value = "tP_help",
         help_the_user(filename = "help_start",format = "html", modal = FALSE)
-        
+
       )
     )
   ) # end taglist
