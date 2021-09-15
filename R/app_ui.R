@@ -10,6 +10,7 @@ app_ui = function(){
     shinyalert::useShinyalert(),
     shiny::navbarPage(
       id = "navbarpage",
+      selected = "Start",  
       title = shiny::div(
         class = "verticalhorizontal",
         shiny::img(
@@ -21,27 +22,27 @@ app_ui = function(){
         shiny::em("ecerto"),
         position = "relative"
       ),
-      selected = "eCerto",
-      shiny::tabPanel(
-        "Home",
-        shiny::sidebarPanel(width = 3,
-            shiny::strong("Restart Session"),
-            shiny::br(),
-            shiny::actionButton(inputId = "session_restart", label = "Restart")
-        ),
-        shiny::mainPanel(
-          shiny::h1("Introducing eCerto"),
-          shiny::p("Certifications are..."),
-          shiny::p("Homogeneities are..."),
-          shiny::p("Stabilities are..."),
-          shiny::actionLink("link_to_start", "Click here to start"),
-          # bookmarkButton()
-        )
-
-      ),
-      shiny::navbarMenu(
-        title = "eCerto",
-        icon = shiny::icon("angle-right"),
+      
+      # shiny::tabPanel(
+      #   "Home",
+      #   shiny::sidebarPanel(width = 3,
+      #       shiny::strong("Restart Session"),
+      #       shiny::br(),
+      #       shiny::actionButton(inputId = "session_restart", label = "Restart")
+      #   ),
+      #   shiny::mainPanel(
+      #     shiny::h1("Introducing eCerto"),
+      #     shiny::p("Certifications are..."),
+      #     shiny::p("Homogeneities are..."),
+      #     shiny::p("Stabilities are..."),
+      #     shiny::actionLink("link_to_start", "Click here to start"),
+      #     # bookmarkButton()
+      #   )
+      # 
+      # ),
+     # shiny::navbarMenu(
+       # title = "eCerto",
+        #icon = shiny::icon("angle-right"),
         # tabs
         shiny::tabPanel(
           id = "start",
@@ -50,6 +51,10 @@ app_ui = function(){
             shiny::column(
               width = 3,
               shiny::wellPanel(
+                shiny::wellPanel(
+                shiny::strong("Restart Session"),
+                shiny::br(),
+                shiny::actionButton(inputId = "session_restart", label = "Restart")),
                 m_RDataImport_UI("Rdatain"),
                 m_RDataExport_UI("Rdataex")
                 ),
@@ -73,23 +78,24 @@ app_ui = function(){
           id = "certif_tab",
           title = "Certification",
           value = "tP_certification",
-          icon = shiny::icon("angle-right"),
+          # icon = shiny::icon("angle-right"),
           m_CertificationUI("certification"),
         ),
         shiny::tabPanel(
           id = "homog_tab",
           title = "Homogeneity",
-          icon = shiny::icon("angle-right"),
+          # icon = shiny::icon("angle-right"),
           value = "tP_homogeneity",
           m_HomogeneityUI("Homogeneity")
         ),
         shiny::tabPanel(
           title = "Stability",
-          icon = shiny::icon("angle-right"),
+          # icon = shiny::icon("angle-right"),
           value = "tP_Stability",
           m_StabilityUI("Stability")
         )
-      ),
+      #)
+     ,
       # eCerto Ende
 
       # Long term stability
