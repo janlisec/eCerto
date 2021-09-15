@@ -152,7 +152,6 @@ m_RDataImport_Server = function(id, rv = reactiveClass$new(init_rv()), silent=FA
             # reads an RData backup which already contains Stab data
             message("RDataImport: Non-legacy upload started")
             for (i in strsplit(resnames,split = ".", fixed = TRUE)) {
-
               # set uploadsource to "RData" if something was uploaded in saved RData
               if(i[length(i)] == "uploadsource" && !is.null(res[[i]])) {
                 set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")

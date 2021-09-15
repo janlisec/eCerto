@@ -73,7 +73,7 @@ m_CertificationUI = function(id) {
         ),
         # Analyte Modul
         shiny::column(width=7, shiny::wellPanel(m_analyteUI(ns("analyteModule")))),
-        # Download-Teil
+        # Report-Teil
         shiny::column(
           width = 3,
           shiny::wellPanel(
@@ -137,7 +137,6 @@ m_CertificationUI = function(id) {
         condition = "input.certification_view.indexOf('boxplot') > -1",
         ns = shiny::NS(id), # namespace of current module,
         shiny::fluidRow(
-          # --- --- --- --- --- --- ---
           shiny::column(
             width = 2,
             shiny::strong(
@@ -146,7 +145,12 @@ m_CertificationUI = function(id) {
                 label = "Fig.1 Certified Value Plot"
               )
             ),
-            shiny::uiOutput(ns("flt_labs")),
+            shiny::fluidRow(
+              shiny::column(
+                width = 12,
+                shiny::uiOutput(ns("flt_labs"))
+              )
+            ),
             shiny::fluidRow(
               shiny::column(
                 width = 6,
@@ -211,7 +215,6 @@ m_CertificationServer = function(id, rv, datreturn) {
   shiny::moduleServer(id, function(input, output, session) {
 
     apm <- shiny::reactiveVal() # what will be returned by the module
-    rdataupload<- shiny::reactiveVal() # forwarded to materialtabelle
     renewTabs <- shiny::reactiveVal(NULL) # command to renew Tabs in analyte-tabs module
 
     # Upload Notification. Since "uploadsource" is invalidated also when other
@@ -221,7 +224,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     uploadsource <- shiny::reactiveVal(NULL)
     UpdateInputs = shiny::reactiveVal(0)
     shiny::observeEvent(getValue(rv,c("Certification","uploadsource")),{
-      o.upload = getValue(rv,c("Certification","uploadsource"))
+      o.upload <- getValue(rv,c("Certification","uploadsource"))
       # assign upload source if (a) hasn't been assigned yet or (b), if not
       # null, has changed since the last time, for example because other data
       # source has been uploaded

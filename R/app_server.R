@@ -8,15 +8,16 @@
 #' @export
 app_server = function(input, output, session) {
 
-  rv = reactiveClass$new(init_rv()) # initiate persistent variables
-  datreturn = reactiveClass$new(init_datreturn()) # initiate runtime variables
+  rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+  datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
 
   # Certification, Homogeneity, Stability -----------------------------------
   excelformat = shiny::reactive({input$moduleSelect})
-  shiny::updateSelectInput(inputId = "moduleSelect",
-                    session = session,
-                    choices = getValue(rv,"modules"),
-                    selected = getValue(rv,"modules")[1]
+  shiny::updateSelectInput(
+    inputId = "moduleSelect",
+    session = session,
+    choices = getValue(rv,"modules"),
+    selected = getValue(rv,"modules")[1]
   )
 
 # Upload Controller -------------------------------------------------------
@@ -41,12 +42,12 @@ app_server = function(input, output, session) {
   })
   # when RData was uploaded
   shiny::observeEvent(upload_notif(),{
-    # message("observer: certifCication was uploaded")
+    # message("observer: certification was uploaded")
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",
-      selected = "tP_certification")
-
+      selected = "tP_certification"
+    )
   }, ignoreNULL = TRUE)
   # when Excel was uploaded with LOAD-Button...
   shiny::observeEvent(ExcelUp(),{
@@ -72,7 +73,8 @@ app_server = function(input, output, session) {
         selected = "tP_Stability")
     }
   })
-  shiny::observeEvent(getValue(datreturn,"transfer"),{
+  shiny::observeEvent(getValue(datreturn,"transfer"), {
+    browser()
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",
@@ -121,39 +123,36 @@ app_server = function(input, output, session) {
    m_CertificationServer(
     id = "certification",
     rv = rv,
-    # apm.input = shiny::reactive({getValue(rv,c("General","apm"))}),
     datreturn = datreturn
   )
 
-
-
-  # --- --- --- --- --- --- --- --- --- --- ---
-
-  h_vals = m_HomogeneityServer(
+  # Homogeneity Modul
+  h_vals <- m_HomogeneityServer(
     id = "Homogeneity",
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
     cert = shiny::reactive({getValue(rv,"Certification")}),
     datreturn = datreturn
   )
+
+  # Stability Modul
   m_StabilityServer(id = "Stability", rv = rv, datreturn = datreturn)
 
-  # --- --- --- --- --- --- --- --- --- --- ---
+  # LTS Modul
   .longtermstabilityServer("lts")
-  # --- --- --- --- --- --- --- --- --- --- ---
 
 
-  shiny::observeEvent(getValue(datreturn,"mater_table"),{
+# observers ---------------------------------------------------------------
+
+  shiny::observeEvent(getValue(datreturn, "mater_table"),{
     message("app_server: datreturn.mater_table changed; set rv.materialtabelle")
-    setValue(rv,"materialtabelle", getValue(datreturn,"mater_table"))
+    setValue(rv, "materialtabelle", getValue(datreturn,"mater_table"))
   })
-
-
 
   # After Homogeneity values have been uploaded
   shiny::observeEvent(h_vals(),{
     message("app_server: h_vals() changed, set datreturn.h_vals")
     setValue(datreturn, "h_vals", h_vals())
-  },ignoreInit = TRUE)
+  }, ignoreInit = TRUE)
 
   shiny::observeEvent(input$moduleUploadHelp, {
     switch (excelformat(),
@@ -161,7 +160,6 @@ app_server = function(input, output, session) {
       "Homogeneity" = help_the_user("homogeneity_dataupload", modal=TRUE),
       "Stability" = help_the_user("stability_dataupload", modal=TRUE)
     )
-
   })
 
 }
