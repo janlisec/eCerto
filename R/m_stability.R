@@ -100,7 +100,7 @@ m_StabilityServer <- function(id, rv, datreturn) {
         uploadsource(o.upload)
         shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
         message("Stability: Uploadsource changed to ", shiny::isolate(ecerto::getValue(rv,c("Stability","uploadsource"))))
-        #browser()
+        #
         s_dat <- ecerto::getValue(rv,c("Stability","data"))
         s_vals <- plyr::ldply(split(s_dat, s_dat[,"analyte"]), function(x) {
           x_lm <- stats::lm(Value ~ Date, data=x)

@@ -166,7 +166,7 @@ init_apm = function(certification = NULL) {
     "sample_ids" = NULL, # which samples are available for the filter
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "analytename" = NULL,
-    "confirmed" = FALSE, # has the analyte manually been confirmed?
+    "confirmed" = FALSE # has the analyte manually been confirmed?
     
   )
   # l = list()

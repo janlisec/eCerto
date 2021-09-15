@@ -118,7 +118,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       shiny::req(homog()[["data"]])
       # this is the local version of the homology data
       # whatever range is loaded from excel can be checked and transformed in here
-      #browser()
+      #
       h_dat <- homog()[["data"]]
       # rename if if first column is not named 'analyte' and convert to factor
       colnames(h_dat)[1] <- "analyte"
@@ -228,7 +228,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       h_dat <- h_Data()
       h_dat <- h_dat[interaction(h_dat[,"analyte"], h_dat[,"H_type"])==input$h_sel_analyt,]
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
-      #browser()
+      #
       #plot(h_dat)
       omn <- round(mean(h_dat[,"value"],na.rm=T), input$h_precision)
       osd <- round(stats::sd(h_dat[,"value"],na.rm=T), input$h_precision)

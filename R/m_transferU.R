@@ -66,7 +66,7 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
 
     # The Dropdown-Menu to select the column of materialtabelle to transfer to
     output$transfer <- shiny::renderUI({
-      #browser()
+      #
       shiny::validate(shiny::need(dat(), message = paste("Please upload", switch(st(),"H"="homogeneity", "S"="stability"), "data")))
       shiny::validate(shiny::need(mat_tab(), message = "Please upload certification data to enable transfer of uncertainty values"))
 
@@ -99,7 +99,7 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
     })
 
     shiny::observeEvent(input$U_cols, {
-      #browser()
+      #
       shinyjs::toggleElement(id = "H_Type", condition = st()=="H")
     })
 
