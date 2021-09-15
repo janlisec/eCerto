@@ -31,7 +31,12 @@ app_server = function(input, output, session) {
     excelformat = excelformat,
     check = check
   )
-  upload_notif = m_RDataImport_Server("Rdata", rv)
+  m_RDataexport_Server(id = "Rdataex",rv = rv)
+  rv_rdata = m_RDataImport_Server(
+    id = "Rdatain",
+    modules = reactive({getValue(rv,"modules")}), 
+    uploadsource = reactive({getValue(rv,c(excelformat(),"uploadsource"))})
+  )
 
 # page turners (and more) -------------------------------------------------------------
 
@@ -40,12 +45,21 @@ app_server = function(input, output, session) {
     to_startPage(session, value="Certification")
   })
   # when RData was uploaded
-  shiny::observeEvent(upload_notif(),{
+  shiny::observeEvent(rv_rdata(),{
     # message("observer: certifCication was uploaded")
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",
       selected = "tP_certification")
+    # overwrites
+    rv_rdatanames <- listNames(
+      sapply(rv_rdata()$get(), function(x) {
+        if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+      })
+    )
+    for (n in strsplit(rv_rdatanames,split = ".", fixed = TRUE)) {
+      setValue(rv,n,getValue(rv_rdata(),n))
+    }
 
   }, ignoreNULL = TRUE)
   # when Excel was uploaded with LOAD-Button...

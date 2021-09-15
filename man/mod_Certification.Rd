@@ -36,8 +36,8 @@ shiny::shinyApp(
  ),
  server = function(input, output, session) {
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-  shiny::observe({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
-  shiny::observe({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
+  shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
+  shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
 
  m_CertificationServer(

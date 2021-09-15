@@ -31,8 +31,9 @@ shiny::shinyApp(
  ),
  server = function(input, output, session) {
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-  shiny::observe({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
-  shiny::observe({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
+   shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
+  shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
+  shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
   selected_tab = reactiveVal("Si")
 
  m_report_server(

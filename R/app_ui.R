@@ -49,7 +49,10 @@ app_ui = function(){
           shiny::fluidRow(
             shiny::column(
               width = 3,
-              shiny::wellPanel(m_RDataImport_UI("Rdata")),
+              shiny::wellPanel(
+                m_RDataImport_UI("Rdatain"),
+                m_RDataExport_UI("Rdataex")
+                ),
             ),
             shiny::column(
               width = 9,
