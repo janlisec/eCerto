@@ -72,6 +72,7 @@ reactiveClass = R6::R6Class(
     },
     #' @description
     #' Returns names of all elements of the reactiveValues list stored in the R6 object, except "General"
+    #' TODO ist noch ein bisschen unglücklich beim Skalieren
     #' @return A new 'reactiveClass' object.
     names = function() {
       n = shiny::isolate(names(private$reactive_data))

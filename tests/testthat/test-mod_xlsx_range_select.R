@@ -8,7 +8,7 @@ test_that(
     cells_selected <- matrix(c(7,1,16,6), ncol = 2, byrow = TRUE)
     suppressMessages(
       shiny::testServer(
-        app = ecerto::xlsx_range_select_Server,
+        app = ecerto::m_xlsx_range_select_Server,
         args = list(current_file_input = fn1, sheet = sheetNo),
         {
           suppressMessages(session$flushReact())
@@ -51,7 +51,7 @@ test_that(
     sheetNo <- shiny::reactiveVal(1)
     suppressMessages(
       shiny::testServer(
-        app = ecerto::xlsx_range_select_Server,
+        app = ecerto::m_xlsx_range_select_Server,
         args = list(current_file_input = fn2,sheet = sheetNo), {
           #browser()
           expect_warning(
@@ -85,7 +85,7 @@ test_that(
     
     suppressMessages(
       shiny::testServer(
-        app = xlsx_range_select_Server,
+        app = m_xlsx_range_select_Server,
         args = list(current_file_input = fn3, sheet = sheetNo), {
           expect_error(tab(), "uploaded Excel files contain an empty one")
         }
@@ -102,7 +102,7 @@ test_that("Throws error correctly when only one Certifications get uploaded",cod
   sheetNo <- shiny::reactiveVal(1)
   suppressMessages(
     shiny::testServer(
-      xlsx_range_select_Server,
+      m_xlsx_range_select_Server,
       args = list(current_file_input = fn1_2,sheet=sheetNo), {
         expect_error(tab(),"less than 2 laboratory files uploaded. Upload more!")
       })
@@ -118,7 +118,7 @@ test_that("no reaction after only one DataTable element is selected",
             sheetNo <- shiny::reactiveVal(1)
             cells_selected <- matrix(c(7,1), ncol = 2, byrow = TRUE)
             shiny::testServer(
-              app = xlsx_range_select_Server,
+              app = m_xlsx_range_select_Server,
               args = list(current_file_input = fn1, sheet = sheetNo), {
                 suppressMessages(session$flushReact())
                 # @Frederick: dieser Test musste modifiziert werden. Ich habe den Modul-Code so geändert, dass der User eine MessageBox bekommt, wenn er versucht eine dritte Zelle innerhalb der Range zu wählen. Die Bedingung das der Klick keine Aktion hervorruft ist aber nicht mehr gegeben.
@@ -148,7 +148,7 @@ test_that("no reaction after only one DataTable element is selected",
 #     )
 #   ))
 #   shiny::testServer(
-#     app = xlsx_range_select_Server,
+#     app = m_xlsx_range_select_Server,
 #     args = list(current_file_input = fnHomog,sheet=sheetNo,excelformat=shiny::reactiveVal({"Homogeneity"})), {
 #       suppressMessages(session$flushReact())
 #       # has File been added correctly after Upload

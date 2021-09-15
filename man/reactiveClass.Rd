@@ -103,6 +103,7 @@ A new 'reactiveClass' object.
 \if{latex}{\out{\hypertarget{method-names}{}}}
 \subsection{Method \code{names()}}{
 Returns names of all elements of the reactiveValues list stored in the R6 object, except "General"
+TODO ist noch ein bisschen unglücklich beim Skalieren
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{reactiveClass$names()}\if{html}{\out{</div>}}
 }
