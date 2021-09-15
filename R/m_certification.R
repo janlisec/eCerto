@@ -24,8 +24,8 @@
 #'  ),
 #'  server = function(input, output, session) {
 #'   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-#'   shiny::observe({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
-#'   shiny::observe({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
+#'   shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
+#'   shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
 #'   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
 #'
 #'  m_CertificationServer(
@@ -76,28 +76,7 @@ m_CertificationUI = function(id) {
         # Download-Teil
         shiny::column(
           width = 3,
-          shiny::wellPanel(
-            shiny::fluidRow(shiny::strong("Download Report")),
-            shiny::fluidRow(
-              shiny::radioButtons(
-                inputId = ns("output_file_format"),
-                label = NULL,
-                choices = c('PDF', 'HTML', 'Word'),
-                inline = TRUE
-              )
-            ),
-            shiny::fluidRow(
-              shiny::column(
-                width = 6,
-                align = "left",
-                shiny::downloadButton('FinalReport', label = "Analyte")),
-              shiny::column(
-                width = 6,
-                align = "right",
-                shiny::downloadButton('MaterialReport', label = "Material")
-              )
-            )
-          )
+          m_report_ui(ns("report"))
         )
       ),
       # Stats (on Lab distributions)
@@ -268,7 +247,9 @@ m_CertificationServer = function(id, rv, datreturn) {
     tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced in future versions
     selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
-
+    m_report_server(id = "report",rv = rv, selected_tab = selected_tab)
+    # --- --- --- --- --- --- --- --- --- --- ---
+    
     current_apm <- shiny::reactive({apm()[[selected_tab()]]})
 
     filtered_labs <- shiny::reactiveVal(NULL)
