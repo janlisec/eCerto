@@ -21,10 +21,15 @@ app_server = function(input, output, session) {
 
 # Upload Controller -------------------------------------------------------
 
+  check <- shiny::reactive({
+    # excelformat() is "" on startup which conflicts with getValue
+    shiny::req(excelformat())
+    is.null(getValue(rv, c(excelformat(),"uploadsource")))
+  })
   ExcelUp <- m_ExcelUpload_Server(
     id = "excelfile",
     excelformat = excelformat,
-    check = shiny::reactive({is.null(getValue(rv, c(excelformat(),"uploadsource")) )})
+    check = check
   )
   upload_notif = m_RDataImport_Server("Rdata", rv)
 

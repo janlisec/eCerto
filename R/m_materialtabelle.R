@@ -66,11 +66,6 @@ m_materialtabelleUI <- function(id) {
                       shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = "110%"),
                       shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "110%")
         ),
-      ),
-      shiny::helpText(
-        "In this interactive table you can add columns of correction factors of the mean as well as uncertainty contributions.",
-        shiny::tags$br(),
-        "You can modify values in these columns by double click on the respective cells in the table (please note that other columns are protected from editing)."
       )
     ),
     shiny::column(10, DT::DTOutput(shiny::NS(id,"matreport")))
@@ -337,7 +332,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
              )), precision2))
     })
-    
+
     shiny::observeEvent(cert_mean(),{
       setValue(datreturn, "cert_mean",cert_mean())
     })
@@ -444,7 +439,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # update 'mater_table'
       mater_table(mt)
     })
-    
+
     shiny::observeEvent(input$materheadline, {
       help_the_user("materialtabelle")
     })
