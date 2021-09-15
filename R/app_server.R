@@ -36,7 +36,7 @@ app_server = function(input, output, session) {
   rv_rdata = m_RDataImport_Server(
     id = "Rdatain",
     modules = reactive({getValue(rv,"modules")}), 
-    uploadsource = reactive({getValue(rv,c(excelformat(),"uploadsource"))})
+    uploadsources = reactive({sapply(getValue(rv,"modules"), function(x){getValue(rv,c(x,"uploadsource"))})})
   )
 
 # page turners (and more) -------------------------------------------------------------

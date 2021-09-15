@@ -6,13 +6,12 @@ test_that(
       name = "SR3_Fe_v26chs.RData",
       datapath = system.file(package = "ecerto","extdata","SR3_Fe_v26chs.RData")
     )
-    rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
     suppressMessages(
       shiny::testServer(
         app = ecerto::m_RDataImport_Server,
         args = list(
           modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
-          uploadsource = shiny::reactiveVal(NULL)
+          uploadsources = shiny::reactiveVal(NULL)
         ),
         expr = {
           session$setInputs(in_file_ecerto_backup = rdat)
@@ -39,20 +38,19 @@ test_that(
       name = "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx",
       datapath = system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
     )
-    rv_test =  ecerto::reactiveClass$new(ecerto::init_rv())
-    
-    shiny::testServer(
-      app = ecerto::m_RDataImport_Server,
-      args = list(
-        modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
-        uploadsource = shiny::reactiveVal(NULL)
-      ),
-      expr = {
-        session$setInputs(in_file_ecerto_backup = excel)
-        expect_error(rdata(),"Only RData allowed.")
-      }
+    suppressMessages(
+      shiny::testServer(
+        app = ecerto::m_RDataImport_Server,
+        args = list(
+          modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
+          uploadsources = shiny::reactiveVal(NULL)
+        ),
+        expr = {
+          session$setInputs(in_file_ecerto_backup = excel)
+          expect_error(rdata(),"Only RData allowed.")
+        }
+      )
     )
-    
   }
 )
 
@@ -64,21 +62,18 @@ test_that(
       name = "SR3_Fe_v26chs.RData",
       datapath = system.file(package = "ecerto","extdata","SR3_Fe_v26chs.RData")
     )
-    rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
     suppressMessages(
       shiny::testServer(
         app = ecerto::m_RDataImport_Server,
         args = list(
           modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
-          uploadsource = shiny::reactiveVal("Excel")
+          uploadsources = shiny::reactiveVal(list("Certification" = "Excel","Homogeneity"=NULL,"stability"=NULL))
         ),
         expr = {
-          
-          
-          expect_message(session$setInputs(in_file_ecerto_backup = rdat),"RDataImport: Found existing data. Overwrite?")
+          expect_message(
+            session$setInputs(in_file_ecerto_backup = rdat)
+            ,"RDataImport: Found existing data. Overwrite?")
           expect_equal(rvreturn(), NULL)
-          # expect_equal(sort(ecerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability" ))
-          # expect_equal(ecerto::getValue(rvreturn(), c("General","user")),"FK4")
         }
       )
     )

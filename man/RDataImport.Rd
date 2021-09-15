@@ -8,20 +8,26 @@
 \usage{
 m_RDataImport_UI(id)
 
-m_RDataImport_Server(id, modules, uploadsource, silent = FALSE)
+m_RDataImport_Server(id, modules, uploadsources, silent = FALSE)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{silent}{Option to print or omit status messages.}
+\item{modules}{c("Certification","Homogeneity","Stability").}
 
-\item{rv}{ReavtiveValues $$.}
+\item{uploadsources}{contains which of the \code{modules} has which
+uploadsource or \code{NULL}. For example if Certification has been
+uploaded, the argument would look like list("Certification" =
+"Excel","Homogeneity"=NULL,"stability"=NULL).}
+
+\item{silent}{Option to print or omit status messages.}
 }
 \value{
 rdata A reactive, but only for notifying the navbarpanel to change
 }
 \description{
-\code{RDataImport} will provide a module to upload/backup Rdata files for certification trial data.
+\code{RDataImport} will provide a module to upload/backup Rdata
+files for certification trial data.
 }
 \details{
 not yet
@@ -32,7 +38,7 @@ shiny::shinyApp(
  ui = shiny::fluidPage(ecerto::m_RDataImport_UI(id = "test")),
  server = function(input, output, session) {
    ecerto::m_RDataImport_Server(
-     id = "test", 
+     id = "test",
      modules = reactiveVal(c("Ceritification","Stability","Homogeneity")),
      uploadsource = reactiveVal("Excel")
      )
