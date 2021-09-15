@@ -65,7 +65,7 @@ test_that(
 test_that(
   desc = "RData Upload for apm saved in variable",
   code = {
-    test_apm = analyte_parameter_list(ecerto:::test_Certification_Excel())
+    test_apm = init_apm(ecerto:::test_Certification_Excel())
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
      datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn()) # initiate runtime variables
     suppressMessages(
