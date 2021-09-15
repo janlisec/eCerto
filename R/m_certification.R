@@ -195,7 +195,8 @@ m_CertificationServer = function(id, rv, datreturn) {
 
     apm <- shiny::reactiveVal() # what will be returned by the module
     renewTabs <- shiny::reactiveVal(NULL) # command to renew Tabs in analyte-tabs module
-
+    rdataupload = shiny::reactiveVal(NULL)
+    
     # Upload Notification. Since "uploadsource" is invalidated also when other
     # parameters within Certification are changed (because of the reactiveValues
     # thing), it has to be checked if it has changed value since the last change
@@ -471,6 +472,10 @@ m_CertificationServer = function(id, rv, datreturn) {
     shiny::observeEvent(lab_statistics(),{
       message("Certification: lab_statistics() changed, set datreturn.lab_statistics")
       ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
+    })
+    
+    shiny::observeEvent(current_apm(), {
+      setValue(datreturn, "current_apm", current_apm())
     })
 
     shiny::observeEvent(input$certification_view, {

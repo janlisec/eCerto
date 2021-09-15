@@ -83,7 +83,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     })
 
     precision_export <- shiny::reactive({
-      current_apm()$precision_export
+      current_apm = getValue(datreturn, "current_apm")
+      current_apm$precision_export
     })
 
     # this is a fixed value to round the uncertainty columns; 4 should be appropriate here

@@ -14,7 +14,8 @@ init_datreturn <- function() {
     transfer = NULL,                    # when transfer was clicked (just to change the panel to Certification)
     lab_statistics = NULL,               # lab statistics (mean,sd) for materialtabelle
     cert_mean = NULL,
-    cert_sd = NULL
+    cert_sd = NULL,
+    current_apm = NULL                 # currently selected apm
     )
 }
 
@@ -165,7 +166,8 @@ analyte_parameter_list = function(certification = NULL) {
     "sample_ids" = NULL, # which samples are available for the filter
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "analytename" = NULL,
-    "confirmed" = FALSE # has the analyte manually been confirmed?
+    "confirmed" = FALSE, # has the analyte manually been confirmed?
+    
   )
   # l = list()
 

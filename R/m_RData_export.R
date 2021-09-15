@@ -77,7 +77,6 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
         inputId = "user",
         value = getValue(rv,c("General","user"))
       )
-      print(input$user)
     })
     
     shiny::observeEvent(input$study_id, {
