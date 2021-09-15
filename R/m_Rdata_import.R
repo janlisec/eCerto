@@ -132,7 +132,6 @@ m_RDataImport_Server = function(id, modules, uploadsource, silent=FALSE) {
             # reads an RData backup which already contains Stab data
             
             for (i in strsplit(resnames,split = ".", fixed = TRUE)) {
-
               # set uploadsource to "RData" if something was uploaded in saved RData
               if(i[length(i)] == "uploadsource" && !is.null(res[[i]])) {
                 set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")

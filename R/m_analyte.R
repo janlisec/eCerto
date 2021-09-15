@@ -78,6 +78,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
 
       # append/prepend a tab for each analyte available
       for (a.name in names(shiny::isolate(apm()))) {
+        #browser()
         # message("append Tab: ", a.name)
         tablist_tmp <- c(tablist(), a.name) # add to tablist for removing later
         tablist(tablist_tmp)
@@ -98,10 +99,10 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
                 )
               ),
               shiny::column(
-                width = 6,
+                width = 3,
                 shiny::numericInput(
                   inputId =ns(paste0("precision",a.name)),
-                  label = "Precision",
+                  label = "Precision (Input)",
                   value =  ifelse(
                     !is.null(shiny::isolate(apm())[[a.name]]$precision),
                     yes = shiny::isolate(apm())[[a.name]]$precision,
@@ -109,7 +110,19 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
                   )
                 )
               ),
-            ),
+              shiny::column(
+                width = 3,
+                shiny::numericInput(
+                  inputId =ns(paste0("precision_export",a.name)),
+                  label = "Precision (Export)",
+                  value =  ifelse(
+                    !is.null(shiny::isolate(apm())[[a.name]]$precision_export),
+                    yes = shiny::isolate(apm())[[a.name]]$precision_export,
+                    no = 4
+                  )
+                )
+              )
+            )
           )
         )
       }
@@ -162,6 +175,17 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       if (!identical(input[[paste0("precision",selected_tab())]], analytes_tmp[[selected_tab()]]$precision)) {
         message("m_analyte: Precision change")
         analytes_tmp[[selected_tab()]]$precision <- input[[paste0("precision",selected_tab())]]
+        apm(analytes_tmp)
+      }
+    })
+
+    # update precision2 (=precision_export)
+    shiny::observe({
+      shiny::req(selected_tab())
+      analytes_tmp <- shiny::isolate(apm())
+      if (!identical(input[[paste0("precision_export",selected_tab())]], analytes_tmp[[selected_tab()]]$precision_export)) {
+        message("m_analyte: Precision (Export) change")
+        analytes_tmp[[selected_tab()]]$precision_export <- input[[paste0("precision_export",selected_tab())]]
         apm(analytes_tmp)
       }
     })

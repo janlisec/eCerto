@@ -41,15 +41,8 @@ m_materialtabelleUI <- function(id) {
   shiny::fluidRow(
     shiny::column(
       width = 2,
-      shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Material Certification")), shiny::br(),
-      # `pooling` bedeutet, das man cert_val nicht aus den Labormittelwerten
-      # schätzt, sondern aus allen Mess-Werten. Im Beispiel wäre n=15 ohne und
-      # n=10 mit Laborfilter. In Summe: für die korrekte Darstellung der
-      # Materialtabelle benötigen wir für jeden Analyten neben cert_val und
-      # cert_sd die Informationen zu 'pooling', 'S_flt' und 'L_flt', sowie die
-      # gewünschte 'precision'. (!S_flt ist relevant, wenn pooling==TRUE, denn
-      # hat der User ein einzelnes Sample gefiltert, dann ändert sich n auf
-      # n-1).
+      shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Tab.3 Material Certification")),
+      shiny::br(),
       shiny::checkboxInput(
         inputId = ns("pooling"),
         label = "pooling",
@@ -89,9 +82,12 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       }
     })
 
-    # create and test precision2. Since it hasn't created yet use try(), see https://github.com/rstudio/shinytest/issues/350
-    precision2 <- 4
-    # shiny::exportTestValues(precision2 = { try(precision2) })
+    precision_export <- shiny::reactive({
+      current_apm()$precision_export
+    })
+
+    # this is a fixed value to round the uncertainty columns; 4 should be appropriate here
+    precision_U <- 4
 
     # helper function to remove unused user columns
     remove_unused_cols <- function(mt=NULL) {
@@ -149,9 +145,6 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         value = mt[,"U"]
       )
 
-      # set result as new value in the R6 object
-      ecerto::setValue(datreturn, "mater_table", mt)
-      if(!silent) message("materialtabelle: recalc_mat_table; set datreturn.mater_table")
       invisible(mt)
     }
 
@@ -245,48 +238,28 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       }
     })
 
-
-    # data frame of selected analyte
-    sAnData = shiny::reactive({ ecerto::getValue(datreturn,"selectedAnalyteDataframe") })
-    lab_filter = shiny::reactive({unique(as.character(sAnData()[sAnData()$L_flt==TRUE,]$Lab))})
-    shiny::observeEvent(sAnData(),{
-      if(!silent) message("materialtabelle: sAnData updated")
-    })
-
-    # get current lab statistics
-    lab_statistics = shiny::reactive({ ecerto::getValue(datreturn,"lab_statistics") })
-
-
-    # # Homogeneity Transfer
-    # shiny::observeEvent(getValue(datreturn,"t_H") ,{
-    #   # can't just set Value to NULL because setValue doesn't accept it
-    #   if(getValue(datreturn,"t_H")  != "new") {
-    #     if(!silent)message("materialtabelle: Homogenity Transfer")
-    #     mater_table_tmp = merge_transfer(df = mater_table(), vec =  ecerto::getValue(datreturn,"t_H"))
-    #     mater_tFable(mater_table_tmp)
-    #     setValue(datreturn,"t_H", "new")
-    #   }
-    # }, ignoreNULL = TRUE)
-
-    # Stability Transfer
-    # shiny::observeEvent(getValue(datreturn,"t_S"), {
-    #   # can't just set Value to NULL because setValue doesn't accept it
-    #   if(getValue(datreturn,"t_H")  != "new") {
-    #     if(!silent)message("materialtabelle: Stability Transfer")
-    #     mater_table_tmp = merge_transfer(
-    #       df = mater_table(), vec =  ecerto::getValue(datreturn,"t_S"))
-    #     mater_table(mater_table_tmp)
-    #     setValue(datreturn,"t_H", "new")
-    #   }
-    # })
-
-    # in case backup data
     shiny::observeEvent(rdataUpload(),{
       if(!silent)message("m_materialtabelleServer: RData Uploaded, insert materialtabelle")
       mt <- rdataUpload()
       mt <- remove_unused_cols(mt=mt)
       mater_table(mt) # save materialtabelle
     }, ignoreNULL = TRUE)
+
+    # data frame of selected analyte
+    sAnData <- shiny::reactive({ ecerto::getValue(datreturn,"selectedAnalyteDataframe") })
+    n <- shiny::reactive({
+      shiny::req(sAnData())
+      x <- sAnData()
+      return(ifelse(
+        test = input$pooling,
+        yes = sum(!x[,"L_flt"]),
+        no = length(unique(as.character(x[!x[,"L_flt"],"Lab"])))
+      ))
+    })
+
+    shiny::observeEvent(sAnData(), {
+      if(!silent) message("materialtabelle: sAnData updated")
+    })
 
     # get all availables analytes
     availableAnalytes = shiny::reactive({levels(sAnData()[["analyte"]])})
@@ -295,25 +268,25 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # change after certification upload
     shiny::observeEvent(availableAnalytes(), once = TRUE, {
       # initiate empty materialtabelle only if nothing has yet been uploaded via RData
-      if (is.null(rdataUpload())) {
-        if(!silent) message("m_materialtabelleServer: initiate empty materialtabelle")
-        mt <- ecerto::init_materialTabelle(availableAnalytes())
-        mt <- remove_unused_cols(mt=mt)
-        mater_table(mt) # write to reactiveValue
-      }
+      if (!silent) message("m_materialtabelleServer: initiate empty materialtabelle")
+      mt <- ecerto::init_materialTabelle(availableAnalytes())
+      mt <- remove_unused_cols(mt=mt)
+      mater_table(mt) # write to reactiveValue
     })
 
     cert_mean <- shiny::reactive({
       shiny::req(sAnData())
-      if(!silent) message("---materialtabelle: cert_mean---")
+      if (!silent) message("---materialtabelle: cert_mean---")
       data <- sAnData()[!sAnData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
+      #getValue(datreturn, "mater_table")
+      #current_apm()
       ifelse(input$pooling,
-             ecerto::roundMT(mean(data[, "value"], na.rm = T), precision2),
+             ecerto::roundMT(mean(data[, "value"], na.rm = T), precision_export()),
              ecerto::roundMT(mean(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
-             )), precision2)
+             )), precision_export())
       )
     })
 
@@ -327,25 +300,33 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # build either standard deviation of all values or standard deviation of
       # average per lab
       ifelse(input$pooling,
-             ecerto::roundMT(stats::sd(data[, "value"], na.rm = T), precision2),
+             ecerto::roundMT(stats::sd(data[, "value"], na.rm = T), precision_export()),
              ecerto::roundMT(stats::sd(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
-             )), precision2))
+             )), precision_export()))
     })
 
     shiny::observeEvent(cert_mean(),{
-      setValue(datreturn, "cert_mean",cert_mean())
+      setValue(datreturn, "cert_mean", cert_mean())
     })
     shiny::observeEvent(cert_sd(),{
-      setValue(datreturn, "cert_sd",cert_sd())
+      setValue(datreturn, "cert_sd", cert_sd())
     })
+    shiny::observeEvent(mater_table(),{
+      # set result as new value in the R6 object
+      if (!identical(ecerto::getValue(datreturn, "mater_table"), mater_table())) {
+        ecerto::setValue(datreturn, "mater_table", mater_table())
+        if(!silent) message("materialtabelle: recalc_mat_table; set datreturn.mater_table")
+      }
+    })
+
 
     # when an Analyte-tab was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
     # in case mater table has been initiated...
     # shiny::observeEvent(sAnData(),{
     shiny::observe({
-      shiny::req(sAnData())
+      shiny::req(sAnData(), n())
       if(!is.null(mater_table())) {
         if (!silent) message("materialtabelleServer: update initiated for ", sAnData()[1,"analyte"])
         ecerto::update_reactivecell(
@@ -360,16 +341,11 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
           analyterow = sAnData()[1,"analyte"],
           value = cert_sd()
         )
-        n <- ifelse(
-          test = input$pooling,
-          yes = sum(lab_statistics()[!(lab_statistics()[, "Lab"] %in% lab_filter()), "n"]),
-          no = nrow(lab_statistics()) - length(lab_filter())
-        )
         ecerto::update_reactivecell(
           r = mater_table,
           colname = "n",
           analyterow = sAnData()[1,"analyte"],
-          value = n
+          value = n()
         )
         # recalc_mat_table(mt=mater_table())
       }
@@ -389,7 +365,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
         grep(x, colnames(mt))
       }))
       for (k in u_cols) {
-        mt[, k] <- ecerto::roundMT(mt[, k], precision2)
+        # apply precision_export() only for the current analyte i
+        mt[, k] <- ecerto::roundMT(mt[, k], precision_U)
       }
       # rename column header for temporary display
       cc <- attr(mt, "col_code")
