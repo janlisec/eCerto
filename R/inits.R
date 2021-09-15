@@ -135,7 +135,7 @@ init_rv = function() {
 
 #' Analyte Parameter List (apm)
 #'
-#' @description \code{analyte_parameter_list} creates for each analyte the
+#' @description \code{init_apm} creates for each analyte the
 #'   parameter list. Each sublist contains information about the selected analyte
 #'   tab, and for each analyte the specified precision, the filtered sample id,
 #'   which sample ids are available to be filtered at all and, for completion,
@@ -150,13 +150,13 @@ init_rv = function() {
 #' @examples
 #' apm <- shiny::reactiveVal()
 #' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
-#' apm(analyte_parameter_list(df))
+#' apm(init_apm(df))
 #' apm_tmp <- shiny::isolate(apm())
 #' apm_tmp[["A1"]]$confirmed = TRUE
 #' apm(apm_tmp)
 #' shiny::isolate(apm()[["A1"]]$confirmed) # TRUE
 #'
-analyte_parameter_list = function(certification = NULL) {
+init_apm = function(certification = NULL) {
   if(!is.null(certification)){
     stopifnot(is.factor(certification[, "analyte"]))
   }

@@ -41,7 +41,7 @@ shiny::shinyApp(
  server = function(input, output, session) {
    m_analyteServer(
      id = "test",
-     apm = shiny::reactiveVal(analyte_parameter_list(df)),
+     apm = shiny::reactiveVal(init_apm(df)),
      renewTab = reactiveVal(1),
      tablist = reactiveVal()
    )

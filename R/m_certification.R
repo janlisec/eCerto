@@ -214,7 +214,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         if(o.upload=="Excel") {
           # Creation of AnalyteParameterList.
           apm(
-            analyte_parameter_list(
+            init_apm(
               getValue(rv, c("Certification", "data"))
             ))
         } else if(startsWith(o.upload, "RData")) {
@@ -226,7 +226,7 @@ m_CertificationServer = function(id, rv, datreturn) {
             apm(getValue(rv,c("General","apm")))
           } else {
             # RData did not contain "apm" --> create
-            apm(analyte_parameter_list(getValue(rv,c("Certification","data"))))
+            apm(init_apm(getValue(rv,c("Certification","data"))))
           }
         } else {
           stop("unknown Upload Type")
