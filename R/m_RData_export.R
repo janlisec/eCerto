@@ -102,7 +102,7 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
           , '.RData')
       },
       content = function(file) {
-        #browser()
+        #
         res <- sapply(rv$get(), function(x) {
           if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x) else x
         })

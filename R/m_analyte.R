@@ -78,7 +78,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
 
       # append/prepend a tab for each analyte available
       for (a.name in names(shiny::isolate(apm()))) {
-        #browser()
+        #
         # message("append Tab: ", a.name)
         tablist_tmp <- c(tablist(), a.name) # add to tablist for removing later
         tablist(tablist_tmp)

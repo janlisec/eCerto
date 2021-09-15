@@ -87,7 +87,7 @@ app_server = function(input, output, session) {
     }
   })
   shiny::observeEvent(getValue(datreturn,"transfer"), {
-    browser()
+    
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",

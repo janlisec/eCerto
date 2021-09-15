@@ -240,6 +240,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     })
 
     shiny::observeEvent(rdataUpload(),{
+      
       if(!silent)message("m_materialtabelleServer: RData Uploaded, insert materialtabelle")
       mt <- rdataUpload()
       mt <- remove_unused_cols(mt=mt)
@@ -247,10 +248,10 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     }, ignoreNULL = TRUE)
 
     # data frame of selected analyte
-    sAnData <- shiny::reactive({ ecerto::getValue(datreturn,"selectedAnalyteDataframe") })
+    selectedAnalyteDataframe <- shiny::reactive({ ecerto::getValue(datreturn,"selectedAnalyteDataframe") })
     n <- shiny::reactive({
-      shiny::req(sAnData())
-      x <- sAnData()
+      shiny::req(selectedAnalyteDataframe())
+      x <- selectedAnalyteDataframe()
       return(ifelse(
         test = input$pooling,
         yes = sum(!x[,"L_flt"]),
@@ -258,27 +259,31 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       ))
     })
 
-    shiny::observeEvent(sAnData(), {
-      if(!silent) message("materialtabelle: sAnData updated")
+    shiny::observeEvent(selectedAnalyteDataframe(), {
+      if(!silent) message("materialtabelle: selectedAnalyteDataframe updated")
+      
     })
 
     # get all availables analytes
-    availableAnalytes = shiny::reactive({levels(sAnData()[["analyte"]])})
+    availableAnalytes = shiny::reactive({levels(selectedAnalyteDataframe()[["analyte"]])})
 
     # the data table should be created only once, since the levels shouldn't
     # change after certification upload
     shiny::observeEvent(availableAnalytes(), once = TRUE, {
+      
       # initiate empty materialtabelle only if nothing has yet been uploaded via RData
-      if (!silent) message("m_materialtabelleServer: initiate empty materialtabelle")
-      mt <- ecerto::init_materialTabelle(availableAnalytes())
-      mt <- remove_unused_cols(mt=mt)
-      mater_table(mt) # write to reactiveValue
+      if(is.null(rdataUpload())) {
+        if (!silent) message("m_materialtabelleServer: initiate empty materialtabelle")
+        mt <- ecerto::init_materialTabelle(availableAnalytes())
+        mt <- remove_unused_cols(mt=mt)
+        mater_table(mt) # write to reactiveValue
+      }
     })
 
     cert_mean <- shiny::reactive({
-      shiny::req(sAnData())
+      shiny::req(selectedAnalyteDataframe())
       if (!silent) message("---materialtabelle: cert_mean---")
-      data <- sAnData()[!sAnData()[, "L_flt"], ]
+      data <- selectedAnalyteDataframe()[!selectedAnalyteDataframe()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
       #getValue(datreturn, "mater_table")
@@ -292,9 +297,9 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     })
 
     cert_sd <- shiny::reactive({
-      shiny::req(sAnData())
+      shiny::req(selectedAnalyteDataframe())
       if (!silent) message("---materialtabelle: cert_sd---")
-      data <- sAnData()[!sAnData()[, "L_flt"], ]
+      data <- selectedAnalyteDataframe()[!selectedAnalyteDataframe()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from
       # calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
@@ -325,27 +330,27 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # when an Analyte-tab was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
     # in case mater table has been initiated...
-    # shiny::observeEvent(sAnData(),{
+    # shiny::observeEvent(selectedAnalyteDataframe(),{
     shiny::observe({
-      shiny::req(sAnData(), n())
+      shiny::req(selectedAnalyteDataframe(), n())
       if(!is.null(mater_table())) {
-        if (!silent) message("materialtabelleServer: update initiated for ", sAnData()[1,"analyte"])
+        if (!silent) message("materialtabelleServer: update initiated for ", selectedAnalyteDataframe()[1,"analyte"])
         ecerto::update_reactivecell(
           r = mater_table,
           colname = "mean",
-          analyterow = sAnData()[1,"analyte"],
+          analyterow = selectedAnalyteDataframe()[1,"analyte"],
           value = cert_mean()
         )
         ecerto::update_reactivecell(
           r = mater_table,
           colname = "sd",
-          analyterow = sAnData()[1,"analyte"],
+          analyterow = selectedAnalyteDataframe()[1,"analyte"],
           value = cert_sd()
         )
         ecerto::update_reactivecell(
           r = mater_table,
           colname = "n",
-          analyterow = sAnData()[1,"analyte"],
+          analyterow = selectedAnalyteDataframe()[1,"analyte"],
           value = n()
         )
         # recalc_mat_table(mt=mater_table())
