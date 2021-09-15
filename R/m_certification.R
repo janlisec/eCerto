@@ -251,7 +251,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced in future versions
     selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
-    # m_report_server(id = "report",rv = rv, selected_tab = selected_tab)
+    m_report_server(id = "report",rv = rv, selected_tab = selected_tab)
     # --- --- --- --- --- --- --- --- --- --- ---
     
     current_apm <- shiny::reactive({apm()[[selected_tab()]]})

@@ -106,7 +106,7 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
     # REPORT Material
     output$MaterialReport <- downloadHandler(
       filename = function() {
-        paste0(input$study_id, "_", input$user, '.', switch(
+        paste0(getValue(rv, c("General","study_id")), "_", getValue(rv, c("General","user")), '.', switch(
           input$output_file_format,
           PDF = 'pdf',
           HTML = 'html',

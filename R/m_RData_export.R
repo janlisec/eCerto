@@ -80,10 +80,11 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
     })
     
     shiny::observeEvent(input$study_id, {
+      if (!silent) message("RData-export: set rv$study_id to ", input$study_id)
       setValue(rv,c("General","study_id"),input$study_id)
     })
     shiny::observeEvent(getValue(rv,c("General", "study_id")), {
-      # if (!silent) message("m_RDataImport_Server: observeEvent(input$study_id")
+      if (!silent) message("RData-export: study_id-input updated to ", getValue(rv,c("General","study_id")))
       shiny::updateTextInput(
         session = session,
         inputId = "study_id",
