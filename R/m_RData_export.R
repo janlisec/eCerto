@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' if (interactive()) {
-#'    
+#'
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(m_RDataExport_UI(id = "test")),
 #'  server = function(input, output, session) {
@@ -48,7 +48,7 @@ m_RDataExport_UI <- function(id) {
           shiny::textInput(
             inputId = ns("study_id"),
             label = "Study ID",
-            value = "TEST"
+            value = "CRM001"
           )
         ),
         shiny::column(
@@ -65,7 +65,7 @@ m_RDataExport_UI <- function(id) {
 m_RDataexport_Server = function(id, rv, silent=FALSE) {
   # stopifnot(shiny::is.reactivevalues(rv$get()))
   shiny::moduleServer(id, function(input, output, session) {
-    
+
     shiny::observeEvent(input$user, {
       if (!silent) message("RData-export: set rv$user to ", input$user)
       setValue(rv,c("General","user"),input$user)
@@ -78,7 +78,7 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
         value = getValue(rv,c("General","user"))
       )
     })
-    
+
     shiny::observeEvent(input$study_id, {
       if (!silent) message("RData-export: set rv$study_id to ", input$study_id)
       setValue(rv,c("General","study_id"),input$study_id)
@@ -93,13 +93,13 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
     })
     # DOWNLOAD
     output$ecerto_backup <- shiny::downloadHandler(
-      
+
       filename = function() {
         paste0(
           ifelse(
             test = is.null(getValue(rv,c("General", "study_id"))),
             yes =  "TEST",
-            no =  getValue(rv,c("General", "study_id")) ) 
+            no =  getValue(rv,c("General", "study_id")) )
           , '.RData')
       },
       content = function(file) {
@@ -112,8 +112,8 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
       },
       contentType = "RData"
     )
-    
+
   })
-  
+
 }
 

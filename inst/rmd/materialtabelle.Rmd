@@ -2,7 +2,7 @@
 
 The material table combines all data collected within a certification trial to provide for each measured entity within the certified material the certified mean `cert_val` and the certified uncertainty `U`.
 
-![Materialtabelle](Data_Stats04.png)
+![Materialtabelle](C_Modul_Tab3.png)
 
 ***Note!*** Only for analytes which have been visually inspected by the user certified values will be transfered to this table to ensure that inspection took place. 
 
