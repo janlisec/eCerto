@@ -128,6 +128,7 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
       
       } else if(excelformat() == "Certification") {
         # CERTIFICATION
+        if(!silent) message("m_ExcelUpload_Server: Certification ")
         for (i in 1:length(tab_flt)) {
           tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_flt[[i]]))
         }
@@ -158,6 +159,7 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
         if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab[[1]]) &
            nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab[[1]])
         ) {
+          if(!silent) message("m_ExcelUpload_Server: Forgot select row and column?")
           shinyalert::shinyalert(
             title = "Forgot select row and column?",
             text = "You're trying to upload Certification data without selection of row and column. Are you sure to proceed?",

@@ -23,14 +23,15 @@ test_that("Successful Upload test",code = {
     args = list(excelformat=excelformat_test, check = check),
     expr =  {
       session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
-      session$setInputs(go = "click")
       
-      test = crop_dataframes(
+      
+      rv_xlsx_range_select$tab = crop_dataframes(
         dfs = rv_xlsx_range_select$tab,
         rows = 8:16,
-        cols = 2:5
+        cols = 1:5
       )
-      print(test)
+      session$setInputs(go = "click")
+      expect_equal("File" %in% names(out$data), TRUE)
 
     }
   )
