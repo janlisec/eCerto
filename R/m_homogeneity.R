@@ -124,10 +124,9 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       colnames(h_dat)[1] <- "analyte"
       h_dat[,"analyte"] <- factor(h_dat[,"analyte"])
       # ensure that there is a second column 'H_type' and convert to factor
-      if (ncol(h_dat)==4) {
+      if (colnames(h_dat)[2]!="H_type" && colnames(h_dat)[3]=="value") {
         h_dat <- cbind(h_dat[,1,drop=FALSE], data.frame("H_type"=gl(n = 1, k = nrow(h_dat), labels = "hom")), h_dat[,2:4])
       } else {
-        colnames(h_dat)[2] <- "H_type"
         h_dat[,"H_type"] <- factor(h_dat[,"H_type"])
       }
       # ensure that there is a third column 'Flasche' and convert to factor
@@ -255,12 +254,12 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
         h4 <- ""
       }
       return(
-        shiny::fluidRow(
+        shiny::fluidRow(shiny::column(12,
           shiny::HTML("The tested items (Flasche) are ", h2, "(ANOVA P-value = ", pn(anp,2), ").<p>",
                       "The uncertainty value for analyte ", input$h_sel_analyt),
           shiny::actionLink(inputId = ns("hom_help_modal"), label = "was determined as"),
-          shiny::HTML("<b>", pn(ansd), "</b>.<p>"), h4
-        )
+          shiny::HTML("<b>", pn(ansd), "</b>.<p>", h4)
+        ))
       )
     })
 
