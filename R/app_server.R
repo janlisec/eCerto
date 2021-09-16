@@ -10,7 +10,8 @@ app_server = function(input, output, session) {
 
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
-
+  silent = FALSE
+  
   # Certification, Homogeneity, Stability -----------------------------------
   excelformat = shiny::reactive({input$moduleSelect})
   shiny::updateSelectInput(
@@ -52,25 +53,25 @@ app_server = function(input, output, session) {
       session = session,
       inputId = "navbarpage",
       selected = "tP_certification")
-    # overwrites
+    # overwrite: Get all elements 
     rv_rdatanames <- listNames(
       sapply(rv_rdata()$get(), function(x) {
         if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
       })
     )
+    # overwrite
     for (n in strsplit(rv_rdatanames,split = ".", fixed = TRUE)) {
       setValue(rv,n,getValue(rv_rdata(),n))
     }
   }, ignoreNULL = TRUE)
   # when Excel was uploaded with LOAD-Button...
   shiny::observeEvent(ExcelUp$data,{
-    message("app_server: Excel Upload, set rv.Data; set rv.Uploadsource")
+    if(!silent) message("app_server: (Excel Upload) set rv.Data; set rv.Uploadsource")
     ex_intern = shiny::isolate(excelformat())
     setValue(rv, c(ex_intern,"data"), ExcelUp$data)
     setValue(rv, c(ex_intern,"input_files"), ExcelUp$input_files)
     setValue(rv, c(ex_intern, "uploadsource"), value = "Excel")
     if(ex_intern == "Certification"){
-      # message("observer: certification was uploaded")
       shiny::updateNavbarPage(
         session = session,
         inputId = "navbarpage",
@@ -158,13 +159,13 @@ app_server = function(input, output, session) {
 # observers ---------------------------------------------------------------
 
   shiny::observeEvent(getValue(datreturn, "mater_table"),{
-    message("app_server: datreturn.mater_table changed; set rv.materialtabelle")
+    if(!silent) message("app_server: (datreturn.mater_table) set rv.materialtabelle")
     setValue(rv, "materialtabelle", getValue(datreturn,"mater_table"))
   })
 
   # After Homogeneity values have been uploaded
   shiny::observeEvent(h_vals(),{
-    message("app_server: h_vals() changed, set datreturn.h_vals")
+    if(!silent) message("app_server: (h_vals()), set datreturn.h_vals")
     setValue(datreturn, "h_vals", h_vals())
   }, ignoreInit = TRUE)
 

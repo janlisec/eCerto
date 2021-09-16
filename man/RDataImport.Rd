@@ -43,7 +43,6 @@ shiny::shinyApp(
      uploadsource = reactiveVal("Excel")
      )
  }
-)
-}
+)}
 
 }

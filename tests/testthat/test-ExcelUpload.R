@@ -1,7 +1,7 @@
 local_edition(3)
 # Certification Test ------------------------------------------------------
 
-# currently not possible since can't access range_select_moduke
+# currently not possible since can't access range_select_module
 
 # test_that("Successful Upload test",code = {
 #   excelformat_test = shiny::reactiveVal("Certification")

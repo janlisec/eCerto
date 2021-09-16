@@ -30,8 +30,7 @@
 #'      uploadsource = reactiveVal("Excel")
 #'      )
 #'  }
-#' )
-#' }
+#' )}
 #'
 #' @rdname RDataImport
 #' @export
@@ -110,7 +109,6 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
     })
 
     shiny::observeEvent(continue(), {
-      # whereami::cat_where(where = "RData_import: RData uploaded", color = "grey")
       res <- rdata()
       rv = reactiveClass$new(init_rv())
       if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE)))
@@ -129,17 +127,13 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
           )
           if (all(resnames %in% rvnames)) {
             # Transfer list elements
-            # $$ToDo$$ one might provide a warning to the user in case he will
-            # overwrite non empty fields i.e. he did load Stab data and now
-            # reads an RData backup which already contains Stab data
-            
             for (i in strsplit(resnames,split = ".", fixed = TRUE)) {
               # set uploadsource to "RData" if something was uploaded in saved RData
               if(i[length(i)] == "uploadsource" && !is.null(res[[i]])) {
                 set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")
               } else {
                 # if current element to-be-inserted is not "uploadsource",
-                # proceed
+                # --> proceed
                 setValue(rv,i,res[[i]])
               }
             }
@@ -205,58 +199,6 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
       continue(NULL)
       rvreturn(rv)
       },ignoreNULL = TRUE)
-
-
-
-    # shiny::observeEvent(user() , {
-    #   # if (!silent) whereami::cat_where(whereami::whereami(),color = "blue")
-    #   shiny::updateTextInput(
-    #     session = session,
-    #     inputId = "user",
-    #     value = user()
-    #   )
-    # })
-
-    # shiny::observeEvent(study_id(), {
-    #   # if (!silent) message("m_RDataImport_Server: observeEvent(input$study_id")
-    #   shiny::updateTextInput(
-    #     session = session,
-    #     inputId = "study_id",
-    #     value =  study_id()
-    #   )
-      # setValue(rv,c("General","study_id"),input$study_id)
-    # })
-
-    # shiny::observeEvent(input$user, {
-    #   setValue(rv,c("General","user"),input$user)
-    # })
-    # 
-    # shiny::observeEvent(input$study_id, {
-    #   setValue(rv,c("General","study_id"),input$study_id)
-    # })
-
-    # # DOWNLOAD
-    # output$ecerto_backup <- shiny::downloadHandler(
-    # 
-    #   filename = function() {
-    #     paste0(
-    #       ifelse(
-    #         test = is.null(study_id()),
-    #         yes =  "TEST",
-    #         no =  study_id() ) 
-    #       , '.RData')
-    #   },
-    #   content = function(file) {
-    #     #
-    #     res <- sapply(rv$get(), function(x) {
-    #       if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x) else x
-    #     })
-    #     res$General$dataformat_version = "2021-05-27"
-    #     save(res, file = file)
-    #   },
-    #   contentType = "RData"
-    # )
-
 
     return(rvreturn)
 
