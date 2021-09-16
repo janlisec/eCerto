@@ -202,15 +202,16 @@ m_CertificationServer = function(id, rv, datreturn) {
     # thing), it has to be checked if it has changed value since the last change
     # to verify an upload
     uploadsource <- shiny::reactiveVal(NULL)
-    UpdateInputs = shiny::reactiveVal(0)
+    UpdateInputs = shiny::reactiveVal(NULL)
     shiny::observeEvent(getValue(rv,c("Certification","uploadsource")),{
       o.upload <- getValue(rv,c("Certification","uploadsource"))
       # assign upload source if (a) hasn't been assigned yet or (b), if not
       # null, has changed since the last time, for example because other data
       # source has been uploaded
+      message("Certification: Uploadsource/ changed to ", o.upload)
       if(is.null(uploadsource()) || uploadsource() != o.upload ){
         uploadsource(o.upload)
-        message("Certification: Uploadsource changed to ", o.upload, "; initiate apm")
+        message("Certification: Uploadsource/ initiate apm")
         if(o.upload=="Excel") {
           # Creation of AnalyteParameterList.
           apm(
@@ -219,7 +220,7 @@ m_CertificationServer = function(id, rv, datreturn) {
             ))
         } else if(startsWith(o.upload, "RData")) {
           # only forward rData Upload after RData was uploaded
-          message("Certification: forward RData to Materialtabelle")
+          message("Certification: Uploadsource/ forward RData to Materialtabelle")
           rdataupload(getValue(rv,"materialtabelle"))
           if(!is.null(getValue(rv,c("General","apm")))) {
             # RData contains element "apm"
@@ -231,8 +232,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         } else {
           stop("unknown Upload Type")
         }
-        UpdateInputs(UpdateInputs() +1 )
-        renewTabs(1) # give a signal to renew tabs
+        UpdateInputs(UpdateInputs() +1 ) # give a signal to renew tabs
         # Change the UploadPanel to the --loaded-- version
         shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "loaded")
       }
@@ -249,7 +249,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
     tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced in future versions
-    selected_tab <- ecerto::m_analyteServer("analyteModule", apm, renewTabs, tablist)
+    selected_tab <- ecerto::m_analyteServer("analyteModule", apm, UpdateInputs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
     m_report_server(id = "report",rv = rv, selected_tab = selected_tab)
     # --- --- --- --- --- --- --- --- --- --- ---

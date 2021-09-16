@@ -147,7 +147,6 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
         }
       }
       confirmedTabs(l)
-      renewTabs(NULL) # reset variable to NULL for next renew-command
     }, ignoreNULL = TRUE)
 
     shiny::observeEvent(confirmedTabs(),{
