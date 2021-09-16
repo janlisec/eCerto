@@ -4,7 +4,7 @@ For the selected analyte various statistical tests regarding lab means and varia
 
 Except for `Cochran`, which tests for outliers with respect to variance, all other columns indicate potential outliers regarding lab means.
 
-![Laboratory statistics example](Data_Stats01.png)
+![Laboratory statistics example](C_Modul_Tab1.png)
 
 eCerto uses functions available for the statistical software environment R. Details regarding the conducted statistical test (implementation, parameters) can be found using the following links:
   

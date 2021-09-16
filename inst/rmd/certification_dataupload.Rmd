@@ -10,6 +10,8 @@ assumes the first and second column to contain analyte names and units
 respectively and replicate measurements of this analyte in all remaining
 columns.",
 
+![Data upload from Excel with preview](M_Modul_Dataupload.png)
+
 **Note!** Filenames will be stored for reference but imported labs will be
 consecutively numbered. In the example below you would import data from table
 'Tabelle1' located in Range A1:D5, containing 2 replicate measurements of 4

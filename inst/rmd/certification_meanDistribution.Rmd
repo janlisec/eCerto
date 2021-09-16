@@ -2,7 +2,7 @@
 
 The distribution of lab means is evaluated using a variety of recommended tests. Normality of the distribution is tested using the KS-Test. Besides `mean` and `sd` the robust alternatives `median` and `MAD`are provided. Columns which end on `_p` provide P-values of the respective tests. Skewness and Kurtosis are computed additionally and grouped with their respective tests (Agostino and Anscombe).
 
-![Statistics regarding overall mean distribution](Data_Stats02.png)
+![Statistics regarding Lab mean distribution](C_Modul_Tab2.png)
 
 
 Details regarding the conducted statistical test can be found using the following links:

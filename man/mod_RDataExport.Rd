@@ -28,7 +28,7 @@ not yet
 }
 \examples{
 if (interactive()) {
-   
+
 shiny::shinyApp(
  ui = shiny::fluidPage(m_RDataExport_UI(id = "test"), shiny::actionButton("insert","insert rv")),
  server = function(input, output, session) {

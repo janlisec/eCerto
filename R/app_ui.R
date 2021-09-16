@@ -10,7 +10,7 @@ app_ui = function(){
     shinyalert::useShinyalert(),
     shiny::navbarPage(
       id = "navbarpage",
-      selected = "Start",  
+      selected = "Start",
       title = shiny::div(
         class = "verticalhorizontal",
         shiny::img(
@@ -22,7 +22,7 @@ app_ui = function(){
         shiny::em("ecerto"),
         position = "relative"
       ),
-      
+
       # shiny::tabPanel(
       #   "Home",
       #   shiny::sidebarPanel(width = 3,
@@ -38,7 +38,7 @@ app_ui = function(){
       #     shiny::actionLink("link_to_start", "Click here to start"),
       #     # bookmarkButton()
       #   )
-      # 
+      #
       # ),
      # shiny::navbarMenu(
        # title = "eCerto",
@@ -47,6 +47,7 @@ app_ui = function(){
         shiny::tabPanel(
           id = "start",
           title = "Start",
+          icon = shiny::icon("angle-right"),
           shiny::fluidRow(
             shiny::column(
               width = 3,
@@ -78,19 +79,19 @@ app_ui = function(){
           id = "certif_tab",
           title = "Certification",
           value = "tP_certification",
-          # icon = shiny::icon("angle-right"),
+          icon = shiny::icon("angle-right"),
           m_CertificationUI("certification"),
         ),
         shiny::tabPanel(
           id = "homog_tab",
           title = "Homogeneity",
-          # icon = shiny::icon("angle-right"),
+          icon = shiny::icon("angle-right"),
           value = "tP_homogeneity",
           m_HomogeneityUI("Homogeneity")
         ),
         shiny::tabPanel(
           title = "Stability",
-          # icon = shiny::icon("angle-right"),
+          icon = shiny::icon("angle-right"),
           value = "tP_Stability",
           m_StabilityUI("Stability")
         )
