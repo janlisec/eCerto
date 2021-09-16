@@ -3,34 +3,39 @@ local_edition(3)
 
 # currently not possible since can't access range_select_module
 
-# test_that("Successful Upload test",code = {
-#   excelformat_test = shiny::reactiveVal("Certification")
-#   check = shiny::reactiveVal(TRUE)
-#   xlsx_test = list(
-#     datapath = c(
-#       system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
-#       system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
-#       system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
-#     ),
-#     name = c(
-#       "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
-#       "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
-#       "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
-#   )
-#   suppressMessages(
-#   shiny::testServer(
-#     app = m_ExcelUpload_Server,
-#     args = list(excelformat=excelformat_test, check = check),
-#     expr =  {
-#       session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
-#       session$setInputs(go = "click")
-#       # print(out())
-#       # expect_true("File" %in% colnames(out$data[[1]]))
-# 
-#     }
-#   )
-#   )
-# })
+test_that("Successful Upload test",code = {
+  excelformat_test = shiny::reactiveVal("Certification")
+  check = shiny::reactiveVal(TRUE)
+  xlsx_test = list(
+    datapath = c(
+      system.file(package = "ecerto", "extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
+      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
+      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
+    ),
+    name = c(
+      "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
+      "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
+      "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
+  )
+  suppressMessages(
+  shiny::testServer(
+    app = m_ExcelUpload_Server,
+    args = list(excelformat=excelformat_test, check = check),
+    expr =  {
+      session$setInputs(excel_file = xlsx_test, sheet_number = 1) # without row and column selection unfortunately
+      session$setInputs(go = "click")
+      
+      test = crop_dataframes(
+        dfs = rv_xlsx_range_select$tab,
+        rows = 8:16,
+        cols = 2:5
+      )
+      print(test)
+
+    }
+  )
+  )
+})
 
 # Homogeneity Upload -------------------------------------------------------------
 
@@ -75,3 +80,5 @@ test_that("Successful Stability Upload test",code = {
     )
   )
 })
+
+# TODO Testen ob File-Spalte angehängt wurde
