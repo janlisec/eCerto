@@ -79,11 +79,11 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
       },
       content = function(file) {
         # temporarily switch to the temp dir, in case you do not have write permission to the current working directory
-        owd <- setwd(tempdir(check = TRUE))
-        on.exit(setwd(owd))
-        writeLines(text = Report_Vorlage_Analyt(), con = 'Report_Vorlage_tmp.Rmd')
+        # owd <- setwd(tempdir(check = TRUE))
+        # on.exit(setwd(owd))
+        # writeLines(text = Report_Vorlage_Analyt(), con = 'Report_Vorlage_tmp.Rmd')
         out <- rmarkdown::render(
-          input = 'Report_Vorlage_tmp.Rmd',
+          input = fnc_get_local_file("report_vorlage.Rmd", copy_to_tempdir = FALSE),
           output_format = switch(
             input$output_file_format,
             PDF = rmarkdown::pdf_document(),
@@ -92,11 +92,12 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
           ),
           params = list(
             "General" = reactiveValuesToList(getValue(rv,"General")),
-            "Certification" = c(isolate(reactiveValuesToList(getValue(rv,"Certification"))),isolate(reactiveValuesToList(getValue(rv,"Certification_processing"))))
+            "Certification" = c(isolate(reactiveValuesToList(getValue(rv,"Certification"))),isolate(reactiveValuesToList(getValue(rv,"Certification_processing")))),
+            selected_tab = selected_tab()
             
             ),
           # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
-          envir = new.env(parent = globalenv())
+          # envir = new.env(parent = globalenv())
         )
         file.rename(out, file)
       }
@@ -104,35 +105,35 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
     
     
     # REPORT Material
-    output$MaterialReport <- downloadHandler(
-      filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", getValue(rv, c("General","user")), '.', switch(
-          input$output_file_format,
-          PDF = 'pdf',
-          HTML = 'html',
-          Word = 'docx'
-        ))
-      },
-      content = function(file) {
-        # temporarily switch to the temp dir, in case you do not have write permission to the current working directory
-        owd <- setwd(tempdir(check = TRUE))
-        on.exit(setwd(owd))
-        writeLines(text = Report_Vorlage_Material(), con = 'tmp_Report.Rmd')
-        out <- rmarkdown::render(
-          input = 'tmp_Report.Rmd',
-          output_format = switch(
-            input$output_file_format,
-            PDF = rmarkdown::pdf_document(),
-            HTML = rmarkdown::html_document(),
-            Word = rmarkdown::word_document()
-          ),
-          params = list("res" = c_res()),
-          # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
-          envir = new.env(parent = globalenv())
-        )
-        file.rename(out, file)
-      }
-    )
+    # output$MaterialReport <- downloadHandler(
+    #   filename = function() {
+    #     paste0(getValue(rv, c("General","study_id")), "_", getValue(rv, c("General","user")), '.', switch(
+    #       input$output_file_format,
+    #       PDF = 'pdf',
+    #       HTML = 'html',
+    #       Word = 'docx'
+    #     ))
+    #   },
+    #   content = function(file) {
+    #     # temporarily switch to the temp dir, in case you do not have write permission to the current working directory
+    #     owd <- setwd(tempdir(check = TRUE))
+    #     on.exit(setwd(owd))
+    #     writeLines(text = Report_Vorlage_Material(), con = 'tmp_Report.Rmd')
+    #     out <- rmarkdown::render(
+    #       input = 'tmp_Report.Rmd',
+    #       output_format = switch(
+    #         input$output_file_format,
+    #         PDF = rmarkdown::pdf_document(),
+    #         HTML = rmarkdown::html_document(),
+    #         Word = rmarkdown::word_document()
+    #       ),
+    #       params = list("res" = c_res()),
+    #       # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
+    #       envir = new.env(parent = globalenv())
+    #     )
+    #     file.rename(out, file)
+    #   }
+    # )
     
   })
   
