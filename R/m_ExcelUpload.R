@@ -13,7 +13,7 @@
 #'@param check Check if 'excelformat' dataset has been uploaded (FALSE) or not (TRUE) (reactive).
 #'@param silent Option to print or omit status messages.
 #'
-#'@return A reactiveVal containing desired data
+#'@return A reactiveValues containing desired data and the name of the input_files
 #'
 #'@examples
 #' if (interactive()) {
@@ -29,7 +29,6 @@
 #'     id = "test",
 #'     excelformat = reactive({input$excelformat}),
 #'     check = reactive({TRUE}))
-#'   #observeEvent(out(), {print(out())})
 #'  }
 #' )
 #' }
@@ -38,7 +37,7 @@
 #' @export
 #'
 m_ExcelUpload_UI <- function(id) {
-
+  
   shiny::tagList(
     # control elements
     shiny::fluidRow(
@@ -55,11 +54,11 @@ m_ExcelUpload_UI <- function(id) {
 #' @export
 
 m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
-
+  
   stopifnot(shiny::is.reactive(excelformat))
-
+  
   shiny::moduleServer(id, function(input, output, session) {
-
+    
     output$btn_load <- shiny::renderUI({
       shiny::fluidRow(
         shiny::strong("Click to load"),
@@ -67,7 +66,7 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
         shiny::actionButton(inputId = shiny::NS(id, "go"), label = "LOAD")
       )
     })
-
+    
     current_file_input <- shiny::reactiveVal(NULL)
     # Excel-File-Input und Sheet-number
     output$excel_file <- shiny::renderUI({
@@ -81,7 +80,7 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
         shiny::HTML("<p style='color:red;'>Already uploaded</p>")
       }
     })
-
+    
     shiny::observeEvent(input$excel_file, {
       sheetnames <- ecerto::load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
@@ -91,14 +90,14 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
       shinyjs::showElement(id = "btn_load")
       current_file_input(input$excel_file)
     })
-
-
+    
+    
     sheetnumber = shiny::reactive({
       shiny::req(input$sheet_number)
       switch (excelformat(),
-        "Certification" = input$sheet_number,
-        "Homogeneity" = input$sheet_number,
-        "Stability" = 1:length(ecerto::load_sheetnames(input$excel_file$datapath))
+              "Certification" = input$sheet_number,
+              "Homogeneity" = input$sheet_number,
+              "Stability" = 1:length(ecerto::load_sheetnames(input$excel_file$datapath))
       )
     })
     # --- --- --- --- --- --- --- --- --- ---
@@ -110,29 +109,28 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
       excelformat = excelformat
     )
     # --- --- --- --- --- --- --- --- --- ---
-
-    out <- shiny::reactiveVal()
+    
+    out <- shiny::reactiveValues(data = NULL, input_files = NULL)
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
       # Append File column
       message("ExcelUpload: Load-button clicked")
-      # tab_flt <- rv_xlsx_range_select$tab_flt
-      # if(!is.null(unlist(tab_param$tab))){
       tab_flt = rv_xlsx_range_select$tab
-      for (i in 1:length(tab_flt)) {
-        tab_flt[[i]][["File"]] = rep(rv_xlsx_range_select$filenames[i], nrow(tab_flt[[i]]))
-      }
-      # }
-
+      out$input_files = current_file_input()$name
       # perform minimal validation checks
       if(excelformat()=="Homogeneity") {
         tab_flt <- tab_flt[[1]]
+        tab_flt[["File"]] = rep(current_file_input()$name[1], nrow(tab_flt))
         if (!"analyte" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'analyte' found in input file.")
         if (!"value" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'value' found in input file.")
         if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUpload_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
-        out(tab_flt)
-      }
-      if(excelformat() == "Certification") {
+        out$data = tab_flt
+      
+      } else if(excelformat() == "Certification") {
+        # CERTIFICATION
+        for (i in 1:length(tab_flt)) {
+          tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_flt[[i]]))
+        }
         uploadExcel = function(){
           # perform minimal validation tests
           if (!length(tab_flt)>=2) message("m_ExcelUpload_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
@@ -152,9 +150,8 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
               )
             )
             return(NULL)
-          }
-          )
-          out(results)
+          })
+          out$data = results
         }
         # in case (a) it is Certification module and (b) the input table has not
         # been filtered, then ask if this is correct
@@ -171,10 +168,10 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
         } else {
           uploadExcel()
         }
-      }
-      if(excelformat() == "Stability") {
+       
+      } else if(excelformat() == "Stability") {
+        # STABILITY
         test_format <- tab_flt[[1]] # openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
-        # TODO @Jan wie kann man das besser hier einbauen?
         if (ncol(test_format)>=3 && "KW" %in% colnames(test_format)) {
           s_dat <- read_lts_input(
             file = input$excel_file$datapath[1],
@@ -188,18 +185,18 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
               cbind(
                 "analyte"= sheetnames[x],
                 tab_flt[[x]]
+                # "File" = current_file_input()$name
               )
             })
         }
-        # s_dat = getValue(rv,c("Stability","data"))
         shiny::validate(shiny::need(c("analyte","Value","Date") %in% colnames(s_dat), "No all required input columns found in input file."))
         shiny::validate(shiny::need(is.numeric(s_dat[,"Value"]), "Column 'Value' in input file contains non-numeric values."))
         if (class(s_dat[,"Date"])!="Date") { s_dat[,"Date"] <- as.Date.character(s_dat[,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d")) }
         shiny::validate(shiny::need(class(s_dat[,"Date"])=="Date", "Sorry, could not convert column 'Date' into correct format."))
         s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
-        out(s_dat)
+        out$data = s_dat
       }
-
+      
     })
     return(out)
   })

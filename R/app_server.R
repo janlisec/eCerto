@@ -63,10 +63,11 @@ app_server = function(input, output, session) {
     }
   }, ignoreNULL = TRUE)
   # when Excel was uploaded with LOAD-Button...
-  shiny::observeEvent(ExcelUp(),{
+  shiny::observeEvent(ExcelUp$data,{
     message("app_server: Excel Upload, set rv.Data; set rv.Uploadsource")
     ex_intern = shiny::isolate(excelformat())
-    setValue(rv, c(ex_intern,"data"), ExcelUp())
+    setValue(rv, c(ex_intern,"data"), ExcelUp$data)
+    setValue(rv, c(ex_intern,"input_files"), ExcelUp$input_files)
     setValue(rv, c(ex_intern, "uploadsource"), value = "Excel")
     if(ex_intern == "Certification"){
       # message("observer: certification was uploaded")

@@ -116,7 +116,7 @@ init_rv = function() {
         # upload
         "data" = NULL, # formerly h_dat
         "uploadsource" = NULL,
-        "h_file" = NULL,
+        "input_files" = NULL,
         # Processing
         "h_vals" = NULL,
         "h_sel_analyt" = NULL,
@@ -124,7 +124,7 @@ init_rv = function() {
         "h_Fig_width" = NULL
       ),
       "Stability" = shiny::reactiveValues(
-        "file" = NULL,
+        "input_files" = NULL,
         "data" = NULL,
         "uploadsource" = NULL,
         "s_vals" = NULL
