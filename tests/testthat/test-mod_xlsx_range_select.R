@@ -117,18 +117,20 @@ test_that("no reaction after only one DataTable element is selected",
             fn1 <- ecerto:::test_mod_xlsx_range()
             sheetNo <- shiny::reactiveVal(1)
             cells_selected <- matrix(c(7,1), ncol = 2, byrow = TRUE)
-            shiny::testServer(
-              app = m_xlsx_range_select_Server,
-              args = list(current_file_input = fn1, sheet = sheetNo), {
-                suppressMessages(session$flushReact())
-                # @Frederick: dieser Test musste modifiziert werden. Ich habe den Modul-Code so geändert, dass der User eine MessageBox bekommt, wenn er versucht eine dritte Zelle innerhalb der Range zu wählen. Die Bedingung das der Klick keine Aktion hervorruft ist aber nicht mehr gegeben.
-                # set rows and columns selection
-                # expect_silent(
-                #   object = session$setInputs(uitab_cells_selected = cells_selected)
-                # )
-                session$setInputs(uitab_cells_selected = cells_selected)
-                expect_equal(input$uitab_cells_selected, cells_selected)
-              }
+            suppressMessages(
+              shiny::testServer(
+                app = m_xlsx_range_select_Server,
+                args = list(current_file_input = fn1, sheet = sheetNo), {
+                  suppressMessages(session$flushReact())
+                  # @Frederick: dieser Test musste modifiziert werden. Ich habe den Modul-Code so geändert, dass der User eine MessageBox bekommt, wenn er versucht eine dritte Zelle innerhalb der Range zu wählen. Die Bedingung das der Klick keine Aktion hervorruft ist aber nicht mehr gegeben.
+                  # set rows and columns selection
+                  # expect_silent(
+                  #   object = session$setInputs(uitab_cells_selected = cells_selected)
+                  # )
+                  session$setInputs(uitab_cells_selected = cells_selected)
+                  expect_equal(input$uitab_cells_selected, cells_selected)
+                }
+              )
             )
           })
 

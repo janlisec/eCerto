@@ -2,8 +2,6 @@ test_that(
   desc = "Boxplot-View toggled saved in rv",
   code = {
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
-    # shiny::isolate({ecerto::setValue(rv_test, c("Certification","data"), ecerto:::test_Certification_Excel()) })
-    # shiny::isolate({ecerto::setValue(rv_test, c("Certification","uploadsource"), "Excel") })
     datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn()) # initiate runtime variables
     suppressMessages(
       shiny::testServer(
