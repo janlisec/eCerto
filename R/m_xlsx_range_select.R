@@ -57,7 +57,7 @@
 #'  server = function(input, output, session) {
 #'   out <- m_xlsx_range_select_Server(
 #'     id = "test",
-#'     x = reactive({input$x}),
+#'     current_file_input = reactive({input$x}),
 #'     sheet = reactive({input$sheet}),
 #'     excelformat = reactive({input$excelformat})
 #'    )

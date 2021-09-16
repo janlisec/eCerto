@@ -62,7 +62,9 @@ m_CertificationUI = function(id) {
             shiny::checkboxGroupInput(
               inputId = ns("certification_view"),
               label = "Select View:",
-              choices = c("Outlier Tests" = "stats",
+              choices = c(
+                "Data View" = "dataview",
+                "Outlier Tests" = "stats",
                           "Lab-Means Tests" = "stats2",
                           "QQ-Plot" = "qqplot",
                           "Certified Values Plot"="boxplot",
@@ -78,6 +80,12 @@ m_CertificationUI = function(id) {
           width = 3,
           m_report_ui(ns("report"))
         )
+      ),
+      # Data View
+      shiny::conditionalPanel(
+        condition = "input.certification_view.indexOf('dataview') > -1",
+        ns = ns,
+        m_DataViewUI(ns("dv"))
       ),
       # Stats (on Lab distributions)
       shiny::conditionalPanel(
@@ -263,7 +271,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     dat <- shiny::reactive({
       shiny::req(selected_tab())
       # subset data frame for currently selected analyte
-      
+      browser()
       message("Cert_Load: dat-reactive invalidated")
       cert.data <- getValue(rv,c("Certification","data")) # take the uploaded certification
       # round input values
@@ -289,6 +297,9 @@ m_CertificationServer = function(id, rv, datreturn) {
       )
       return(cert.data)
     })
+    
+    # -- -- -- -- -- -- --
+    m_DataViewServer("dv", dat, current_apm)
     
     # Filter laboratories (e.g. "L1")
     output$flt_labs <- shiny::renderUI({

@@ -30,13 +30,15 @@ not yet
 if (interactive()) {
    
 shiny::shinyApp(
- ui = shiny::fluidPage(m_RDataExport_UI(id = "test")),
+ ui = shiny::fluidPage(m_RDataExport_UI(id = "test"), shiny::actionButton("insert","insert rv")),
  server = function(input, output, session) {
  rv_test <- reactiveClass$new(init_rv())
-    shiny::isolate({setValue(rv_test, c("Certification","data"), test_Certification_Excel()) })
+   m_RDataexport_Server(id = "test", rv = rv_test)
+   observeEvent(input$insert,{
+   shiny::isolate({setValue(rv_test, c("Certification","data"), test_Certification_Excel()) })
     shiny::isolate({setValue(rv_test, c("General", "user"), "FK4") })
     shiny::isolate({set_uploadsource(rv_test, "Certification", uploadsource = "Excel") })
-   m_RDataexport_Server(id = "test", rv = rv_test)
+   })
  }
 )
 }

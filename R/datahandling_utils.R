@@ -81,16 +81,18 @@ laboratory_dataframe = function(x) {
   # drop first (analyte name), second (unit)
   # and File name column before continue;
   # create new data frame
-  x2 <- data.frame(
+  x3 <- data.frame(
     "analyte"=factor(rep(analyte,times=ncol(dat)),levels=analyte),
     "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
     "value"=as.numeric(unlist(dat)),
     "unit"=as.character(rep(unit,times=ncol(dat)))
   )
-  
-  return(x2)
-  
-  
+  # add File column again (is this redundant with being removed above?)
+  if(any(names(x2) %in% "File")){
+    filecol = x2[["File"]]
+    x3["File"] = as.character(rep(filecol,times=ncol(dat)))
+  }
+  return(x3)
 }
 
 #' Loads names of Excel sheets
