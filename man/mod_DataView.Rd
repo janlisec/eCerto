@@ -30,8 +30,16 @@ shiny::shinyApp(
    m_DataViewUI(id = "test")
  ),
  server = function(input, output, session) {
+ datasetflt = reactiveVal(structure(
+ list(
+   ID = c(1L,10L,18,25), Lab = factor(c("L1","L1","L2","L2")), analyte = rep("Si",4), replicate = c(1,2,1,2),
+    value = runif(4, 0, 1),unit = rep("0.05",4),File = rep("Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",4),
+    S_flt = rep(FALSE,4),L_flt = rep(FALSE, 4),row.names = c(1L,10L,18,25),class = "data.frame")))
+    
    m_DataViewServer(
-     id = "test"
+     id = "test",
+     dataset_flt = datasetflt,
+     current_apm  = reactiveVal(list(precision = 3))
    )
  }
 )

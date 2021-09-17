@@ -15,8 +15,16 @@
 #'    m_DataViewUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
+#'  datasetflt = reactiveVal(structure(
+#'  list(
+#'    ID = c(1L,10L,18,25), Lab = factor(c("L1","L1","L2","L2")), analyte = rep("Si",4), replicate = c(1,2,1,2),
+#'     value = runif(4, 0, 1),unit = rep("0.05",4),File = rep("Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",4),
+#'     S_flt = rep(FALSE,4),L_flt = rep(FALSE, 4),row.names = c(1L,10L,18,25),class = "data.frame")))
+#'     
 #'    m_DataViewServer(
-#'      id = "test"
+#'      id = "test",
+#'      dataset_flt = datasetflt,
+#'      current_apm  = reactiveVal(list(precision = 3))
 #'    )
 #'  }
 #' )
@@ -28,6 +36,7 @@ m_DataViewUI <- function(id) {
   shiny::tagList(
     shiny::wellPanel(
       shiny::selectInput(
+        width = "200px",
         inputId = ns("data_view_select"), # previously opt_show_files
         label = "Data view",
         choices = c("kompakt", "standard"),
@@ -61,7 +70,7 @@ m_DataViewServer <- function(id, dataset_flt, current_apm) {
     # prepare a compact version of the data table
     dataset_komp <- reactive({
       req(dataset_flt())
-      
+      browser()
       data <- dataset_flt()
       n_reps <- sort(unique(data$replicate))
       data <- plyr::ldply(split(data, data$Lab), function(x) {
