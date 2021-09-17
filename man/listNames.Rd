@@ -2,21 +2,26 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{listNames}
 \alias{listNames}
-\title{listNames}
+\title{listNames
+Provides names of nested list elements, but ignores data.frame column}
 \usage{
-listNames(l, maxDepth = 2)
+listNames(l, maxDepth = 2, split = FALSE)
 }
 \arguments{
-\item{l}{nested list}
+\item{l}{nested list or R6 containing reactiveValues or reactiveValues}
 
 \item{maxDepth}{the maximum depth, the names of list should be returned}
+
+\item{split}{should the returning list be returned as nested  (TRUE) or
+as point-separated list?}
 }
 \value{
-Provides names of nested list elements, but ignores data.frame column names.
-Refer to https://stackoverflow.com/q/68453593/6946122
+list if split == TRUE, otherwise character vector
+names. Refer to https://stackoverflow.com/q/68453593/6946122
 }
 \description{
 listNames
+Provides names of nested list elements, but ignores data.frame column
 }
 \examples{
 a = list(

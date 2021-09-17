@@ -118,13 +118,11 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
         if ( res$General$dataformat_version=="2021-05-27") {
           # Non-legacy upload #####
           if(!silent) message("RDataImport: Non-legacy upload started")
-          # rv should contain all variables from uploaded res
-          resnames <- listNames(l = res, maxDepth = 2) # names(unlist(res, recursive = FALSE))
-          rvnames <-listNames(
-            sapply(rv$get(), function(x) {
-                if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
-              })
-          )
+          # rv should contain all variables from uploaded res split must be
+          # false here, otherwise one name list is of class character the other
+          # of class list -> Error
+          resnames <- listNames(l = res, maxDepth = 2, split = FALSE) 
+          rvnames <-listNames(rv)
           if (all(resnames %in% rvnames)) {
             # Transfer list elements
             for (i in strsplit(resnames,split = ".", fixed = TRUE)) {

@@ -307,12 +307,15 @@ to_startPage = function(session, value="Certification") {
 }
 
 #' @title listNames
+#' Provides names of nested list elements, but ignores data.frame column
 #'
-#' @param l nested list
+#' @param l nested list or R6 containing reactiveValues or reactiveValues
 #' @param maxDepth the maximum depth, the names of list should be returned
+#' @param split should the returning list be returned as nested  (TRUE) or
+#'   as point-separated list?
 #'
-#' @return Provides names of nested list elements, but ignores data.frame column names.
-#' Refer to https://stackoverflow.com/q/68453593/6946122
+#' @return list if split == TRUE, otherwise character vector
+#'   names. Refer to https://stackoverflow.com/q/68453593/6946122
 #'
 #' @export
 #'
@@ -322,16 +325,49 @@ to_startPage = function(session, value="Certification") {
 #'  c = NULL,
 #'  df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4)))
 #' listNames(a,2) # [1] "b.df1" "b.e"   "c"     "df2"
-listNames <- function(l, maxDepth = 2) {
-  n = 0
-  listNames_rec = function(l, n) {
-    if(!is.list(l) | is.data.frame(l) | n>=maxDepth) TRUE
+listNames <- function(l, maxDepth = 2, split = FALSE) {
+  if(R6::is.R6(l) | shiny::is.reactivevalues(l)){
+    # decompose first if it is a R6 object
+    l = sapply(l$get(), function(x) {
+        if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+      })
+  }
+  depth = 0
+  listNames_rec = function(l, depth) {
+    if(!is.list(l) | is.data.frame(l) | depth >= maxDepth) TRUE
     else {
-      n = n + 1
-      # print(n)
-      lapply(l, listNames_rec, n)
+      depth = depth + 1
+      lapply(l, listNames_rec, depth)
     }
   }
-  n = names(unlist(listNames_rec(l, n)))
-  return(n)
+  nms = names(unlist(listNames_rec(l, depth)))
+  if(split==TRUE){
+    nms = strsplit(nms,split = ".", fixed = TRUE)
+  }
+  return(nms)
+}
+
+
+#' Show View Returns a list of panels, which are marked to be shown in the
+#' accordingly used RData from previous analysis
+#'
+#' @param rv the R6 reactiveValues object
+#'
+#' @return a list of panels to be shown
+#' @export
+#'
+#' @examples
+#' rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#' shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
+#' print(show_view(rv))
+show_view = function(rv){
+  nms = shiny::isolate(listNames(rv, maxDepth = 3, split = TRUE))
+  visible = c()
+  for (n in nms) {
+    i = any(n %in% "show")
+    if(i && !is.null(shiny::isolate(getValue(rv, n))) && shiny::isolate(getValue(rv, n))) {
+      visible = c(visible,n[2])
+    } 
+  }
+  return(visible)
 }

@@ -65,11 +65,11 @@ m_CertificationUI = function(id) {
               choices = c(
                 "Data View" = "dataview",
                 "Outlier Tests" = "stats",
-                          "Lab-Means Tests" = "stats2",
-                          "QQ-Plot" = "qqplot",
-                          "Certified Values Plot"="boxplot",
-                          "Material table" = "mt"),
-              selected = c("boxplot","mt")
+                "Lab-Means Tests" = "mstats",
+                "QQ-Plot" = "qqplot",
+                "Certified Values Plot" = "CertValPlot",
+                "Material table" = "mt"),
+              selected = c("CertValPlot","mt")
             )
           )
         ),
@@ -99,9 +99,9 @@ m_CertificationUI = function(id) {
         ),
         DT::dataTableOutput(ns("overview_stats"))
       ),
-      # Stats2 (on Lab means)
+      # mstats (on Lab means)
       shiny::conditionalPanel(
-        condition = "input.certification_view.indexOf('stats2') > -1",
+        condition = "input.certification_view.indexOf('mstats') > -1",
         ns = shiny::NS(id),
         shiny::strong(
           shiny::actionLink(
@@ -121,7 +121,7 @@ m_CertificationUI = function(id) {
         )
       ),
       shiny::conditionalPanel(
-        condition = "input.certification_view.indexOf('boxplot') > -1",
+        condition = "input.certification_view.indexOf('CertValPlot') > -1",
         ns = shiny::NS(id), # namespace of current module,
         shiny::fluidRow(
           shiny::column(
@@ -326,12 +326,20 @@ m_CertificationServer = function(id, rv, datreturn) {
       us = getValue(rv,c("Certification","uploadsource"))
       if (startsWith(us,"RData") ) {
         
+        # "Data View" = "dataview",
+        # "Outlier Tests" = "stats",
+        # "Lab-Means Tests" = "mstats",
+        # "QQ-Plot" = "qqplot",
+        # "Certified Values Plot" = "CertValPlot",
+        # "Material table" = "mt"
         
-        
-        
-        
-        
-        
+        selectedView = show_view(rv)
+        browser()
+        shiny::updateCheckboxGroupInput(
+          session = session,
+          inputId = "certification_view",
+          selected = selectedView
+        )
         
         shiny::updateNumericInput(
           session=session,
@@ -506,7 +514,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     
     shiny::observeEvent(input$certification_view, {
       # Box "QQ-Plot" clickable? Depends in state of Box above it
-      if("stats2" %in% input$certification_view) {
+      if("mstats" %in% input$certification_view) {
         setValue(rv, c("Certification_processing","mstats","show"), TRUE)
         shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
       } else {
@@ -514,14 +522,9 @@ m_CertificationServer = function(id, rv, datreturn) {
         setValue(rv, c("Certification_processing","mstats","show"), FALSE)
       }
       # only change rv-object if CertValplot has changed
-      show_Boxplot = "boxplot" %in% input$certification_view
-      if(
-        is.null(getValue(rv,c("Certification_processing","CertValPlot","show"))) ||
-        getValue(rv,c("Certification_processing","CertValPlot","show")) != show_Boxplot
-      ) {
+      show_CertValPlot = "CertValPlot" %in% input$certification_view
         message("CERTIFICATION: SET Cert_ValPlot")
-        setValue(rv,c("Certification_processing","CertValPlot","show"),show_Boxplot)
-      }
+        setValue(rv,c("Certification_processing","CertValPlot","show"),show_CertValPlot)
     })
     
     output$overview_stats <- DT::renderDataTable({
@@ -529,13 +532,13 @@ m_CertificationServer = function(id, rv, datreturn) {
     }, options = list(dom = "t", pageLength=100, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
     
     # mStats
-    stats2 = reactive({mstats(data = dat(), precision = current_apm()$precision)})
+    # mstats_results = reactive({mstats(data = dat(), precision = current_apm()$precision)})
     output$overview_mstats <- DT::renderDataTable({
-      stats2
+      mstats(data = dat(), precision = current_apm()$precision)
     }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
-    # observeEvent(stats2(), {
+    # observeEvent(mstats_results(), {
     #   browser()
-    #   setValue(rv, c("Certification_processing","mstats","data"), stats2())
+    #   setValue(rv, c("Certification_processing","mstats","data"), mstats_results())
     # })
     
     output$qqplot <- shiny::renderPlot({

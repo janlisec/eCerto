@@ -105,10 +105,10 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
           , '.RData')
       },
       content = function(file) {
-        #
         res <- sapply(rv$get(), function(x) {
           if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x) else x
         })
+        
         res$General$dataformat_version = "2021-05-27"
         save(res, file = file)
       },

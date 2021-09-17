@@ -54,13 +54,14 @@ app_server = function(input, output, session) {
       inputId = "navbarpage",
       selected = "tP_certification")
     # overwrite: Get all elements 
-    rv_rdatanames <- listNames(
-      sapply(rv_rdata()$get(), function(x) {
-        if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
-      })
-    )
+    # rv_rdatanames <- listNames(
+    #   sapply(rv_rdata()$get(), function(x) {
+    #     if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+    #   })
+    # )
+    rv_rdatanames <- listNames(rv_rdata(), split = TRUE)
     # overwrite
-    for (n in strsplit(rv_rdatanames,split = ".", fixed = TRUE)) {
+    for (n in rv_rdatanames) {
       setValue(rv,n,getValue(rv_rdata(),n))
     }
   }, ignoreNULL = TRUE)
