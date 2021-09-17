@@ -3,7 +3,7 @@
 #' @aliases m_report_server
 #'
 #' @title report
-#' 
+#'
 #' @param id module ID
 #' @param rv the rv-reactiveClass object
 #' @param selected_tab which analyte-tab is currently selected
@@ -32,7 +32,7 @@
 #'  }
 #' )
 #' }
-#' 
+#'
 #' @rdname mod_report
 #' @export
 m_report_ui <- function(id) {
@@ -65,7 +65,7 @@ m_report_ui <- function(id) {
 
 
 m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
-  
+
   shiny::moduleServer(id, function(input, output, session) {
 
     output$FinalReport <- shiny::downloadHandler(
@@ -91,19 +91,21 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
             Word = rmarkdown::word_document()
           ),
           params = list(
-            "General" = reactiveValuesToList(getValue(rv,"General")),
-            "Certification" = c(isolate(reactiveValuesToList(getValue(rv,"Certification"))),isolate(reactiveValuesToList(getValue(rv,"Certification_processing")))),
-            selected_tab = selected_tab()
-            
+            "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
+            "Certification" = c(
+              shiny::isolate(shiny::reactiveValuesToList(getValue(rv,"Certification"))),
+              shiny::isolate(shiny::reactiveValuesToList(getValue(rv,"Certification_processing")))
             ),
+            "selected_tab" = selected_tab()
+          ),
           # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
           # envir = new.env(parent = globalenv())
         )
         file.rename(out, file)
       }
     )
-    
-    
+
+
     # REPORT Material
     # output$MaterialReport <- downloadHandler(
     #   filename = function() {
@@ -134,9 +136,7 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
     #     file.rename(out, file)
     #   }
     # )
-    
+
   })
-  
+
 }
-
-

@@ -33,9 +33,8 @@ These files have been provided to the tool by `r params$General$user`:
 cat(paste(Zertifizierung$input_files, collapse=",\n"))
 ```
 
-????? >
 `r ifelse(any(!Zertifizierung$opt$flt_samples==""), "The following samples (IDs) have been removed by the user:", "")`
-< ?????
+
 ```{r, eval=any(!Zertifizierung$opt$flt_samples==\"\"), echo=FALSE, comment=NA} 
 cat(paste(Zertifizierung$opt$flt_samples, collapse=", ")) 
 ```
