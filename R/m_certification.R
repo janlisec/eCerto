@@ -207,8 +207,8 @@ m_CertificationServer = function(id, rv, datreturn) {
     
     # Upload Notification. Since "uploadsource" is invalidated also when other
     # parameters within Certification are changed (because of the reactiveValues
-    # thing), it has to be checked if it has changed value since the last change
-    # to verify an upload
+    # thing), it has to verify an upload by checing if it has changed value
+    # since the last change
     uploadsource <- shiny::reactiveVal(NULL)
     UpdateInputs = shiny::reactiveVal(NULL)
     shiny::observeEvent(getValue(rv,c("Certification","uploadsource")),{
@@ -219,15 +219,17 @@ m_CertificationServer = function(id, rv, datreturn) {
       message("Certification: Uploadsource/ changed to ", o.upload)
       if(is.null(uploadsource()) || uploadsource() != o.upload ){
         uploadsource(o.upload)
-        message("Certification: Uploadsource/ initiate apm")
         if(o.upload=="Excel") {
+          message("Certification: Uploadsource/ initiate apm")
           # Creation of AnalyteParameterList.
           apm(
             init_apm(
               getValue(rv, c("Certification", "data"))
             ))
         } else if(startsWith(o.upload, "RData")) {
-          # only forward rData Upload after RData was uploaded
+          # only forward rData Upload after RData was uploaded; startsWith() is
+          # used since names change of RData-uploadsource changes iteratively
+          # with every RData-Upload
           message("Certification: Uploadsource/ forward RData to Materialtabelle")
           rdataupload(getValue(rv,"materialtabelle"))
           if(!is.null(getValue(rv,c("General","apm")))) {
@@ -298,7 +300,10 @@ m_CertificationServer = function(id, rv, datreturn) {
     })
     
     # -- -- -- -- -- -- --
-    m_DataViewServer("dv", dat, current_apm)
+    dataset_komp = m_DataViewServer("dv", dat, current_apm)
+    observeEvent(dataset_komp(), {
+      setValue(rv,c("Certification_processing","data_kompakt"), dataset_komp())
+    })
     
     # Filter laboratories (e.g. "L1")
     output$flt_labs <- shiny::renderUI({
@@ -318,9 +323,16 @@ m_CertificationServer = function(id, rv, datreturn) {
     
     shiny::observeEvent(UpdateInputs(), {
       message("certification: UpdateInputs() observeEvent")
-      
       us = getValue(rv,c("Certification","uploadsource"))
       if (startsWith(us,"RData") ) {
+        
+        
+        
+        
+        
+        
+        
+        
         shiny::updateNumericInput(
           session=session,
           inputId = "Fig01_width",
@@ -489,35 +501,42 @@ m_CertificationServer = function(id, rv, datreturn) {
     
     shiny::observeEvent(current_apm(), {
       message("Certification: current_apm() changed, set datreturn.current_apm")
-      
       setValue(datreturn, "current_apm", current_apm())
     })
     
     shiny::observeEvent(input$certification_view, {
       # Box "QQ-Plot" clickable? Depends in state of Box above it
-      shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
       if("stats2" %in% input$certification_view) {
+        setValue(rv, c("Certification_processing","mstats","show"), TRUE)
         shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
+      } else {
+        shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
+        setValue(rv, c("Certification_processing","mstats","show"), FALSE)
       }
       # only change rv-object if CertValplot has changed
-      show_Boxplot =  "boxplot" %in% input$certification_view
+      show_Boxplot = "boxplot" %in% input$certification_view
       if(
         is.null(getValue(rv,c("Certification_processing","CertValPlot","show"))) ||
-        show_Boxplot != getValue(rv,c("Certification_processing","CertValPlot","show"))
+        getValue(rv,c("Certification_processing","CertValPlot","show")) != show_Boxplot
       ) {
         message("CERTIFICATION: SET Cert_ValPlot")
         setValue(rv,c("Certification_processing","CertValPlot","show"),show_Boxplot)
       }
-    }, ignoreInit = TRUE)
+    })
     
     output$overview_stats <- DT::renderDataTable({
       Stats(data = dat(), precision = current_apm()$precision)
     }, options = list(dom = "t", pageLength=100, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
     
     # mStats
+    stats2 = reactive({mstats(data = dat(), precision = current_apm()$precision)})
     output$overview_mstats <- DT::renderDataTable({
-      mstats(data = dat(), precision = current_apm()$precision)
+      stats2
     }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+    # observeEvent(stats2(), {
+    #   browser()
+    #   setValue(rv, c("Certification_processing","mstats","data"), stats2())
+    # })
     
     output$qqplot <- shiny::renderPlot({
       shiny::req(lab_statistics())
@@ -538,7 +557,6 @@ m_CertificationServer = function(id, rv, datreturn) {
     
     # whenever the analyte parameter like lab filter, sample filter etc are changed
     shiny::observeEvent(apm(), {
-      
       message("certification: apm changed, set rv.apm")
       setValue(rv,c("General","apm"), apm())
     }, ignoreNULL = TRUE)

@@ -110,7 +110,10 @@ init_rv = function() {
         "stats" = NULL,
         "boxplot" = NULL,
         "opt" = NULL,
-        "mstats" = NULL
+        "mstats" = list(
+          "show" = NULL,
+          "data" = NULL
+        )
       ),
       "Homogeneity" = shiny::reactiveValues(
         # upload

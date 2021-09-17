@@ -18,7 +18,7 @@ m_DataViewServer(id, dataset_flt, current_apm)
 \item{current_apm}{current analyte-parameter-list for selected analyte}
 }
 \value{
-Will return UI and Server logic for the stability tab.
+kompakt data representation
 }
 \description{
 Data View Module

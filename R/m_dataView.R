@@ -5,7 +5,7 @@
 #' @param dataset_flt filtered data for particular measurements specified by user
 #' @param current_apm current analyte-parameter-list for selected analyte
 #'
-#' @return Will return UI and Server logic for the stability tab.
+#' @return kompakt data representation
 #' @export
 #'
 #' @examples
@@ -90,6 +90,6 @@ m_DataViewServer <- function(id, dataset_flt, current_apm) {
         "sd" = round(apply(data[, -1, drop = F], 1, stats::sd, na.rm = T), digits = n)
       ))
     })
-    
+    return(dataset_komp)
   })
 }
