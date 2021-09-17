@@ -180,7 +180,7 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
           if (!silent) message("RDataImport_Server: Homog data transfered")
           setValue(rv,c("Homogeneity","data"),res[["Homogeneity"]][["h_dat"]])
           set_uploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
-          setValue(rv,c("Homogeneity","h_file"),res[["Homogeneity"]][["h_file"]])
+          setValue(rv,c("Homogeneity","input_files"),res[["Homogeneity"]][["h_file"]])
           # Processing
           setValue(rv,c("Homogeneity","h_vals"),res[["Homogeneity"]][["h_vals"]])
           setValue(rv,c("Homogeneity","h_sel_analyt"),res[["Homogeneity"]][["h_sel_analyt"]])
@@ -189,7 +189,7 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
         }
         if ("Stability" %in% names(res) && !is.null(res$Stability)) {
           if (!silent) message("RDataImport_Server: Stab data transfered")
-          setValue(rv,c("Stability","file"),res[["Stability"]][["s_file"]])
+          setValue(rv,c("Stability","input_files"),res[["Stability"]][["s_file"]])
           setValue(rv,c("Stability","data"),res[["Stability"]][["s_dat"]])
           set_uploadsource(rv = rv, m = "Stability", uploadsource = "RData")
           setValue(rv,c("Stability","s_vals"),res[["Stability"]][["s_vals"]])
