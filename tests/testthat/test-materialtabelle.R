@@ -102,24 +102,10 @@ test_that("Lab filter",code = {
       ), {
         session$setInputs(pooling=FALSE)
         session$flushReact()
-        # print(tmp_mater_table())
         selectedAnalyteDataframe_tmp = selectedAnalyteDataframe()
         selectedAnalyteDataframe_tmp[selectedAnalyteDataframe_tmp$Lab=="L1",]$L_flt <- TRUE
         setValue(datreturn,"selectedAnalyteDataframe",selectedAnalyteDataframe_tmp)
-        # session$setInputs(datreturn$selectedAnalyteDataframe=selectedAnalyteDataframe_tmp)
         session$flushReact()
-        # print(dput(mater_table()[mater_table()$analyte=="Si",]))
-        # data <- selectedAnalyteDataframe()[!selectedAnalyteDataframe()[, "L_flt"], ]
-        # expected_mean = roundMT(mean(sapply(
-        #   split(data[, "value"], as.character(data[, "Lab"])), mean, na.rm = T
-        # )), 4)
-        # expected_Si = structure(list(analyte = "Si", mean = 0.0484, cert_val = 0.0484,
-        #                              sd = 0.0041, n = 2L, char = 0.0599, com = 0.0599,
-        #                              k = 2, U = 0.1198), col_code = structure(list(
-        #                                ID = character(0), Name = character(0)), row.names = integer(0), class = "data.frame"), row.names = 1L, class = "data.frame")
-        # print(expected_mean)
-        # actual_mean = tmp_mater_table()[tmp_mater_table()$analyte=="Si",]$mean
-        # expect_equal(actual_mean,0.0512)
         actual_Si = tmp_mater_table()[tmp_mater_table()$analyte=="Si",]
         expected_Si = structure(list(analyte = "Si", mean = 0.0512, cert_val = 0.0512,
                                      sd = 1e-04, n = 2L, char = 0.0014, com = 0.0014, k = 2, U = 0.0028), col_code = structure(list(

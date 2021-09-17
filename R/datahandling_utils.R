@@ -131,6 +131,7 @@ load_sheetnames = function(filepath){
 #'
 #' @return cropped list of data frames(s)
 #'
+#' @export
 #' @rdname datahandling_utils
 #' @examples ecerto:::crop_dataframes(iris,2:3,5:6)
 crop_dataframes <- function(dfs, cols, rows) {

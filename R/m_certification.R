@@ -433,9 +433,9 @@ m_CertificationServer = function(id, rv, datreturn) {
         paste0(getValue(rv, c("General","study_id")), "_", current_apm()$analytename, "_Fig01.pdf")
       },
       content = function(file) {
-        pdf(file = file, width = input$Fig01_width/72, height = input$Fig01_height/72)
+        grDevices::pdf(file = file, width = input$Fig01_width/72, height = input$Fig01_height/72)
         CertValPlot(data = dat(), annotate_id=input$annotate_id)
-        dev.off()
+        grDevices::dev.off()
       },
       contentType = "image/pdf"
     )

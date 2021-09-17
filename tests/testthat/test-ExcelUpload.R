@@ -21,7 +21,7 @@ test_that("Certification: File-column appended",code = {
       expr =  {
         session$setInputs(excel_file = xlsx_test, sheet_number = 1) 
         # without row and column selection unfortunately
-        rv_xlsx_range_select$tab = crop_dataframes(
+        rv_xlsx_range_select$tab = ecerto:::crop_dataframes(
           dfs = rv_xlsx_range_select$tab,
           rows = 8:16,
           cols = 1:5
