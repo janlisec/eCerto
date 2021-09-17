@@ -36,8 +36,8 @@ app_server = function(input, output, session) {
   m_RDataexport_Server(id = "Rdataex",rv = rv)
   rv_rdata = m_RDataImport_Server(
     id = "Rdatain",
-    modules = reactive({getValue(rv,"modules")}), 
-    uploadsources = reactive({sapply(getValue(rv,"modules"), function(x){getValue(rv,c(x,"uploadsource"))})})
+    modules = shiny::reactive({getValue(rv,"modules")}), 
+    uploadsources = shiny::reactive({sapply(getValue(rv,"modules"), function(x){getValue(rv,c(x,"uploadsource"))})})
   )
 
 # page turners (and more) -------------------------------------------------------------

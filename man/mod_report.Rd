@@ -7,6 +7,8 @@
 \title{report}
 \usage{
 m_report_ui(id)
+
+m_report_server(id, rv, selected_tab, silent = FALSE)
 }
 \arguments{
 \item{id}{module ID}

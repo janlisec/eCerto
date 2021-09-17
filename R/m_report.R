@@ -63,7 +63,8 @@ m_report_ui <- function(id) {
   )
 }
 
-
+#' @rdname mod_report
+#' @export
 m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
 
   shiny::moduleServer(id, function(input, output, session) {
@@ -78,12 +79,16 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
         ))
       },
       content = function(file) {
-        # temporarily switch to the temp dir, in case you do not have write permission to the current working directory
-        # owd <- setwd(tempdir(check = TRUE))
-        # on.exit(setwd(owd))
-        # writeLines(text = Report_Vorlage_Analyt(), con = 'Report_Vorlage_tmp.Rmd')
+        # https://shiny.rstudio.com/gallery/download-knitr-reports.html
+        src <- normalizePath("report_vorlage.Rmd")
+        # temporarily switch to the temp dir, in case you do not have write
+        # permission to the current working directory
+        owd <- setwd(tempdir())
+        on.exit(setwd(owd))
+        file.copy(src, "report_vorlage.Rmd", overwrite = TRUE)
+
         out <- rmarkdown::render(
-          input = fnc_get_local_file("report_vorlage.Rmd", copy_to_tempdir = FALSE),
+          input = fnc_get_local_file(src, copy_to_tempdir = FALSE),
           output_format = switch(
             input$output_file_format,
             PDF = rmarkdown::pdf_document(),
