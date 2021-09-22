@@ -1,9 +1,7 @@
 ---
-output:
+output: 
   pdf_document:
     latex_engine: lualatex
-  html_document:
-    df_print: paged
 header-includes:
 - \usepackage{booktabs}
 - \usepackage{longtable}
@@ -20,11 +18,11 @@ header-includes:
 - \usepackage{makecell}
 - \usepackage{xcolor}
 - \usepackage{fontspec}
-- \setmainfont{BAMKlavika-Light.ttf}[BoldFont = BAMKlavika-Medium.ttf, ItalicFont
-  = BAMKlavika-LightItalic.ttf, BoldItalicFont = BAMKlavika-MediumItalic.ttf]
+- \setmainfont{BAMKlavika-Light.ttf}[BoldFont = BAMKlavika-Medium.ttf, ItalicFont = BAMKlavika-LightItalic.ttf, BoldItalicFont = BAMKlavika-MediumItalic.ttf]
 params:
   dat: NA
   logo_file: NA
+  fnc: NA
 ---
 
 ```{r setup, include=FALSE}
@@ -32,16 +30,10 @@ knitr::opts_chunk$set(echo = FALSE)
 library(kableExtra)
 l_max <- 45
 i <- 1
-if (params[["dat"]]=="NA") {
-  plot_lts_data <- ecerto::plot_lts_data
-  d <- data.frame("RM"="RM", "CertVal"=1L, "U_Def"="1s", "U"=1L, "KW"="KW", "KW_Def"="KW_Def", "KW_Unit"="KW_Unit", "acc_Datasets"=1, "Coef_of_Var"=1)
-  v <- data.frame("Date"=as.Date(paste0("2021-",1:10,"-01")), "Value"=sort(rnorm(10)), "File"=paste("File",1:10), "Comment"=c(rep(NA,9),"Comment"))
-  l <- NA
-} else {
-  d <- params[["dat"]][[i]][["def"]]
-  v <- params[["dat"]][[i]][["val"]]
-  l <- params[["logo_file"]]
-}
+d <- params[["dat"]][[i]][["def"]]
+v <- params[["dat"]][[i]][["val"]]
+l <- params[["logo_file"]]
+plot_lts_data <- params[["fnc"]][["plot_lts_data"]]
 ```
 
 ```{r logo, echo=FALSE, fig.align='right', fig.height = 0.5}
@@ -63,8 +55,8 @@ if (!(is.null(l) | is.na(l))) {
   # 2 plots as in App version
   par(mar=c(5,4,4,2)+0.1)
   par(mfrow=c(1,2))
-    plot_lts_data(x = list("def"=d, "val"=v), type=1)
-    lts <- plot_lts_data(x = list("def"=d, "val"=v), type=2)
+    plot_lts_data(x = params$dat[[i]], type=1)
+    lts <- plot_lts_data(x = params$dat[[i]], type=2)
   par(mfrow=c(1,1))
 ```
 

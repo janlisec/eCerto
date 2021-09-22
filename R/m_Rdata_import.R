@@ -34,7 +34,7 @@
 #'
 #' @rdname RDataImport
 #' @export
-#' 
+#'
 m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
@@ -77,7 +77,7 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
     shiny::observeEvent(rdata(), {
-      
+
       ttt = sapply(modules(), function(x) {!is.null(uploadsources()[[x]])},simplify = "array")
       if(any(ttt)){
         if(!silent) message("RDataImport: Found existing data. Overwrite?")
@@ -110,18 +110,18 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
 
     shiny::observeEvent(continue(), {
       res <- rdata()
-      rv = reactiveClass$new(init_rv())
+      rv <- reactiveClass$new(init_rv())
       if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE)))
         {
 
         # import functions for defined data_format schemes
         if ( res$General$dataformat_version=="2021-05-27") {
           # Non-legacy upload #####
-          if(!silent) message("RDataImport: Non-legacy upload started")
+          if (!silent) message("RDataImport: Non-legacy upload started")
           # rv should contain all variables from uploaded res split must be
           # false here, otherwise one name list is of class character the other
           # of class list -> Error
-          resnames <- listNames(l = res, maxDepth = 2, split = FALSE) 
+          resnames <- listNames(l = res, maxDepth = 2, split = FALSE)
           rvnames <-listNames(rv)
           if (all(resnames %in% rvnames)) {
             # Transfer list elements
@@ -140,8 +140,9 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
             setValue(rv,c("General","time_stamp"), Sys.time())
             message("RDataImport: Non-legacy upload finished")
           } else {
-            allgivenexpected = c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
-            found_table = names(which(table(c(resnames, rvnames))==1))
+            #browser()
+            allgivenexpected <- c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
+            found_table <- names(which(table(c(resnames, rvnames))==1))
             err <- allgivenexpected[c(resnames, rvnames) %in% found_table]
             shinyalert::shinyalert(title = "m_RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:\n", paste(err, collapse=", ")), type = "warning")
           }

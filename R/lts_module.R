@@ -346,7 +346,11 @@
         # Set up parameters to pass to Rmd document
         dat <- datalist[["lts_data"]]
         if (length(dat)>=2 & i()>=2) for (j in rev(1:(i()-1))) dat[j] <- NULL
-        params <- list("dat" = dat, "logo_file" = logofile)
+        params <- list(
+          "dat" = dat,
+          "logo_file" = logofile,
+          "fnc"=list("plot_lts_data"=plot_lts_data)
+        )
 
         # das hat bei mir zum download (und der nicht erfolgreichen Installation) von tinytech geführt
         # für das online tool brauchen wir das nicht (shiny server kümmert sich)
@@ -373,11 +377,11 @@
       },
       contentType = "RData"
     )
-    
+
     shiny::observeEvent(input$InputHelp, {
       help_the_user("lts_dataupload", modal = TRUE)
     })
-    
+
   })
 }
 

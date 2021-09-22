@@ -82,7 +82,7 @@ test_that(
       row.names = c(NA,-1L)
     ))
     sheetNo <- shiny::reactiveVal(1)
-    
+
     suppressMessages(
       shiny::testServer(
         app = m_xlsx_range_select_Server,
@@ -134,33 +134,3 @@ test_that("no reaction after only one DataTable element is selected",
             )
           })
 
-
-# Homogeneity -------------------------------------------------------------
-
-# test_that("File column is appended for Homogeneity",code = {
-#   sheetNo <- shiny::reactiveVal(1)
-#   fnHomog = shiny::reactiveVal(structure(
-#     list(
-#       name = "Homog_test.xlsx",
-#       # size = c(27926L, 27617L, 9944L),
-#       type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-#       datapath = system.file(package = "ecerto", "extdata", "Homog_test.xlsx"),
-#       # row.names = c(NA,-3L),
-#       class = "data.frame"
-#     )
-#   ))
-#   shiny::testServer(
-#     app = m_xlsx_range_select_Server,
-#     args = list(current_file_input = fnHomog,sheet=sheetNo,excelformat=shiny::reactiveVal({"Homogeneity"})), {
-#       suppressMessages(session$flushReact())
-#       # has File been added correctly after Upload
-#       expect_true("File" %in% colnames(tab_param$tab_flt[[1]]))
-#       # set rows and columns selection
-#       # suppressMessages(
-#       #   session$setInputs(uitab_cells_selected = cells_selected))
-#       # session$flushReact()
-#       # # has File been added correctly after cell selection
-#       # expect_true("File" %in% colnames(tab_param$tab_flt[[1]]))
-#     }
-#   )
-# })

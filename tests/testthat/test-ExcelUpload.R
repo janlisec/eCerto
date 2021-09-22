@@ -1,4 +1,5 @@
 local_edition(3)
+
 # Certification Test ------------------------------------------------------
 test_that("Certification: File-column appended",code = {
   excelformat_test = shiny::reactiveVal("Certification")
@@ -19,7 +20,7 @@ test_that("Certification: File-column appended",code = {
       app = m_ExcelUpload_Server,
       args = list(excelformat=excelformat_test, check = check),
       expr =  {
-        session$setInputs(excel_file = xlsx_test, sheet_number = 1) 
+        session$setInputs(excel_file = xlsx_test, sheet_number = 1)
         # without row and column selection unfortunately
         rv_xlsx_range_select$tab = ecerto:::crop_dataframes(
           dfs = rv_xlsx_range_select$tab,
