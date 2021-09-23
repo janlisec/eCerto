@@ -27,9 +27,11 @@ fnc_get_local_file <- function(x=NULL, pkg="ecerto", copy_to_tempdir=TRUE) {
   if (pkg %in% rownames(utils::installed.packages())) {
     # installed with package
     out <- system.file("rmd", x, package = pkg)[1]
+    #out <- list.files(pattern = x, recursive = TRUE)
   } else {
     # as available in ShinyApp
-    out <- paste("www", x, sep="/")
+    out <- list.files(pattern = x, recursive = TRUE)
+    #out <- paste("www", x, sep="/")
   }
   if (copy_to_tempdir) {
     file.copy(out, file.path(tempdir(), basename(out)), overwrite = TRUE)
