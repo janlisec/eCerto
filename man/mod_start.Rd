@@ -12,6 +12,8 @@ m_startServer(id, rv)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
+
+\item{rv}{The gloobal R6 object.}
 }
 \value{
 h_vals = The start data (not the transferred ones yet)

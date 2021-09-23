@@ -33,4 +33,5 @@ version.
 \examples{
 fnc_get_local_file(x="help_start.Rmd")
 fnc_get_local_file(x="help_start.Rmd", copy_to_tempdir=FALSE)
+
 }

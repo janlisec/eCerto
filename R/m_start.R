@@ -9,6 +9,7 @@
 #' @details Providing the backup/restore modules as well as the Excel upload.
 #'
 #' @param id Name when called as a module in a shiny app.
+#' @param rv The gloobal R6 object.
 #'
 #' @examples
 #' if (interactive()) {

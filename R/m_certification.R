@@ -60,15 +60,15 @@ m_CertificationUI = function(id) {
           shiny::wellPanel(
             shiny::checkboxGroupInput(
               inputId = ns("certification_view"),
-              label = "Select View:",
+              label = "Select to show",
               choices = c(
-                "Data View" = "dataview",
+                "Imported Data" = "dataview",
                 "Outlier Tests" = "stats",
                 "Lab-Means Tests" = "mstats",
-                "QQ-Plot" = "qqplot",
-                "Certified Values Plot" = "CertValPlot",
-                "Material table" = "mt"),
-              selected = c("CertValPlot","mt")
+                #"QQ-Plot" = "qqplot",
+                "Certified Values Plot" = "CertValPlot"
+              ),
+              selected = c("CertValPlot")
             )
           )
         ),
@@ -109,15 +109,7 @@ m_CertificationUI = function(id) {
           )
         ),
         DT::dataTableOutput(ns("overview_mstats")),
-        htmltools::p(),
-        shiny::textOutput(outputId = ns("normality_statement")),
-        htmltools::p(),
-        shiny::conditionalPanel(
-          condition = "input.certification_view.indexOf('qqplot') > -1",
-          ns = shiny::NS(id),
-          shiny::plotOutput(ns("qqplot")),
-          htmltools::p()
-        )
+        shiny::uiOutput(outputId = ns("tab2_statement")),
       ),
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('CertValPlot') > -1",
@@ -182,15 +174,8 @@ m_CertificationUI = function(id) {
           ))
         )
       ),
-      # materialtabelle
-      shiny::conditionalPanel(
-        # check if checkBox is marked for material table
-        condition = "input.certification_view.indexOf('mt') > -1",
-        ns = shiny::NS(id), # namespace of current module
-        # --- --- --- --- --- --- --- --- --- --- ---
-        m_materialtabelleUI(ns("mat_cert"))
-        # --- --- --- --- --- --- --- --- --- --- ---
-      ),
+      # materialtabelle (mandatory)
+      m_materialtabelleUI(ns("mat_cert"))
     )
   )
 }
@@ -328,9 +313,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         # "Data View" = "dataview",
         # "Outlier Tests" = "stats",
         # "Lab-Means Tests" = "mstats",
-        # "QQ-Plot" = "qqplot",
         # "Certified Values Plot" = "CertValPlot",
-        # "Material table" = "mt"
 
         selectedView = show_view(rv)
         #browser()
@@ -423,11 +406,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       CertValPlot(data = dat(), annotate_id=input$annotate_id)
-    }, height = shiny::reactive({
-      input$Fig01_height
-    }), width = shiny::reactive({
-      input$Fig01_width
-    }))
+    }, height = shiny::reactive({input$Fig01_height}), width = shiny::reactive({input$Fig01_width}))
 
     CertValPlot_list <- shiny::reactive({
       shiny::req(input$Fig01_width)
@@ -481,20 +460,31 @@ m_CertificationServer = function(id, rv, datreturn) {
       return(out)
     })
 
-    output$normality_statement <- shiny::renderText({
+    output$tab2_statement <- shiny::renderUI({
       l <- lab_statistics()
       suppressWarnings(
         KS_p <- stats::ks.test(x = l$mean, y = "pnorm", mean = mean(l$mean), sd = stats::sd(l$mean))$p.value
       )
-      normality_statement <- paste0(
-        "The data is",
-        ifelse(KS_p < 0.05, " not ", " "),
-        "normally distributed (KS_p=",
-        #formatC(KS_p, format = "E", digits = 2),
-        ecerto::pn(KS_p),
-        ")."
+      return(shiny::fluidRow(shiny::column(12,
+        shiny::HTML(paste0("The data is", ifelse(KS_p < 0.05, " not ", " "), "normally distributed (KS_p=", pn(KS_p), ").")),
+        shiny::HTML("Show "),
+        shiny::actionLink(inputId = session$ns("qqplot_link"), label = "QQ-Plot"),
+        shiny::HTML(" of Lab means."),
+        shiny::p()
+      )))
+    })
+
+    shiny::observeEvent(input$qqplot_link, {
+      shiny::showModal(
+        shiny::modalDialog(
+          shiny::plotOutput(session$ns("qqplot")),
+          size = "m",
+          easyClose = TRUE,
+          title = paste("QQ Plot", current_apm()$analytename, sep=" - ")
+        )
       )
     })
+
 
     shiny::observeEvent(dat(),{
       message("Certification: dat() changed, set datreturn.selectedAnalyteDataframe")
@@ -515,9 +505,7 @@ m_CertificationServer = function(id, rv, datreturn) {
       # Box "QQ-Plot" clickable? Depends in state of Box above it
       if("mstats" %in% input$certification_view) {
         setValue(rv, c("Certification_processing","mstats","show"), TRUE)
-        shinyjs::enable(selector = "#certification-certification_view input[value='qqplot']")
       } else {
-        shinyjs::disable(selector = "#certification-certification_view input[value='qqplot']")
         setValue(rv, c("Certification_processing","mstats","show"), FALSE)
       }
       # only change rv-object if CertValplot has changed
