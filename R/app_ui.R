@@ -2,102 +2,83 @@
 #'
 #' @return the UI
 #' @export
-app_ui = function(){
+app_ui <- function() {
 
   shiny::tagList(
     # tagList to make useShinyjs independent from tabs
     shinyjs::useShinyjs(),
     shinyalert::useShinyalert(),
+
     shiny::navbarPage(
       id = "navbarpage",
       selected = "Start",
       title = shiny::div(
         class = "verticalhorizontal",
         shiny::img(
-          src = "bam_logo_20pt.gif",
+          src = fnc_get_local_file("bam_logo_20pt.gif"),
           position = "absolute",
           margin = "auto"
         ),
         shiny::strong("BAM"),
-        shiny::em("ecerto"),
-        position = "relative"
+        shiny::em("eCerto"),
+        position="relative"
       ),
+      windowTitle = "BAM eCerto",
+      position = "static-top",
+      footer = shiny::pre(" 2021-09-23, Jan Lisec (jan.lisec@bam.de), v.0.0.0.900"),
 
-      # shiny::tabPanel(
-      #   "Home",
-      #   shiny::sidebarPanel(width = 3,
-      #       shiny::strong("Restart Session"),
-      #       shiny::br(),
-      #       shiny::actionButton(inputId = "session_restart", label = "Restart")
-      #   ),
-      #   shiny::mainPanel(
-      #     shiny::h1("Introducing eCerto"),
-      #     shiny::p("Certifications are..."),
-      #     shiny::p("Homogeneities are..."),
-      #     shiny::p("Stabilities are..."),
-      #     shiny::actionLink("link_to_start", "Click here to start"),
-      #     # bookmarkButton()
-      #   )
-      #
-      # ),
-     # shiny::navbarMenu(
-       # title = "eCerto",
-        #icon = shiny::icon("angle-right"),
-        # tabs
-        shiny::tabPanel(
-          id = "start",
-          title = "Start",
-          icon = shiny::icon("angle-right"),
-          shiny::fluidRow(
-            shiny::column(
-              width = 3,
-              shiny::wellPanel(
-                shiny::wellPanel(
-                shiny::strong("Restart Session"),
-                shiny::br(),
-                shiny::actionButton(inputId = "session_restart", label = "Restart")),
-                m_RDataImport_UI("Rdatain"),
-                m_RDataExport_UI("Rdataex")
-                ),
-            ),
-            shiny::column(
-              width = 9,
-              shiny::wellPanel(
-                  shiny::selectInput(
-                    inputId = "moduleSelect",
-                    choices = NULL,
-                    label = shiny::actionLink(inputId = "moduleUploadHelp",label = "Module"),
-                    width = "50%"
-
-              ),
-                m_ExcelUpload_UI("excelfile")
-              )
-            )
-          )
-        ),
-        shiny::tabPanel(
-          id = "certif_tab",
-          title = "Certification",
-          value = "tP_certification",
-          icon = shiny::icon("angle-right"),
-          m_CertificationUI("certification"),
-        ),
-        shiny::tabPanel(
-          id = "homog_tab",
-          title = "Homogeneity",
-          icon = shiny::icon("angle-right"),
-          value = "tP_homogeneity",
-          m_HomogeneityUI("Homogeneity")
-        ),
-        shiny::tabPanel(
-          title = "Stability",
-          icon = shiny::icon("angle-right"),
-          value = "tP_Stability",
-          m_StabilityUI("Stability")
-        )
-      #)
-     ,
-      # eCerto Ende
+      shiny::tabPanel(
+        id = "start",
+        title = "Start",
+        icon = shiny::icon("angle-right"),
+        # shiny::fluidRow(
+        #   shiny::column(
+        #     width = 3,
+        #     shiny::wellPanel(
+        #       shiny::wellPanel(
+        #       shiny::strong("Restart Session"),
+        #       shiny::br(),
+        #       shiny::actionButton(inputId = "session_restart", label = "Restart")),
+        #       m_RDataImport_UI("Rdatain"),
+        #       m_RDataExport_UI("Rdataex")
+        #       ),
+        #   ),
+        #   shiny::column(
+        #     width = 9,
+        #     shiny::wellPanel(
+        #         shiny::selectInput(
+        #           inputId = "moduleSelect",
+        #           choices = NULL,
+        #           label = shiny::actionLink(inputId = "moduleUploadHelp",label = "Module"),
+        #           width = "50%"
+        #
+        #     ),
+        #       m_ExcelUpload_UI("excelfile")
+        #     )
+        #   )
+        # )
+        m_startUI("Start")
+      ),
+      shiny::tabPanel(
+        id = "certif_tab",
+        title = "Certification",
+        value = "tP_certification",
+        icon = shiny::icon("angle-right"),
+        m_CertificationUI("certification"),
+      ),
+      shiny::tabPanel(
+        id = "homog_tab",
+        title = "Homogeneity",
+        icon = shiny::icon("angle-right"),
+        value = "tP_homogeneity",
+        m_HomogeneityUI("Homogeneity")
+      ),
+      shiny::tabPanel(
+        title = "Stability",
+        icon = shiny::icon("angle-right"),
+        value = "tP_Stability",
+        m_StabilityUI("Stability")
+      ),
 
       # Long term stability
       shiny::tabPanel(

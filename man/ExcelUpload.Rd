@@ -8,16 +8,14 @@
 \usage{
 m_ExcelUpload_UI(id)
 
-m_ExcelUpload_Server(id, excelformat, check, silent = FALSE)
+m_ExcelUpload_Server(id, exl_fmt = shiny::reactive({
+    ""
+}))
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{excelformat}{Selector for dataset type (reactive).}
-
-\item{check}{Check if 'excelformat' dataset has been uploaded (FALSE) or not (TRUE) (reactive).}
-
-\item{silent}{Option to print or omit status messages.}
+\item{exl_fmt}{Selector for dataset type (reactive).}
 }
 \value{
 A reactiveValues containing desired data and the name of the input_files
@@ -38,10 +36,11 @@ shiny::shinyApp(
    m_ExcelUpload_UI(id = "test")
  ),
  server = function(input, output, session) {
-  out <- m_ExcelUpload_Server(
-    id = "test",
-    excelformat = reactive({input$excelformat}),
-    check = reactive({TRUE}))
+   out <- m_ExcelUpload_Server(
+     id = "test",
+     exl_fmt = reactive({input$excelformat})
+   )
+   shiny::observeEvent(out$data, { print(out$data) })
  }
 )
 }

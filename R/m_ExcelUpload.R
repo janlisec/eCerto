@@ -9,9 +9,7 @@
 #'@details not yet
 #'
 #'@param id Name when called as a module in a shiny app.
-#'@param excelformat Selector for dataset type (reactive).
-#'@param check Check if 'excelformat' dataset has been uploaded (FALSE) or not (TRUE) (reactive).
-#'@param silent Option to print or omit status messages.
+#'@param exl_fmt Selector for dataset type (reactive).
 #'
 #'@return A reactiveValues containing desired data and the name of the input_files
 #'
@@ -25,10 +23,11 @@
 #'    m_ExcelUpload_UI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'   out <- m_ExcelUpload_Server(
-#'     id = "test",
-#'     excelformat = reactive({input$excelformat}),
-#'     check = reactive({TRUE}))
+#'    out <- m_ExcelUpload_Server(
+#'      id = "test",
+#'      exl_fmt = reactive({input$excelformat})
+#'    )
+#'    shiny::observeEvent(out$data, { print(out$data) })
 #'  }
 #' )
 #' }
@@ -37,50 +36,68 @@
 #' @export
 #'
 m_ExcelUpload_UI <- function(id) {
-  
+
+  ns <- shiny::NS(id)
+
   shiny::tagList(
+    # initialize shinyjs
+    shinyjs::useShinyjs(),
     # control elements
     shiny::fluidRow(
-      shiny::column(3, shiny::uiOutput(outputId = shiny::NS(id,"excel_file"))),
-      shiny::column(3, shiny::numericInput(inputId = shiny::NS(id,"sheet_number"), label = "sheet_number", value = 1)),
-      shiny::column(6, align="right", shiny::uiOutput(outputId = shiny::NS(id,"btn_load")))
+      shiny::column(3, shiny::uiOutput(outputId = ns("inp_file"))),
+      shiny::column(3, shiny::numericInput(inputId = ns("sheet_number"), label = "sheet_number", value = 1)),
+      shiny::column(6, align="right", shiny::uiOutput(outputId = ns("btn_load")))
     ),
     # preview table
-    ecerto::m_xlsx_range_select_UI(shiny::NS(id,"Upload")),
+    ecerto::m_xlsx_range_select_UI(ns("rng_select")),
   )
 }
 
 #' @rdname ExcelUpload
 #' @export
 
-m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
-  
-  stopifnot(shiny::is.reactive(excelformat))
-  
+m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
+
+  stopifnot(shiny::is.reactive(exl_fmt))
+  ns <- shiny::NS(id)
+  silent <- FALSE
+
   shiny::moduleServer(id, function(input, output, session) {
-    
+
+    # remeber locally what has been uploaded already from Excel
+    uploaded_datasets <- shiny::reactiveVal("")
+
+    # wrap load button in UI element to allow easier show/hide
     output$btn_load <- shiny::renderUI({
       shiny::fluidRow(
-        shiny::strong("Click to load"),
+        shiny::strong("Load Data"),
         shiny::br(),
-        shiny::actionButton(inputId = shiny::NS(id, "go"), label = "LOAD")
+        shiny::actionButton(inputId = session$ns("go"), label = "Load selected cell range")
       )
     })
-    
+
+    # monitor the status of the file selector
     current_file_input <- shiny::reactiveVal(NULL)
-    # Excel-File-Input und Sheet-number
-    output$excel_file <- shiny::renderUI({
-      if (check()) {
-        shiny::updateNumericInput(session = session, inputId = "sheet_number", value=1)
-        shinyjs::hideElement(id = "sheet_number")
-        shinyjs::hideElement(id = "btn_load")
-        current_file_input(NULL)
-        shiny::fileInput(multiple = excelformat()=="Certification", inputId = shiny::NS(id,"excel_file"), label = "Select Excel (xlsx)", accept = "xlsx")
+
+    # Excel-File-Input
+    output$inp_file <- shiny::renderUI({
+      shiny::updateNumericInput(session = session, inputId = "sheet_number", value=1)
+      current_file_input(NULL)
+      shinyjs::hideElement(id = "sheet_number")
+      shinyjs::hideElement(id = "btn_load")
+      if (exl_fmt() %in% uploaded_datasets()) {
+        shiny::helpText("You have uploaded this data set already. Restart Session or upload from previous analysis (RData) to overwrite.")
       } else {
-        shiny::HTML("<p style='color:red;'>Already uploaded</p>")
+        shiny::fileInput(
+          inputId = session$ns("excel_file"),
+          multiple = exl_fmt()=="Certification",
+          label = "Select Excel (xlsx)",
+          accept = "xlsx"
+        )
       }
     })
-    
+
+    # Excdel Sheet-number selector
     shiny::observeEvent(input$excel_file, {
       sheetnames <- ecerto::load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
@@ -90,27 +107,28 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
       shinyjs::showElement(id = "btn_load")
       current_file_input(input$excel_file)
     })
-    
-    
-    sheetnumber = shiny::reactive({
+
+    sheetnumber <- shiny::reactive({
       shiny::req(input$sheet_number)
-      switch (excelformat(),
-              "Certification" = input$sheet_number,
-              "Homogeneity" = input$sheet_number,
-              "Stability" = 1:length(ecerto::load_sheetnames(input$excel_file$datapath))
+      switch (
+        exl_fmt(),
+        "Certification" = input$sheet_number,
+        "Homogeneity" = input$sheet_number,
+        "Stability" = 1:length(ecerto::load_sheetnames(input$excel_file$datapath))
       )
     })
-    # --- --- --- --- --- --- --- --- --- ---
-    # Module to select rows and columns
+
+    # Show file preview to select rows and columns
     rv_xlsx_range_select <- m_xlsx_range_select_Server(
-      id = "Upload",
+      id = "rng_select",
       current_file_input = current_file_input,
       sheet = sheetnumber,
-      excelformat = excelformat
+      excelformat = exl_fmt
     )
-    # --- --- --- --- --- --- --- --- --- ---
-    
+
+    # initialize return object 'out'
     out <- shiny::reactiveValues(data = NULL, input_files = NULL)
+
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
       # Append File column
@@ -118,15 +136,15 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
       tab_flt = rv_xlsx_range_select$tab
       out$input_files = current_file_input()$name
       # perform minimal validation checks
-      if(excelformat()=="Homogeneity") {
+      if(exl_fmt()=="Homogeneity") {
         tab_flt <- tab_flt[[1]]
         tab_flt[["File"]] = rep(current_file_input()$name[1], nrow(tab_flt))
         if (!"analyte" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'analyte' found in input file.")
         if (!"value" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'value' found in input file.")
         if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUpload_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
         out$data = tab_flt
-      
-      } else if(excelformat() == "Certification") {
+
+      } else if(exl_fmt() == "Certification") {
         # CERTIFICATION
         if(!silent) message("m_ExcelUpload_Server: Certification ")
         for (i in 1:length(tab_flt)) {
@@ -170,8 +188,8 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
         } else {
           uploadExcel()
         }
-       
-      } else if(excelformat() == "Stability") {
+
+      } else if(exl_fmt() == "Stability") {
         # STABILITY
         test_format <- tab_flt[[1]] # openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
         if (ncol(test_format)>=3 && "KW" %in% colnames(test_format)) {
@@ -198,8 +216,18 @@ m_ExcelUpload_Server <- function(id, excelformat, check, silent=FALSE) {
         s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
         out$data = s_dat
       }
-      
+
     })
+
+    shiny::observeEvent(out$data, {
+      #browser()
+      tmp <- uploaded_datasets()
+      tmp <- c(tmp, exl_fmt())
+      uploaded_datasets(tmp)
+    })
+
+    # return data as uploaded from Excel
     return(out)
+
   })
 }

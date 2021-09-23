@@ -69,7 +69,7 @@ getValue = function(df, key=NULL) {
 #' @export
 laboratory_dataframe = function(x) {
   stopifnot(!shiny::is.reactive(x))
-  
+
   x2 = as.data.frame(x)
   x2_sub =  x2[,!names(x2) %in% c(names(x2[,c(1,2)]),"Species","File")]
   flt <- apply(x2_sub, 1, function(y) {any(is.finite(as.numeric(y)))})
@@ -112,7 +112,7 @@ load_sheetnames = function(filepath){
       return(NULL)
     }
   })
-  
+
   if(length(unique(a))!=1) {
     shinyalert::shinyalert(
       title = "Different sheetnames",
@@ -147,12 +147,12 @@ crop_dataframes <- function(dfs, cols, rows) {
     stop("order of elements wrong")
   if(!is.numeric(cols) | !is.numeric(rows))
     stop("rows and column index are not numerics")
-  
+
   if(!inherits(dfs,"list")){
     warning("data frame is not a list")
     dfs <- list(dfs)
   }
-  
+
   r <- lapply(dfs, function(y) {
     y[rows,cols]
   })
@@ -189,12 +189,12 @@ set_uploadsource = function(rv, m, uploadsource) {
       no = 0
     }
     uploadsource = paste0("RData-", no + 1)
-    
+
   }
   setValue(rv,c(m,"uploadsource"), uploadsource)
   # rv$set(c(m,"uploadsource"),uploadsource)
   # rv[[m]][["uploadsource"]] = uploadsource
-  
+
 }
 
 
@@ -255,7 +255,7 @@ pn <- function(n=NULL, p=4L) {
 #' @rdname datahandling_utils
 #' @export
 update_reactivecell = function(r,colname,analyterow = NULL,value) {
-  
+
   if(!is.data.frame(r()))
     stop("r is not a data frame")
   if(!colname %in% colnames(r()))
@@ -268,7 +268,7 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
     warning("value to be inserted is not scalar, i.e. more than one. Take only first!")
     value = value[1]
   }
-  
+
   # message("reactivecell: Update ",  deparse(substitute(r())), "; column: ", colname)
   # extract original row to be edit into variable (1/3)
   df = r()
@@ -277,23 +277,25 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
   } else {
     newRow = df[df[["analyte"]]==analyterow,]
   }
-  
+
   # edit cell (2/3)
   newRow[[colname]] = value
-  
+
   # update (3/3)
   if(is.null(analyterow)){
     df = newRow
   } else {
     df[df[["analyte"]]==analyterow,] = newRow
   }
-  
+
   r(df)
 }
 
 #' @keywords internal
 #' to switch to Start Page
 to_startPage = function(session, value="Certification") {
+  # this function will break if shiny input IDs get changed
+  # ToDo: implement in testthat that 'Start' and 'Start-moduleSelect' are present
   shiny::updateNavbarPage(
     session = session,
     inputId = "navbarpage",
@@ -301,7 +303,7 @@ to_startPage = function(session, value="Certification") {
   )
   shiny::updateSelectInput(
     session = session,
-    inputId = "moduleSelect",
+    inputId = "Start-moduleSelect",
     selected = value
   )
 }
@@ -367,7 +369,7 @@ show_view = function(rv){
     i = any(n %in% "show")
     if(i && !is.null(shiny::isolate(getValue(rv, n))) && shiny::isolate(getValue(rv, n))) {
       visible = c(visible,n[2])
-    } 
+    }
   }
   return(visible)
 }

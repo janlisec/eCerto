@@ -10,133 +10,26 @@ app_server = function(input, output, session) {
 
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
-  silent = FALSE
-  
-  # Certification, Homogeneity, Stability -----------------------------------
-  excelformat = shiny::reactive({input$moduleSelect})
-  shiny::updateSelectInput(
-    inputId = "moduleSelect",
-    session = session,
-    choices = getValue(rv,"modules"),
-    selected = getValue(rv,"modules")[1]
-  )
+  silent = FALSE ## ToDo: make silent a global option of the package like suggested by Golem-package devel
 
-# Upload Controller -------------------------------------------------------
+  m_startServer(id="Start", rv=rv)
 
-  check <- shiny::reactive({
-    # excelformat() is "" on startup which conflicts with getValue
-    shiny::req(excelformat())
-    is.null(getValue(rv, c(excelformat(),"uploadsource")))
-  })
-  ExcelUp <- m_ExcelUpload_Server(
-    id = "excelfile",
-    excelformat = excelformat,
-    check = check
-  )
-  m_RDataexport_Server(id = "Rdataex",rv = rv)
-  rv_rdata = m_RDataImport_Server(
-    id = "Rdatain",
-    modules = shiny::reactive({getValue(rv,"modules")}), 
-    uploadsources = shiny::reactive({sapply(getValue(rv,"modules"), function(x){getValue(rv,c(x,"uploadsource"))})})
-  )
-
-# page turners (and more) -------------------------------------------------------------
-
-  # when Start Button was clicked
-  shiny::observeEvent(input$link_to_start, {
-    to_startPage(session, value="Certification")
-  })
-  # when RData was uploaded
-
-  shiny::observeEvent(rv_rdata(),{
-    shiny::updateNavbarPage(
-      session = session,
-      inputId = "navbarpage",
-      selected = "tP_certification")
-    # overwrite: Get all elements 
-    # rv_rdatanames <- listNames(
-    #   sapply(rv_rdata()$get(), function(x) {
-    #     if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
-    #   })
-    # )
-    rv_rdatanames <- listNames(rv_rdata(), split = TRUE)
-    # overwrite
-    for (n in rv_rdatanames) {
-      setValue(rv,n,getValue(rv_rdata(),n))
-    }
-  }, ignoreNULL = TRUE)
-  # when Excel was uploaded with LOAD-Button...
-  shiny::observeEvent(ExcelUp$data,{
-    if(!silent) message("app_server: (Excel Upload) set rv.Data; set rv.Uploadsource")
-    ex_intern = shiny::isolate(excelformat())
-    setValue(rv, c(ex_intern,"data"), ExcelUp$data)
-    setValue(rv, c(ex_intern,"input_files"), ExcelUp$input_files)
-    setValue(rv, c(ex_intern, "uploadsource"), value = "Excel")
-    if(ex_intern == "Certification"){
-      shiny::updateNavbarPage(
-        session = session,
-        inputId = "navbarpage",
-        selected = "tP_certification")
-    } else if (ex_intern == "Homogeneity") {
-      shiny::updateNavbarPage(
-        session = session,
-        inputId = "navbarpage",
-        selected = "tP_homogeneity")
-    } else if (ex_intern == "Stability") {
-      shiny::updateNavbarPage(
-        session = session,
-        inputId = "navbarpage",
-        selected = "tP_Stability")
-    }
-  })
-  shiny::observeEvent(getValue(datreturn,"transfer"), {
-    
-    shiny::updateNavbarPage(
-      session = session,
-      inputId = "navbarpage",
-      selected = "tP_certification")
-  })
   shiny::observeEvent(input$navbarpage, {
-    # when Homogeneity is clicked but has no been uploaded yet --> change to
-    # Upload page
-    if (input$navbarpage == "tP_homogeneity" &&
-        is.null(getValue(rv, c("Homogeneity","uploadsource"))) ) {
+    # when a tab for an empty dataset is selected --> jump to upload page
+    if (input$navbarpage == "tP_homogeneity" && is.null(getValue(rv, c("Homogeneity","uploadsource"))) ) {
       to_startPage(session, value="Homogeneity")
     }
-    # ... same for Certification ...
-    if (input$navbarpage == "tP_certification" &&
-        is.null(getValue(rv, c("Certification","uploadsource"))) ) {
+    if (input$navbarpage == "tP_certification" && is.null(getValue(rv, c("Certification","uploadsource"))) ) {
       to_startPage(session, value="Certification")
     }
-    # ... and Stability
-    if (input$navbarpage == "tP_Stability" &&
-        is.null(getValue(rv, c("Stability","uploadsource"))) ) {
+    if (input$navbarpage == "tP_Stability" && is.null(getValue(rv, c("Stability","uploadsource"))) ) {
       to_startPage(session, value="Stability")
     }
   })
 
-
-# Restart App -------------------------------------------------------------
-  # Open confirmation dialog
-  shiny::observeEvent(input$session_restart, {
-    shiny::showModal(shiny::modalDialog(
-      easyClose = FALSE,
-      title="Sure you want to restart the session?",
-      "This will erase all non-saved inputs!",
-      footer = shiny::tagList(
-        shiny::actionButton("confirmRestart", "Restart"),
-        shiny::modalButton("Cancel")
-      )
-    ))
-  })
-  shiny::observeEvent(input$confirmRestart, {
-    session$reload()
-    shiny::removeModal()
-  })
-
 # Panels ------------------------------------------------------------------
 
-   m_CertificationServer(
+  m_CertificationServer(
     id = "certification",
     rv = rv,
     datreturn = datreturn
@@ -157,11 +50,42 @@ app_server = function(input, output, session) {
   .longtermstabilityServer("lts")
 
 
-# observers ---------------------------------------------------------------
+# more observers ---------------------------------------------------------------
+
+  # when the user initiates a transfer of U values from H or S Modules --> show material_table
+  shiny::observeEvent(getValue(datreturn,"transfer"), {
+    shiny::updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "tP_certification")
+  })
+
+  # when the user uploaded excel data on S Modul --> change Tab to modified dataset
+  shiny::observeEvent(getValue(rv, c("Certification", "input_files")), {
+    shiny::updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "tP_certification"
+    )
+  })
+  shiny::observeEvent(getValue(rv, c("Homogeneity", "input_files")), {
+    shiny::updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "tP_homogeneity"
+    )
+  })
+  shiny::observeEvent(getValue(rv, c("Stability", "input_files")), {
+    shiny::updateNavbarPage(
+      session = session,
+      inputId = "navbarpage",
+      selected = "tP_Stability"
+    )
+  })
 
   shiny::observeEvent(getValue(datreturn, "mater_table"),{
-    if(!silent) message("app_server: (datreturn.mater_table) set rv.materialtabelle")
-    setValue(rv, "materialtabelle", getValue(datreturn,"mater_table"))
+    if (!silent) message("app_server: (datreturn.mater_table) set rv.materialtabelle")
+    setValue(rv, "materialtabelle", getValue(datreturn, "mater_table"))
   })
 
   # After Homogeneity values have been uploaded
@@ -169,13 +93,5 @@ app_server = function(input, output, session) {
     if(!silent) message("app_server: (h_vals()), set datreturn.h_vals")
     setValue(datreturn, "h_vals", h_vals())
   }, ignoreInit = TRUE)
-
-  shiny::observeEvent(input$moduleUploadHelp, {
-    switch (excelformat(),
-      "Certification" = help_the_user("certification_dataupload", modal=TRUE),
-      "Homogeneity" = help_the_user("homogeneity_dataupload", modal=TRUE),
-      "Stability" = help_the_user("stability_dataupload", modal=TRUE)
-    )
-  })
 
 }
