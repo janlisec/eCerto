@@ -69,20 +69,13 @@ m_startServer = function(id, rv) {
     ns <- shiny::NS(id)
 
     # Certification, Homogeneity, Stability -----------------------------------
-    excelformat <- shiny::reactive({input$moduleSelect})
     shiny::updateSelectInput(
       inputId = "moduleSelect",
       session = session,
-      choices = getValue(rv,"modules"),
-      selected = getValue(rv,"modules")[1]
+      choices = getValue(rv, "modules")
     )
 
     # Upload Controller -------------------------------------------------------
-    check <- shiny::reactive({
-      # excelformat() is "" on startup which conflicts with getValue
-      shiny::req(excelformat())
-      is.null(getValue(rv, c(excelformat(), "uploadsource")))
-    })
     ExcelUp <- m_ExcelUpload_Server(
       id = "excelfile",
       exl_fmt = shiny::reactive({input$moduleSelect})
@@ -117,7 +110,7 @@ m_startServer = function(id, rv) {
     shiny::observeEvent(ExcelUp$data,{
       # ToDo: make silent a global parameter
       #if (!silent) message("app_server: (Excel Upload) set rv.Data; set rv.Uploadsource")
-      ex_frm <- excelformat()
+      ex_frm <- input$moduleSelect
       setValue(rv, c(ex_frm, "data"), ExcelUp$data)
       setValue(rv, c(ex_frm, "input_files"), ExcelUp$input_files)
       setValue(rv, c(ex_frm, "uploadsource"), value = "Excel")

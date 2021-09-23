@@ -85,16 +85,20 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
       current_file_input(NULL)
       shinyjs::hideElement(id = "sheet_number")
       shinyjs::hideElement(id = "btn_load")
-      if (exl_fmt() %in% uploaded_datasets()) {
-        shiny::helpText("You have uploaded this data set already. Restart Session or upload from previous analysis (RData) to overwrite.")
-      } else {
+      shiny::tagList(
         shiny::fileInput(
           inputId = session$ns("excel_file"),
           multiple = exl_fmt()=="Certification",
           label = "Select Excel (xlsx)",
           accept = "xlsx"
+        ),
+        shiny::helpText(
+          ifelse(
+            exl_fmt() %in% uploaded_datasets(),
+            "Note! You have uploaded this data set already. If you upload a different file, all your selected parameters may be lost.",
+            "")
         )
-      }
+      )
     })
 
     # Excdel Sheet-number selector
@@ -220,7 +224,6 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
     })
 
     shiny::observeEvent(out$data, {
-      #browser()
       tmp <- uploaded_datasets()
       tmp <- c(tmp, exl_fmt())
       uploaded_datasets(tmp)
