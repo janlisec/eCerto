@@ -8,6 +8,8 @@
 #' @export
 app_server = function(input, output, session) {
 
+  shiny::addResourcePath(prefix = "ecerto", directoryPath = "C:\\Users\\jlisec\\Rpackages\\Rpackage_eCerto\\ecerto\\inst\\rmd")
+
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
   silent = FALSE ## ToDo: make silent a global option of the package like suggested by Golem-package devel

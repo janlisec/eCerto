@@ -11,18 +11,20 @@ app_ui <- function() {
 
     shiny::navbarPage(
       id = "navbarpage",
-      selected = "Start",
       title = shiny::div(
         class = "verticalhorizontal",
         shiny::img(
-          src = fnc_get_local_file("bam_logo_20pt.gif"),
+          #src = fnc_get_local_file("bam_logo_20pt.gif"),
+          src = "ecerto/bam_logo_20pt.gif",
           position = "absolute",
-          margin = "auto"
+          margin = "auto",
+          alt="BAM Logo"
         ),
         shiny::strong("BAM"),
         shiny::em("eCerto"),
         position="relative"
       ),
+      selected = "Start",
       windowTitle = "BAM eCerto",
       position = "static-top",
       footer = shiny::pre(" 2021-09-23, Jan Lisec (jan.lisec@bam.de), v.0.0.0.900"),
@@ -31,32 +33,6 @@ app_ui <- function() {
         id = "start",
         title = "Start",
         icon = shiny::icon("angle-right"),
-        # shiny::fluidRow(
-        #   shiny::column(
-        #     width = 3,
-        #     shiny::wellPanel(
-        #       shiny::wellPanel(
-        #       shiny::strong("Restart Session"),
-        #       shiny::br(),
-        #       shiny::actionButton(inputId = "session_restart", label = "Restart")),
-        #       m_RDataImport_UI("Rdatain"),
-        #       m_RDataExport_UI("Rdataex")
-        #       ),
-        #   ),
-        #   shiny::column(
-        #     width = 9,
-        #     shiny::wellPanel(
-        #         shiny::selectInput(
-        #           inputId = "moduleSelect",
-        #           choices = NULL,
-        #           label = shiny::actionLink(inputId = "moduleUploadHelp",label = "Module"),
-        #           width = "50%"
-        #
-        #     ),
-        #       m_ExcelUpload_UI("excelfile")
-        #     )
-        #   )
-        # )
         m_startUI("Start")
       ),
       shiny::tabPanel(
@@ -92,9 +68,8 @@ app_ui <- function() {
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        help_the_user(filename = "help_start",format = "html", modal = FALSE)
-
+        help_the_user(filename = "help_start", format = "html", modal = FALSE)
       )
     )
-  ) # end taglist
+  )
 }
