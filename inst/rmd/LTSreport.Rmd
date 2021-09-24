@@ -113,5 +113,6 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
     for (j in 1:ncol(dummy)) dummy[,j] <- rep(NA,n_fill)
     out <- cbind(out[1:l_max,], rbind(out[(l_max+1):nrow(out),], dummy))
   }
+  opts <- options(knitr.kable.NA = "")
   print(knitr::kable(x=out, row.names = FALSE) %>% kableExtra::kable_styling(latex_options = "striped", font_size = 8) %>% kableExtra::footnote(number=com))
 ```

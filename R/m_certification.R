@@ -58,6 +58,7 @@ m_CertificationUI = function(id) {
         shiny::column(
           width=2,
           shiny::wellPanel(
+            style = "height:160px",
             shiny::checkboxGroupInput(
               inputId = ns("certification_view"),
               label = "Select to show",
@@ -73,11 +74,14 @@ m_CertificationUI = function(id) {
           )
         ),
         # Analyte Modul
-        shiny::column(width=7, shiny::wellPanel(m_analyteUI(ns("analyteModule")))),
+        shiny::column(
+          width=7,
+          shiny::wellPanel(style = "height:160px", m_analyteUI(ns("analyteModule")))
+        ),
         # Report-Teil
         shiny::column(
           width = 3,
-          m_report_ui(ns("report"))
+          shiny::wellPanel(style = "height:160px", m_report_ui(ns("report")))
         )
       ),
       # Data View

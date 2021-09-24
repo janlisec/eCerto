@@ -23,11 +23,7 @@ test_that(
         expr =  {
           session$setInputs(excel_file = xlsx_test, sheet_number = 1)
           # without row and column selection unfortunately
-          rv_xlsx_range_select$tab = ecerto:::crop_dataframes(
-            dfs = rv_xlsx_range_select$tab,
-            rows = 8:16,
-            cols = 1:5
-          )
+          rv_xlsx_range_select$tab <- lapply(rv_xlsx_range_select$tab, function(x) { x[8:16, 1:5, drop=FALSE]})
           session$setInputs(go = "click")
           expect_equal("File" %in% names(out$data), TRUE)
         }

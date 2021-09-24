@@ -38,26 +38,24 @@
 m_report_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::wellPanel(
-      shiny::fluidRow(shiny::strong("Download Report")),
-      shiny::fluidRow(
-        shiny::radioButtons(
-          inputId = ns("output_file_format"),
-          label = NULL,
-          choices = c('PDF', 'HTML', 'Word'),
-          inline = TRUE
-        )
-      ),
-      shiny::fluidRow(
-        shiny::column(
-          width = 6,
-          align = "left",
-          shiny::downloadButton(outputId = ns('FinalReport'), label = "Analyte")),
-        shiny::column(
-          width = 6,
-          align = "right",
-          shiny::downloadButton(outputId = ns('MaterialReport'), label = "Material")
-        )
+    shiny::fluidRow(shiny::strong("Download Report")),
+    shiny::fluidRow(
+      shiny::radioButtons(
+        inputId = ns("output_file_format"),
+        label = NULL,
+        choices = c('PDF', 'HTML', 'Word'),
+        inline = TRUE
+      )
+    ),
+    shiny::fluidRow(
+      shiny::column(
+        width = 6,
+        align = "left",
+        shiny::downloadButton(outputId = ns('AnalyteReport'), label = "Analyte")),
+      shiny::column(
+        width = 6,
+        align = "right",
+        shiny::downloadButton(outputId = ns('MaterialReport'), label = "Material")
       )
     )
   )
@@ -69,7 +67,7 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    output$FinalReport <- shiny::downloadHandler(
+    output$AnalyteReport <- shiny::downloadHandler(
       filename = function() {
         paste0(getValue(rv, c("General","study_id")), "_", selected_tab(), '.', switch(
           input$output_file_format,
@@ -79,16 +77,13 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
         ))
       },
       content = function(file) {
-        # https://shiny.rstudio.com/gallery/download-knitr-reports.html
-        # src <- normalizePath("report_vorlage.Rmd")
-        # temporarily switch to the temp dir, in case you do not have write
-        # permission to the current working directory
-        owd <- setwd(tempdir())
-        on.exit(setwd(owd))
-        # file.copy(src, "report_vorlage.Rmd", overwrite = TRUE)
-        
-        out <- rmarkdown::render(
-          input = fnc_get_local_file("report_vorlage.Rmd", copy_to_tempdir = FALSE),
+        # Copy the report file to a temporary directory before processing it
+        rmdfile <- fnc_get_local_file("report_vorlage_analyt.Rmd")
+        fnc_get_local_file("template.docx")
+
+        rmarkdown::render(
+          input = rmdfile,
+          output_file = file,
           output_format = switch(
             input$output_file_format,
             PDF = rmarkdown::pdf_document(),
@@ -98,49 +93,15 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
           params = list(
             "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
             "Certification" = c(
-              shiny::isolate(shiny::reactiveValuesToList(getValue(rv,"Certification"))),
-              shiny::isolate(shiny::reactiveValuesToList(getValue(rv,"Certification_processing")))
+              shiny::reactiveValuesToList(getValue(rv,"Certification")),
+              shiny::reactiveValuesToList(getValue(rv,"Certification_processing"))
             ),
             "selected_tab" = selected_tab()
           ),
-          # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
-          # envir = new.env(parent = globalenv())
+          envir = new.env(parent = globalenv())
         )
-        file.rename(out, file)
       }
     )
-
-
-    # REPORT Material
-    # output$MaterialReport <- downloadHandler(
-    #   filename = function() {
-    #     paste0(getValue(rv, c("General","study_id")), "_", getValue(rv, c("General","user")), '.', switch(
-    #       input$output_file_format,
-    #       PDF = 'pdf',
-    #       HTML = 'html',
-    #       Word = 'docx'
-    #     ))
-    #   },
-    #   content = function(file) {
-    #     # temporarily switch to the temp dir, in case you do not have write permission to the current working directory
-    #     owd <- setwd(tempdir(check = TRUE))
-    #     on.exit(setwd(owd))
-    #     writeLines(text = Report_Vorlage_Material(), con = 'tmp_Report.Rmd')
-    #     out <- rmarkdown::render(
-    #       input = 'tmp_Report.Rmd',
-    #       output_format = switch(
-    #         input$output_file_format,
-    #         PDF = rmarkdown::pdf_document(),
-    #         HTML = rmarkdown::html_document(),
-    #         Word = rmarkdown::word_document()
-    #       ),
-    #       params = list("res" = c_res()),
-    #       # !!! das ist die Liste mit Eingabewerten für die weitere Verarbeitung im Report
-    #       envir = new.env(parent = globalenv())
-    #     )
-    #     file.rename(out, file)
-    #   }
-    # )
 
   })
 

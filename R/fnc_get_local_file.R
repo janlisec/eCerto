@@ -35,8 +35,8 @@ fnc_get_local_file <- function(x=NULL, pkg="ecerto", copy_to_tempdir=TRUE) {
     #out <- paste("www", x, sep="/")
   }
   if (copy_to_tempdir) {
-    file.copy(out, file.path(tempdir(), basename(out)), overwrite = TRUE)
-    return(file.path(tempdir(), basename(out)))
+    file.copy(out, file.path(tempdir(), x), overwrite = TRUE)
+    return(file.path(tempdir(), x, fsep="\\"))
   } else {
     return(out)
   }
