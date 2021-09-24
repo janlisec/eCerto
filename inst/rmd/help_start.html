@@ -303,7 +303,7 @@ pre code {
 <div id="uncertainty" class="section level3">
 <h3>Uncertainty</h3>
 <p>Conducting the analysis of variance (ANOVA) on a one factor linear model we determined from <span class="math inline">\(N\)</span> bottles/containers with <span class="math inline">\(n\)</span> replicates each the variance within bottles <span class="math inline">\(s_w\)</span> (MS_within) and the variance between bottles <span class="math inline">\(s_a\)</span> (MS_among). Together with the overall mean vlaue <span class="math inline">\(\mu\)</span> (mean of all <span class="math inline">\(N\)</span> bottle means), we now can compute two relative uncertainties between bottles:</p>
-<p><span class="math display">\[s_{bb}={\sqrt{s_a-s_w} \over \mu}\]</span></p>
+<p><span class="math display">\[s_{bb}={\sqrt{s_a-s_w \over n} \over \mu}\]</span></p>
 <p>and</p>
 <p><span class="math display">\[s_{bb, min}={\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4} \over \mu}\]</span></p>
 <p>The larger of both values, <span class="math inline">\(s_{bb}\)</span> and <span class="math inline">\(s_{bb,min}\)</span>, is transfered as uncertainty contribution to the column in the material table selected by the user.</p>

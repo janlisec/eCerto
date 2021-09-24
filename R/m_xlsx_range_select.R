@@ -125,19 +125,15 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
     tab_param <- shiny::reactiveValues("tab"=NULL, "start_row"=1, "end_row"=1, "start_col"=1, "end_col"=1, "tab_flt"=matrix(1), "rng"="A1:A1")
     # event: upload of excel file(s)
     shiny::observeEvent(tab(), {
-      if (!silent)
-        message("m_xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
+      if (!silent) message("m_xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
       tab_param$tab <- tab()
       tab_param$tab_upload <- shiny::isolate(tab()) # unchanged table from upload (for checking if row and column was selected)
       tab_param$start_row <- 1
       tab_param$start_col <- 1
       tab_param$end_row <- nrow(tab()[[1]])
       tab_param$end_col <- ncol(tab()[[1]])
-      tab_param$rng <- # for printing
-        getRngTxt(tab_param$start_col,
-                  tab_param$start_row,
-                  tab_param$end_col,
-                  tab_param$end_row)
+      # as user response in UI
+      tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
     })
 
     # das Proxy der Tabelle, um sicherstellen zu können, dass immer nur 2 Zellen angewählt werden können (proxy version kann serverseitig manipuliert werden)
@@ -147,71 +143,53 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
     shiny::observeEvent(input$uitab_cells_selected, {
       if (!silent) message("m_xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
       cs <- input$uitab_cells_selected
-      check_cs <- function(x) {
-        diff(range(x[,1]))>=1 &&
-          diff(range(x[,2]))>=1 &&
-          any(tab_param$start_col != min(x[,2]), tab_param$end_col != max(x[,2]), tab_param$start_row != min(cs[,1]), tab_param$end_row != max(cs[,1]))
-      }
-      check_new_point <- function(x) {
-        x[3,1]>=min(x[-3,1]) & x[3,1]<=max(x[-3,1]) & x[3,2]>=min(x[-3,2]) & x[3,2]<=max(x[-3,2])
-      }
-      update_cs <- function() {
-        tab_param$start_col = min(cs[,2])
-        tab_param$end_col = max(cs[,2])
-        tab_param$start_row = min(cs[,1])
-        tab_param$end_row = max(cs[,1])
-        tab_param$tab = crop_dataframes(
-          dfs = tab(),
-          rows = as.numeric(tab_param$start_row):as.numeric(tab_param$end_row),
-          cols = as.numeric(tab_param$start_col):as.numeric(tab_param$end_col)
-        )
-        tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
-        DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
-      }
-      # the final row is the cell selected last by the user
-      if (nrow(cs)==2 && check_cs(x=cs)) {
-        update_cs()
-      }
-      # did the user select a third point ?
-      if (nrow(cs)>2) {
-        # is this third point outside or inside the current range
-        if (check_new_point(x=cs)) {
-          # when inside --> open a modal to inform the user that he needs to deselect another cell first
-          shiny::showModal(shiny::modalDialog(
-            shiny::HTML("You selected a cell within the current range.<br>Please deselect one of the two outer cells first.")
-          ))
-          DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
-        } else {
-          # when outside --> increase selected range automatically
-          if (check_cs(x=cs)) {
-            update_cs()
-          }
+      if (nrow(cs)>=2) {
+        check_cs <- function(x, exc_fmt="Certification") {
+          min_rows <- switch(exc_fmt, "Certification"=0, 1)
+          min_cols <- switch(exc_fmt, "Certification"=2, 1)
+          diff(range(x[,1]))>=min_rows &&
+            diff(range(x[,2]))>=min_cols &&
+            any(tab_param$start_col != min(x[,2]), tab_param$end_col != max(x[,2]), tab_param$start_row != min(cs[,1]), tab_param$end_row != max(cs[,1]))
         }
-        DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
-      }
-      # the final row is the cell selected last by the user
-      if (nrow(cs)==2 && check_cs(x=cs)) {
-        update_cs()
-      }
-      # did the user select a third point
-      if (nrow(cs)>2) {
-        # is this third point outside or inside the current range
-        if (check_new_point(x=cs)) {
-          # when inside --> open a modal to inform the user that he needs to deselect another cell first
-          shiny::showModal(shiny::modalDialog(
-            shiny::HTML("You selected a cell within the current range.<br>Please deselect one of the two outer cells first.")
-          ))
-          DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
-        } else {
-          # when outside --> increase selected range automatically
-          if (check_cs(x=cs)) {
-            update_cs()
+        check_new_point <- function(x) {
+          x[3,1]>=min(x[-3,1]) & x[3,1]<=max(x[-3,1]) & x[3,2]>=min(x[-3,2]) & x[3,2]<=max(x[-3,2])
+        }
+        update_cs <- function() {
+          tab_param$start_col = min(cs[,2])
+          tab_param$end_col = max(cs[,2])
+          tab_param$start_row = min(cs[,1])
+          tab_param$end_row = max(cs[,1])
+          if (is.list(tab())) {
+            tab_param$tab <- lapply(tab(), function(x) { x[min(cs[,1]):max(cs[,1]), min(cs[,2]):max(cs[,2]), drop=FALSE]})
+          } else {
+            tab_param$tab <- tab()[min(cs[,1]):max(cs[,1]), min(cs[,2]):max(cs[,2]), drop=FALSE]
           }
+          tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
+          DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
+        }
+        # the final row is the cell selected last by the user
+        if (nrow(cs)==2 && check_cs(x=cs, exc_fmt=excelformat())) {
+          update_cs()
+        }
+        # did the user select a third point ?
+        if (nrow(cs)>2) {
+          # is this third point outside or inside the current range
+          if (check_new_point(x=cs)) {
+            # when inside --> open a modal to inform the user that he needs to deselect another cell first
+            shiny::showModal(shiny::modalDialog(
+              shiny::HTML("You selected a cell within the current range.<br>Please deselect one of the two outer cells first.")
+            ))
+            DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
+          } else {
+            # when outside --> increase selected range automatically
+            if (check_cs(x=cs)) {
+              update_cs()
+            }
+          }
+          DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol=2))
         }
       }
     })
-
-
 
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({

@@ -24,11 +24,11 @@
 #'  setValue(rv, c("General","user"),"Franz")
 #'  getValue(rv, c("General","user"))
 #' }
-setValue = function(df,key,value){
+setValue <- function(df, key, value){
   if(R6::is.R6(df)){
     df$set(key, value) # in reactiveClass.R
   } else {
-    stop("object of class ", class(df), " can't get set currently.")
+    stop("Object of class ", class(df), " can't set value currently.")
   }
 }
 
@@ -55,7 +55,7 @@ getValue = function(df, key=NULL) {
   } else if(is.list(df)){
     return(df[[key]])
   } else {
-    stop("object of class ", class(df), " can't get/set currently.")
+    stop("Object of class ", class(df), " can't get value currently.")
   }
 }
 
@@ -122,44 +122,6 @@ load_sheetnames = function(filepath){
   }
   return(a[[1]])
 }
-
-#' Crops dataframe(s)
-#'
-#' @param dfs list of dataframe(s)
-#' @param cols columns as array, e.g. 1:3
-#' @param rows rows as array, e.g. 5:8
-#'
-#' @return cropped list of data frames(s)
-#'
-#' @export
-#' @rdname datahandling_utils
-#' @examples ecerto:::crop_dataframes(iris,2:3,5:6)
-crop_dataframes <- function(dfs, cols, rows) {
-  if(missing(dfs))
-    stop("list of dataframes missing")
-  if(missing(cols))
-    stop("Need to specify columns")
-  if(missing(rows))
-    stop("Need to specify rows")
-  if(length(cols) == 1 | length(rows) == 1)
-    stop("length of rows and columns is one")
-  if(cols[2]<cols[1] | rows[2] < rows[1])
-    stop("order of elements wrong")
-  if(!is.numeric(cols) | !is.numeric(rows))
-    stop("rows and column index are not numerics")
-
-  if(!inherits(dfs,"list")){
-    warning("data frame is not a list")
-    dfs <- list(dfs)
-  }
-
-  r <- lapply(dfs, function(y) {
-    y[rows,cols]
-  })
-  return(r)
-}
-
-
 
 #' set source of upload for an element
 #'

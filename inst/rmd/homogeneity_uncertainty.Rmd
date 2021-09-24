@@ -2,7 +2,7 @@
 
 Conducting the analysis of variance (ANOVA) on a one factor linear model we determined from $N$ bottles/containers with $n$ replicates each the variance within bottles $s_w$ (MS_within) and the variance between bottles $s_a$ (MS_among). Together with the overall mean vlaue $\mu$ (mean of all $N$ bottle means), we now can compute two relative uncertainties between bottles:
 
-$$s_{bb}={\sqrt{s_a-s_w} \over \mu}$$
+$$s_{bb}={\sqrt{s_a-s_w \over n} \over \mu}$$
 
 and
 

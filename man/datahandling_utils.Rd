@@ -6,7 +6,6 @@
 \alias{getValue}
 \alias{laboratory_dataframe}
 \alias{load_sheetnames}
-\alias{crop_dataframes}
 \alias{set_uploadsource}
 \alias{roundMT}
 \alias{pn}
@@ -20,8 +19,6 @@ getValue(df, key = NULL)
 laboratory_dataframe(x)
 
 load_sheetnames(filepath)
-
-crop_dataframes(dfs, cols, rows)
 
 set_uploadsource(rv, m, uploadsource)
 
@@ -41,12 +38,6 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 \item{x}{data frame with uploaded excel table}
 
 \item{filepath}{the path to a single or multiple excel file(s)}
-
-\item{dfs}{list of dataframe(s)}
-
-\item{cols}{columns as array, e.g. 1:3}
-
-\item{rows}{rows as array, e.g. 5:8}
 
 \item{rv}{the list}
 
@@ -75,8 +66,6 @@ another data frame with extracted laboratory parameters
 
 the names of sheets
 
-cropped list of data frames(s)
-
 nothing directly, but via rv
 
 the rounded value
@@ -102,7 +91,6 @@ if (interactive()) {
 }
 datreturn <- ecerto:::test_datreturn()
 shiny::isolate(ecerto::getValue(datreturn, "selectedAnalyteDataframe"))
-ecerto:::crop_dataframes(iris,2:3,5:6)
 if (interactive()) {
   rv = init_rv()
   set_uploadsource(rv,"Certification","Excel")
