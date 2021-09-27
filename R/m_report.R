@@ -18,16 +18,14 @@
 #'    m_report_ui(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
 #'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-#'   shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
-#'   shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
-#'   selected_tab = reactiveVal("Si")
-#'
-#'  m_report_server(
+#'    shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
+#'    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
+#'    m_report_server(
 #'      id = "test",
 #'      rv = rv,
-#'      selected_tab = selected_tab
+#'      selected_tab = reactiveVal("Si")
 #'    )
 #'  }
 #' )
@@ -79,8 +77,12 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
       content = function(file) {
         # Copy the report file to a temporary directory before processing it
         rmdfile <- fnc_get_local_file("report_vorlage_analyt.Rmd")
+        # copy the word template (for font sizes and font types) to a temporary directory
         fnc_get_local_file("template.docx")
-
+        # copy the BAM Logo to a temporary directory
+        logofile <- fnc_get_local_file("BAMLogo2015.png")
+        #browser()
+        # render the markdown file
         rmarkdown::render(
           input = rmdfile,
           output_file = file,
@@ -92,11 +94,10 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
           ),
           params = list(
             "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
-            "Certification" = c(
-              shiny::reactiveValuesToList(getValue(rv,"Certification")),
-              shiny::reactiveValuesToList(getValue(rv,"Certification_processing"))
-            ),
-            "selected_tab" = selected_tab()
+            "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
+            "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
+            "selected_tab" = selected_tab(),
+            "logo_file" = logofile
           ),
           envir = new.env(parent = globalenv())
         )

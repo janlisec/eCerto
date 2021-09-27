@@ -3,123 +3,128 @@
 params:
   General: NA
   Certification: NA
+  Certification_processing: NA
   selected_tab: NA
+  logo_file: NA
 output:
+  html_document:
+    df_print: paged
   word_document: 
     reference_docx: template.docx
   pdf_document:
     latex_engine: lualatex
-  html_document:
-    df_print: paged
 fontsize: 11pt
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-# get a local representation of all data provided by Shiny
-# setting testing <- TRUE will load test data for development of the Rmd
-testing <- TRUE
-if (testing) {
-  tmp <- new.env()
-  load(file = "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/JL2/CRM001.RData", envir = tmp)
-  res <- get(x = "res", envir = tmp)
-  G <- res$General
-  C <- res$Certification
-  A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
-  D <- G$apm[[A]]
-} else {
-  G <- params$General
-  C <- params$Certification
-  A <- ifelse(params$selected_tab %in% names(G$apm), params$selected_tab, names(G$apm)[1])
-  D <- G$apm[[A]]
-}
+  knitr::opts_chunk$set(echo = FALSE)
+  if("kableExtra" %in% (.packages())) {
+    detach("package:kableExtra", unload=TRUE, character.only = TRUE) 
+  }
+  # get a local representation of all data provided by Shiny
+  # setting testing <- TRUE will load test data for development of the Rmd
+  testing <- c(FALSE, TRUE)[1]
+  if (testing) {
+    tmp <- new.env()
+    load(file = "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/JL2/CRM001.RData", envir = tmp)
+    res <- get(x = "res", envir = tmp)
+    G <- res$General
+    C <- res$Certification
+    CP <- res$Certification_processing
+    A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
+    D <- G$apm[[A]]
+    L <- "C:/Users/jlisec/Documents/Projects/BAMTool/www/BAMLogo2015.png"
+  } else {
+    G <- params$General
+    C <- params$Certification
+    CP <- params$Certification_processing
+    A <- ifelse(params$selected_tab %in% names(G$apm), params$selected_tab, names(G$apm)[1])
+    D <- G$apm[[A]]
+    #L <- ifelse(exists(params[["logo_file"]]), params[["logo_file"]], NA)
+    L <- params[["logo_file"]]
+  }
+```
+
+```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
+  knitr::include_graphics(L)
 ```
 
 ## *eCerto* Analyte Report
 
-**Study ID: `r G$study_id`**  
-**User: `r G$user`**  
-**Date: `r format(Sys.time(), '%d %B, %Y')`**
+### Meta Data
 
-**Analyte: `r A`**  
+|               |                |              |                                     |
+|--------------:|:---------------|-------------:|:------------------------------------|
+| **Study ID:** | `r G$study_id` |    **Date:** | `r format(Sys.time(), '%d %B, %Y')` |
+|     **User:** | `r G$user`     | **Analyte:** | `r A`                               |
 
 ### Data Import
 
 These files have been provided to the tool by `r G$user`:
 
 ```{r data_files, echo=FALSE, comment=NA}
-cat(paste(C$input_files, collapse=",\n"))
+  cat(paste(C$input_files, collapse=",\n"))
 ```
 
 This is the imported data which was basis for all further calculations:
 
 ```{r data_table, echo=FALSE}
-df <- knitr::kable(C$data[C$data[,"analyte"]==A,1:7,drop=FALSE], row.names=FALSE, format.args = list(decimal.mark = "."))
-if (knitr::is_html_output()) {
-  kableExtra::kable_styling(df, font_size = 9)
-} else {
-  df
-  #knitr::kable(C$data[C$data[,"analyte"]==A,1:7,drop=FALSE], row.names=FALSE, format.args = list(decimal.mark = "."))
-}
+  df <- C$data[C$data[,"analyte"]==A,1:7,drop=FALSE]
+  if (knitr::is_html_output()) {
+    kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
+  } else if (knitr::is_latex_output()) {
+    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
+  } else {
+    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
+  }
 ```
 
 ### Statistics regarding lab means, lab variances and outlier detection
 
-```{r echo=FALSE, comment=NA}
-knitr::kable(data.frame("Tab1"=NA), row.names=FALSE, format.args = list(decimal.mark = "."))
-#     Stats <- eval(parse(text=C$stats$fnc))
-# if (C$opt$show_code) {
-#     cat("Function call:\n")  
-#     tmp <- deparse(Stats, width.cutoff = 56L) 
-#     for (i in 1:length(tmp)){
-#       cat(tmp[i])
-#       cat("\n")
-#       }
-#     } 
-#     cat(paste("Selected precision:", precision, "\n")) knitr::kable(eval(C$stats$call), row.names=FALSE, format.args = list(decimal.mark = ","))
-#  
+```{r Outlier_Stats, echo=FALSE, comment=NA}
+  df <- CP$stats
+  if (knitr::is_html_output()) {
+    kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
+  } else if (knitr::is_latex_output()) {
+    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
+  } else {
+    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
+  }
 ```
 
 `r ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been removed by the user upon inspection of the oulier statistics:", "")`
 
-```{r, echo=FALSE, comment=NA} 
+```{r S_flt, echo=FALSE, comment=NA}
 cat(paste(D$sample_filter, collapse=", ")) 
 ```
 
 ### Statistics regarding overall mean distribution and variance testing
 
-```{r eval=TRUE, echo=FALSE, comment=NA}
-knitr::kable(data.frame("Tab2"=NA), row.names=FALSE, format.args = list(decimal.mark = "."))
-#     mstats <- eval(parse(text=C$mstats$fnc))
-# if (C$opt$show_code) { 
-#     cat("Function call:\n")  
-#   tmp <- deparse(mstats, width.cutoff = 56L) 
-#     for (i in 1:length(tmp))  {
-#       cat(tmp[i])
-#       cat("\n")}
-#   }
-#   cat(paste(C$normality_statement, "\n")) knitr::kable(eval(C$mstats$call), row.names=FALSE, format.args = list(decimal.mark = ",")) 
+```{r lab_means, eval=TRUE, echo=FALSE, comment=NA}
+df <- CP$mstats
+  if (knitr::is_html_output()) {
+    kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
+  } else if (knitr::is_latex_output()) {
+    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
+  } else {
+    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
+  }
 ```
 
 `r ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics:", "")`
 
-```{r, eval=!is.null(D$lab_filter), echo=FALSE, comment=NA} 
+```{r L_flt, eval=!is.null(D$lab_filter), echo=FALSE, comment=NA}
 cat(paste(D$lab_filter, collapse=", ")) 
 ```
 
 ### Certified Values Plot
 
-```{r, eval=TRUE, echo=FALSE, comment=NA, fig.width=480/72, fig.height=480/72}
-plot(1:10)
-# CertValPlot <- eval(parse(text=C$CertValPlot$fnc))
-# if (C$opt$show_code) {
-#   cat("Function call:\n")
-#   tmp <- deparse(CertValPlot)
-#   for (i in 1:length(tmp)) {
-#     cat(tmp[i])
-#     cat("\n")}
-#   }
-# eval(C$CertValPlot$call)
+```{r CertValPlot, eval=TRUE, echo=FALSE, comment=NA, fig.width=CP$CertValPlot$Fig01_width/72, fig.height=CP$CertValPlot$Fig01_height/72}
+  CertValPlot <- eval(parse(text=CP$CertValPlot$fnc))
+  data <- C$data[C$data[,"analyte"]==A,,drop=FALSE]
+  data[,"L_flt"] <- data[,"Lab"] %in% D$lab_filter
+  data <- data[!(data[,"ID"] %in% D$sample_filter),]
+  eval(CP$CertValPlot$call)
 ```
 
 ### Certified Value and uncertainty contributions

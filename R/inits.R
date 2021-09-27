@@ -12,11 +12,11 @@ init_datreturn <- function() {
     h_vals = NULL,                      # values from Homogeneity-module materialtabelle via .TransferHomogeneity
     mater_table = NULL,                 # material table, formerly 'cert_vals'
     transfer = NULL,                    # when transfer was clicked (just to change the panel to Certification)
-    lab_statistics = NULL,               # lab statistics (mean,sd) for materialtabelle
+    #lab_statistics = NULL,               # lab statistics (mean,sd) for materialtabelle
     cert_mean = NULL,
     cert_sd = NULL,
     current_apm = NULL                 # currently selected apm
-    )
+  )
 }
 
 #' Initializes material table for materialtabelle module
@@ -71,7 +71,7 @@ init_materialTabelle <- function(analytes) {
 #' @export
 #'
 #' @examples rv = init_rv()
-init_rv = function() {
+init_rv <- function() {
   rv <-
     list(
       "modules" = c("Certification","Homogeneity","Stability"), # names of the modules
@@ -81,16 +81,16 @@ init_rv = function() {
         "study_id" = NULL,
         "time_stamp" = as.Date.POSIXct(0),
         "dataformat_version" = "2021-05-27",
-        # filter
+        # analyte specific parameters
         "apm" = NULL
       ),
       # materialtabelle
       "materialtabelle" = NULL,
       # data input
       "Certification" = shiny::reactiveValues(
-        "data" = NULL,
         "input_files" = NULL,
-        "uploadsource" = NULL
+        "uploadsource" = NULL,
+        "data" = NULL
       ),
       # processing
       "Certification_processing" = shiny::reactiveValues(
@@ -117,9 +117,9 @@ init_rv = function() {
       ),
       "Homogeneity" = shiny::reactiveValues(
         # upload
-        "data" = NULL, # formerly h_dat
-        "uploadsource" = NULL,
         "input_files" = NULL,
+        "uploadsource" = NULL,
+        "data" = NULL, # formerly h_dat
         # Processing
         "h_vals" = NULL,
         "h_sel_analyt" = NULL,
@@ -128,8 +128,8 @@ init_rv = function() {
       ),
       "Stability" = shiny::reactiveValues(
         "input_files" = NULL,
-        "data" = NULL,
         "uploadsource" = NULL,
+        "data" = NULL,
         "s_vals" = NULL
       )
     )
@@ -144,52 +144,36 @@ init_rv = function() {
 #'   which sample ids are available to be filtered at all and, for completion,
 #'   the analyte name in case the list name fails
 #'
-#' @param certification data frame of certification data
+#' @param x data frame of analyte names and sample IDs
 #'
-#' @return reactiveValues
+#' @return A empty list (if no data frame is provided) or a apm-List otherwise.
 #'
 #' @export
-#'
-#' @examples
-#' apm <- shiny::reactiveVal()
-#' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
-#' apm(init_apm(df))
-#' apm_tmp <- shiny::isolate(apm())
-#' apm_tmp[["A1"]]$confirmed = TRUE
-#' apm(apm_tmp)
-#' shiny::isolate(apm()[["A1"]]$confirmed) # TRUE
-#'
-init_apm = function(certification = NULL) {
-  if(!is.null(certification)){
-    stopifnot(is.factor(certification[, "analyte"]))
-  }
-  param_template = list(
+init_apm <- function(
+  x = data.frame("ID"=1:20, "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
+) {
+  templ <- list(
     "precision" = NULL,
     "sample_filter" = NULL, # saving which samples where selected for filter
     "sample_ids" = NULL, # which samples are available for the filter
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "analytename" = NULL,
-    "confirmed" = FALSE # has the analyte manually been confirmed?
-    
+    "confirmed" = FALSE, # has the analyte manually been confirmed?
+    "precision_export" = 4 # rounding precision for export
   )
-  # l = list()
-
-  analytes = levels(certification[, "analyte"])
-
-  # create list with lists of all analytes (i.e. a nested list)
-  a_param_list = rep(list(param_template), length(analytes))
-  if(!is.null(certification)){
-    for (i in 1:length(a_param_list)) {
-      # add analyte name to list
-      a_param_list[[i]]$analytename = as.list(analytes)[[i]]
-      # add available id's of samples to list
-      tmp = certification
-      ids = tmp[tmp[["analyte"]] == as.list(analytes)[[i]], "ID"]
-      a_param_list[[i]]$sample_ids = ids[!is.na(ids)] # fill available ids
+  if (!is.null(x) && is.data.frame(x) && c("ID","analyte") %in% colnames(x)) {
+    if (!is.factor(x[, "analyte"])) {
+      x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
     }
+    # create list with lists of all analytes (i.e. a nested list)
+    apm <- sapply(levels(x[, "analyte"]), function(y) {
+      out <- templ
+      out$analytename <- y
+      out$sample_ids <- x[x[,"analyte"]==y,"ID"]
+      return(out)
+    }, simplify = FALSE)
+    return(apm)
+  } else {
+    return(list())
   }
-  # set names of sublists to analyte names
-  a_param_list = stats::setNames(a_param_list, analytes)
-  # end param list
-  return(a_param_list)
 }

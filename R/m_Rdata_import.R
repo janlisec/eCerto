@@ -26,11 +26,12 @@
 #'  server = function(input, output, session) {
 #'    ecerto::m_RDataImport_Server(
 #'      id = "test",
-#'      modules = reactiveVal(c("Ceritification","Stability","Homogeneity")),
-#'      uploadsource = reactiveVal("Excel")
-#'      )
+#'      modules = reactiveVal(c("Certification","Stability","Homogeneity")),
+#'      uploadsources = reactiveVal(list("Certification" = "Excel"))
+#'    )
 #'  }
-#' )}
+#' )
+#' }
 #'
 #' @rdname RDataImport
 #' @export
@@ -45,7 +46,7 @@ m_RDataImport_UI <- function(id) {
         label = "Select Previous Analysis",
         multiple = FALSE,
         accept = c("RData")
-      ),
+      )
     )
   )
 }
@@ -53,13 +54,14 @@ m_RDataImport_UI <- function(id) {
 #' @rdname RDataImport
 #' @export
 m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
+
   shiny::moduleServer(id, function(input, output, session) {
-    rvreturn = shiny::reactiveVal(NULL)
+    rvreturn <- shiny::reactiveVal(NULL)
     continue <- shiny::reactiveVal(NULL) # NULL -> don't continue
 
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
-      if(!silent) message("RData uploaded")
+      if (!silent) message("RData uploaded")
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
       shiny::validate(
         shiny::need(tolower(file.type) == "rdata","Only RData allowed."),
@@ -77,17 +79,17 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
     shiny::observeEvent(rdata(), {
-
-      ttt = sapply(modules(), function(x) {!is.null(uploadsources()[[x]])},simplify = "array")
-      if(any(ttt)){
-        if(!silent) message("RDataImport: Found existing data. Overwrite?")
+      ns <- session$ns
+      test <- sapply(modules(), function(x) {!is.null(uploadsources()[[x]])}, simplify = "array")
+      if (any(test)){
+        if (!silent) message("RDataImport: Found existing data. Overwrite?")
         shiny::showModal(
           shiny::modalDialog(
             title = "Existent data",
-            htmltools::HTML("Modul(s) <u>", paste(names(ttt[ttt==TRUE]),collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
+            htmltools::HTML("Modul(s) <u>", paste(names(which(test)), collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
             footer = shiny::tagList(
-              shiny::actionButton(shiny::NS(id,"cancel"), "Cancel"),
-              shiny::actionButton(shiny::NS(id,"overwrite"), "Overwrite", class = "btn btn-danger")
+              shiny::actionButton(inputId = ns("cancel"), label = "Cancel"),
+              shiny::actionButton(inputId = ns("overwrite"), label = "Overwrite", class = "btn btn-danger")
             )
           )
         )
@@ -113,7 +115,6 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
       rv <- reactiveClass$new(init_rv())
       if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE)))
         {
-
         # import functions for defined data_format schemes
         if ( res$General$dataformat_version=="2021-05-27") {
           # Non-legacy upload #####
@@ -165,7 +166,6 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
           setValue(rv,c("Certification_processing","cert_sd"),res[["Certification"]][["cert_sd"]])
           setValue(rv,c("Certification_processing","normality_statement"),res[["Certification"]][["normality_statement"]])
           setValue(rv,c("Certification_processing","precision"),res[["Certification"]][["precision"]])
-
           setValue(rv,c("Certification_processing","data_kompakt"),res[["Certification"]][["data_kompakt"]])
           setValue(rv,c("Certification_processing","CertValPlot"),res[["Certification"]][["CertValPlot"]])
           setValue(rv,c("Certification_processing","stats"),res[["Certification"]][["stats"]])

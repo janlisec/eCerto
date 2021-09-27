@@ -39,10 +39,11 @@ shiny::shinyApp(
  server = function(input, output, session) {
    ecerto::m_RDataImport_Server(
      id = "test",
-     modules = reactiveVal(c("Ceritification","Stability","Homogeneity")),
-     uploadsource = reactiveVal("Excel")
-     )
+     modules = reactiveVal(c("Certification","Stability","Homogeneity")),
+     uploadsources = reactiveVal(list("Certification" = "Excel"))
+   )
  }
-)}
+)
+}
 
 }

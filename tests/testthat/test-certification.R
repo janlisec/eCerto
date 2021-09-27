@@ -66,7 +66,6 @@ test_that(
   desc = "RData Upload for apm saved in variable",
   code = {
     # initiate runtime variables
-    test_apm <- init_apm(ecerto:::test_Certification_Excel())
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
     datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn())
     suppressMessages(
@@ -77,11 +76,10 @@ test_that(
           datreturn = datreturn
         ),
         expr =  {
-          ecerto::setValue(rv_test, c("General","apm"), test_apm)
+          ecerto::setValue(rv_test, c("General","apm"), ecerto::init_apm(ecerto:::test_Certification_Excel()))
           ecerto::setValue(rv, c("Certification","uploadsource"), "RData")
           session$flushReact()
           expect_equal(apm(), getValue(rv_test, c("General","apm")))
-
         }
       )
     )

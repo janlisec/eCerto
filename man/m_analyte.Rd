@@ -28,11 +28,10 @@ fill automatically after analytes are available and gives the user the
 opportunity to select analytes as well as precision and filter samples.
 }
 \details{
-not yet
+Note! This module will change a reactive variable apm() provided to the module as a parameter
 }
 \examples{
 if (interactive()) {
-df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
 shiny::shinyApp(
  ui = shiny::fluidPage(
  shinyjs::useShinyjs(),
@@ -41,7 +40,7 @@ shiny::shinyApp(
  server = function(input, output, session) {
    m_analyteServer(
      id = "test",
-     apm = shiny::reactiveVal(init_apm(df)),
+     apm = shiny::reactiveVal(ecerto::init_apm()),
      renewTab = reactiveVal(1),
      tablist = reactiveVal()
    )

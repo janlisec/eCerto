@@ -4,13 +4,15 @@
 \alias{init_apm}
 \title{Analyte Parameter List (apm)}
 \usage{
-init_apm(certification = NULL)
+init_apm(
+  x = data.frame(ID = 1:20, analyte = gl(n = 2, k = 10, labels = c("A1", "A2")))
+)
 }
 \arguments{
-\item{certification}{data frame of certification data}
+\item{x}{data frame of analyte names and sample IDs}
 }
 \value{
-reactiveValues
+A empty list (if no data frame is provided) or a apm-List otherwise.
 }
 \description{
 \code{init_apm} creates for each analyte the
@@ -18,14 +20,4 @@ parameter list. Each sublist contains information about the selected analyte
 tab, and for each analyte the specified precision, the filtered sample id,
 which sample ids are available to be filtered at all and, for completion,
 the analyte name in case the list name fails
-}
-\examples{
-apm <- shiny::reactiveVal()
-df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
-apm(init_apm(df))
-apm_tmp <- shiny::isolate(apm())
-apm_tmp[["A1"]]$confirmed = TRUE
-apm(apm_tmp)
-shiny::isolate(apm()[["A1"]]$confirmed) # TRUE
-
 }

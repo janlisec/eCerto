@@ -2,7 +2,7 @@
 #' @param data Table with columns 'Lab' and 'value'.
 #' @param precision Rounding precision.
 #' @noRd
-Stats <- function(data = NULL, precision = 4) {
+fnc_outlier_stats <- function(data = NULL, precision = 4) {
   lab_means <-
     plyr::ldply(split(data$value, data$Lab), function(x) {
       data.frame(
@@ -161,7 +161,7 @@ Cochran <- function(data=NULL) {
 #' @param data Table with columns 'Lab' and 'value'.
 #' @param precision Rounding precision.
 #' @noRd
-mstats <- function(data=NULL, precision=4) {
+fnc_labmean_stats <- function(data=NULL, precision=4) {
   lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
   n <- nrow(lab_means)
   out <- data.frame(
@@ -173,7 +173,7 @@ mstats <- function(data=NULL, precision=4) {
     #"Bartlett_p"=ecerto::pn(stats::bartlett.test(value~Lab, data=data)$p.value, precision),
     "ANOVA_p"=formatC(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],format="E",digits=2),
     #"ANOVA_p"=ecerto::pn(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],precision),
-    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=lab_means$mean, y="pnorm", mean = mean(lab_means$mean), sd = stats::sd(lab_means$mean))$p.value), format="E",digits=2),
+    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=lab_means$mean, y="pnorm", mean = mean(lab_means$mean), sd = stats::sd(lab_means$mean))$p.value), format="E", digits=2),
     #"KS_p"=ecerto::pn(suppressWarnings(stats::ks.test(x=lab_means$mean, y="pnorm", mean = mean(lab_means$mean), sd = stats::sd(lab_means$mean))$p.value), precision),
     "Skewness"=round(moments::skewness(x = lab_means$mean),precision),
     "Agostino_p"=NA,

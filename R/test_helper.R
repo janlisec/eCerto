@@ -1,14 +1,14 @@
 #' @keywords internal
 test_datreturn = function() {
   datreturnList = list(
-    lab_statistics = structure(
-      list(
-        Lab = structure(1:3, .Label = c("L1", "L2", "L3"), class = "factor"),
-        mean = c(0.0453, 0.0513333333333333, 0.0511333333333333),
-        sd = c(0.00185202591774521, 0.00100664459136943,0.000351188458428424),
-        n = c(3L, 3L, 3L)),
-      class = "data.frame", row.names = c("L1","L2", "L3")
-    ),
+    # lab_statistics = structure(
+    #   list(
+    #     Lab = structure(1:3, .Label = c("L1", "L2", "L3"), class = "factor"),
+    #     mean = c(0.0453, 0.0513333333333333, 0.0511333333333333),
+    #     sd = c(0.00185202591774521, 0.00100664459136943,0.000351188458428424),
+    #     n = c(3L, 3L, 3L)),
+    #   class = "data.frame", row.names = c("L1","L2", "L3")
+    # ),
     selectedAnalyteDataframe = structure(
       list(
         ID = c(1L,12L, 23L, 34L, 44L, 54L, 64L, 75L, 86L),
@@ -50,7 +50,7 @@ test_datreturn = function() {
     ),
     transfer = NULL,
     current_apm = NULL,
-    lab_statistics = NULL,
+    #lab_statistics = NULL,
     cert_mean = NULL,
     cert_sd = NULL
   )

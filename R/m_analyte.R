@@ -8,7 +8,7 @@
 #'  fill automatically after analytes are available and gives the user the
 #'  opportunity to select analytes as well as precision and filter samples.
 #'
-#' @details not yet
+#' @details Note! This module will change a reactive variable apm() provided to the module as a parameter
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param apm reactiveValues object, which gives available analytes, holds parameter, etc.
@@ -21,7 +21,6 @@
 #' @export
 #' @examples
 #' if (interactive()) {
-#' df <- data.frame("analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'  shinyjs::useShinyjs(),
@@ -30,7 +29,7 @@
 #'  server = function(input, output, session) {
 #'    m_analyteServer(
 #'      id = "test",
-#'      apm = shiny::reactiveVal(init_apm(df)),
+#'      apm = shiny::reactiveVal(ecerto::init_apm()),
 #'      renewTab = reactiveVal(1),
 #'      tablist = reactiveVal()
 #'    )
@@ -51,17 +50,20 @@ m_analyteUI = function(id){
 #' @importFrom purrr '%>%'
 #' @export
 m_analyteServer = function(id, apm, renewTabs, tablist) {
+
+
   stopifnot(shiny::is.reactive(apm))
+
   shiny::moduleServer(id, function(input, output, session){
+
     ns <- session$ns # to get full namespace here in server function
 
-    selected_tab = shiny::eventReactive(input$tabs,{
+    selected_tab <- shiny::eventReactive(input$tabs, {
       input$tabs
     })
 
-    confirmedTabs <- shiny::reactiveVal()
-
     # change color of tab when selected by changing class
+    confirmedTabs <- shiny::reactiveVal()
     markConfirmed <- function(tab) {
       # message("color tab: ", tab)
       # s = paste0("#",ns("tabs")," li a[data-value=",tab,"]")
@@ -70,7 +72,13 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
         selector = s,
         class = "selct")
     }
+    shiny::observeEvent(confirmedTabs(),{
+      for (i in confirmedTabs()) {
+        markConfirmed(i)
+      }
+    })
 
+    # upon upload of other data source we may need to renew the analyte tab-list
     shiny::observeEvent(renewTabs(),{
       message("m_analyte: Renew Tabs")
       tablist() %>% purrr::walk(~shiny::removeTab("tabs", .x)) # remove old tabs
@@ -149,22 +157,16 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
       confirmedTabs(l)
     }, ignoreNULL = TRUE)
 
-    shiny::observeEvent(confirmedTabs(),{
-      for (i in confirmedTabs()) {
-        markConfirmed(i)
-      }
-    })
-
     shiny::observeEvent(selected_tab(),{
       if(!selected_tab() %in% confirmedTabs()) {
-        ct = confirmedTabs()
-        ct = append(ct,selected_tab())
+        ct <- confirmedTabs()
+        ct <- append(ct, selected_tab())
         confirmedTabs(ct)
       }
       analytes_tmp <- shiny::isolate(apm())
       analytes_tmp[[selected_tab()]]$confirmed = TRUE
       apm(analytes_tmp)
-    },ignoreInit = TRUE, ignoreNULL = TRUE)
+    }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
 
     # update precision

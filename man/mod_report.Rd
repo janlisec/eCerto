@@ -32,16 +32,14 @@ shiny::shinyApp(
    m_report_ui(id = "test")
  ),
  server = function(input, output, session) {
-  rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-  shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
-  shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
-  selected_tab = reactiveVal("Si")
-
- m_report_server(
+   shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
+   shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
+   m_report_server(
      id = "test",
      rv = rv,
-     selected_tab = selected_tab
+     selected_tab = reactiveVal("Si")
    )
  }
 )
