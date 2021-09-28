@@ -91,31 +91,31 @@ m_StabilityServer <- function(id, rv, datreturn) {
     # thing), it has to be checked if it has changed value since the last change
     # to verify an upload
     uploadsource <- shiny::reactiveVal(NULL)
-    shiny::observeEvent(ecerto::getValue(rv,c("Stability","uploadsource")),{
-      o.upload <- ecerto::getValue(rv,c("Stability","uploadsource"))
+    shiny::observeEvent(getValue(rv,c("Stability","uploadsource")),{
+      o.upload <- getValue(rv,c("Stability","uploadsource"))
       # assign upload source if (a) hasn't been assigned yet or (b), if not
       # null, has changed since the last time, for example because other data
       # source has been uploaded
       if(is.null(uploadsource()) || uploadsource() != o.upload ){
         uploadsource(o.upload)
         shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
-        message("Stability: Uploadsource changed to ", shiny::isolate(ecerto::getValue(rv,c("Stability","uploadsource"))))
+        message("Stability: Uploadsource changed to ", shiny::isolate(getValue(rv,c("Stability","uploadsource"))))
         #
-        s_dat <- ecerto::getValue(rv,c("Stability","data"))
+        s_dat <- getValue(rv,c("Stability","data"))
         s_vals <- plyr::ldply(split(s_dat, s_dat[,"analyte"]), function(x) {
           x_lm <- stats::lm(Value ~ Date, data=x)
-          mon_diff <- max(ecerto::mondf(x[,"Date"]))
+          mon_diff <- max(mondf(x[,"Date"]))
           x_slope <- summary(x_lm)$coefficients[2,1:2]
           data.frame("mon_diff"=mon_diff, "slope"=x_slope[1], "SE_slope"=x_slope[2], "U_Stab"=abs(x_slope[1]*x_slope[2]))
         }, .id="analyte")
-        ecerto::setValue(rv, c("Stability","s_vals"), s_vals)
+        setValue(rv, c("Stability","s_vals"), s_vals)
       }
     })
 
-    # # TODO This is for saving; Has to be transformed to ecerto::setValue()
+    # # TODO This is for saving; Has to be transformed to setValue()
     # s_res <- reactive({
     #   # combine data for backup in a list
-    #   if (is.null(ecerto::getValue(rv,c("Stability","data")))) {
+    #   if (is.null(getValue(rv,c("Stability","data")))) {
     #     return(list("Stability"=NULL))
     #   } else {
     #     return(list("Stability"=list(
@@ -129,7 +129,7 @@ m_StabilityServer <- function(id, rv, datreturn) {
 
 
     s_Data <- shiny::reactive({
-      s_dat <- ecerto::getValue(rv,c("Stability","data"))
+      s_dat <- getValue(rv,c("Stability","data"))
       if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
       return(s_dat)
     })
@@ -144,45 +144,45 @@ m_StabilityServer <- function(id, rv, datreturn) {
     # Tables
     output$s_overview <- DT::renderDataTable({
       shiny::req(s_Data(), input$s_sel_analyte)
-      s <- ecerto::getValue(rv,c("Stability","data"))
+      s <- getValue(rv,c("Stability","data"))
       s[s[,"analyte"]==input$s_sel_analyte,c("Date","Value")]
     }, options = list(paging = TRUE, searching = FALSE), rownames=NULL)
 
     output$s_vals <- DT::renderDataTable({
         shiny::req(s_Data())
-        s_vals <- ecerto::getValue(rv, c("Stability","s_vals"))
+        s_vals <- getValue(rv, c("Stability","s_vals"))
         for (i in c("slope","SE_slope","U_Stab")) {
-          s_vals[,i] <- ecerto::pn(s_vals[,i], 4)
+          s_vals[,i] <- pn(s_vals[,i], 4)
         }
-        if (!is.null(ecerto::getValue(datreturn,"mater_table"))) {
-          c_vals <- ecerto::getValue(datreturn,"mater_table")
+        if (!is.null(getValue(datreturn,"mater_table"))) {
+          c_vals <- getValue(datreturn,"mater_table")
           s_vals[,"Present"] <- sapply(s_vals[,"analyte"], function(x) {
             ifelse(x %in% c_vals[,"analyte"], "Yes", "No")
           })
         }
         return(s_vals)
       },
-      options = list(dom = "t", pageLength=shiny::isolate(nrow(ecerto::getValue(rv,c("Stability","s_vals"))))),
+      options = list(dom = "t", pageLength=shiny::isolate(nrow(getValue(rv,c("Stability","s_vals"))))),
       selection = list(mode="single", target="row"), rownames=NULL
     )
 
     shiny::observeEvent(input$s_vals_rows_selected, {
-      sel <- as.character(ecerto::getValue(rv,c("Stability","s_vals"))[input$s_vals_rows_selected,"analyte"])
+      sel <- as.character(getValue(rv,c("Stability","s_vals"))[input$s_vals_rows_selected,"analyte"])
       shiny::updateSelectInput(session = session, inputId = "s_sel_analyte", selected = sel)
     })
 
     shiny::observeEvent(input$s_sel_analyte, {
       # show/hide the input field to select a deviation type (will effect the Figure)
       shiny::req(input$s_sel_dev)
-      mt <- ecerto::getValue(datreturn,"mater_table")
+      mt <- getValue(datreturn,"mater_table")
       a <- input$s_sel_analyte
       test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
       shinyjs::toggle(id="s_sel_dev", condition = test)
     })
 
     output$s_sel_dev <- shiny::renderUI({
-      shiny::req(s_Data(), ecerto::getValue(datreturn,"mater_table"), input$s_sel_analyte)
-      mt <- ecerto::getValue(datreturn,"mater_table")
+      shiny::req(s_Data(), getValue(datreturn,"mater_table"), input$s_sel_analyte)
+      mt <- getValue(datreturn,"mater_table")
       a <- input$s_sel_analyte
       # show element only once mat_tab is available and analyte and mean value exist
       shiny::req(a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"]))
@@ -209,7 +209,7 @@ m_StabilityServer <- function(id, rv, datreturn) {
       U <- 2*stats::sd(s[l,"Value"], na.rm=T)
       U_Def <- "2s"
       if (!is.null(input$s_sel_dev)) { # !is.null(input$sel_analyt) &
-        cert_vals <- ecerto::getValue(datreturn,"mater_table")
+        cert_vals <- getValue(datreturn,"mater_table")
         if (any(cert_vals[,"analyte"] %in% input$s_sel_analyte)) {
           CertVal <- cert_vals[cert_vals[,"analyte"] %in% input$s_sel_analyte,"cert_val"]
           U <- ifelse(input$s_sel_dev=="U", 1, 2)*cert_vals[cert_vals[,"analyte"] %in% input$s_sel_analyte, ifelse(input$s_sel_dev=="U", "U", "sd")]
@@ -227,12 +227,12 @@ m_StabilityServer <- function(id, rv, datreturn) {
                   stringsAsFactors = FALSE
                 )
       )
-      ecerto::plot_lts_data(x=x)
+      plot_lts_data(x=x)
     })
 
     # The Dropdown-Menu to select the column of materialtabelle to transfer to
     output$s_transfer_ubb <- shiny::renderUI({
-      cert_vals <- ecerto::getValue(datreturn,"mater_table")
+      cert_vals <- getValue(datreturn,"mater_table")
       shiny::validate(shiny::need(cert_vals, message = "Please upload certification data to transfer Uncertainty values"))
 
       cc <- attr(cert_vals, "col_code")
@@ -256,12 +256,12 @@ m_StabilityServer <- function(id, rv, datreturn) {
     # allow transfer of U values
     s_transfer_U <- m_TransferUServer(
       id = "s_transfer",
-      dat = shiny::reactive({ecerto::getValue(rv, c("Stability","s_vals"))}),
-      mat_tab = shiny::reactive({ecerto::getValue(datreturn, "mater_table")})
+      dat = shiny::reactive({getValue(rv, c("Stability","s_vals"))}),
+      mat_tab = shiny::reactive({getValue(datreturn, "mater_table")})
     )
     shiny::observeEvent(s_transfer_U$changed, {
       message("Stability: observeEvent(s_transfer_U)")
-      ecerto::setValue(datreturn, "mater_table", s_transfer_U$value)
+      setValue(datreturn, "mater_table", s_transfer_U$value)
       setValue(datreturn, "transfer", 1) # trigger panel change in app_server
     }, ignoreInit = TRUE)
 

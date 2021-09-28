@@ -49,7 +49,7 @@ m_ExcelUpload_UI <- function(id) {
       shiny::column(6, align="right", shiny::uiOutput(outputId = ns("btn_load")))
     ),
     # preview table
-    ecerto::m_xlsx_range_select_UI(ns("rng_select")),
+    m_xlsx_range_select_UI(ns("rng_select")),
   )
 }
 
@@ -103,7 +103,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
 
     # Excdel Sheet-number selector
     shiny::observeEvent(input$excel_file, {
-      sheetnames <- ecerto::load_sheetnames(input$excel_file$datapath)
+      sheetnames <- load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
         shiny::updateNumericInput(session = session, inputId = "sheet_number", value = 1, min = 1, max = length(sheetnames), step = 1)
         shinyjs::showElement(id = "sheet_number")
@@ -118,7 +118,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
         exl_fmt(),
         "Certification" = input$sheet_number,
         "Homogeneity" = input$sheet_number,
-        "Stability" = 1:length(ecerto::load_sheetnames(input$excel_file$datapath))
+        "Stability" = 1:length(load_sheetnames(input$excel_file$datapath))
       )
     })
 
@@ -202,7 +202,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
             simplify=TRUE)
           colnames(s_dat)[colnames(s_dat)=="KW"] <- "analyte"
         } else {
-          sheetnames = ecerto::load_sheetnames(input$excel_file$datapath[1])
+          sheetnames = load_sheetnames(input$excel_file$datapath[1])
           s_dat = plyr::ldply(
             sheetnumber(),
             function(x) {

@@ -234,7 +234,6 @@ m_CertificationServer = function(id, rv, datreturn) {
       }
     })
 
-
     # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is embedded in Certification-UI, that's why it is here
     m_materialtabelleServer(
@@ -245,7 +244,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
     tablist <- shiny::reactiveVal(NULL) # store created tabs; to be replaced in future versions
-    selected_tab <- ecerto::m_analyteServer("analyteModule", apm, UpdateInputs, tablist)
+    selected_tab <- m_analyteServer("analyteModule", apm, UpdateInputs, tablist)
     # --- --- --- --- --- --- --- --- --- --- ---
     m_report_server(id = "report", rv = rv, selected_tab = selected_tab)
     # --- --- --- --- --- --- --- --- --- --- ---
@@ -313,13 +312,8 @@ m_CertificationServer = function(id, rv, datreturn) {
       us <- getValue(rv,c("Certification","uploadsource"))
       if (startsWith(us,"RData") ) {
 
-        # "Data View" = "dataview",
-        # "Outlier Tests" = "stats",
-        # "Lab-Means Tests" = "mstats",
-        # "Certified Values Plot" = "CertValPlot",
-
         selectedView = show_view(rv)
-        #browser()
+
         shiny::updateCheckboxGroupInput(
           session = session,
           inputId = "certification_view",
@@ -405,7 +399,6 @@ m_CertificationServer = function(id, rv, datreturn) {
       getValue(datreturn,"cert_sd")
     })
 
-
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       CertValPlot(data = dat(), annotate_id=input$annotate_id)
@@ -441,28 +434,6 @@ m_CertificationServer = function(id, rv, datreturn) {
       contentType = "image/pdf"
     )
 
-    # Calculates statistics for all available labs
-    # formerly: lab_means()
-    # Format example:
-    # Lab       mean    sd       n
-    # L1 0.04551667 0.0012560520 6
-    # L2 0.05150000 0.0007563068 6
-    # L3 0.05126667 0.0004926121 6
-    # lab_statistics <- shiny::reactive({
-    #   # data <- dat()
-    #   shiny::req(dat())
-    #   message("Certification: dat() changed; change lab_statistics")
-    #   out <- plyr::ldply(split(dat()$value, dat()$Lab), function(x) {
-    #     data.frame(
-    #       "mean" = mean(x, na.rm = T),
-    #       "sd" = stats::sd(x, na.rm = T),
-    #       "n" = sum(is.finite(x))
-    #     )
-    #   }, .id = "Lab")
-    #   rownames(out) <- out$Lab
-    #   return(out)
-    # })
-
     shiny::observeEvent(input$qqplot_link, {
       shiny::showModal(
         shiny::modalDialog(
@@ -474,33 +445,15 @@ m_CertificationServer = function(id, rv, datreturn) {
       )
     })
 
-
     shiny::observeEvent(dat(),{
       message("Certification: dat() changed, set datreturn.selectedAnalyteDataframe")
-      ecerto::setValue(datreturn, "selectedAnalyteDataframe", dat())
+      setValue(datreturn, "selectedAnalyteDataframe", dat())
     })
-
-    # shiny::observeEvent(lab_statistics(),{
-    #   message("Certification: lab_statistics() changed, set datreturn.lab_statistics")
-    #   ecerto::setValue(datreturn, "lab_statistics", lab_statistics())
-    # })
 
     shiny::observeEvent(current_apm(), {
       message("Certification: current_apm() changed, set datreturn.current_apm")
       setValue(datreturn, "current_apm", current_apm())
     })
-
-    # shiny::observeEvent(input$certification_view, {
-    #   # Box "QQ-Plot" clickable? Depends in state of Box above it
-    #   if("mstats" %in% input$certification_view) {
-    #     setValue(rv, c("Certification_processing","mstats","show"), TRUE)
-    #   } else {
-    #     setValue(rv, c("Certification_processing","mstats","show"), FALSE)
-    #   }
-    #   # only change rv-object if CertValplot has changed
-    #   message("CERTIFICATION: SET Cert_ValPlot")
-    #   setValue(rv, c("Certification_processing","CertValPlot","show"), "CertValPlot" %in% input$certification_view)
-    # })
 
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
@@ -553,7 +506,7 @@ m_CertificationServer = function(id, rv, datreturn) {
     }, height = 400, width = 400)
 
     shiny::observeEvent(input$stat_link,{
-      help_the_user("certification_laboratoryStatistics")
+      help_the_user("certification_laboratoryStatistics", format = "rmd")
     })
     shiny::observeEvent(input$stat2_link,{
       help_the_user("certification_meanDistribution")

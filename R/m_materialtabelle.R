@@ -69,7 +69,7 @@ m_materialtabelleUI <- function(id) {
 #' @export
 m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
   stopifnot(R6::is.R6(datreturn))
-  stopifnot(shiny::is.reactivevalues(ecerto::getValue(datreturn,NULL)))
+  stopifnot(shiny::is.reactivevalues(getValue(datreturn,NULL)))
   shiny::moduleServer(id, function(input, output, session) {
 
     silent = FALSE # messages
@@ -115,7 +115,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # recalculate all cert_mean values including correction factors
       f_cols <- unlist(sapply(c("mean", paste0("F", 1:9)), function(x) { grep(x, colnames(mt)) }))
       mt[,"cert_val"] <- apply(mt[,f_cols,drop=FALSE], 1, prod, na.rm = T)
-      ecerto::update_reactivecell(
+      update_reactivecell(
         r = mater_table,
         colname = "cert_val",
         value = mt[,"cert_val"]
@@ -123,7 +123,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
       # update the 'char'acteristic uncertainty
       mt[,"char"] <- mt[, "sd"] / (sqrt(mt[, "n"]) * mt[, "mean"])
-      ecerto::update_reactivecell(
+      update_reactivecell(
         r = mater_table,
         colname = "char",
         value = mt[,"char"]
@@ -140,7 +140,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
       # update the overall uncertainty
       mt[,"U"] <- mt[, "k"] * mt[, "com"]
-      ecerto::update_reactivecell(
+      update_reactivecell(
         r = mater_table,
         colname = "U",
         value = mt[,"U"]
@@ -240,7 +240,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     })
 
     shiny::observeEvent(rdataUpload(),{
-      
+
       if(!silent)message("m_materialtabelleServer: RData Uploaded, insert materialtabelle")
       mt <- rdataUpload()
       mt <- remove_unused_cols(mt=mt)
@@ -248,7 +248,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     }, ignoreNULL = TRUE)
 
     # data frame of selected analyte
-    selectedAnalyteDataframe <- shiny::reactive({ ecerto::getValue(datreturn,"selectedAnalyteDataframe") })
+    selectedAnalyteDataframe <- shiny::reactive({ getValue(datreturn,"selectedAnalyteDataframe") })
     n <- shiny::reactive({
       shiny::req(selectedAnalyteDataframe())
       x <- selectedAnalyteDataframe()
@@ -261,7 +261,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
 
     shiny::observeEvent(selectedAnalyteDataframe(), {
       if(!silent) message("materialtabelle: selectedAnalyteDataframe updated")
-      
+
     })
 
     # get all availables analytes
@@ -270,11 +270,11 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     # the data table should be created only once, since the levels shouldn't
     # change after certification upload
     shiny::observeEvent(availableAnalytes(), once = TRUE, {
-      
+
       # initiate empty materialtabelle only if nothing has yet been uploaded via RData
       if(is.null(rdataUpload())) {
         if (!silent) message("m_materialtabelleServer: initiate empty materialtabelle")
-        mt <- ecerto::init_materialTabelle(availableAnalytes())
+        mt <- init_materialTabelle(availableAnalytes())
         mt <- remove_unused_cols(mt=mt)
         mater_table(mt) # write to reactiveValue
       }
@@ -289,8 +289,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       #getValue(datreturn, "mater_table")
       #current_apm()
       ifelse(input$pooling,
-             ecerto::roundMT(mean(data[, "value"], na.rm = T), precision_export()),
-             ecerto::roundMT(mean(sapply(
+             roundMT(mean(data[, "value"], na.rm = T), precision_export()),
+             roundMT(mean(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
              )), precision_export())
       )
@@ -306,8 +306,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       # build either standard deviation of all values or standard deviation of
       # average per lab
       ifelse(input$pooling,
-             ecerto::roundMT(stats::sd(data[, "value"], na.rm = T), precision_export()),
-             ecerto::roundMT(stats::sd(sapply(
+             roundMT(stats::sd(data[, "value"], na.rm = T), precision_export()),
+             roundMT(stats::sd(sapply(
                split(data[, "value"], data[, "Lab"]), mean, na.rm = T
              )), precision_export()))
     })
@@ -320,8 +320,8 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
     })
     shiny::observeEvent(mater_table(),{
       # set result as new value in the R6 object
-      if (!identical(ecerto::getValue(datreturn, "mater_table"), mater_table())) {
-        ecerto::setValue(datreturn, "mater_table", mater_table())
+      if (!identical(getValue(datreturn, "mater_table"), mater_table())) {
+        setValue(datreturn, "mater_table", mater_table())
         if(!silent) message("materialtabelle: recalc_mat_table; set datreturn.mater_table")
       }
     })
@@ -335,19 +335,19 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       shiny::req(selectedAnalyteDataframe(), n())
       if(!is.null(mater_table())) {
         if (!silent) message("materialtabelleServer: update initiated for ", selectedAnalyteDataframe()[1,"analyte"])
-        ecerto::update_reactivecell(
+        update_reactivecell(
           r = mater_table,
           colname = "mean",
           analyterow = selectedAnalyteDataframe()[1,"analyte"],
           value = cert_mean()
         )
-        ecerto::update_reactivecell(
+        update_reactivecell(
           r = mater_table,
           colname = "sd",
           analyterow = selectedAnalyteDataframe()[1,"analyte"],
           value = cert_sd()
         )
-        ecerto::update_reactivecell(
+        update_reactivecell(
           r = mater_table,
           colname = "n",
           analyterow = selectedAnalyteDataframe()[1,"analyte"],
@@ -372,7 +372,7 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
       }))
       for (k in u_cols) {
         # apply precision_export() only for the current analyte i
-        mt[, k] <- ecerto::roundMT(mt[, k], precision_U)
+        mt[, k] <- roundMT(mt[, k], precision_U)
       }
       # rename column header for temporary display
       cc <- attr(mt, "col_code")

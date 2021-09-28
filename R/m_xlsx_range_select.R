@@ -98,7 +98,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
       # use different modes of fnc_load_xlsx to import data depending on file type
       if (!silent) message("m_xlsx_range_select_Server: reactive(tab): load ", nrow(current_file_input()), " files")
       if (shiny::isolate(excelformat())=="Certification") {
-        l <- lapply(current_file_input()$datapath, function(x) { ecerto::fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
+        l <- lapply(current_file_input()$datapath, function(x) { fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
         shiny::validate(
           shiny::need(all(!sapply(l, is.null)),"uploaded Excel files contain an empty one"),
           shiny::need(length(l)>=2,"less than 2 laboratory files uploaded. Upload more!")
@@ -109,7 +109,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
       } else if(shiny::isolate(excelformat())=="Stability") {
         # for Stability, all sheets are loaded in Background
         l <- lapply(sheet(),function(x) {
-          ecerto::fnc_load_xlsx(
+          fnc_load_xlsx(
             filepath = current_file_input()$datapath[1],
             sheet = x,
             method="openxlsx"
@@ -117,7 +117,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
         })
         # TODO Tabelle nicht editierbar machen!
       } else {
-        l <- list(ecerto::fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method="openxlsx"))
+        l <- list(fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method="openxlsx"))
       }
       return(l)
     })

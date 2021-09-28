@@ -200,7 +200,7 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
       c_Data <- cert
       h_vals_print <- h_vals()
       for (cn in c("mean","MSamong","MSwithin","P","s_bb","s_bb_min")) {
-        h_vals_print[,cn] <- ecerto::pn(h_vals_print[,cn], input$h_precision)
+        h_vals_print[,cn] <- pn(h_vals_print[,cn], input$h_precision)
       }
       if (!is.null(c_Data()$data)) {
         mater_table <- c_Data()$data
@@ -291,11 +291,11 @@ m_HomogeneityServer = function(id, homog, cert, datreturn) {
     h_transfer_U <- m_TransferUServer(
       id = "h_transfer",
       dat = shiny::reactive({h_vals()}),
-      mat_tab = shiny::reactive({ecerto::getValue(datreturn, "mater_table")})
+      mat_tab = shiny::reactive({getValue(datreturn, "mater_table")})
     )
     shiny::observeEvent(h_transfer_U$changed, {
       message("Homogeneity: observeEvent(h_transfer_U)")
-      ecerto::setValue(datreturn, "mater_table", h_transfer_U$value)
+      setValue(datreturn, "mater_table", h_transfer_U$value)
       setValue(datreturn, "transfer", 1) # trigger panel change in app_server
     }, ignoreInit = TRUE)
 
