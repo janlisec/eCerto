@@ -20,10 +20,10 @@ test_that(
           session$setInputs(certification_view=c("dataview", "stats", "CertValPlot"))
           testthat::expect_equal(input$certification_view,c("dataview","stats","CertValPlot"))
           # the rv object is updated accordingly
-          testthat::expect_equal(
-            ecerto::getValue(rv,c("Certification_processing","CertValPlot","show")),
-            TRUE
-          )
+          # testthat::expect_equal(
+          #   ecerto::getValue(rv,c("Certification_processing","CertValPlot","show")),
+          #   TRUE
+          # )
         }
       )
     )
