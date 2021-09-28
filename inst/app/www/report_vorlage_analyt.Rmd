@@ -1,5 +1,5 @@
 ---
-#title: "eCerto Analyte Report"
+title: "&nbsp;"
 params:
   General: NA
   Certification: NA

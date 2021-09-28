@@ -1,3 +1,7 @@
+---
+title: "&nbsp;"
+output: html_document
+---
 ### Data upload
 
 Please prepare data in a single Excel file on seperate tables for each analyte as shown in the below example. Table names have to match analyte names from the Certification module. Column names need to be exactly `Value` and `Date` and column format should be numeric and date respectively.
