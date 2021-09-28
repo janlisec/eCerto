@@ -29,7 +29,8 @@ Imports:
     R6,
     purrr,
     htmltools,
-    dgof
+    dgof,
+    markdown
 Suggests: 
     testthat (>= 3.0.0),
     shinytest,

@@ -7,6 +7,7 @@
 #' @return returns the help text as HTML (currently produces errors when used)
 #' @export
 #'
+#' @importFrom markdown markdownToHTML
 #'
 help_the_user = function(filename, format = "rmd", modal=TRUE) {
 
@@ -24,11 +25,13 @@ help_the_user = function(filename, format = "rmd", modal=TRUE) {
     )
     help_text <- shiny::withMathJax(shiny::includeCSS(path = file))
   } else if (format == "rmd")  {
-    help_text <- shiny::withMathJax(
-      shiny::includeMarkdown(
-        fnc_get_local_file(x = paste0(filename, ".Rmd"), copy_to_tempdir = FALSE)
-      )
+    message(fnc_get_local_file(x = paste0(filename, ".Rmd"), copy_to_tempdir = FALSE))
+    test <- markdown::markdownToHTML(
+      file = fnc_get_local_file(x = paste0(filename, ".Rmd"), copy_to_tempdir = FALSE),
+      fragment.only = TRUE
     )
+    help_text <- shiny::withMathJax(shiny::HTML(test))
+    # shiny::includeMarkdown unfortunately  fails when on shinyio
   } else if (format == "test") {
     file <- rmarkdown::render(
       input = fnc_get_local_file(

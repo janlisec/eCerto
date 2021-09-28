@@ -4,12 +4,14 @@
 \alias{fnc_get_local_file}
 \title{fnc_get_local_file.}
 \usage{
-fnc_get_local_file(x = NULL, copy_to_tempdir = TRUE)
+fnc_get_local_file(x = NULL, copy_to_tempdir = TRUE, fsep = "/")
 }
 \arguments{
 \item{x}{Filename to search for without path but with extension.}
 
-\item{copy_to_tempdir}{If FALSE, file path is returned, if TRUE file is copied
+\item{copy_to_tempdir}{If FALSE, file path is returned, if TRUE file is copied}
+
+\item{fsep}{The system path seperator.
 to temp dir and this temp file path is returned.}
 }
 \value{

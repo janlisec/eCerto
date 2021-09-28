@@ -5,6 +5,7 @@
 #'
 #'@param x Filename to search for without path but with extension.
 #'@param copy_to_tempdir If FALSE, file path is returned, if TRUE file is copied
+#'@param fsep The system path seperator.
 #'  to temp dir and this temp file path is returned.
 #'
 #'@details Developing a shiny app as an R package in parallel leads to
@@ -23,19 +24,19 @@
 #'
 #'@export
 #'
-fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE) {
+fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE, fsep="/") {
   if ("ecerto" %in% rownames(utils::installed.packages())) {
     # installed with package
     pkg_path <- system.file(package = "ecerto")
     file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-    out <- file.path(pkg_path, file_path, fsep="\\")
+    out <- file.path(pkg_path, file_path, fsep=fsep)
   } else {
     # as available in ShinyApp
     out <- list.files(pattern = x, recursive = TRUE)
     #out <- paste("www", x, sep="/")
   }
   if (copy_to_tempdir) {
-    tmp_file <- file.path(tempdir(), x, fsep="\\")
+    tmp_file <- file.path(tempdir(), x, fsep=fsep)
     file.copy(out, tmp_file, overwrite = TRUE)
     out <- tmp_file
   }
