@@ -4,7 +4,6 @@
 #'package system file (if available) or from www subdir (if online app).
 #'
 #'@param x Filename to search for without path but with extension.
-#'@param pkg Package to seach system file in.
 #'@param copy_to_tempdir If FALSE, file path is returned, if TRUE file is copied
 #'  to temp dir and this temp file path is returned.
 #'
@@ -24,20 +23,22 @@
 #'
 #'@export
 #'
-fnc_get_local_file <- function(x=NULL, pkg="ecerto", copy_to_tempdir=TRUE) {
-  if (pkg %in% rownames(utils::installed.packages())) {
+fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE) {
+  if ("ecerto" %in% rownames(utils::installed.packages())) {
     # installed with package
-    out <- system.file("rmd", x, package = pkg)[1]
-    #out <- list.files(pattern = x, recursive = TRUE)
+    pkg_path <- system.file(package = "ecerto")
+    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
+    out <- file.path(pkg_path, file_path, fsep="\\")
   } else {
     # as available in ShinyApp
     out <- list.files(pattern = x, recursive = TRUE)
     #out <- paste("www", x, sep="/")
   }
   if (copy_to_tempdir) {
-    file.copy(out, file.path(tempdir(), x), overwrite = TRUE)
-    return(file.path(tempdir(), x, fsep="\\"))
-  } else {
-    return(out)
+    tmp_file <- file.path(tempdir(), x, fsep="\\")
+    file.copy(out, tmp_file, overwrite = TRUE)
+    out <- tmp_file
   }
+  if (out=="") message("Can't find file ", x)
+  return(out)
 }
