@@ -6,45 +6,57 @@
 #'
 #' @return returns the help text as HTML (currently produces errors when used)
 #' @export
-#' 
-#' 
+#'
+#'
 help_the_user = function(filename, format = "rmd", modal=TRUE) {
+
   help_text = NULL
-  if(format == "html"){
-    file = paste0(filename,".html")
-    rmarkdown::render(
+
+  if (format == "html") {
+    file <- rmarkdown::render(
       fnc_get_local_file(
         x = paste0(filename, ".Rmd"),
         copy_to_tempdir = FALSE # don't TRUE, or it can't find dependent RMDs
       ),
+      output_format = "html_document",
+      output_file = paste0(filename,".html"),
       quiet = TRUE
     )
-    help_text = shiny::withMathJax(shiny::includeCSS(
-      ecerto::fnc_get_local_file(file, copy_to_tempdir = FALSE)
-    ))
-  } else if(format == "rmd")  {
-    file = paste0(filename, ".Rmd")
-    help_text = shiny::withMathJax(shiny::includeMarkdown(
-      #rmarkdown::render(input = system.file("rmd", "uncertainty.Rmd", package = "ecerto"))
-      ecerto::fnc_get_local_file(file, copy_to_tempdir = FALSE)
-    ))
+    help_text <- shiny::withMathJax(shiny::includeCSS(path = file))
+  } else if (format == "rmd")  {
+    help_text <- shiny::withMathJax(
+      shiny::includeMarkdown(
+        fnc_get_local_file(x = paste0(filename, ".Rmd"), copy_to_tempdir = FALSE)
+      )
+    )
+  } else if (format == "test") {
+    file <- rmarkdown::render(
+      input = fnc_get_local_file(
+        x = paste0(filename, ".Rmd"),
+        copy_to_tempdir = FALSE # don't TRUE, or it can't find dependent RMDs
+      ),
+      output_format = "html_document",
+      output_file = paste0(filename,".html"),
+      quiet = TRUE
+    )
+    #browser()
+    help_text <- shiny::withMathJax(shiny::includeHTML(file))
   } else {
     warning("format does not exist")
   }
 
-if(modal==TRUE) {
-  shiny::showModal(
-    shiny::modalDialog(
-      #@FK: Der in issue # 66 beschribene Fehler tritt nur auf, wenn man modal_html übergibt, bei HTML("bla") funktioniert alles
-      #HTML("bla"),
-      help_text,
-      footer = shiny::tagList(shiny::modalButton("Ok")),
-      size = "m",
-      easyClose = TRUE,
-      title = "Help" # TODO title
+  if (modal==TRUE) {
+    shiny::showModal(
+      shiny::modalDialog(
+        help_text,
+        footer = shiny::tagList(shiny::modalButton("Ok")),
+        size = "m",
+        easyClose = TRUE,
+        title = paste("Help", filename, sep=" - ")
+      )
     )
-  )
-}
-return(help_text)
+  }
+
+  return(help_text)
 
 }
