@@ -463,20 +463,6 @@ m_CertificationServer = function(id, rv, datreturn) {
     #   return(out)
     # })
 
-    output$tab2_statement <- shiny::renderUI({
-      lmn <- overview_stats_pre()
-      suppressWarnings(
-        KS_p <- stats::ks.test(x = lmn, y = "pnorm", mean = mean(lmn), sd = stats::sd(lmn))$p.value
-      )
-      return(shiny::fluidRow(shiny::column(12,
-        shiny::HTML(paste0("The data is", ifelse(KS_p < 0.05, " not ", " "), "normally distributed (KS_p=", pn(KS_p), ").")),
-        shiny::HTML("Show "),
-        shiny::actionLink(inputId = session$ns("qqplot_link"), label = "QQ-Plot"),
-        shiny::HTML(" of Lab means."),
-        shiny::p()
-      )))
-    })
-
     shiny::observeEvent(input$qqplot_link, {
       shiny::showModal(
         shiny::modalDialog(
@@ -504,17 +490,17 @@ m_CertificationServer = function(id, rv, datreturn) {
       setValue(datreturn, "current_apm", current_apm())
     })
 
-    shiny::observeEvent(input$certification_view, {
-      # Box "QQ-Plot" clickable? Depends in state of Box above it
-      if("mstats" %in% input$certification_view) {
-        setValue(rv, c("Certification_processing","mstats","show"), TRUE)
-      } else {
-        setValue(rv, c("Certification_processing","mstats","show"), FALSE)
-      }
-      # only change rv-object if CertValplot has changed
-      message("CERTIFICATION: SET Cert_ValPlot")
-      setValue(rv, c("Certification_processing","CertValPlot","show"), "CertValPlot" %in% input$certification_view)
-    })
+    # shiny::observeEvent(input$certification_view, {
+    #   # Box "QQ-Plot" clickable? Depends in state of Box above it
+    #   if("mstats" %in% input$certification_view) {
+    #     setValue(rv, c("Certification_processing","mstats","show"), TRUE)
+    #   } else {
+    #     setValue(rv, c("Certification_processing","mstats","show"), FALSE)
+    #   }
+    #   # only change rv-object if CertValplot has changed
+    #   message("CERTIFICATION: SET Cert_ValPlot")
+    #   setValue(rv, c("Certification_processing","CertValPlot","show"), "CertValPlot" %in% input$certification_view)
+    # })
 
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
@@ -541,6 +527,23 @@ m_CertificationServer = function(id, rv, datreturn) {
     output$overview_mstats <- DT::renderDataTable({
       labmean_stats_pre()
     }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+
+    # Normality statement
+    output$tab2_statement <- shiny::renderUI({
+      KS_p <- labmean_stats_pre()[,"KS_p"]
+      return(
+        shiny::fluidRow(
+          shiny::column(
+            width = 12,
+            shiny::HTML(paste0("The data is", ifelse(as.numeric(KS_p) < 0.05, " not ", " "), "normally distributed (KS_p=", KS_p, ").")),
+            shiny::HTML("Show "),
+            shiny::actionLink(inputId = session$ns("qqplot_link"), label = "QQ-Plot"),
+            shiny::HTML(" of Lab means."),
+            shiny::p()
+          )
+        )
+      )
+    })
 
     # QQ Plot
     output$qqplot <- shiny::renderPlot({

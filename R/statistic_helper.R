@@ -29,9 +29,13 @@ fnc_outlier_stats <- function(data = NULL, precision = 4) {
 #' @param data Table with columns 'Lab' and 'value'.
 #' @noRd
 Scheffe <- function(data=NULL) {
+  S05 <- try(agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"], silent=TRUE)
+  if (class(S05)=="try-error") S05 <- rep("Error", length(levels(data$Lab)))
+  S01 <- try(agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.01)$group[levels(data$Lab),"groups"], silent=TRUE)
+  if (class(S01)=="try-error") S01 <- rep("Error", length(levels(data$Lab)))
   return(data.frame(
-    "Scheffe_05"=agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"],
-    "Scheffe_01"=agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.01)$group[levels(data$Lab),"groups"],
+    "Scheffe_05"=S05,
+    "Scheffe_01"=S01,
     row.names=levels(data$Lab))
   )
 }
@@ -40,62 +44,43 @@ Scheffe <- function(data=NULL) {
 #' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Dixon <- function(lab_means=NULL) {
-  out <- data.frame("Dixon_p"=rep(NA,nrow(lab_means)), row.names=row.names(lab_means))
   x <- lab_means[,"mean"]
-  smallest_is_extreme <- (max(x) - mean(x)) <= (mean(x) - min(x))
-  if (nrow(lab_means)>=3) out$Dixon_p[which.max(lab_means$mean)] <- outliers::dixon.test(x=lab_means$mean, type = 0, two.sided = FALSE, opposite = ifelse(smallest_is_extreme,TRUE,FALSE))$p.value
-  if (nrow(lab_means)>=3) out$Dixon_p[which.min(lab_means$mean)] <- outliers::dixon.test(x=lab_means$mean, type = 0, two.sided = FALSE, opposite = ifelse(smallest_is_extreme,FALSE,TRUE))$p.value
-  out$Dixon_p <- sapply(out$Dixon_p, function(x) { ifelse(is.na(x),".",ifelse(x<0.01,".01",ifelse(x<0.05,".05","n.s."))) })
-  return(out)
+  out <- rep(NA, length(x))
+  if (length(x)>=3 && diff(range(x))>0) {
+    smallest_is_extreme <- (max(x) - mean(x)) <= (mean(x) - min(x))
+    # calculate outlier p to the max
+    l_max <- x==max(x)
+    out[l_max] <- outliers::dixon.test(x=x, type = 0, two.sided = FALSE, opposite = ifelse(smallest_is_extreme,TRUE,FALSE))$p.value
+    # calculate outlier p to the min
+    l_min <- x==min(x)
+    out[l_min] <- outliers::dixon.test(x=x, type = 0, two.sided = FALSE, opposite = ifelse(smallest_is_extreme,FALSE,TRUE))$p.value
+    # reformat p-values
+    out <- sapply(out, function(x) { ifelse(is.na(x),".",ifelse(x<0.01,".01",ifelse(x<0.05,".05","n.s."))) })
+  } else {
+    out <- rep("Error", length(x))
+  }
+  return(data.frame("Dixon_p"=out, row.names=row.names(lab_means)))
 }
 
 #' @description BAMTool, Modul: Zertifizierung, Grubbs Test
 #' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Grubbs <- function(lab_means = NULL) {
-  out <-
-    data.frame("Grubbs1_p" = rep(NA, nrow(lab_means)),
-               row.names = row.names(lab_means))
+  out <- data.frame("Grubbs1_p" = rep(NA, nrow(lab_means)), row.names = row.names(lab_means))
   x <- lab_means[, "mean"]
-  smallest_is_extreme <- (max(x) - mean(x)) <= (mean(x) - min(x))
-  out$Grubbs1_p[which.max(lab_means$mean)] <-
-    outliers::grubbs.test(
-      x = lab_means$mean,
-      type = 10,
-      two.sided = FALSE,
-      opposite = ifelse(smallest_is_extreme, TRUE, FALSE)
-    )$p.value
-  out$Grubbs1_p[which.min(lab_means$mean)] <-
-    outliers::grubbs.test(
-      x = lab_means$mean,
-      type = 10,
-      two.sided = FALSE,
-      opposite = ifelse(smallest_is_extreme, FALSE, TRUE)
-    )$p.value
-  out$Grubbs1_p <-
-    sapply(out$Grubbs1_p, function(x) {
-      ifelse(is.na(x), ".", ifelse(x < 0.01, ".01", ifelse(x < 0.05, ".05", "n.s.")))
-    })
-  if (nrow(lab_means) >= 4) {
-    out$Grubbs2_p <- rep(NA, nrow(lab_means))
-    out$Grubbs2_p[order(lab_means$mean, decreasing = T)[1:2]] <-
-      outliers::grubbs.test(
-        x = lab_means$mean,
-        type = 20,
-        two.sided = FALSE,
-        opposite = ifelse(smallest_is_extreme, TRUE, FALSE)
-      )$p.value
-    out$Grubbs2_p[order(lab_means$mean, decreasing = F)[1:2]] <-
-      outliers::grubbs.test(
-        x = lab_means$mean,
-        type = 20,
-        two.sided = FALSE,
-        opposite = ifelse(smallest_is_extreme, FALSE, TRUE)
-      )$p.value
-    out$Grubbs2_p <-
-      sapply(out$Grubbs2_p, function(x) {
-        ifelse(is.na(x), ".", ifelse(x < 0.01, ".01", ifelse(x < 0.05, ".05", "n.s.")))
-      })
+  if (length(x)>=3 && diff(range(x))>0) {
+    smallest_is_extreme <- (max(x) - mean(x)) <= (mean(x) - min(x))
+    out$Grubbs1_p[which.max(x)] <- outliers::grubbs.test(x = x, type = 10, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, TRUE, FALSE))$p.value
+    out$Grubbs1_p[which.min(x)] <- outliers::grubbs.test(x = x, type = 10, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, FALSE, TRUE))$p.value
+    out$Grubbs1_p <- sapply(out$Grubbs1_p, function(x) { ifelse(is.na(x), ".", ifelse(x < 0.01, ".01", ifelse(x < 0.05, ".05", "n.s."))) })
+    if (length(x) >= 4) {
+      out$Grubbs2_p <- rep(NA, length(x))
+      out$Grubbs2_p[order(x, decreasing = T)[1:2]] <- outliers::grubbs.test(x = x, type = 20, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, TRUE, FALSE))$p.value
+      out$Grubbs2_p[order(x, decreasing = F)[1:2]] <- outliers::grubbs.test(x = x, type = 20, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, FALSE, TRUE))$p.value
+      out$Grubbs2_p <- sapply(out$Grubbs2_p, function(x) { ifelse(is.na(x), ".", ifelse(x < 0.01, ".01", ifelse(x < 0.05, ".05", "n.s."))) })
+    }
+  } else {
+    out$Grubbs1_p <- rep("Error", length(x))
   }
   return(out)
 }
@@ -162,27 +147,28 @@ Cochran <- function(data=NULL) {
 #' @param precision Rounding precision.
 #' @noRd
 fnc_labmean_stats <- function(data=NULL, precision=4) {
-  lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
-  n <- nrow(lab_means)
+  #lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
+  #n <- nrow(lab_means)
+  x <- sapply(split(data$value, data$Lab), mean)
   out <- data.frame(
-    "Mean"=round(mean(lab_means$mean),precision),
-    "Median"=round(stats::median(lab_means$mean),precision),
-    "SD"=round(stats::sd(lab_means$mean),precision),
-    "MAD"=round(stats::mad(lab_means$mean),precision),
+    "Mean"=round(mean(x), precision),
+    "Median"=round(stats::median(x), precision),
+    "SD"=round(stats::sd(x), precision),
+    "MAD"=round(stats::mad(x), precision),
     "Bartlett_p"=formatC(stats::bartlett.test(value~Lab, data=data)$p.value,format="E",digits=2),
     #"Bartlett_p"=ecerto::pn(stats::bartlett.test(value~Lab, data=data)$p.value, precision),
     "ANOVA_p"=formatC(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],format="E",digits=2),
     #"ANOVA_p"=ecerto::pn(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],precision),
-    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=lab_means$mean, y="pnorm", mean = mean(lab_means$mean), sd = stats::sd(lab_means$mean))$p.value), format="E", digits=2),
-    #"KS_p"=ecerto::pn(suppressWarnings(stats::ks.test(x=lab_means$mean, y="pnorm", mean = mean(lab_means$mean), sd = stats::sd(lab_means$mean))$p.value), precision),
-    "Skewness"=round(moments::skewness(x = lab_means$mean),precision),
+    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), format="E", digits=2),
+    #"KS_p"=ecerto::pn(suppressWarnings(stats::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), precision),
+    "Skewness"=round(moments::skewness(x = x),precision),
     "Agostino_p"=NA,
-    "Kurtosis"=round(moments::kurtosis(x = lab_means$mean),precision),
+    "Kurtosis"=round(moments::kurtosis(x = x),precision),
     "Anscombe_p"=NA
   )
-  test <- try(moments::agostino.test(x = lab_means$mean), silent=TRUE)
+  test <- try(moments::agostino.test(x = x), silent=TRUE)
   if (!class(test)=="try-error") out$Agostino_p <- formatC(test$p.value,format="E",digits=2)
-  test <- try(moments::anscombe.test(x = lab_means$mean), silent=TRUE)
+  test <- try(moments::anscombe.test(x = x), silent=TRUE)
   if (!class(test)=="try-error") out$Anscombe_p <- formatC(test$p.value,format="E",digits=2)
   return(out)
 }
