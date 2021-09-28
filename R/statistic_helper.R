@@ -1,4 +1,4 @@
-#' @description BAMTool, Modul: Zertifizierung, Lab stats
+#' @description BAMTool, Modul: Certification, Lab stats
 #' @param data Table with columns 'Lab' and 'value'.
 #' @param precision Rounding precision.
 #' @noRd
@@ -25,7 +25,7 @@ fnc_outlier_stats <- function(data = NULL, precision = 4) {
   return(out[order(out[, "mean"]), ])
 }
 
-#' @description BAMTool, Modul: Zertifizierung, Scheffe's multiple t-test
+#' @description BAMTool, Modul: Certification, Scheffe's multiple t-test
 #' @param data Table with columns 'Lab' and 'value'.
 #' @noRd
 Scheffe <- function(data=NULL) {
@@ -40,7 +40,7 @@ Scheffe <- function(data=NULL) {
   )
 }
 
-#' @description BAMTool, Modul: Zertifizierung, Dixon Test
+#' @description BAMTool, Modul: Certification, Dixon Test
 #' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Dixon <- function(lab_means=NULL) {
@@ -62,7 +62,7 @@ Dixon <- function(lab_means=NULL) {
   return(data.frame("Dixon_p"=out, row.names=row.names(lab_means)))
 }
 
-#' @description BAMTool, Modul: Zertifizierung, Grubbs Test
+#' @description BAMTool, Modul: Certification, Grubbs Test
 #' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Grubbs <- function(lab_means = NULL) {
@@ -85,7 +85,7 @@ Grubbs <- function(lab_means = NULL) {
   return(out)
 }
 
-#' @description BAMTool, Modul: Zertifizierung, Nalimov Test
+#' @description BAMTool, Modul: Certification, Nalimov Test
 #' @param lab_means data.frame, output of Stats function.
 #' @noRd
 Nalimov <- function(lab_means=NULL) {
@@ -111,7 +111,7 @@ Nalimov <- function(lab_means=NULL) {
   )
 }
 
-#' @description BAMTool, Modul: Zertifizierung, Cochran Test
+#' @description BAMTool, Modul: Certification, Cochran Test
 #' @param data Table with columns 'Lab' and 'value'.
 #' @noRd
 Cochran <- function(data=NULL) {
@@ -142,9 +142,10 @@ Cochran <- function(data=NULL) {
   return(out)
 }
 
-#' @description BAMTool, Modul: Zertifizierung, Lab-mean stats
+#' @description BAMTool, Modul: Certification, Lab-mean stats
 #' @param data Table with columns 'Lab' and 'value'.
 #' @param precision Rounding precision.
+#' @importFrom dgof ks.test
 #' @noRd
 fnc_labmean_stats <- function(data=NULL, precision=4) {
   #lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
@@ -156,11 +157,11 @@ fnc_labmean_stats <- function(data=NULL, precision=4) {
     "SD"=round(stats::sd(x), precision),
     "MAD"=round(stats::mad(x), precision),
     "Bartlett_p"=formatC(stats::bartlett.test(value~Lab, data=data)$p.value,format="E",digits=2),
-    #"Bartlett_p"=ecerto::pn(stats::bartlett.test(value~Lab, data=data)$p.value, precision),
+    #"Bartlett_p"=pn(stats::bartlett.test(value~Lab, data=data)$p.value, precision),
     "ANOVA_p"=formatC(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],format="E",digits=2),
-    #"ANOVA_p"=ecerto::pn(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],precision),
-    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), format="E", digits=2),
-    #"KS_p"=ecerto::pn(suppressWarnings(stats::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), precision),
+    #"ANOVA_p"=pn(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],precision),
+    "KS_p"=formatC(suppressWarnings(dgof::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), format="E", digits=2),
+    #"KS_p"=pn(suppressWarnings(dgof::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), precision),
     "Skewness"=round(moments::skewness(x = x),precision),
     "Agostino_p"=NA,
     "Kurtosis"=round(moments::kurtosis(x = x),precision),

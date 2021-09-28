@@ -28,7 +28,8 @@ Imports:
     plyr,
     R6,
     purrr,
-    htmltools
+    htmltools,
+    dgof
 Suggests: 
     testthat (>= 3.0.0),
     shinytest,
