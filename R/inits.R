@@ -161,7 +161,7 @@ init_apm <- function(
     "confirmed" = FALSE, # has the analyte manually been confirmed?
     "precision_export" = 4 # rounding precision for export
   )
-  if (!is.null(x) && is.data.frame(x) && c("ID","analyte") %in% colnames(x)) {
+  if (!is.null(x) && is.data.frame(x) && all(c("ID","analyte") %in% colnames(x))) {
     if (!is.factor(x[, "analyte"])) {
       x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
     }

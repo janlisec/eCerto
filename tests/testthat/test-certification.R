@@ -68,6 +68,7 @@ test_that(
     # initiate runtime variables
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
     datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn())
+    apm_test <- ecerto::init_apm(ecerto:::test_Certification_Excel())
     suppressMessages(
       shiny::testServer(
         app = m_CertificationServer,
@@ -76,7 +77,7 @@ test_that(
           datreturn = datreturn
         ),
         expr =  {
-          ecerto::setValue(rv_test, c("General","apm"), ecerto::init_apm(ecerto:::test_Certification_Excel()))
+          ecerto::setValue(rv_test, c("General","apm"), apm_test)
           ecerto::setValue(rv, c("Certification","uploadsource"), "RData")
           session$flushReact()
           expect_equal(apm(), getValue(rv_test, c("General","apm")))
