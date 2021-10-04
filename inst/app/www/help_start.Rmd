@@ -24,5 +24,7 @@ output:
 
 # Long Term Stability (LTS)
 
+***Note!*** This module might be moved to an independent shiny app in the future.
+
 ```{r child = 'lts.Rmd'}
 ```

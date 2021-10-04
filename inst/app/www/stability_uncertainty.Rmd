@@ -1,8 +1,4 @@
----
-title: "&nbsp;"
-output: html_document
----
-### Uncertainty calculation
+### Stability Uncertainty calculation
 
 The uncertainty contribution of the stability measurements `U_Stab` is calculated for each analyte based on a linear model of `Value` on `Date`. The parameters of each model are combined using formula $$U_{Stab}=abs(m*err)$$ where $m$ is the `slope` of the linear model and $err$ is the standard error `SE` of the slope. 
 

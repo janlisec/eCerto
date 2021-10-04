@@ -1,5 +1,4 @@
 ---
-title: "&nbsp;"
 output: 
   pdf_document:
     latex_engine: lualatex

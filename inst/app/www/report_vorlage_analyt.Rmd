@@ -1,5 +1,4 @@
 ---
-title: "&nbsp;"
 params:
   General: NA
   Certification: NA
@@ -23,14 +22,16 @@ fontsize: 11pt
   }
   # get a local representation of all data provided by Shiny
   # setting testing <- TRUE will load test data for development of the Rmd
-  testing <- c(FALSE, TRUE)[1]
+  #testing <- c(FALSE, TRUE)[1]
+  testing <- length(params$General)==1L && is.na(params$General)
   if (testing) {
     tmp <- new.env()
-    load(file = ecerto::fnc_get_local_file(x="SR3.RData", copy_to_tempdir=FALSE), envir = tmp)
+    load(file = ecerto::fnc_get_local_file(x="CRM001.RData", copy_to_tempdir=FALSE), envir = tmp)
     res <- get(x = "res", envir = tmp)
     G <- res$General
     C <- res$Certification
     CP <- res$Certification_processing
+    CP$CertValPlot
     A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
     D <- G$apm[[A]]
     L <- ecerto::fnc_get_local_file(x="BAMLogo2015.png", copy_to_tempdir=FALSE)

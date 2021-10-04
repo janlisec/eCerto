@@ -1,15 +1,13 @@
----
-title: "&nbsp;"
-output: html_document
----
 ## General information
 
-eCerto is an online tool written in R/Shiny to facilitate the statistical evaluation of data collected in connection with the production of reference materials at Bundesanstalt für Materialforschung und -prüfung (BAM).
+*eCerto* is an online tool written in R/Shiny to facilitate the statistical evaluation of data collected in connection with the production of certified reference materials (CRMs) at Bundesanstalt für Materialforschung und -prüfung (BAM).
 
 The standard workflow consistes of a certification trial in combination with homogeneity and stability assays. Data from all of these assays need to be collected, combined and analyzed to report certified values of measured properties or entities of a reference material. 
 
-### User/Study information and data backup/retrieval
+### User/Study information
 
-For the eCerto module of the software you should provide a user name and trial ID which will be stored together with your data ('Save Current Analysis').
+You should provide a user name and trial ID which will be stored together with your data ('Save Current Analysis').
+
+### Data backup/retrieval
 
 Previous analyses can be read from a backup file and will contain all input data and previously set parameters.

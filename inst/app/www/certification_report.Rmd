@@ -1,8 +1,4 @@
----
-title: "&nbsp;"
-output: html_document
----
-### Report
+### Analyte Report
 
 A report of the above analysis (single analyte) or for the material (all analytes) can be generated and exported in different formats.
 

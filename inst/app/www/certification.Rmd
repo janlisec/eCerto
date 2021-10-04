@@ -1,7 +1,3 @@
----
-title: "&nbsp;"
-output: html_document
----
 ## Certification
 
 ```{r child = 'certification_dataupload.Rmd'}

@@ -1,7 +1,3 @@
----
-title: "&nbsp;"
-output: html_document
----
 ### Data upload from Excel for a new analysis
 To process a new analysis, please collect all data which should be retuned in
 pre-defined Excel-Files by your certification trial partners and stored within

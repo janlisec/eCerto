@@ -1,8 +1,3 @@
----
-title: "&nbsp;"
-output: html_document
----
-
 ## Material table
 
 The material table combines all data collected within a certification trial to provide for each measured entity within the certified material the certified mean `cert_val` and the certified uncertainty `U`.

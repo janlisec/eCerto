@@ -1,19 +1,15 @@
----
-title: "&nbsp;"
-output: html_document
----
 ## Homogeneity
 
 ```{r child = 'homogeneity_dataupload.Rmd'}
 ```
 
-### Statistics
+### Homogeneity Statistics
 
 The uncertainty contribution of the Homogeneity measurements `U_bb` is calculated for each analyte based on formula and is transfered to the materials table of the certification module in case that an analyte of matching name is found.
 
-### Report
-
-Figures and tables can currently be exported in a HTML format.
-
 ```{r child = 'homogeneity_uncertainty.Rmd'}
 ```
+
+### Homogeneity Report
+
+Figures and tables can currently be exported in a HTML format.

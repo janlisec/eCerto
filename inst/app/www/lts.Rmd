@@ -1,11 +1,7 @@
----
-title: "&nbsp;"
-output: html_document
----
 ```{r child = 'lts_dataupload.Rmd'}
 ```
 
-### Statistics
+### LTS Statistics
 
 The Tool calculates the expected life time of a reference material in several steps:
 
