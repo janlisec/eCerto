@@ -506,10 +506,10 @@ m_CertificationServer = function(id, rv, datreturn) {
     }, height = 400, width = 400)
 
     shiny::observeEvent(input$stat_link,{
-      help_the_user("certification_laboratoryStatistics", format = "rmd")
+      help_the_user("certification_laboratoryStatistics", format = "rmd_with_link")
     })
     shiny::observeEvent(input$stat2_link,{
-      help_the_user("certification_meanDistribution")
+      help_the_user("certification_meanDistribution", format = "rmd_with_link")
     })
     shiny::observeEvent(input$certifiedValuePlot_link, {
       help_the_user("certification_boxplot")
