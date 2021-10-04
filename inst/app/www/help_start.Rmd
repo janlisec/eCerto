@@ -5,7 +5,7 @@ output:
     toc: true
 ---
 
-# eCerto (Certification statistics)
+# *eCerto* (Certification statistics)
 
 ```{r child = 'ecerto_home.Rmd'}
 ```
