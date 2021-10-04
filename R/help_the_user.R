@@ -32,18 +32,27 @@ help_the_user = function(filename, format = "rmd", modal=TRUE) {
     )
     help_text <- shiny::withMathJax(shiny::HTML(test))
     # shiny::includeMarkdown unfortunately  fails when on shinyio
-  } else if (format == "test") {
+  } else if (format == "rmd_with_link") {
+    # Note! ifame's can only be served with html files from the www subdirectory
+    # to use this option and avoid includeHTML (because it causes side effects to the navbar)
+    # we need (!!) to keep the Rmd files in the www subfolder although a creation
+    # using tempfile() would be beneficial
+    #tmp_file <- tempfile(pattern = "ecerto_help_", fileext = ".html")
+    tmp_file <- paste0(filename, ".html")
     file <- rmarkdown::render(
       input = fnc_get_local_file(
         x = paste0(filename, ".Rmd"),
         copy_to_tempdir = FALSE # don't TRUE, or it can't find dependent RMDs
       ),
       output_format = "html_document",
-      output_file = paste0(filename,".html"),
+      output_file = tmp_file,
       quiet = TRUE
     )
-    #browser()
-    help_text <- shiny::withMathJax(shiny::includeHTML(file))
+    #tmp_file <- "certification_laboratoryStatistics.html"
+    #tmp_file <- file
+    #file.exists(tmp_file)
+    #help_text <- includeHTML(tmp_file)
+    help_text <- shiny::tags$iframe(src = tmp_file, width="100%", height="400", scrolling="yes", seamless="seamless", frameBorder="0")
   } else {
     warning("format does not exist")
   }
