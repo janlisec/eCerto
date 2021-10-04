@@ -29,6 +29,7 @@
       ),
       shiny::helpText("Example Table"),
       shiny::imageOutput(outputId = ns("myImage11a"), inline = TRUE),
+      shiny::img(src = "Import_ltsData_FixedFormat.png")
     ),
     shiny::conditionalPanel(
       condition="output.LTS_fileUploaded == true",
@@ -336,7 +337,7 @@
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
-        rmdfile <- fnc_get_local_file("LTSreport.Rmd")
+        rmdfile <- fnc_get_local_file("report_vorlage_lts.Rmd")
         logofile <- fnc_get_local_file("BAMLogo2015.svg")
         font_file1 <- fnc_get_local_file("BAMKlavika-Light.ttf")
         font_file2 <- fnc_get_local_file("BAMKlavika-Medium.ttf")
