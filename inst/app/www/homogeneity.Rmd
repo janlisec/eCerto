@@ -5,7 +5,10 @@
 
 ### Homogeneity Statistics
 
-The uncertainty contribution of the Homogeneity measurements `U_bb` is calculated for each analyte based on formula and is transfered to the materials table of the certification module in case that an analyte of matching name is found.
+The uncertainty contribution of the Homogeneity measurements `U_bb` (uncertainty between bottles) is calculated for each analyte based on formula and is transfered to user specified column in the material table of the certification module.
+
+***Note!*** Transfer is only sucessfull in case that an analyte of matching name can be found found (see colum`In_Cert_Module`).
+
 
 ```{r child = 'homogeneity_uncertainty.Rmd'}
 ```
