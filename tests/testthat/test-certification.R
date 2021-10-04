@@ -1,4 +1,4 @@
-test_that(
+testthat::test_that(
   desc = "Boxplot-View toggled saved in rv",
   code = {
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
@@ -30,7 +30,7 @@ test_that(
   }
 )
 
-# test_that(
+# testthat::test_that(
 #   desc = "Deselecting of last lab filter is working",
 #   code = {
 #     # initiate runtime variables
@@ -62,7 +62,7 @@ test_that(
 #   }
 # )
 
-test_that(
+testthat::test_that(
   desc = "RData Upload for apm saved in variable",
   code = {
     # initiate runtime variables
