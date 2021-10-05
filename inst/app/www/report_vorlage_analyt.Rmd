@@ -26,7 +26,7 @@ fontsize: 11pt
   testing <- length(params$General)==1L && is.na(params$General)
   if (testing) {
     tmp <- new.env()
-    load(file = ecerto::fnc_get_local_file(x="CRM001.RData", copy_to_tempdir=FALSE), envir = tmp)
+    load(file = fnc_get_local_file(x="CRM001.RData", copy_to_tempdir=FALSE), envir = tmp)
     res <- get(x = "res", envir = tmp)
     G <- res$General
     C <- res$Certification
@@ -34,7 +34,7 @@ fontsize: 11pt
     CP$CertValPlot
     A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
     D <- G$apm[[A]]
-    L <- ecerto::fnc_get_local_file(x="BAMLogo2015.png", copy_to_tempdir=FALSE)
+    L <- fnc_get_local_file(x="BAMLogo2015.png", copy_to_tempdir=FALSE)
   } else {
     G <- params$General
     C <- params$Certification
@@ -114,7 +114,7 @@ df <- CP$mstats
 
 `r ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics:", "")`
 
-```{r L_flt, eval=!is.null(D$lab_filter), echo=FALSE, comment=NA}
+```{r L_flt, echo=FALSE, comment=NA}
 cat(paste(D$lab_filter, collapse=", ")) 
 ```
 
