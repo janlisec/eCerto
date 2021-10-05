@@ -111,93 +111,10 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
     })
 
     shiny::observeEvent(continue(), {
-      res <- rdata()
-      rv <- reactiveClass$new(init_rv())
-      if ("General.dataformat_version" %in% names(unlist(res, recursive = FALSE)))
-        {
-        # import functions for defined data_format schemes
-        if ( res$General$dataformat_version=="2021-05-27") {
-          # Non-legacy upload #####
-          if (!silent) message("RDataImport: Non-legacy upload started")
-          # rv should contain all variables from uploaded res split must be
-          # false here, otherwise one name list is of class character the other
-          # of class list -> Error
-          resnames <- listNames(l = res, maxDepth = 2, split = FALSE)
-          rvnames <-listNames(rv)
-          if (all(resnames %in% rvnames)) {
-            # Transfer list elements
-            for (i in strsplit(resnames,split = ".", fixed = TRUE)) {
-              # set uploadsource to "RData" if something was uploaded in saved RData
-              if(i[length(i)] == "uploadsource" && !is.null(res[[i]])) {
-                set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")
-              } else {
-                # if current element to-be-inserted is not "uploadsource",
-                # --> proceed
-                setValue(rv,i,res[[i]])
-              }
-            }
-            # reset time_stamp with current
-            # $$ToDo think if this is really desirable
-            setValue(rv,c("General","time_stamp"), Sys.time())
-            message("RDataImport: Non-legacy upload finished")
-          } else {
-            #browser()
-            allgivenexpected <- c(paste0("file: ", resnames), paste0("\nexpected: ", rvnames))
-            found_table <- names(which(table(c(resnames, rvnames))==1))
-            err <- allgivenexpected[c(resnames, rvnames) %in% found_table]
-            shinyalert::shinyalert(title = "m_RDataImport_Server", text = paste("The following components were inconsistent between loaded RData file and internal data structure:\n", paste(err, collapse=", ")), type = "warning")
-          }
-        }
-        # Legacy upload
-      } else {
-        message("RDataImport: Legacy upload started")
-        if ("Certification" %in% names(res) && !is.null(res$Certification)) {
-          if (!silent) message("RDataImport_Server: Cert data transfered")
-          setValue(rv,c("Certification","data"),res[["Certification"]][["data_input"]])
-          setValue(rv,c("Certification","input_files"),res[["Certification"]][["input_files"]])
-          # setValue(rv,c("Certification","uploadsource"),value = "RData")
-          set_uploadsource(rv = rv, m = "Certification", uploadsource = "RData")
-          # save
-          setValue(rv,c("General","user"),res$Certification$user)
-          setValue(rv,c("General","study_id"),res$Certification$study_id)
-          # processing
-          setValue(rv,c("Certification_processing","lab_means"), res[["Certification"]][["lab_means"]])
-          setValue(rv,c("Certification_processing","cert_mean"),res[["Certification"]][["cert_mean"]])
-          setValue(rv,c("Certification_processing","cert_sd"),res[["Certification"]][["cert_sd"]])
-          setValue(rv,c("Certification_processing","normality_statement"),res[["Certification"]][["normality_statement"]])
-          setValue(rv,c("Certification_processing","precision"),res[["Certification"]][["precision"]])
-          setValue(rv,c("Certification_processing","data_kompakt"),res[["Certification"]][["data_kompakt"]])
-          setValue(rv,c("Certification_processing","CertValPlot"),res[["Certification"]][["CertValPlot"]])
-          setValue(rv,c("Certification_processing","stats"),res[["Certification"]][["stats"]])
-          setValue(rv,c("Certification_processing","boxplot"),res[["Certification"]][["boxplot"]])
-          setValue(rv,c("Certification_processing","opt"),res[["Certification"]][["opt"]])
-          setValue(rv,c("Certification_processing","mstats"),res[["Certification"]][["mstats"]])
-          # materialtabelle
-          setValue(rv,"materialtabelle",res[["Certification"]][["cert_vals"]])
-        }
-        if ("Homogeneity" %in% names(res) && !is.null(res$Homogeneity)) {
-          if (!silent) message("RDataImport_Server: Homog data transfered")
-          setValue(rv,c("Homogeneity","data"),res[["Homogeneity"]][["h_dat"]])
-          set_uploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
-          setValue(rv,c("Homogeneity","input_files"),res[["Homogeneity"]][["h_file"]])
-          # Processing
-          setValue(rv,c("Homogeneity","h_vals"),res[["Homogeneity"]][["h_vals"]])
-          setValue(rv,c("Homogeneity","h_sel_analyt"),res[["Homogeneity"]][["h_sel_analyt"]])
-          setValue(rv,c("Homogeneity","h_precision"),res[["Homogeneity"]][["h_precision"]])
-          setValue(rv,c("Homogeneity","h_Fig_width"),res[["Homogeneity"]][["h_Fig_width"]])
-        }
-        if ("Stability" %in% names(res) && !is.null(res$Stability)) {
-          if (!silent) message("RDataImport_Server: Stab data transfered")
-          setValue(rv,c("Stability","input_files"),res[["Stability"]][["s_file"]])
-          setValue(rv,c("Stability","data"),res[["Stability"]][["s_dat"]])
-          set_uploadsource(rv = rv, m = "Stability", uploadsource = "RData")
-          setValue(rv,c("Stability","s_vals"),res[["Stability"]][["s_vals"]])
-        }
-        setValue(rv,c("General","time_stamp"),Sys.time())
-      }
+      rv <- fnc_load_RData(x = rdata())
       continue(NULL)
       rvreturn(rv)
-      },ignoreNULL = TRUE)
+    }, ignoreNULL = TRUE)
 
     return(rvreturn)
 
