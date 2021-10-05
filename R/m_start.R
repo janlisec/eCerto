@@ -38,9 +38,21 @@ m_startUI <- function(id) {
       width = 3,
       shiny::wellPanel(
         shiny::wellPanel(
-          shiny::strong("Restart Session"),
-          shiny::br(),
-          shiny::actionButton(inputId = ns("session_restart"), label = "Restart")),
+          shiny::fluidRow(
+            shiny::column(
+              width = 6,
+              shiny::strong("Restart Session"),
+              shiny::br(),
+              shiny::actionButton(inputId = ns("session_restart"), label = "Restart")
+            ),
+            shiny::column(
+              width = 6,
+              shiny::strong("Load Test Data"),
+              shiny::br(),
+              shiny::actionButton(inputId = ns("load_test_data"), label = "Load")
+            )
+          )
+        ),
         m_RDataImport_UI(ns("Rdatain")),
         m_RDataExport_UI(ns("Rdataex"))
       )
@@ -88,8 +100,8 @@ m_startServer = function(id, rv) {
       id = "Rdatain",
       modules = shiny::reactive({getValue(rv,"modules")}),
       uploadsources = shiny::reactive({
-        sapply(getValue(rv,"modules"), function(x) {
-          getValue(rv,c(x,"uploadsource"))
+        sapply(getValue(rv, "modules"), function(x) {
+          getValue(rv, c(x,"uploadsource"))
         })
       })
     )
@@ -117,7 +129,7 @@ m_startServer = function(id, rv) {
       setValue(rv, c(ex_frm, "uploadsource"), value = "Excel")
     })
 
-    # Restart App -------------------------------------------------------------
+    # Restart App --------------------------------------------------------------
     # Open confirmation dialog
     shiny::observeEvent(input$session_restart, {
       shiny::showModal(shiny::modalDialog(
@@ -132,6 +144,33 @@ m_startServer = function(id, rv) {
     })
     shiny::observeEvent(input$confirmRestart, {
       session$reload()
+      shiny::removeModal()
+    })
+
+    # Load Test Data -----------------------------------------------------------
+    shiny::observeEvent(input$load_test_data, {
+      shiny::showModal(shiny::modalDialog(
+        easyClose = FALSE,
+        title="Sure you want to load test data?",
+        "This will erase all non-saved inputs!",
+        footer = shiny::tagList(
+          shiny::actionButton(session$ns("confirmLoadTestData"), "Load Test Data"),
+          shiny::modalButton("Cancel")
+        )
+      ))
+    })
+
+    shiny::observeEvent(input$confirmLoadTestData, {
+      # browser()
+      ne <- new.env()
+      load(file = fnc_get_local_file(x = "CRM001.RData"), envir = ne)
+      res <- get("res", ne)
+      rv_test <- fnc_load_RData(x = res)
+      rv_testnames <- listNames(rv_test, split = TRUE)
+      # overwrite
+      for (n in rv_testnames) {
+        setValue(rv, n, getValue(rv_test, n))
+      }
       shiny::removeModal()
     })
 
