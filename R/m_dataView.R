@@ -17,13 +17,13 @@
 #'  server = function(input, output, session) {
 #'  datasetflt = reactiveVal(structure(
 #'  list(
-#'    ID = c(1L,10L,18,25), Lab = factor(c("L1","L1","L2","L2")), 
+#'    ID = c(1L,10L,18,25), Lab = factor(c("L1","L1","L2","L2")),
 #'    analyte = rep("Si",4), replicate = c(1,2,1,2),
 #'     value = runif(4, 0, 1),unit = rep("0.05",4),
 #'     File = rep("Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",4),
 #'     S_flt = rep(FALSE,4),L_flt = rep(FALSE, 4),
 #'     row.names = c(1L,10L,18,25),class = "data.frame")))
-#'     
+#'
 #'    m_DataViewServer(
 #'      id = "test",
 #'      dataset_flt = datasetflt,
@@ -53,7 +53,7 @@ m_DataViewUI <- function(id) {
 #' @rdname mod_DataView
 #' @export
 m_DataViewServer <- function(id, dataset_flt, current_apm) {
-  
+
   shiny::moduleServer(id, function(input, output, session) {
     # Generate an HTML table view of filtered single analyt data
     output$flt_Input_Data <- DT::renderDataTable({
@@ -61,15 +61,15 @@ m_DataViewServer <- function(id, dataset_flt, current_apm) {
         return(dataset_komp())
       }
       if (input$data_view_select == "standard") {
-        return(dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File", "L_flt")])
+        return(dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")])
       } else {
         return()
       }
     }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
-    
-    
-    
-    
+
+
+
+
     # prepare a compact version of the data table
     dataset_komp <- shiny::reactive({
       shiny::req(dataset_flt())
