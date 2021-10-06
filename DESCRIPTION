@@ -30,7 +30,8 @@ Imports:
     purrr,
     htmltools,
     dgof,
-    markdown
+    markdown,
+    rsconnect
 Suggests: 
     testthat (>= 3.0.0),
     shinytest,
