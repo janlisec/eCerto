@@ -51,7 +51,7 @@ deploy_to_shinyio <- function(path_app = "C:/Users/jlisec/Rpackages/ShinyApps/eC
   # prepare 'global.R'
   #fl <- list.files(pattern = "DESCRIPTION", full.names = TRUE, recursive = TRUE)
   cat(file = paste(path_app,"global.R",sep="/"))
-  for (pkg in c("shiny","shinyjs","shinyalert","DT","openxlsx","outliers","moments","tinytex","rmarkdown","markdown","htmltools","purrr","tidyxl","plyr","R6","agricolae","dgof","rsconnect")) {
+  for (pkg in c("shiny","shinyjs","shinyalert","DT","openxlsx","outliers","moments","tinytex","rmarkdown","markdown","htmltools","purrr","tidyxl","plyr","R6","agricolae","dgof","rsconnect","magick","rsvg")) {
     cat(paste0("library('", pkg, "')"), file = paste(path_app,"global.R",sep="/"), append=TRUE, sep = "\n")
   }
   #cat("sapply(dir(path_app = 'R', full.names = TRUE, pattern = 'R$'), source)", file = paste(path_app,"global.R",sep="/"), append=TRUE, sep = "\n")

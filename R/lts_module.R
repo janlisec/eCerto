@@ -353,17 +353,14 @@
           "fnc"=list("plot_lts_data"=plot_lts_data)
         )
 
-        # das hat bei mir zum download (und der nicht erfolgreichen Installation) von tinytech geführt
-        # für das online tool brauchen wir das nicht (shiny server kümmert sich)
-        # für die app würde ich der installation eine MsgBox vorschalten ob der Nutzer das möchte (ich habe z.B. bereits ein MikTeX drauf und kann auf tiny verzichten)
-        #if (tinytex::tinytex_root() == "") tinytex::install_tinytex()
-
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).
-        rmarkdown::render(rmdfile, output_file = file,
-                          params = params,
-                          envir = new.env(parent = globalenv())
+        rmarkdown::render(
+          input = rmdfile,
+          output_file = file,
+          params = params,
+          envir = new.env(parent = globalenv())
         )
       }
     )
