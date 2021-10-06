@@ -5,12 +5,15 @@
 \title{deploy_to_shinyio.}
 \usage{
 deploy_to_shinyio(
-  path = "C:/Users/jlisec/Rpackages/ShinyApps/eCerto",
+  path_app = "C:/Users/jlisec/Rpackages/ShinyApps/eCerto",
+  path_pkg = "C:/Users/jlisec/Rpackages/Rpackage_eCerto/ecerto",
   appName = c("TriboMat", "eCerto")[2]
 )
 }
 \arguments{
-\item{path}{Which path to use for the App.}
+\item{path_app}{Which path to use for the App.}
+
+\item{path_pkg}{Which path to use for the App.}
 
 \item{appName}{Which shinyapp.io name is to be used.}
 }
@@ -24,6 +27,6 @@ NULL.
 tbd.
 }
 \examples{
-#'#ecerto:::deploy_to_shinyio()
+#ecerto:::deploy_to_shinyio()
 
 }
