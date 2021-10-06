@@ -307,6 +307,15 @@ m_CertificationServer = function(id, rv, datreturn) {
       )
     })
 
+    # store Fig options
+    shiny::observeEvent(input$Fig01_width, {
+      setValue(rv, c("Certification_processing","CertValPlot","Fig01_width"), input$Fig01_width)
+    })
+
+    shiny::observeEvent(input$Fig01_height, {
+      setValue(rv, c("Certification_processing","CertValPlot","Fig01_width"), input$Fig01_height)
+    })
+
     shiny::observeEvent(UpdateInputs(), {
       message("certification: UpdateInputs() observeEvent")
       us <- getValue(rv,c("Certification","uploadsource"))
@@ -323,9 +332,7 @@ m_CertificationServer = function(id, rv, datreturn) {
         shiny::updateNumericInput(
           session=session,
           inputId = "Fig01_width",
-          value = getValue(
-            rv,
-            c("Certification_processing","CertValPlot","Fig01_width")
+          value = getValue(rv, c("Certification_processing","CertValPlot","Fig01_width")
           )
         )
         shiny::updateNumericInput(

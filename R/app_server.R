@@ -8,8 +8,6 @@
 #' @export
 app_server = function(input, output, session) {
 
-  shiny::addResourcePath(prefix = "ecerto", directoryPath = "www")
-
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
   silent = FALSE ## ToDo: make silent a global option of the package like suggested by Golem-package devel
@@ -24,7 +22,7 @@ app_server = function(input, output, session) {
     if (input$navbarpage == "tP_certification" && is.null(getValue(rv, c("Certification","uploadsource"))) ) {
       to_startPage(session, value="Certification")
     }
-    if (input$navbarpage == "tP_Stability" && is.null(getValue(rv, c("Stability","uploadsource"))) ) {
+    if (input$navbarpage == "tP_stability" && is.null(getValue(rv, c("Stability","uploadsource"))) ) {
       to_startPage(session, value="Stability")
     }
   })
@@ -81,7 +79,7 @@ app_server = function(input, output, session) {
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",
-      selected = "tP_Stability"
+      selected = "tP_stability"
     )
   })
 

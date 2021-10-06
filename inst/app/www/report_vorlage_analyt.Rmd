@@ -17,24 +17,23 @@ fontsize: 11pt
 
 ```{r setup, include=FALSE}
   knitr::opts_chunk$set(echo = FALSE)
-  if("kableExtra" %in% (.packages())) {
-    detach("package:kableExtra", unload=TRUE, character.only = TRUE) 
-  }
-  # get a local representation of all data provided by Shiny
-  # setting testing <- TRUE will load test data for development of the Rmd
-  #testing <- c(FALSE, TRUE)[1]
-  testing <- length(params$General)==1L && is.na(params$General)
+  testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
   if (testing) {
+    fnc_get_local_file <- function(x=NULL) {
+      pkg_path <- system.file(package = "ecerto")
+      file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
+      return(file.path(pkg_path, file_path, fsep="/"))
+    }
     tmp <- new.env()
-    load(file = fnc_get_local_file(x="CRM001.RData", copy_to_tempdir=FALSE), envir = tmp)
+    load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp)
     res <- get(x = "res", envir = tmp)
     G <- res$General
     C <- res$Certification
     CP <- res$Certification_processing
-    CP$CertValPlot
+    #CP$CertValPlot
     A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
     D <- G$apm[[A]]
-    L <- fnc_get_local_file(x="BAMLogo2015.png", copy_to_tempdir=FALSE)
+    L <- fnc_get_local_file(x="BAMLogo2015.png")
   } else {
     G <- params$General
     C <- params$Certification

@@ -1,0 +1,78 @@
+---
+params:
+  materialtabelle: NA
+  General: NA
+  Certification: NA
+  Certification_processing: NA
+  selected_tab: NA
+  logo_file: NA
+output:
+  html_document:
+    df_print: paged
+  word_document: 
+    reference_docx: template.docx
+  pdf_document:
+    latex_engine: lualatex
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = FALSE)
+  testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
+  if (testing) {
+    fnc_get_local_file <- function(x=NULL) {
+      pkg_path <- system.file(package = "ecerto")
+      file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
+      return(file.path(pkg_path, file_path, fsep="/"))
+    }
+    tmp <- new.env()
+    load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp)
+    res <- get(x = "res", envir = tmp)
+    M <- res$materialtabelle
+    G <- res$General
+    C <- res$Certification
+    CP <- res$Certification_processing
+    #CP$CertValPlot
+    A <- paste(names(G$apm), collapse=", ")
+    D <- G$apm[[A]]
+    L <- fnc_get_local_file(x="BAMLogo2015.png")
+  } else {
+    M <- params$materialtabelle
+    G <- params$General
+    C <- params$Certification
+    CP <- params$Certification_processing
+    A <- paste(names(G$apm), collapse=", ")
+    D <- G$apm[[A]]
+    #L <- ifelse(exists(params[["logo_file"]]), params[["logo_file"]], NA)
+    L <- params[["logo_file"]]
+  }
+```
+
+```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
+  knitr::include_graphics(L)
+```
+
+## *eCerto* Material Report
+
+### Meta Data
+
+|               |                |               |                                     |
+|--------------:|:---------------|--------------:|:------------------------------------|
+| **Study ID:** | `r G$study_id` |    **Date:**  | `r format(Sys.time(), '%d %B, %Y')` |
+|     **User:** | `r G$user`     | **Analytes:** | `r A`                               |
+
+
+### Material table
+
+```{r mat_table, echo=FALSE}
+  df <- M
+  if (knitr::is_html_output()) {
+    kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
+  } else if (knitr::is_latex_output()) {
+    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
+  } else {
+    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
+  }
+```
+
+***Note!*** This is a Report template for demonstration purpose. Specific layouts can be generated on demand.

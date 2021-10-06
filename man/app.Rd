@@ -7,7 +7,7 @@
 app()
 }
 \value{
-the App
+The eCerto App.
 }
 \description{
 App

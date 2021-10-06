@@ -81,7 +81,6 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
         fnc_get_local_file("template.docx")
         # copy the BAM Logo to a temporary directory
         logofile <- fnc_get_local_file("BAMLogo2015.png")
-        #browser()
         # render the markdown file
         rmarkdown::render(
           input = rmdfile,
@@ -93,6 +92,45 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
             Word = rmarkdown::word_document()
           ),
           params = list(
+            "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
+            "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
+            "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
+            "selected_tab" = selected_tab(),
+            "logo_file" = logofile
+          ),
+          envir = new.env(parent = globalenv())
+        )
+      }
+    )
+
+    output$MaterialReport <- shiny::downloadHandler(
+      filename = function() {
+        paste0(getValue(rv, c("General","study_id")), "_", "Material", '.', switch(
+          input$output_file_format,
+          PDF = 'pdf',
+          HTML = 'html',
+          Word = 'docx'
+        ))
+      },
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it
+        rmdfile <- fnc_get_local_file("report_vorlage_material.Rmd")
+        # copy the word template (for font sizes and font types) to a temporary directory
+        fnc_get_local_file("template.docx")
+        # copy the BAM Logo to a temporary directory
+        logofile <- fnc_get_local_file("BAMLogo2015.png")
+        # render the markdown file
+        rmarkdown::render(
+          input = rmdfile,
+          output_file = file,
+          output_format = switch(
+            input$output_file_format,
+            PDF = rmarkdown::pdf_document(),
+            HTML = rmarkdown::html_document(),
+            Word = rmarkdown::word_document()
+          ),
+          params = list(
+            "materialtabelle" = getValue(rv,"materialtabelle"),
             "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
             "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
             "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),

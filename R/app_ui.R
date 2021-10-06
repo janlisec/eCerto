@@ -14,8 +14,10 @@ app_ui <- function() {
       title = shiny::div(
         class = "verticalhorizontal",
         shiny::img(
-          #src = fnc_get_local_file("bam_logo_20pt.gif"),
+          #src = fnc_get_local_file("bam_logo_20pt.gif", copy_to_tempdir = FALSE),
           src = "ecerto/bam_logo_20pt.gif",
+          #src = "www/bam_logo_20pt.gif",
+          #src = "bam_logo_20pt.gif",
           position = "absolute",
           margin = "auto",
           alt="BAM Logo"
@@ -27,7 +29,7 @@ app_ui <- function() {
       selected = "Start",
       windowTitle = "BAM eCerto",
       position = "static-top",
-      footer = shiny::pre(" 2021-09-23, Jan Lisec (jan.lisec@bam.de), v.0.0.0.900"),
+      footer = shiny::pre(" 2021-10-05, Jan Lisec (jan.lisec@bam.de), v.0.0.0.900"),
 
       shiny::tabPanel(
         id = "start",
@@ -52,7 +54,7 @@ app_ui <- function() {
       shiny::tabPanel(
         title = "Stability",
         icon = shiny::icon("angle-right"),
-        value = "tP_Stability",
+        value = "tP_stability",
         m_StabilityUI("Stability")
       ),
 
