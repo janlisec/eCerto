@@ -2,9 +2,6 @@
 params:
   materialtabelle: NA
   General: NA
-  Certification: NA
-  Certification_processing: NA
-  selected_tab: NA
   logo_file: NA
 output:
   html_document:
@@ -30,20 +27,12 @@ fontsize: 11pt
     res <- get(x = "res", envir = tmp)
     M <- res$materialtabelle
     G <- res$General
-    C <- res$Certification
-    CP <- res$Certification_processing
-    #CP$CertValPlot
     A <- paste(names(G$apm), collapse=", ")
-    D <- G$apm[[A]]
     L <- fnc_get_local_file(x="BAMLogo2015.png")
   } else {
-    M <- params$materialtabelle
-    G <- params$General
-    C <- params$Certification
-    CP <- params$Certification_processing
-    A <- paste(names(G$apm), collapse=", ")
-    D <- G$apm[[A]]
-    #L <- ifelse(exists(params[["logo_file"]]), params[["logo_file"]], NA)
+    M <- params[["materialtabelle"]]
+    G <- params[["General"]]
+    A <- paste(names(G[["apm"]]), collapse=", ")
     L <- params[["logo_file"]]
   }
 ```
@@ -64,7 +53,7 @@ fontsize: 11pt
 
 ### Material table
 
-```{r mat_table, echo=FALSE}
+```{r mat_tab, echo=FALSE}
   df <- M
   if (knitr::is_html_output()) {
     kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
@@ -74,5 +63,7 @@ fontsize: 11pt
     knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
   }
 ```
+
+---
 
 ***Note!*** This is a Report template for demonstration purpose. Specific layouts can be generated on demand.

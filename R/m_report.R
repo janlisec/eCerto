@@ -120,6 +120,7 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
         # copy the BAM Logo to a temporary directory
         logofile <- fnc_get_local_file("BAMLogo2015.png")
         # render the markdown file
+        #browser()
         rmarkdown::render(
           input = rmdfile,
           output_file = file,
@@ -130,11 +131,8 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
             Word = rmarkdown::word_document()
           ),
           params = list(
-            "materialtabelle" = getValue(rv,"materialtabelle"),
+            "materialtabelle" = shiny::isolate(getValue(rv,"materialtabelle")),
             "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
-            "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
-            "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
-            "selected_tab" = selected_tab(),
             "logo_file" = logofile
           ),
           envir = new.env(parent = globalenv())

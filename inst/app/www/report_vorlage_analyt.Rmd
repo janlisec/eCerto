@@ -131,4 +131,6 @@ cat(paste(D$lab_filter, collapse=", "))
 
 Here we could include the Tab.3 from the App including the certified values. However, this might be better done in the Material Report/Certificate.
 
+---
+
 ***Note!*** This is a Report template for demonstration purpose. Specific layouts can be generated on demand.
