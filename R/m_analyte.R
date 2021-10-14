@@ -40,8 +40,8 @@
 m_analyteUI = function(id){
   # empty tabset panel, to be filled by the analytes in the server Module
   shiny::tagList(
-    shinyjs::inlineCSS('.selct  {background: green; color: white;border: 5px solid black;}'),
-    shiny::tabsetPanel(id = shiny::NS(id,"tabs"))
+    shinyjs::inlineCSS('.selct { background: green; color: white; border: 5px solid black; }'),
+    shiny::tabsetPanel(id = shiny::NS(id, "tabs"))
   )
 
 }
@@ -50,7 +50,6 @@ m_analyteUI = function(id){
 #' @importFrom purrr '%>%'
 #' @export
 m_analyteServer = function(id, apm, renewTabs, tablist) {
-
 
   stopifnot(shiny::is.reactive(apm))
 
@@ -67,7 +66,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
     markConfirmed <- function(tab) {
       # message("color tab: ", tab)
       # s = paste0("#",ns("tabs")," li a[data-value=",tab,"]")
-      s = paste0(" li a[data-value=",tab,"]")
+      s <- paste0(" li a[data-value=", tab, "]")
       shinyjs::addClass(
         selector = s,
         class = "selct")
@@ -86,7 +85,6 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
 
       # append/prepend a tab for each analyte available
       for (a.name in names(shiny::isolate(apm()))) {
-        #
         # message("append Tab: ", a.name)
         tablist_tmp <- c(tablist(), a.name) # add to tablist for removing later
         tablist(tablist_tmp)
@@ -95,6 +93,7 @@ m_analyteServer = function(id, apm, renewTabs, tablist) {
           select = FALSE,
           shiny::tabPanel(
             title=a.name,
+            htmltools::p(),
             shiny::fluidRow(
               shiny::column(
                 width = 6,
