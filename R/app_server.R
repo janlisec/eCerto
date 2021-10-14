@@ -12,7 +12,7 @@ app_server = function(input, output, session) {
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
   silent = FALSE ## ToDo: make silent a global option of the package like suggested by Golem-package devel
 
-  m_startServer(id="Start", rv=rv)
+  page_startServer(id="Start", rv=rv)
 
   shiny::observeEvent(input$navbarpage, {
     # when a tab for an empty dataset is selected --> jump to upload page
@@ -29,14 +29,14 @@ app_server = function(input, output, session) {
 
 # Panels ------------------------------------------------------------------
 
-  m_CertificationServer(
+  page_CertificationServer(
     id = "certification",
     rv = rv,
     datreturn = datreturn
   )
 
   # Homogeneity Modul
-  h_vals <- m_HomogeneityServer(
+  h_vals <- page_HomogeneityServer(
     id = "Homogeneity",
     homog = shiny::reactive({getValue(rv,"Homogeneity")}),
     cert = shiny::reactive({getValue(rv,"Certification")}),
@@ -44,7 +44,7 @@ app_server = function(input, output, session) {
   )
 
   # Stability Modul
-  m_StabilityServer(id = "Stability", rv = rv, datreturn = datreturn)
+  page_StabilityServer(id = "Stability", rv = rv, datreturn = datreturn)
 
   # LTS Modul
   .longtermstabilityServer("lts")

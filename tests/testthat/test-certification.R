@@ -5,7 +5,7 @@ testthat::test_that(
     datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn()) # initiate runtime variables
     suppressMessages(
       shiny::testServer(
-        app = m_CertificationServer,
+        app = page_CertificationServer,
         args = list(
           rv = rv_test,
           datreturn = datreturn
@@ -38,7 +38,7 @@ testthat::test_that(
 #     datreturn <- ecerto::reactiveClass$new(ecerto::init_datreturn())
 #     # suppressMessages(
 #       shiny::testServer(
-#         app = m_CertificationServer,
+#         app = page_CertificationServer,
 #         args = list(
 #           rv = rv_test,
 #           datreturn = datreturn
@@ -71,7 +71,7 @@ testthat::test_that(
     apm_test <- ecerto::init_apm(ecerto:::test_Certification_Excel())
     suppressMessages(
       shiny::testServer(
-        app = m_CertificationServer,
+        app = page_CertificationServer,
         args = list(
           rv = rv_test,
           datreturn = datreturn

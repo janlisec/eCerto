@@ -1,10 +1,10 @@
-#' @name mod_Start
-#' @aliases m_startUI
-#' @aliases m_startServer
+#' @name page_Start
+#' @aliases page_startUI
+#' @aliases page_startServer
 #'
-#' @title start MODULE
+#' @title Start-Page
 #'
-#' @description \code{m_start} is the module for eCerto startup.
+#' @description \code{page_start} is the module for eCerto startup.
 #'
 #' @details Providing the backup/restore modules as well as the Excel upload.
 #'
@@ -15,21 +15,21 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_startUI(id = "test")
+#'    page_startUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
 #'    datreturn <- ecerto:::test_datreturn()
-#'    m_startServer(id = "test", rv = rv)
+#'    page_startServer(id = "test", rv = rv)
 #'  }
 #' )
 #' }
 #'
 #' @return h_vals = The start data (not the transferred ones yet)
-#' @rdname mod_start
+#' @rdname page_Start
 #' @export
 
-m_startUI <- function(id) {
+page_startUI <- function(id) {
 
   ns <- shiny::NS(id)
 
@@ -73,9 +73,9 @@ m_startUI <- function(id) {
   )
 }
 
-#' @rdname mod_start
+#' @rdname page_Start
 #' @export
-m_startServer = function(id, rv) {
+page_startServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 

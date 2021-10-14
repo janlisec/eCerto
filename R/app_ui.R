@@ -35,27 +35,27 @@ app_ui <- function() {
         id = "start",
         title = "Start",
         icon = shiny::icon("angle-right"),
-        m_startUI("Start")
+        page_startUI("Start")
       ),
       shiny::tabPanel(
         id = "certif_tab",
         title = "Certification",
         value = "tP_certification",
         icon = shiny::icon("angle-right"),
-        m_CertificationUI("certification"),
+        page_CertificationUI("certification"),
       ),
       shiny::tabPanel(
         id = "homog_tab",
         title = "Homogeneity",
         icon = shiny::icon("angle-right"),
         value = "tP_homogeneity",
-        m_HomogeneityUI("Homogeneity")
+        page_HomogeneityUI("Homogeneity")
       ),
       shiny::tabPanel(
         title = "Stability",
         icon = shiny::icon("angle-right"),
         value = "tP_stability",
-        m_StabilityUI("Stability")
+        page_StabilityUI("Stability")
       ),
 
       # Long term stability

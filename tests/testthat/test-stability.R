@@ -4,7 +4,7 @@ test_that(
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
     suppressMessages(
       shiny::testServer(
-        app = ecerto::m_StabilityServer,
+        app = ecerto::page_StabilityServer,
         args = list(
           rv = rv_test
         ),
@@ -32,10 +32,10 @@ test_that(
   desc = "Correct error if no Certification has been uploaded yet",
   code = {
     rv_test <- ecerto::reactiveClass$new(ecerto::init_rv())
-    datreturn_test = ecerto::reactiveClass$new(init_datreturn()) 
+    datreturn_test = ecerto::reactiveClass$new(init_datreturn())
     suppressMessages(
       shiny::testServer(
-        app = ecerto::m_StabilityServer,
+        app = ecerto::page_StabilityServer,
         args = list(
           rv = rv_test,
           datreturn = datreturn_test
@@ -72,7 +72,7 @@ test_that(
     shiny::isolate({setValue(datreturn_test,"mater_table",mater_table)})
     suppressMessages(
       shiny::testServer(
-        app = ecerto::m_StabilityServer,
+        app = ecerto::page_StabilityServer,
         args = list(
           rv = rv_test,
           datreturn = datreturn_test

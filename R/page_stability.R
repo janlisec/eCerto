@@ -1,23 +1,23 @@
-#' @title STABILITY MODULE
-#' @name mod_Stability
+#' @title page_Stability
+#' @name page_Stability
 #'
 #' @param id Id when called in module.
 #'
-#' @return Will return UI and Server logic for the stability tab.
+#' @return Will return UI and Server logic for the stability page.
 #' @export
 #'
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_StabilityUI(id = "test")
+#'    page_StabilityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- ecerto::reactiveClass$new(ecerto::init_rv()) # initiate persistent variables
 #'    shiny::isolate({ecerto::setValue(rv, c("Stability","data"), ecerto:::test_Stability_Excel() )})
 #'    shiny::isolate({ecerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
 #'    datreturn <- ecerto:::test_datreturn()
-#'    m_StabilityServer(
+#'    page_StabilityServer(
 #'      id = "test",
 #'      rv = rv,
 #'      datreturn = datreturn
@@ -27,7 +27,7 @@
 #' }
 #'
 
-m_StabilityUI <- function(id) {
+page_StabilityUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::tabsetPanel(
@@ -74,11 +74,11 @@ m_StabilityUI <- function(id) {
   )
 }
 
-#' @rdname mod_Stability
+#' @rdname page_Stability
 #' @param rv reactiveClass object.
 #' @param datreturn reactiveClass object.
 #' @export
-m_StabilityServer <- function(id, rv, datreturn) {
+page_StabilityServer <- function(id, rv, datreturn) {
 
   shiny::moduleServer(id, function(input, output, session) {
 

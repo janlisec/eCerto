@@ -2,11 +2,11 @@ test_that("Successfull Upload Homogeneity",code = {
   homog = shiny::reactiveVal({ecerto:::test_homog()})
   suppressMessages(
     shiny::testServer(
-      app = ecerto::m_HomogeneityServer,
+      app = ecerto::page_HomogeneityServer,
       args = list(
         homog = homog,
         cert = reactiveVal(NULL),
-        datreturn = ecerto:::test_datreturn() 
+        datreturn = ecerto:::test_datreturn()
       ),
       expr =  {
         session$flushReact()
@@ -35,11 +35,11 @@ test_that("Successful Upload Homogeneity and Certification",code = {
   homog = shiny::reactiveVal({ecerto:::test_homog()})
   cert = shiny::reactiveVal({ecerto:::test_certification()})
   shiny::testServer(
-    app = ecerto::m_HomogeneityServer,
+    app = ecerto::page_HomogeneityServer,
     args = list(
       homog = homog,
       cert = cert,
-      datreturn = ecerto:::test_datreturn() 
+      datreturn = ecerto:::test_datreturn()
     ),
     expr =  {
       session$setInputs(h_precision = 3)

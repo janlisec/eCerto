@@ -1,18 +1,18 @@
-#' @name mod_Certification
-#' @aliases m_CertificationUI
-#' @aliases m_CertificationServer
+#' @name page_Certification
+#' @aliases page_CertificationUI
+#' @aliases page_CertificationServer
 #'
-#' @title Certification.
+#' @title Certification page
 #'
-#' @description \code{m_CertificationServer} is the module for handling the
+#' @description \code{page_Certification} is the module for handling the
 #'  Certification part but also contains the materialtabelle (until further
 #'  changes).
 #'
 #' @details not yet
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param rv the whole R6 object
-#' @param datreturn the session data object
+#' @param rv The whole R6 object.
+#' @param datreturn The session data object.
 #'
 #' @return nothing
 #'
@@ -20,7 +20,7 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_CertificationUI(id = "test")
+#'    page_CertificationUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
@@ -28,7 +28,7 @@
 #'   shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
 #'   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
 #'
-#'  m_CertificationServer(
+#'  page_CertificationServer(
 #'      id = "test",
 #'      rv = rv,
 #'      datreturn = datreturn
@@ -37,9 +37,9 @@
 #' )
 #' }
 #'
-#' @rdname mod_Certification
+#' @rdname page_Certification
 #' @export
-m_CertificationUI = function(id) {
+page_CertificationUI = function(id) {
   ns <- shiny::NS(id)
   shiny::tabsetPanel(
     id = ns("certificationPanel"),
@@ -75,12 +75,12 @@ m_CertificationUI = function(id) {
         ),
         # Analyte Modul
         shiny::column(
-          width=7,
+          width=8,
           shiny::wellPanel(style = "height:160px", m_analyteUI(ns("analyteModule")))
         ),
         # Report-Teil
         shiny::column(
-          width = 3,
+          width = 2,
           shiny::wellPanel(style = "height:160px", m_report_ui(ns("report")))
         )
       ),
@@ -184,9 +184,9 @@ m_CertificationUI = function(id) {
   )
 }
 
-#' @rdname mod_Certification
+#' @rdname page_Certification
 #' @export
-m_CertificationServer = function(id, rv, datreturn) {
+page_CertificationServer = function(id, rv, datreturn) {
 
   shiny::moduleServer(id, function(input, output, session) {
 

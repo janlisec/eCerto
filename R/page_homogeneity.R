@@ -1,10 +1,10 @@
-#' @name mod_Homogeneity
-#' @aliases m_HomogeneityUI
-#' @aliases m_HomogeneityServer
+#' @name page_Homogeneity
+#' @aliases page_HomogeneityUI
+#' @aliases page_HomogeneityServer
 #'
-#' @title HOMOGENEITY MODULE
+#' @title Homogeneity page
 #'
-#' @description \code{m_Homogeneity} is the module for handling Homogeneity Data
+#' @description \code{page_Homogeneity} is the module for handling Homogeneity Data
 #'
 #' @details not yet
 #'
@@ -17,12 +17,12 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_HomogeneityUI(id = "test")
+#'    page_HomogeneityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
 #'    datreturn = ecerto:::test_datreturn()
-#'    m_HomogeneityServer(
+#'    page_HomogeneityServer(
 #'      id = "test",
 #'      homog = shiny::reactive({test_homog()}),
 #'      cert = shiny::reactive({test_certification()}),
@@ -33,10 +33,10 @@
 #' }
 #'
 #' @return h_vals = The Homogeneity data (not the transferred ones yet)
-#' @rdname mod_Homogeneity
+#' @rdname page_Homogeneity
 #' @export
 
-m_HomogeneityUI <- function(id) {
+page_HomogeneityUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tabsetPanel(
     id = ns( "HomogeneityPanel"),
@@ -90,9 +90,9 @@ m_HomogeneityUI <- function(id) {
   )
 }
 
-#' @rdname mod_Homogeneity
+#' @rdname page_Homogeneity
 #' @export
-m_HomogeneityServer = function(id, homog, cert, datreturn) {
+page_HomogeneityServer = function(id, homog, cert, datreturn) {
   stopifnot(shiny::is.reactive(homog))
   stopifnot(shiny::is.reactive(cert))
 
