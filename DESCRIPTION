@@ -1,10 +1,11 @@
 Package: ecerto
-Title: The Ecerto package for Bundesanstalt für Materialforschung (BAM)
-Version: 0.0.0.9000
+Title: The eCerto package of the Bundesanstalt für Materialforschung (BAM)
+Version: 0.1.1
+Date: 2021-10-14
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
-    person("Frederik", "Kreß", email = "frederik.kress@bam.de", role = "aut"))
-Description: What the package does (one paragraph).
+    person("Frederik", "Kreß", role = "aut"))
+Description: The package contains a shiny app which provides various functionality to load, process and backup data for the statistical evaluation of analyses conducted during the production of certified reference materials.
 License: MIT + file LICENSE
 Depends:
   R(>= 3.5.0)
@@ -14,26 +15,28 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
-    shinyjs,
+    agricolae,
+    dgof,
     DT,
+    htmltools,
+    magick,
+    markdown,
+    moments,
     openxlsx,
     outliers,
-    moments,
-    shiny,
-    tinytex,
-    shinyalert,
-    rmarkdown,
-    agricolae,
-    tidyxl,
     plyr,
-    R6,
     purrr,
-    htmltools,
-    dgof,
-    markdown,
-    rsconnect
+    R6,
+    rmarkdown,
+    shiny,
+    shinyalert,
+    shinyjs,
+    tinytex,
+    tidyxl,
+    rsconnect,
+    rsvg
 Suggests: 
-    testthat (>= 3.0.0),
     shinytest,
+    testthat (>= 3.0.0),
     tibble
 Config/testthat/edition: 3

@@ -17,6 +17,7 @@
 #'NULL.
 #'
 #'@importFrom rsconnect deployApp
+#'@keyword internal
 #'
 deploy_to_shinyio <- function(path_app = "C:/Users/jlisec/Rpackages/ShinyApps/eCerto", path_pkg = "C:/Users/jlisec/Rpackages/Rpackage_eCerto/ecerto", appName = c("TriboMat","eCerto")[2]) {
 
