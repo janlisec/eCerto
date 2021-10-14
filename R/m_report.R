@@ -7,9 +7,10 @@
 #' @param id module ID
 #' @param rv the rv-reactiveClass object
 #' @param selected_tab which analyte-tab is currently selected
-#' @param silent default FALSE
 #'
 #' @return nothing
+#'
+#' @importFrom htmltools p
 #'
 #' @examples
 #'if (interactive()) {
@@ -20,7 +21,7 @@
 #'  server = function(input, output, session) {
 #'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
 #'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-#'    shiny::isolate({setValue(rv, c("Certification","data"), test_Certification_Excel()) })
+#'    shiny::isolate({setValue(rv, c("Certification","data"), ecerto:::test_Certification_Excel()) })
 #'    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
 #'    m_report_server(
 #'      id = "test",
@@ -37,22 +38,21 @@ m_report_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::fluidRow(shiny::strong("Download Report")),
-    shiny::fluidRow(
-      shiny::radioButtons(
-        inputId = ns("output_file_format"),
-        label = NULL,
-        choices = c('PDF', 'HTML', 'Word'),
-        inline = TRUE
-      )
-    ),
+    p(),
     shiny::fluidRow(
       shiny::column(
-        width = 6,
-        align = "left",
-        shiny::downloadButton(outputId = ns('AnalyteReport'), label = "Analyte")),
+        width = 5,
+        shiny::radioButtons(
+          inputId = ns("output_file_format"),
+          label = NULL,
+          choices = c('PDF', 'HTML', 'Word'),
+          inline = FALSE
+        )
+      ),
       shiny::column(
-        width = 6,
-        align = "right",
+        width = 7,
+        shiny::downloadButton(outputId = ns('AnalyteReport'), label = "Analyte"),
+        p(),
         shiny::downloadButton(outputId = ns('MaterialReport'), label = "Material")
       )
     )
@@ -61,7 +61,7 @@ m_report_ui <- function(id) {
 
 #' @rdname mod_report
 #' @export
-m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
+m_report_server <- function(id, rv, selected_tab) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -120,7 +120,6 @@ m_report_server <- function(id, rv, selected_tab, silent=FALSE) {
         # copy the BAM Logo to a temporary directory
         logofile <- fnc_get_local_file("BAMLogo2015.png")
         # render the markdown file
-        #browser()
         rmarkdown::render(
           input = rmdfile,
           output_file = file,
