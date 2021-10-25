@@ -149,9 +149,7 @@ init_rv <- function() {
 #' @return A empty list (if no data frame is provided) or a apm-List otherwise.
 #'
 #' @export
-init_apm <- function(
-  x = data.frame("ID"=1:20, "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))
-) {
+init_apm <- function(x = data.frame("ID"=1:20, "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))) {
   templ <- list(
     "precision" = NULL,
     "sample_filter" = NULL, # saving which samples where selected for filter

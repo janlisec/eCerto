@@ -1,23 +1,20 @@
-#' Main User Interface
-#'
-#' @return the UI
-#' @export
-app_ui <- function() {
-
-  shiny::tagList(
-    # tagList to make useShinyjs independent from tabs
-    shinyjs::useShinyjs(),
-    shinyalert::useShinyalert(),
-
+#' The application User-Interface
+#' 
+#' @param request Internal parameter for `{shiny}`. 
+#'     DO NOT REMOVE.
+#' @import shiny
+#' @noRd
+app_ui <- function(request) {
+  tagList(
+    # Leave this function for adding external resources
+    golem_add_external_resources(),
+    
     shiny::navbarPage(
       id = "navbarpage",
       title = shiny::div(
         class = "verticalhorizontal",
         shiny::img(
-          #src = fnc_get_local_file("bam_logo_20pt.gif", copy_to_tempdir = FALSE),
-          src = "ecerto/bam_logo_20pt.gif",
-          #src = "www/bam_logo_20pt.gif",
-          #src = "bam_logo_20pt.gif",
+          src = "www/bam_logo_20pt.gif",
           position = "absolute",
           margin = "auto",
           alt="BAM Logo"
@@ -29,8 +26,11 @@ app_ui <- function() {
       selected = "Start",
       windowTitle = "BAM eCerto",
       position = "static-top",
-      footer = shiny::pre(" 2021-10-05, Jan Lisec (jan.lisec@bam.de), v.0.0.0.900"),
-
+      footer = shiny::pre(shiny::HTML(
+        get_golem_config("golem_name"),
+        "( ver.", get_golem_config("golem_version"),")",
+        "jan.lisec@bam.de"
+      )),
       shiny::tabPanel(
         id = "start",
         title = "Start",
@@ -57,7 +57,6 @@ app_ui <- function() {
         value = "tP_stability",
         page_StabilityUI("Stability")
       ),
-
       # Long term stability
       shiny::tabPanel(
         title = "LTS",
@@ -65,7 +64,6 @@ app_ui <- function() {
         value = "tP_LTS",
         .longtermstabilityUI("lts")
       ),
-
       shiny::tabPanel(
         title = "Help",
         icon = shiny::icon("angle-right"),
@@ -75,3 +73,31 @@ app_ui <- function() {
     )
   )
 }
+
+#' Add external Resources to the Application
+#' 
+#' This function is internally used to add external 
+#' resources inside the Shiny application. 
+#' 
+#' @import shiny
+#' @importFrom golem add_resource_path activate_js favicon bundle_resources
+#' @noRd
+golem_add_external_resources <- function(){
+  
+  add_resource_path(
+    'www', app_sys('app/www')
+  )
+  #browser()
+  tags$head(
+    favicon(ico = "BAMLogo.ico"),
+    bundle_resources(
+      path = app_sys('app/www'),
+      app_title = 'eCerto'
+    ),
+    # Add here other external resources
+    # for example, you can add shinyalert::useShinyalert() 
+    shinyjs::useShinyjs(),
+    shinyalert::useShinyalert()
+  )
+}
+

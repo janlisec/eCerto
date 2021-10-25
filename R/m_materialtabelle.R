@@ -169,7 +169,6 @@ m_materialtabelleServer <- function(id, rdataUpload, datreturn) {
           }
         }
       )
-
     })
     # remove a correction factor column
     shiny::observeEvent(input$c_remF, {

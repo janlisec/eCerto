@@ -7,7 +7,7 @@
 deploy_to_shinyio(
   path_app = "C:/Users/jlisec/Rpackages/ShinyApps/eCerto",
   path_pkg = "C:/Users/jlisec/Rpackages/Rpackage_eCerto/ecerto",
-  appName = c("TriboMat", "eCerto")[2]
+  appName = c("test", "eCerto")[1]
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ deploy_to_shinyio(
 
 \item{path_pkg}{Which path to use for the App.}
 
-\item{appName}{Which shinyapp.io name is to be used.}
+\item{appName}{Either shinyapp.io name to deploy to or NULL to omit deployment step.}
 }
 \value{
 NULL.
@@ -24,9 +24,10 @@ NULL.
 \code{deploy_to_shinyio} will deploy_to_shinyio.
 }
 \details{
-tbd.
+use \code{rsconnect::showLogs(appName = "test")} to check for errors
 }
 \examples{
-#ecerto:::deploy_to_shinyio()
+\dontrun{ecerto:::deploy_to_shinyio(appName=NULL)}
 
 }
+\keyword{internal}

@@ -1,0 +1,9 @@
+default:
+  golem_name: eCerto
+  golem_version: 0.1.21
+  app_prod: no
+production:
+  app_prod: yes
+  silent: no
+dev:
+  golem_wd: !expr here::here()

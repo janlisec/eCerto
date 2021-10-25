@@ -10,6 +10,7 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv The gloobal R6 object.
+#' @param tde test data environment.
 #'
 #' @examples
 #' if (interactive()) {
@@ -75,7 +76,7 @@ page_startUI <- function(id) {
 
 #' @rdname page_Start
 #' @export
-page_startServer = function(id, rv) {
+page_startServer = function(id, rv, tde) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -161,10 +162,7 @@ page_startServer = function(id, rv) {
     })
 
     shiny::observeEvent(input$confirmLoadTestData, {
-      # browser()
-      ne <- new.env()
-      load(file = fnc_get_local_file(x = "CRM001.RData"), envir = ne)
-      res <- get("res", ne)
+      res <- get("res", tde)
       rv_test <- fnc_load_RData(x = res)
       rv_testnames <- listNames(rv_test, split = TRUE)
       # overwrite

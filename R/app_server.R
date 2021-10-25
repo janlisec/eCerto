@@ -1,19 +1,21 @@
-#' Main Server
-#'
-#' @param input input.
-#' @param output output.
-#' @param session session.
-#'
-#' @return the Server
-#' @export
-app_server = function(input, output, session) {
-
+#' The application server-side
+#' 
+#' @param input,output,session Internal parameters for {shiny}. 
+#'     DO NOT REMOVE.
+#' @import shiny
+#' @noRd
+app_server <- function( input, output, session ) {
+  # Your application server logic 
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
   datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
   silent = FALSE ## ToDo: make silent a global option of the package like suggested by Golem-package devel
+  
+  # preload testdata
+  tde <- new.env()
+  load(file = fnc_get_local_file("CRM001.RData", copy_to_tempdir = FALSE), envir = tde)
 
-  page_startServer(id="Start", rv=rv)
-
+  page_startServer(id="Start", rv=rv, tde=tde)
+  
   shiny::observeEvent(input$navbarpage, {
     # when a tab for an empty dataset is selected --> jump to upload page
     if (input$navbarpage == "tP_homogeneity" && is.null(getValue(rv, c("Homogeneity","uploadsource"))) ) {
@@ -26,15 +28,13 @@ app_server = function(input, output, session) {
       to_startPage(session, value="Stability")
     }
   })
-
-# Panels ------------------------------------------------------------------
-
+  
+  # Panels ------------------------------------------------------------------
   page_CertificationServer(
     id = "certification",
     rv = rv,
     datreturn = datreturn
   )
-
   # Homogeneity Modul
   h_vals <- page_HomogeneityServer(
     id = "Homogeneity",
@@ -42,16 +42,12 @@ app_server = function(input, output, session) {
     cert = shiny::reactive({getValue(rv,"Certification")}),
     datreturn = datreturn
   )
-
   # Stability Modul
   page_StabilityServer(id = "Stability", rv = rv, datreturn = datreturn)
-
   # LTS Modul
   .longtermstabilityServer("lts")
-
-
-# more observers ---------------------------------------------------------------
-
+  
+  # some observers, mainly to use 'updateNavbarPage' depending on user action
   # when the user initiates a transfer of U values from H or S Modules --> show material_table
   shiny::observeEvent(getValue(datreturn,"transfer"), {
     shiny::updateNavbarPage(
@@ -59,7 +55,7 @@ app_server = function(input, output, session) {
       inputId = "navbarpage",
       selected = "tP_certification")
   })
-
+  
   # when the user uploaded excel data on S Modul --> change Tab to modified dataset
   shiny::observeEvent(getValue(rv, c("Certification", "input_files")), {
     shiny::updateNavbarPage(
@@ -82,16 +78,16 @@ app_server = function(input, output, session) {
       selected = "tP_stability"
     )
   })
-
+  
   shiny::observeEvent(getValue(datreturn, "mater_table"),{
     if (!silent) message("app_server: (datreturn.mater_table) set rv.materialtabelle")
     setValue(rv, "materialtabelle", getValue(datreturn, "mater_table"))
   })
-
+  
   # After Homogeneity values have been uploaded
   shiny::observeEvent(h_vals(),{
     if(!silent) message("app_server: (h_vals()), set datreturn.h_vals")
     setValue(datreturn, "h_vals", h_vals())
   }, ignoreInit = TRUE)
-
+  
 }

@@ -28,8 +28,7 @@
         accept = c("xls","xlsx","RData")
       ),
       shiny::helpText("Example Table"),
-      shiny::imageOutput(outputId = ns("myImage11a"), inline = TRUE),
-      shiny::img(src = "Import_ltsData_FixedFormat.png")
+      shiny::img(src = "www/Import_ltsData_FixedFormat.png")
     ),
     shiny::conditionalPanel(
       condition="output.LTS_fileUploaded == true",
@@ -343,7 +342,7 @@
         font_file2 <- fnc_get_local_file("BAMKlavika-Medium.ttf")
         font_file3 <- fnc_get_local_file("BAMKlavika-LightItalic.ttf")
         font_file4 <- fnc_get_local_file("BAMKlavika-MediumItalic.ttf")
-
+        
         # Set up parameters to pass to Rmd document
         dat <- datalist[["lts_data"]]
         if (length(dat)>=2 & i()>=2) for (j in rev(1:(i()-1))) dat[j] <- NULL
@@ -359,6 +358,7 @@
         rmarkdown::render(
           input = rmdfile,
           output_file = file,
+          output_format = "pdf_document",
           params = params,
           envir = new.env(parent = globalenv())
         )

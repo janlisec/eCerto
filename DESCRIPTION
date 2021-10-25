@@ -1,6 +1,6 @@
-Package: ecerto
+Package: eCerto
 Title: The eCerto package of the Bundesanstalt für Materialforschung (BAM)
-Version: 0.1.1
+Version: 0.1.21
 Date: 2021-10-14
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
@@ -18,22 +18,27 @@ Imports:
     agricolae,
     dgof,
     DT,
+    fs,
+    golem,
     htmltools,
+    knitr,
+    kableExtra,
     magick,
     markdown,
     moments,
     openxlsx,
     outliers,
+    pkgload,
     plyr,
     purrr,
     R6,
     rmarkdown,
+    rsconnect,
     shiny,
     shinyalert,
     shinyjs,
     tinytex,
     tidyxl,
-    rsconnect,
     rsvg
 Suggests: 
     shinytest,

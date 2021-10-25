@@ -4,7 +4,11 @@
 \alias{help_the_user}
 \title{Help Window: opens a modal with respective Help text for users}
 \usage{
-help_the_user(filename, format = "rmd", modal = TRUE)
+help_the_user(
+  filename,
+  format = c("rmd", "html", "rmd_with_link")[1],
+  modal = TRUE
+)
 }
 \arguments{
 \item{filename}{name of the file as string (if necessary, containing also path)}

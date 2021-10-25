@@ -8,12 +8,14 @@
 \usage{
 page_startUI(id)
 
-page_startServer(id, rv)
+page_startServer(id, rv, tde)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
 \item{rv}{The gloobal R6 object.}
+
+\item{tde}{test data environment.}
 }
 \value{
 h_vals = The start data (not the transferred ones yet)

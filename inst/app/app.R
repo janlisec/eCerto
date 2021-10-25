@@ -1,1 +1,0 @@
-ecerto::app()

@@ -81,6 +81,7 @@ m_report_server <- function(id, rv, selected_tab) {
         fnc_get_local_file("template.docx")
         # copy the BAM Logo to a temporary directory
         logofile <- fnc_get_local_file("BAMLogo2015.png")
+        
         # render the markdown file
         rmarkdown::render(
           input = rmdfile,

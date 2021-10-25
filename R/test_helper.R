@@ -1,5 +1,5 @@
 #' @keywords internal
-test_datreturn = function() {
+test_datreturn <- function() {
   datreturnList = list(
     # lab_statistics = structure(
     #   list(
@@ -60,93 +60,58 @@ test_datreturn = function() {
 }
 
 #' @keywords internal
-test_mod_xlsx_range = function() {
-  shiny::reactiveVal(structure(list(
-    name = c(
-      "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx",
-      "Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",
-      "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx"),
-    size = c(27926L, 27617L, 27527L),
-    type = c("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-    datapath = c(
-      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"),
-      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx"),
-      system.file(package = "ecerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
-    )
-  ),
-  row.names = c(NA,-3L),
-  class = "data.frame"
-  ))
+test_mod_xlsx_range <- function() {
+  fn <- paste0("Ergebnisblatt_BAM-M321_", c("Aleris_Koblenz","Aleris_Duffel","AMAG_Nasschemie"), "_m.xlsx")
+  shiny::reactiveVal(
+    structure(list(
+      name = fn,
+      size = c(27926L, 27617L, 27527L),
+      type = rep("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 3),
+      datapath = sapply(fn, function(x) { system.file("extdata", x, package = "ecerto") }, USE.NAMES = FALSE)
+    ), row.names = c(NA,-3L), class = "data.frame")
+  )
 }
 
-#' @keywords internal
-test_homog = function() {
-  list(data = structure(list(
-    analyte = c(rep("Fe",45), rep("Mg",45)),
-    H_type = c("radial",
-               "radial", "radial", "radial", "radial", "radial", "radial", "axial",
-               "axial", "axial", "axial", "axial", "axial", "axial", "axial",
-               "radial", "radial", "radial", "radial", "radial", "radial", "radial",
-               "axial", "axial", "axial", "axial", "axial", "axial", "axial",
-               "axial", "radial", "radial", "radial", "radial", "radial", "radial",
-               "radial", "axial", "axial", "axial", "axial", "axial", "axial",
-               "axial", "axial", "radial", "radial", "radial", "radial", "radial",
-               "radial", "radial", "axial", "axial", "axial", "axial", "axial",
-               "axial", "axial", "axial", "radial", "radial", "radial", "radial",
-               "radial", "radial", "radial", "axial", "axial", "axial", "axial",
-               "axial", "axial", "axial", "axial", "radial", "radial", "radial",
-               "radial", "radial", "radial", "radial", "axial", "axial", "axial",
-               "axial", "axial", "axial", "axial", "axial"),
-    Flasche = c(3,
-                36, 62, 78, 109, 144, 162, 200, 225, 239, 256, 295, 325, 351,
-                397, 3, 36, 62, 78, 109, 144, 162, 200, 225, 239, 256, 295, 325,
-                351, 397, 3, 36, 62, 78, 109, 144, 162, 200, 225, 239, 256, 295,
-                325, 351, 397, 3, 36, 62, 78, 109, 144, 162, 200, 225, 239, 256,
-                295, 325, 351, 397, 3, 36, 62, 78, 109, 144, 162, 200, 225, 239,
-                256, 295, 325, 351, 397, 3, 36, 62, 78, 109, 144, 162, 200, 225,
-                239, 256, 295, 325, 351, 397),
-    value = c(0.289769302010799, 0.296775267744762,
-              0.307595169154081, 0.300664250302984, 0.29811301754119, 0.301859235605158,
-              0.305164626561129, 0.293492422937789, 0.236992793889049, 0.299077096041326,
-              0.29164790303274, 0.298173200433747, 0.303313470041546, 0.308457017250942,
-              0.298846106640478, 0.293802481871515, 0.291392362971851, 0.291094800663056,
-              0.283585735787096, 0.298514721954372, 0.288477795851408, 0.294097538322355,
-              0.286553380479238, 0.294097538322355, 0.29656807690673, 0.290716021312024,
-              0.291126983269754, 0.288429945088968, 0.283975057155655, 0.296777621789265,
-              0.277709047077942, 0.288665439616136, 0.294864773778629, 0.292476575796996,
-              0.279400384647449, 0.291891197400404, 0.287502624747949, 0.289597686099481,
-              0.287421387249232, 0.29007503820822, 0.299880243325049, 0.283940874023323,
-              0.286604696487606, 0.290288015380048, 0.285404025002208, 0.289769302010799,
-              0.296775267744762, 0.307595169154081, 0.300664250302984, 0.29811301754119,
-              0.301859235605158, 0.305164626561129, 0.293492422937789, 0.236992793889049,
-              0.299077096041326, 0.29164790303274, 0.298173200433747, 0.303313470041546,
-              0.308457017250942, 0.298846106640478, 0.293802481871515, 0.291392362971851,
-              0.291094800663056, 0.283585735787096, 0.298514721954372, 0.288477795851408,
-              0.304019400022322, 0.286553380479238, 0.294097538322355, 0.29656807690673,
-              0.290716021312024, 0.291126983269754, 0.288429945088968, 0.283975057155655,
-              0.296777621789265, 0.277709047077942, 0.288665439616136, 0.294864773778629,
-              0.292476575796996, 0.279400384647449, 0.291891197400404, 0.287502624747949,
-              0.289597686099481, 0.287421387249232, 0.29007503820822, 0.299880243325049,
-              0.283940874023323, 0.286604696487606, 0.290288015380048, 0.285404025002208
-    ),
-    unit = c("mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L",
-             "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L",
-             "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L",
-             "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L",
-             "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L",
-             "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mM/L", "mg/mL", "mg/mL",
-             "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL",
-             "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL",
-             "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL",
-             "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL",
-             "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL",
-             "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL", "mg/mL",
-             "mg/mL"),
-    File = rep("Homog_test.xlsx", 90)),
-    row.names = c(NA, 90L), class = "data.frame"), uploadsource = "Excel", h_file = NULL,
-    h_vals = NULL, h_sel_analyt = NULL, h_precision = NULL, h_Fig_width = NULL)
+#'@title test_homog.
+#'@details The homogeneity test data are hard coded here using `structure` to
+#'  potentially identify changes in the excel importer function. When tested,
+#'  the excel importer will read the file "Homog_test.xlsx" from the folder
+#'  `ìnst/extdata` and compare the result with the return value of this function.
+#'@keywords internal
+test_homog <- function() {
+  list(
+    data = structure(list(
+      analyte = c(rep("Fe",45), rep("Mg",45)),
+      H_type = rep(rep(c("radial", "axial"), times=c(7,8)), 6),
+      Flasche = rep(c(3, 36, 62, 78, 109, 144, 162, 200, 225, 239, 256, 295, 325, 351, 397), 6),
+      value = c(0.289769302010799, 0.296775267744762,
+                0.307595169154081, 0.300664250302984, 0.29811301754119, 0.301859235605158,
+                0.305164626561129, 0.293492422937789, 0.236992793889049, 0.299077096041326,
+                0.29164790303274, 0.298173200433747, 0.303313470041546, 0.308457017250942,
+                0.298846106640478, 0.293802481871515, 0.291392362971851, 0.291094800663056,
+                0.283585735787096, 0.298514721954372, 0.288477795851408, 0.294097538322355,
+                0.286553380479238, 0.294097538322355, 0.29656807690673, 0.290716021312024,
+                0.291126983269754, 0.288429945088968, 0.283975057155655, 0.296777621789265,
+                0.277709047077942, 0.288665439616136, 0.294864773778629, 0.292476575796996,
+                0.279400384647449, 0.291891197400404, 0.287502624747949, 0.289597686099481,
+                0.287421387249232, 0.29007503820822, 0.299880243325049, 0.283940874023323,
+                0.286604696487606, 0.290288015380048, 0.285404025002208, 0.289769302010799,
+                0.296775267744762, 0.307595169154081, 0.300664250302984, 0.29811301754119,
+                0.301859235605158, 0.305164626561129, 0.293492422937789, 0.236992793889049,
+                0.299077096041326, 0.29164790303274, 0.298173200433747, 0.303313470041546,
+                0.308457017250942, 0.298846106640478, 0.293802481871515, 0.291392362971851,
+                0.291094800663056, 0.283585735787096, 0.298514721954372, 0.288477795851408,
+                0.304019400022322, 0.286553380479238, 0.294097538322355, 0.29656807690673,
+                0.290716021312024, 0.291126983269754, 0.288429945088968, 0.283975057155655,
+                0.296777621789265, 0.277709047077942, 0.288665439616136, 0.294864773778629,
+                0.292476575796996, 0.279400384647449, 0.291891197400404, 0.287502624747949,
+                0.289597686099481, 0.287421387249232, 0.29007503820822, 0.299880243325049,
+                0.283940874023323, 0.286604696487606, 0.290288015380048, 0.285404025002208
+      ),
+      unit = rep(c("mM/L", "mg/mL"), each=45),
+      File = rep("Homog_test.xlsx", 90)
+    ), row.names = c(NA, 90L), class = "data.frame"),
+    uploadsource = "Excel", h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_precision = NULL, h_Fig_width = NULL)
 }
 
 #' @keywords internal
