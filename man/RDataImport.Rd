@@ -35,9 +35,9 @@ not yet
 \examples{
 if (interactive()) {
 shiny::shinyApp(
- ui = shiny::fluidPage(ecerto::m_RDataImport_UI(id = "test")),
+ ui = shiny::fluidPage(eCerto::m_RDataImport_UI(id = "test")),
  server = function(input, output, session) {
-   ecerto::m_RDataImport_Server(
+   eCerto::m_RDataImport_Server(
      id = "test",
      modules = reactiveVal(c("Certification","Stability","Homogeneity")),
      uploadsources = reactiveVal(list("Certification" = "Excel"))

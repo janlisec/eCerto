@@ -9,13 +9,14 @@
 #'@param x A list of values.
 #'
 #'@examples
-#' # test function with
-#' fl <- ecerto::fnc_get_local_file(x = "CRM001.RData")
-#' ne <- new.env()
-#' load(file = fl, envir = ne)
-#' res <- get("res", ne)
-#' tmp <- fnc_load_RData(x = res)
-#'
+#'# test function with
+#'\dontrun{
+#'fl <- eCerto::fnc_get_local_file(x = "CRM001.RData")
+#'ne <- new.env()
+#'load(file = fl, envir = ne)
+#'res <- get("res", ne)
+#'tmp <- fnc_load_RData(x = res)
+#'}
 #'@return
 #'A reactive values list 'rv'.
 #'

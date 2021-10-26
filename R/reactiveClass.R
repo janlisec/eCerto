@@ -18,13 +18,13 @@
 #' shiny:::flushReact()
 #' rv$a <- 2
 #' shiny:::flushReact()
-#' test <- reactiveClass$new(ecerto:::init_rv())
-#' ecerto::getValue(test, c("Certification_processing","data"))
-#' shiny::observeEvent(ecerto::getValue(test, "Certification_processing")$data, {
-#'   message("Certification$data changed:", ecerto::getValue(test, "Certification")$data)
+#' test <- reactiveClass$new(eCerto:::init_rv())
+#' eCerto::getValue(test, c("Certification_processing","data"))
+#' shiny::observeEvent(eCerto::getValue(test, "Certification_processing")$data, {
+#'   message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
 #' })
-#' ecerto::setValue(test, c("Certification","data"), 5)
-#' ecerto::getValue(test, c("Certification","data"))
+#' eCerto::setValue(test, c("Certification","data"), 5)
+#' eCerto::getValue(test, c("Certification","data"))
 #' shiny:::flushReact()
 #' }
 #'
@@ -46,7 +46,7 @@ reactiveClass = R6::R6Class(
       # stopifnot(shiny::is.reactivevalues(rv))
       private$reactive_data = rv
     },
-    
+
     #' @description
     #' Read the value of field element of R6 object.
     #' @param keys Name of list element.
@@ -54,7 +54,7 @@ reactiveClass = R6::R6Class(
     get = function(keys=NULL) {
       purrr::chuck(private$reactive_data, !!!keys)
     },
-    
+
     #' @description
     #' Write the value to field element of R6 object.
     #' @param keys Name of list element.
@@ -65,7 +65,7 @@ reactiveClass = R6::R6Class(
       # list entry
       if(!is.null(value)) {
         purrr::pluck(private$reactive_data, !!!keys) <- value
-      } 
+      }
       # if(!is.null(self$get(field))) {
       #   warning(paste0(field, " was ", self$get(field),"; overwritten now with ", x))
       # }

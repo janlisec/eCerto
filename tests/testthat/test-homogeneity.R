@@ -1,16 +1,16 @@
-test_that("Successfull Upload Homogeneity",code = {
-  homog = shiny::reactiveVal({ecerto:::test_homog()})
+testthat::test_that("Successfull Upload Homogeneity",code = {
+  homog = shiny::reactiveVal({eCerto:::test_homog()})
   suppressMessages(
     shiny::testServer(
-      app = ecerto::page_HomogeneityServer,
+      app = eCerto::page_HomogeneityServer,
       args = list(
         homog = homog,
         cert = reactiveVal(NULL),
-        datreturn = ecerto:::test_datreturn()
+        datreturn = eCerto:::test_datreturn()
       ),
       expr =  {
         session$flushReact()
-        expect_equal(
+        testthat::expect_equal(
           session$returned(),
           structure(
             list(
@@ -31,20 +31,20 @@ test_that("Successfull Upload Homogeneity",code = {
   )
 })
 
-test_that("Successful Upload Homogeneity and Certification",code = {
-  homog = shiny::reactiveVal({ecerto:::test_homog()})
-  cert = shiny::reactiveVal({ecerto:::test_certification()})
+testthat::test_that("Successful Upload Homogeneity and Certification",code = {
+  homog = shiny::reactiveVal({eCerto:::test_homog()})
+  cert = shiny::reactiveVal({eCerto:::test_certification()})
   shiny::testServer(
-    app = ecerto::page_HomogeneityServer,
+    app = eCerto::page_HomogeneityServer,
     args = list(
       homog = homog,
       cert = cert,
-      datreturn = ecerto:::test_datreturn()
+      datreturn = eCerto:::test_datreturn()
     ),
     expr =  {
       session$setInputs(h_precision = 3)
       session$flushReact()
-      expect_equal(
+      testthat::expect_equal(
         as.character(h_vals_print()[,"In_Cert_Module"]),
         rep("Yes",4)
       )

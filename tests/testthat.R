@@ -1,5 +1,5 @@
 library(testthat)
-library(ecerto)
+library(eCerto)
 
 # testthat::test_check(package = "ecerto",reporter=c("minimal", "location"))
 

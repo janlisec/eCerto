@@ -67,7 +67,7 @@ test_mod_xlsx_range <- function() {
       name = fn,
       size = c(27926L, 27617L, 27527L),
       type = rep("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 3),
-      datapath = sapply(fn, function(x) { system.file("extdata", x, package = "ecerto") }, USE.NAMES = FALSE)
+      datapath = sapply(fn, function(x) { system.file("extdata", x, package = "eCerto") }, USE.NAMES = FALSE)
     ), row.names = c(NA,-3L), class = "data.frame")
   )
 }

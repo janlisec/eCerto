@@ -89,8 +89,8 @@ if (interactive()) {
  setValue(rv, c("General","user"),"Franz")
  getValue(rv, c("General","user"))
 }
-datreturn <- ecerto:::test_datreturn()
-shiny::isolate(ecerto::getValue(datreturn, "selectedAnalyteDataframe"))
+datreturn <- eCerto:::test_datreturn()
+shiny::isolate(eCerto::getValue(datreturn, "selectedAnalyteDataframe"))
 if (interactive()) {
   rv = init_rv()
   set_uploadsource(rv,"Certification","Excel")

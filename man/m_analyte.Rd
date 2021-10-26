@@ -40,7 +40,7 @@ shiny::shinyApp(
  server = function(input, output, session) {
    m_analyteServer(
      id = "test",
-     apm = shiny::reactiveVal(ecerto::init_apm()),
+     apm = shiny::reactiveVal(eCerto::init_apm()),
      renewTab = reactiveVal(1),
      tablist = reactiveVal()
    )

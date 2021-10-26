@@ -22,9 +22,9 @@
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
-#'  ui = shiny::fluidPage(ecerto::m_RDataImport_UI(id = "test")),
+#'  ui = shiny::fluidPage(eCerto::m_RDataImport_UI(id = "test")),
 #'  server = function(input, output, session) {
-#'    ecerto::m_RDataImport_Server(
+#'    eCerto::m_RDataImport_Server(
 #'      id = "test",
 #'      modules = reactiveVal(c("Certification","Stability","Homogeneity")),
 #'      uploadsources = reactiveVal(list("Certification" = "Excel"))
@@ -74,7 +74,10 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
       }, error = function(e) {
         stop(shiny::safeError(e))
       })
-      return(get(x = "res", envir = load_envir))
+      # check if 'res' is contained in loaded workspace
+      obj <- ls(envir = load_envir)
+      obj <- obj[obj %in% "res"]
+      return(base::get(x = obj, envir = load_envir))
     }, ignoreNULL = TRUE)
 
     # Is anything already uploaded via Excel? If so, show Window Dialog

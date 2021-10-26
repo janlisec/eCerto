@@ -34,9 +34,9 @@ shiny::shinyApp(
  fpath <- system.file("extdata", "SR3_Fe_v26chs.RData", package="ecerto")
  load(fpath)
  rdataUpload <- reactive({res[[1]][["cert_vals"]]})
- datreturn <- ecerto:::test_datreturn()
+ datreturn <- eCerto:::test_datreturn()
  m_materialtabelleServer(id = "test", rdataUpload=rdataUpload, datreturn=datreturn);
-  observe({ecerto::getValue(datreturn,"selectedAnalyteDataframe")})
+  observe({eCerto::getValue(datreturn,"selectedAnalyteDataframe")})
  }
 )
 }

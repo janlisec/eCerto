@@ -1,23 +1,23 @@
 # Test 1: Certifications Uploaded, but Homogeneity hasn't yet ---------------------
-test_that(
+testthat::test_that(
   desc = "Init of materialtable after Certifications uploaded",
   code = {
     testthat::local_edition(3)
-    test_datreturn <- ecerto:::test_datreturn() # load test data
+    test_datreturn <- eCerto:::test_datreturn() # load test data
     suppressMessages(
       shiny::testServer(
-        app = ecerto::m_materialtabelleServer,
+        app = eCerto::m_materialtabelleServer,
         args = list(rdataUpload = shiny::reactive({NULL}), datreturn = test_datreturn),
         expr = {
           session$setInputs(pooling=FALSE) # needs to be set to trigger events ???
-          expect_equal(availableAnalytes(), c("Si","Fe","Cu","Mn","Mg","Cr","Ni","Zn","Ti","Sc","Sn"))
-          expect_equal(nrow(mater_table()), 11)
-          expect_equal(colnames(mater_table()), c("analyte", "mean", "cert_val", "sd", "n", "char", "com", "k", "U"))
-          expect_equal(cert_sd(), getValue(test_datreturn,"cert_sd"))
-          expect_equal(cert_mean(), getValue(test_datreturn,"cert_mean"))
-          expect_equal(mater_table()$U, getValue(test_datreturn,"mater_table")[,"U"], tolerance = 1e-5)
-          expect_equal(mater_table()$char, getValue(test_datreturn,"mater_table")[,"char"], tolerance = 1e-5)
-          expect_equal(mater_table()$com, getValue(test_datreturn,"mater_table")[,"com"], tolerance = 1e-5)
+          testthat::expect_equal(availableAnalytes(), c("Si","Fe","Cu","Mn","Mg","Cr","Ni","Zn","Ti","Sc","Sn"))
+          testthat::expect_equal(nrow(mater_table()), 11)
+          testthat::expect_equal(colnames(mater_table()), c("analyte", "mean", "cert_val", "sd", "n", "char", "com", "k", "U"))
+          testthat::expect_equal(cert_sd(), getValue(test_datreturn,"cert_sd"))
+          testthat::expect_equal(cert_mean(), getValue(test_datreturn,"cert_mean"))
+          testthat::expect_equal(mater_table()$U, getValue(test_datreturn,"mater_table")[,"U"], tolerance = 1e-5)
+          testthat::expect_equal(mater_table()$char, getValue(test_datreturn,"mater_table")[,"char"], tolerance = 1e-5)
+          testthat::expect_equal(mater_table()$com, getValue(test_datreturn,"mater_table")[,"com"], tolerance = 1e-5)
         }
       )
     )
@@ -25,11 +25,11 @@ test_that(
 )
 
 # Test 2: another Analyte gets selected ------------------------------------
-test_that(
+testthat::test_that(
   desc = "materialtable gets updated after another analyte gets selected",
   code = {
     # load/prepare test data
-    test_datreturn <- ecerto:::test_datreturn()
+    test_datreturn <- eCerto:::test_datreturn()
     Fe <- structure(
       list(
         ID = c(2L, 9L, 16L, 23L, 30L, 37L),
@@ -44,20 +44,20 @@ test_that(
     )
     suppressMessages(
       shiny::testServer(
-        app = ecerto::m_materialtabelleServer,
+        app = eCerto::m_materialtabelleServer,
         args = list(rdataUpload = shiny::reactive({NULL}), datreturn = test_datreturn),
         expr = {
           testthat::local_edition(3)
-          expect_null(mater_table()[mater_table()$analyte=="Fe","mean"])
+          testthat::expect_null(mater_table()[mater_table()$analyte=="Fe","mean"])
           session$setInputs(pooling=FALSE)
-          expect_equal(mater_table()[mater_table()$analyte=="Fe","mean"], as.numeric(NA))
+          testthat::expect_equal(mater_table()[mater_table()$analyte=="Fe","mean"], as.numeric(NA))
           datreturn$set("selectedAnalyteDataframe", Fe)
           session$flushReact()
-          expect_equal(nrow(mater_table()), 11)
-          expect_equal(colnames(mater_table()), c("analyte", "mean", "cert_val", "sd", "n", "char", "com", "k", "U"))
-          expect_equal(cert_sd(), getValue(test_datreturn,"cert_sd"))
-          expect_equal(cert_mean(), getValue(test_datreturn,"cert_mean"))
-          expect_equal(mater_table(), getValue(test_datreturn,"mater_table"))
+          testthat::expect_equal(nrow(mater_table()), 11)
+          testthat::expect_equal(colnames(mater_table()), c("analyte", "mean", "cert_val", "sd", "n", "char", "com", "k", "U"))
+          testthat::expect_equal(cert_sd(), getValue(test_datreturn,"cert_sd"))
+          testthat::expect_equal(cert_mean(), getValue(test_datreturn,"cert_mean"))
+          testthat::expect_equal(mater_table(), getValue(test_datreturn,"mater_table"))
           #expect_equal(mater_table()$U,c(0.079635,0.04475583,rep(0,9)),tolerance = 1e-5)
           #expect_equal(mater_table()$char, c(0.039817,0.022378,rep(NA,9)), tolerance = 1e-5)
           #expect_equal(mater_table()$com,c(0.03981726,0.02237792, rep(0,9)),tolerance = 1e-5)
@@ -68,21 +68,21 @@ test_that(
 )
 
 # Test 3: Pooling on/off --------------------------------------------------
-test_that(
+testthat::test_that(
   desc = "Pooling on/off switch can be set and changes 'n' in mat_tab",
   code = {
     testthat::local_edition(3)
-    test_datreturn <- ecerto:::test_datreturn()
+    test_datreturn <- eCerto:::test_datreturn()
     suppressMessages(shiny::testServer(
-      app = ecerto::m_materialtabelleServer,
+      app = eCerto::m_materialtabelleServer,
       args = list(rdataUpload = shiny::reactive({NULL}), datreturn=test_datreturn),
       expr = {
         session$setInputs(pooling=FALSE)
-        expect_equal(mater_table()[1,"n"], 3L)
+        testthat::expect_equal(mater_table()[1,"n"], 3L)
         session$setInputs(pooling=TRUE)
-        expect_equal(mater_table()[1,"n"], 9L)
-        expect_equal(mater_table()$n[1], 9)
-        expect_equal(mater_table(), getValue(test_datreturn,"mater_table"))
+        testthat::expect_equal(mater_table()[1,"n"], 9L)
+        testthat::expect_equal(mater_table()$n[1], 9)
+        testthat::expect_equal(mater_table(), getValue(test_datreturn,"mater_table"))
         # expect_equal(cert_sd(), 0.0032)
         # expect_equal(mater_table()$char[1], 0.02163624, tolerance = 1e-5)
         # expect_equal(mater_table()$com[1], 0.02163624, tolerance = 1e-5)
@@ -93,25 +93,25 @@ test_that(
 )
 
 # Test 4: Lab filter ---------------------
-test_that(
+testthat::test_that(
   desc = "Setting Lab filter is changing 'n' in material table",
   code = {
-    test_datreturn <- ecerto:::test_datreturn()
+    test_datreturn <- eCerto:::test_datreturn()
     suppressMessages(
       shiny::testServer(
-        ecerto::m_materialtabelleServer,
+        eCerto::m_materialtabelleServer,
         args = list(
           rdataUpload = shiny::reactive({NULL}),
           datreturn = test_datreturn
         ), {
           session$setInputs(pooling=FALSE)
           session$flushReact()
-          expect_equal(tmp_mater_table()[tmp_mater_table()$analyte=="Si","n"], 3L)
+          testthat::expect_equal(tmp_mater_table()[tmp_mater_table()$analyte=="Si","n"], 3L)
           tmp <- selectedAnalyteDataframe()
           tmp[tmp$Lab=="L1",]$L_flt <- TRUE
           setValue(datreturn, "selectedAnalyteDataframe", tmp)
           session$flushReact()
-          expect_equal(tmp_mater_table()[tmp_mater_table()$analyte=="Si","n"], 2L)
+          testthat::expect_equal(tmp_mater_table()[tmp_mater_table()$analyte=="Si","n"], 2L)
         }
       )
     )

@@ -15,13 +15,13 @@ shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
 shiny:::flushReact()
 rv$a <- 2
 shiny:::flushReact()
-test <- reactiveClass$new(ecerto:::init_rv())
-ecerto::getValue(test, c("Certification_processing","data"))
-shiny::observeEvent(ecerto::getValue(test, "Certification_processing")$data, {
-  message("Certification$data changed:", ecerto::getValue(test, "Certification")$data)
+test <- reactiveClass$new(eCerto:::init_rv())
+eCerto::getValue(test, c("Certification_processing","data"))
+shiny::observeEvent(eCerto::getValue(test, "Certification_processing")$data, {
+  message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
 })
-ecerto::setValue(test, c("Certification","data"), 5)
-ecerto::getValue(test, c("Certification","data"))
+eCerto::setValue(test, c("Certification","data"), 5)
+eCerto::getValue(test, c("Certification","data"))
 shiny:::flushReact()
 }
 

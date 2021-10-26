@@ -28,15 +28,15 @@
 #' attr(mt, "col_code") <- data.frame("ID"=c("F1","U1"), "Name"=c("bla","U_test"))
 #' ud <- data.frame("analyte"=rep(c("A","C","D"),2), "H_type"=gl(2,3),
 #'                  "s_bb"=rep(c(0,1,0.5),2), "s_bb_min"=rep(c(1,NA,0.5),2))
-#' test <- ecerto::reactiveClass$new(list("ud"=ud, "mt"=mt))
+#' test <- eCerto::reactiveClass$new(list("ud"=ud, "mt"=mt))
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    m_TransferUUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    m_TransferUServer(id = "test",
-#'      dat = shiny::reactive({ecerto::getValue(test, "ud")}),
-#'      mat_tab = shiny::reactive({ecerto::getValue(test, "mt")})
+#'      dat = shiny::reactive({eCerto::getValue(test, "ud")}),
+#'      mat_tab = shiny::reactive({eCerto::getValue(test, "mt")})
 #'    )
 #'  }
 #' )

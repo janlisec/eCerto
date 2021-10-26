@@ -7,8 +7,8 @@ testthat::test_that(
     write.csv(df, path_csv, row.names = FALSE)
     # check that error messages are created on selection
     fpath <- paste0(path_csv,"test.csv")
-    expect_error(ecerto::load_sheetnames(fpath))
-    expect_error(ecerto::load_excelfiles(fpath, 1))
+    testthat::expect_error(eCerto::load_sheetnames(fpath))
+    testthat::expect_error(eCerto::load_excelfiles(fpath, 1))
   }
 )
 
@@ -16,9 +16,9 @@ testthat::test_that(
   desc = "getValue: empty key should return reactive thing",
   code = {
     lz = list(a1=list(b1 = "Streusalz",b2 = "Andreas Scheuer"), a2 = "Wurst")
-    lz = ecerto::reactiveClass$new(do.call(shiny::reactiveValues,lz))
+    lz = eCerto::reactiveClass$new(do.call(shiny::reactiveValues,lz))
     k = c("a1","b1") # keys
-    expect_equal(class(ecerto::getValue(lz,NULL)),"reactivevalues")
+    testthat::expect_equal(class(eCerto::getValue(lz,NULL)),"reactivevalues")
   }
 )
 
@@ -27,8 +27,8 @@ testthat::test_that(
   code = {
     rv <- reactiveClass$new(init_rv()) # initiate persistent variables
     nms = shiny::isolate(listNames(l = rv))
-    expect_gte(length(nms),2)
-    expect_equal(class(nms),"character")
+    testthat::expect_gte(length(nms),2)
+    testthat::expect_equal(class(nms),"character")
   }
 )
 
@@ -37,6 +37,6 @@ testthat::test_that(
   code = {
     rv <- reactiveClass$new(init_rv()) # initiate persistent variables
     shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
-    expect_equal(show_view(rv),"CertValPlot")
+    testthat::expect_equal(show_view(rv),"CertValPlot")
   }
 )

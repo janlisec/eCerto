@@ -15,8 +15,10 @@
 #'If ecerto is not available it will search in the current wd.
 #'
 #'@examples
-#'fnc_get_local_file(x="help_start.Rmd")
-#'fnc_get_local_file(x="help_start.Rmd", copy_to_tempdir=FALSE)
+#'\dontrun{
+#'eCerto::fnc_get_local_file(x="help_start.Rmd")
+#'eCerto::fnc_get_local_file(x="help_start.Rmd", copy_to_tempdir=FALSE)
+#'}
 #'
 #'@return A file path (either of source or of a temp file depending on option 'copy_to_tempdir').
 #'
@@ -35,8 +37,6 @@ fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE, fsep=.Platform$file
     if (!file.exists(www_dir)) {
       if ("eCerto" %in% rownames(utils::installed.packages())) {
         www_dir  <- system.file(package = "eCerto", lib.loc = .libPaths())
-        file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-        www_dir <- file.path(pkg_path, file_path, fsep=fsep)
       } else {
         www_dir <- NULL
       }
@@ -46,13 +46,16 @@ fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE, fsep=.Platform$file
   stopifnot(!is.null(www_dir))
   if (nchar(www_dir)>=4) setwd(substr(www_dir,1,nchar(www_dir)-4))
   out <- list.files(pattern = x, recursive = TRUE)[1]
-  stopifnot(length(out)>=1)
-  out <- out[1]
-  if (copy_to_tempdir) {
-    tmp_file <- file.path(fs::path_temp(), x, fsep=fsep)
-    file.copy(out, tmp_file, overwrite = TRUE)
-    out <- tmp_file
+  if(!(length(out)>=1)) {
+    message("Can't find file ", x)
+    out <- ""
+  } else {
+    out <- out[1]
+    if (copy_to_tempdir) {
+      tmp_file <- file.path(fs::path_temp(), x, fsep=fsep)
+      file.copy(out, tmp_file, overwrite = TRUE)
+      out <- tmp_file
+    }
   }
-  if (out=="") message("Can't find file ", x)
   return(out)
 }

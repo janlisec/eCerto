@@ -34,7 +34,7 @@ shiny::shinyApp(
  ),
  server = function(input, output, session) {
    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-   datreturn <- ecerto:::test_datreturn()
+   datreturn <- eCerto:::test_datreturn()
    page_startServer(id = "test", rv = rv)
  }
 )

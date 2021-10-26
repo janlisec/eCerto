@@ -47,8 +47,8 @@ setValue <- function(df, key, value){
 #'
 #' @rdname datahandling_utils
 #' @examples
-#' datreturn <- ecerto:::test_datreturn()
-#' shiny::isolate(ecerto::getValue(datreturn, "selectedAnalyteDataframe"))
+#' datreturn <- eCerto:::test_datreturn()
+#' shiny::isolate(eCerto::getValue(datreturn, "selectedAnalyteDataframe"))
 getValue = function(df, key=NULL) {
   if(R6::is.R6(df)){
     return(df$get(key))

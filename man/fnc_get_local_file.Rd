@@ -29,7 +29,9 @@ will check if a package 'of name pkg'ecerto' is installed and use system file to
 If ecerto is not available it will search in the current wd.
 }
 \examples{
-fnc_get_local_file(x="help_start.Rmd")
-fnc_get_local_file(x="help_start.Rmd", copy_to_tempdir=FALSE)
+\dontrun{
+eCerto::fnc_get_local_file(x="help_start.Rmd")
+eCerto::fnc_get_local_file(x="help_start.Rmd", copy_to_tempdir=FALSE)
+}
 
 }

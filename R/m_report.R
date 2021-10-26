@@ -21,7 +21,7 @@
 #'  server = function(input, output, session) {
 #'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
 #'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-#'    shiny::isolate({setValue(rv, c("Certification","data"), ecerto:::test_Certification_Excel()) })
+#'    shiny::isolate({setValue(rv, c("Certification","data"), eCerto:::test_Certification_Excel()) })
 #'    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
 #'    m_report_server(
 #'      id = "test",
@@ -81,7 +81,7 @@ m_report_server <- function(id, rv, selected_tab) {
         fnc_get_local_file("template.docx")
         # copy the BAM Logo to a temporary directory
         logofile <- fnc_get_local_file("BAMLogo2015.png")
-        
+
         # render the markdown file
         rmarkdown::render(
           input = rmdfile,

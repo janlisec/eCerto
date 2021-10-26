@@ -68,6 +68,8 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
   # stopifnot(shiny::is.reactivevalues(rv$get()))
   shiny::moduleServer(id, function(input, output, session) {
 
+    ns <- shiny::NS(id)
+
     shiny::observeEvent(input$user, {
       if (!silent) message("RData-export: set rv$user to ", input$user)
       setValue(rv,c("General","user"),input$user)
@@ -75,8 +77,10 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
     shiny::observeEvent(getValue(rv,c("General","user")) , {
       if (!silent) message("RData-export: user-input updated to ", getValue(rv,c("General","user")))
       shiny::updateTextInput(
-        session = session,
-        inputId = "user",
+        # session = session,
+        # inputId = "user",
+        #inputId = session$ns("user"),
+        inputId = ns("user"),
         value = getValue(rv,c("General","user"))
       )
     })
@@ -93,7 +97,7 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
         value =  getValue(rv,c("General", "study_id"))
       )
     })
-    
+
     # DOWNLOAD
     output$ecerto_backup <- shiny::downloadHandler(
       filename = function() {
@@ -108,7 +112,7 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
         res <- sapply(rv$get(), function(x) {
           if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x) else x
         })
-        
+
         res$General$dataformat_version = "2021-05-27"
         save(res, file = file)
       },

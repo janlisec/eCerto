@@ -8,3 +8,5 @@
 ^\.gitlab$
 ^app\.R$
 ^rsconnect$
+dev
+R/_disable_autoload.R
