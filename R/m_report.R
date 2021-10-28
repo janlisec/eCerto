@@ -83,24 +83,31 @@ m_report_server <- function(id, rv, selected_tab) {
         logofile <- fnc_get_local_file("BAMLogo2015.png")
 
         # render the markdown file
-        rmarkdown::render(
-          input = rmdfile,
-          output_file = file,
-          output_format = switch(
-            input$output_file_format,
-            PDF = rmarkdown::pdf_document(),
-            HTML = rmarkdown::html_document(),
-            Word = rmarkdown::word_document()
-          ),
-          params = list(
-            "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
-            "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
-            "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
-            "selected_tab" = selected_tab(),
-            "logo_file" = logofile
-          ),
-          envir = new.env(parent = globalenv())
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            out <- rmarkdown::render(
+              input = rmdfile,
+              output_file = file,
+              output_format = switch(
+                input$output_file_format,
+                PDF = rmarkdown::pdf_document(),
+                HTML = rmarkdown::html_document(),
+                Word = rmarkdown::word_document()
+              ),
+              params = list(
+                "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
+                "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
+                "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
+                "selected_tab" = selected_tab(),
+                "logo_file" = logofile
+              ),
+              envir = new.env(parent = globalenv())
+            )
+          },
+          message = "Rendering Analyte Report.."
         )
+        return(out)
       }
     )
 
@@ -121,21 +128,27 @@ m_report_server <- function(id, rv, selected_tab) {
         # copy the BAM Logo to a temporary directory
         logofile <- fnc_get_local_file("BAMLogo2015.png")
         # render the markdown file
-        rmarkdown::render(
-          input = rmdfile,
-          output_file = file,
-          output_format = switch(
-            input$output_file_format,
-            PDF = rmarkdown::pdf_document(),
-            HTML = rmarkdown::html_document(),
-            Word = rmarkdown::word_document()
-          ),
-          params = list(
-            "materialtabelle" = shiny::isolate(getValue(rv, c("General","materialtabelle"))),
-            "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
-            "logo_file" = logofile
-          ),
-          envir = new.env(parent = globalenv())
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            rmarkdown::render(
+              input = rmdfile,
+              output_file = file,
+              output_format = switch(
+                input$output_file_format,
+                PDF = rmarkdown::pdf_document(),
+                HTML = rmarkdown::html_document(),
+                Word = rmarkdown::word_document()
+              ),
+              params = list(
+                "materialtabelle" = shiny::isolate(getValue(rv, c("General","materialtabelle"))),
+                "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
+                "logo_file" = logofile
+              ),
+              envir = new.env(parent = globalenv())
+            )
+          },
+          message = "Rendering Material Report.."
         )
       }
     )
