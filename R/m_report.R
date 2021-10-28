@@ -131,7 +131,7 @@ m_report_server <- function(id, rv, selected_tab) {
             Word = rmarkdown::word_document()
           ),
           params = list(
-            "materialtabelle" = shiny::isolate(getValue(rv,"materialtabelle")),
+            "materialtabelle" = shiny::isolate(getValue(rv, c("General","materialtabelle"))),
             "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
             "logo_file" = logofile
           ),

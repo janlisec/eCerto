@@ -27,12 +27,19 @@ not yet
 \examples{
 if (interactive()) {
 shiny::shinyApp(
- ui = shiny::fluidPage(shinyalert::useShinyalert(), m_materialtabelleUI(id = "test")),
+ ui = shiny::fluidPage(shinyalert::useShinyalert(),
+   m_materialtabelleUI(id = "test")),
  server = function(input, output, session) {
  rv <- reactiveClass$new(init_rv())
- shiny::isolate(eCerto::setValue(rv, c("Certification","data"), eCerto:::test_certification()[["data"]]))
- shiny::isolate(eCerto::setValue(rv, c("General","apm"), eCerto::init_apm(eCerto:::test_certification()[["data"]])))
- shiny::isolate(eCerto::setValue(rv, c("General","materialtabelle"), eCerto::init_materialTabelle(names(eCerto::getValue(rv, c("General","apm"))))))
+ shiny::isolate({
+ eCerto::setValue(rv, c("Certification","data"),
+   eCerto:::test_certification()[["data"]])
+ eCerto::setValue(rv, c("General","apm"),
+   eCerto::init_apm(eCerto:::test_certification()[["data"]]))
+ an <- names(eCerto::getValue(rv, c("General","apm")))
+ eCerto::setValue(rv, c("General","materialtabelle"),
+   eCerto::init_materialTabelle(an))
+ })
  out <- m_materialtabelleServer(id = "test", rv=rv)
  observeEvent(out(), {print(out())})
  }
