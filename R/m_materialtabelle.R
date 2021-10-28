@@ -368,7 +368,7 @@ m_materialtabelleServer <- function(id, rv) {
     })
 
     # the rendered, editable mat_table as seen by user
-    selected_row_idx <- reactiveVal(1)
+    selected_row_idx <- shiny::reactiveVal(1)
     output$matreport <- DT::renderDT(
       DT::datatable(
         data = tmp_mater_table(),
@@ -388,15 +388,21 @@ m_materialtabelleServer <- function(id, rv) {
         # use proxy <- DT::dataTableProxy('tab') and than
         # selectRows(proxy, selected=selected_row_idx())
       } else {
+        an <- as.character(mater_table()[input$matreport_rows_selected,"analyte"])
+        if (!getValue(rv, c("General", "apm"))[[an]][["confirmed"]]) {
+          # mark analyte as confirmed
+          tmp <- getValue(rv, c("General", "apm"))
+          tmp[[an]][["confirmed"]] <- TRUE
+          setValue(rv, c("General", "apm"), tmp)
+        }
         if (input$matreport_rows_selected==selected_row_idx()) {
-          if (is.null(out()) || out()!= mater_table()[input$matreport_rows_selected,"analyte"]) {
-            out(as.character(mater_table()[input$matreport_rows_selected,"analyte"]))
+          if (is.null(out()) || out()!=an) {
+            out(an)
           }
         } else {
           selected_row_idx(input$matreport_rows_selected)
         }
       }
-
     }, ignoreNULL = FALSE)
 
     # ensure update of mater_table() on user input

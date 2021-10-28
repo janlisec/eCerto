@@ -77,7 +77,7 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
       shiny::tagList(
         shiny::fluidRow(shiny::HTML(paste0(
           "<p style=margin-left:6%;margin-bottom:-", switch(st(),"H"=3, "S"=0), "%><strong>Transfer ",
-          switch(st(),"H"="maximum from (s_bb, s_bb_min) of H_type", "S"="values from column U_stab"),
+          switch(st(),"H"="maximum from (s_bb, s_bb_min) of H_type", "S"="values from column"),
           "</strong></p>"
         ))),
         shiny::selectInput(
@@ -85,7 +85,7 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
           label="",
           width='100%',
           selectize=TRUE,
-          choices=switch(st(),"H"=levels(dat()[,"H_type"]), "S"="")
+          choices=switch(st(),"H"=levels(dat()[,"H_type"]), "S"="U_stab")
         ),
         shiny::selectInput(
           inputId=session$ns("U_cols"),
@@ -98,10 +98,10 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
       )
     })
 
-    shiny::observeEvent(input$U_cols, {
-      #
-      shinyjs::toggleElement(id = "H_Type", condition = st()=="H")
-    })
+    # shiny::observeEvent(input$U_cols, {
+    #   #
+    #   shinyjs::toggleElement(id = "H_Type", condition = st()=="H")
+    # })
 
     shiny::observeEvent(input$transfer_button, {
       mt <- mat_tab()
