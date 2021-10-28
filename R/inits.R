@@ -1,24 +1,3 @@
-#' @title init_datreturn.
-#'
-#' @description \code{init_datreturn} Initiates a reactiveValues object used for
-#' session-only and module-to-materialtabelle content
-#'
-#' @return datreturn
-#' @export
-#'
-init_datreturn <- function() {
-  shiny::reactiveValues(
-    selectedAnalyteDataframe = NULL,    # The dataframe corresp. to the selected analyte
-    h_vals = NULL,                      # values from Homogeneity-module materialtabelle via .TransferHomogeneity
-    mater_table = NULL,                 # material table, formerly 'cert_vals'
-    transfer = NULL,                    # when transfer was clicked (just to change the panel to Certification)
-    #lab_statistics = NULL,               # lab statistics (mean,sd) for materialtabelle
-    cert_mean = NULL,
-    cert_sd = NULL,
-    current_apm = NULL                 # currently selected apm
-  )
-}
-
 #' Initializes material table for materialtabelle module
 #'
 #' @param analytes the available analytes
@@ -33,29 +12,16 @@ init_materialTabelle <- function(analytes) {
   c = data.frame(
     "analyte" =  analytes,
     "mean" = NA,
-    "F1" = 1,
-    "F2" = 1,
-    "F3" = 1,
     "cert_val" = NA,
     "sd" = NA,
     "n" = NA,
     "char" = 0,
-    "U2" = 0,
-    "U3" = 0,
-    "U4" = 0,
-    "U5" = 0,
-    "U6" = 0,
-    "U7" = 0,
     "com" = NA,
     "k" = 2,
     "U" = NA
   )
   attr(c, "col_code") <-
-    data.frame(
-      "ID" = c(paste0("F", 1:3), paste0("U", 2:7)),
-      "Name" = c(paste0("F", 1:3), paste0("U", 2:7)),
-      stringsAsFactors = FALSE
-    )
+    data.frame("ID" = "", "Name" = "", stringsAsFactors = FALSE)[-1,,drop=FALSE]
   return(c)
 }
 
@@ -72,68 +38,66 @@ init_materialTabelle <- function(analytes) {
 #'
 #' @examples rv = init_rv()
 init_rv <- function() {
-  rv <-
-    list(
-      "modules" = c("Certification","Homogeneity","Stability"), # names of the modules
-      "General" = shiny::reactiveValues(
-        # save
-        "user" = NULL,
-        "study_id" = NULL,
-        "time_stamp" = as.Date.POSIXct(0),
-        "dataformat_version" = "2021-05-27",
-        # analyte specific parameters
-        "apm" = NULL
-      ),
+  rv <- list(
+    "modules" = c("Certification","Homogeneity","Stability"), # names of the modules
+    "General" = shiny::reactiveValues(
+      # save
+      "user" = NULL,
+      "study_id" = NULL,
+      "time_stamp" = as.Date.POSIXct(0),
+      "dataformat_version" = "2021-05-27",
+      # analyte specific parameters
+      "apm" = NULL,
       # materialtabelle
-      "materialtabelle" = NULL,
-      # data input
-      "Certification" = shiny::reactiveValues(
-        "input_files" = NULL,
-        "uploadsource" = NULL,
+      "materialtabelle" = NULL
+    ),
+    # data input
+    "Certification" = shiny::reactiveValues(
+      "input_files" = NULL,
+      "uploadsource" = NULL,
+      "data" = NULL
+    ),
+    # processing
+    "Certification_processing" = shiny::reactiveValues(
+      "lab_means" = NULL,
+      "cert_mean" = NULL,
+      "cert_sd" = NULL,
+      "normality_statement" = NULL,
+      "precision" = NULL,
+      "data_kompakt" = NULL,
+      "CertValPlot" = list(
+        "show" = NULL,
+        "fnc" = NULL,
+        "call" = NULL,
+        "Fig01_width" = NULL,
+        "Fig01_height" = NULL
+      ),
+      "stats" = NULL,
+      "boxplot" = NULL,
+      "opt" = NULL,
+      "mstats" = list(
+        "show" = NULL,
         "data" = NULL
-      ),
-      # processing
-      "Certification_processing" = shiny::reactiveValues(
-        "lab_means" = NULL,
-        "cert_mean" = NULL,
-        "cert_sd" = NULL,
-        "normality_statement" = NULL,
-        "precision" = NULL,
-        "data_kompakt" = NULL,
-        "CertValPlot" = list(
-          "show" = NULL,
-          "fnc" = NULL,
-          "call" = NULL,
-          "Fig01_width" = NULL,
-          "Fig01_height" = NULL
-        ),
-        "stats" = NULL,
-        "boxplot" = NULL,
-        "opt" = NULL,
-        "mstats" = list(
-          "show" = NULL,
-          "data" = NULL
-        )
-      ),
-      "Homogeneity" = shiny::reactiveValues(
-        # upload
-        "input_files" = NULL,
-        "uploadsource" = NULL,
-        "data" = NULL, # formerly h_dat
-        # Processing
-        "h_vals" = NULL,
-        "h_sel_analyt" = NULL,
-        "h_precision" = NULL,
-        "h_Fig_width" = NULL
-      ),
-      "Stability" = shiny::reactiveValues(
-        "input_files" = NULL,
-        "uploadsource" = NULL,
-        "data" = NULL,
-        "s_vals" = NULL
       )
+    ),
+    "Homogeneity" = shiny::reactiveValues(
+      # upload
+      "input_files" = NULL,
+      "uploadsource" = NULL,
+      "data" = NULL, # formerly h_dat
+      # Processing
+      "h_vals" = NULL,
+      "h_sel_analyt" = NULL,
+      "h_precision" = NULL,
+      "h_Fig_width" = NULL
+    ),
+    "Stability" = shiny::reactiveValues(
+      "input_files" = NULL,
+      "uploadsource" = NULL,
+      "data" = NULL,
+      "s_vals" = NULL
     )
-
+  )
 }
 
 #' Analyte Parameter List (apm)
@@ -149,25 +113,31 @@ init_rv <- function() {
 #' @return A empty list (if no data frame is provided) or a apm-List otherwise.
 #'
 #' @export
-init_apm <- function(x = data.frame("ID"=1:20, "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")))) {
+init_apm <- function(x = data.frame("ID"=1:20, "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")), "Lab"=rep(rep(c("L1","L2"),each=5),2))) {
   templ <- list(
-    "precision" = NULL,
-    "sample_filter" = NULL, # saving which samples where selected for filter
+    "name" = NULL,
     "sample_ids" = NULL, # which samples are available for the filter
+    "sample_filter" = NULL, # saving which samples where selected for filter
+    "lab_ids" = NULL, # which labs have mesasured this analyte
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
-    "analytename" = NULL,
     "confirmed" = FALSE, # has the analyte manually been confirmed?
+    "pooling" = FALSE, # s pooling allowed for this analyte
+    "precision" = 4, # rounding precision for imported data
     "precision_export" = 4 # rounding precision for export
   )
-  if (!is.null(x) && is.data.frame(x) && all(c("ID","analyte") %in% colnames(x))) {
+  if (!is.null(x) && is.data.frame(x) && all(c("ID","analyte","Lab") %in% colnames(x))) {
     if (!is.factor(x[, "analyte"])) {
       x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
     }
     # create list with lists of all analytes (i.e. a nested list)
-    apm <- sapply(levels(x[, "analyte"]), function(y) {
+    apm <- sapply(levels(x[, "analyte"]), function(an) {
       out <- templ
-      out$analytename <- y
-      out$sample_ids <- x[x[,"analyte"]==y,"ID"]
+      out$name <- an
+      out$sample_ids <- x[as.character(x[,"analyte"])==an,"ID"]
+      y <- x[as.character(x[,"analyte"])==an,,drop=FALSE]
+      out$lab_ids <- unique(as.character(y[,"Lab"]))
+      if ("S_flt" %in% colnames(y) && any(y[,"S_flt"])) out$sample_filter <- y[which(y[,"S_flt"]),"ID"]
+      if ("L_flt" %in% colnames(y) && any(y[,"L_flt"])) out$lab_filter <- unique(as.character(y[which(y[,"L_flt"]),"Lab"]))
       return(out)
     }, simplify = FALSE)
     return(apm)

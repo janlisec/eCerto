@@ -33,18 +33,15 @@ testthat::test_that(
   desc = "Correct error if no Certification has been uploaded yet",
   code = {
     rv_test <- eCerto::reactiveClass$new(eCerto::init_rv())
-    datreturn_test <- eCerto::reactiveClass$new(init_datreturn())
     suppressMessages(
       shiny::testServer(
         app = eCerto::page_StabilityServer,
         args = list(
-          rv = rv_test,
-          datreturn = datreturn_test
+          rv = rv_test
         ),
         expr =  {
           eCerto::setValue(rv_test, c("Stability","data"), eCerto:::test_Stability_Excel() )
-          eCerto::setValue(rv_test, c("Stability","uploadsource"), "Excel")
-          testthat::expect_error(output$s_transfer_ubb,"Please upload certification data to transfer Uncertainty values")
+          testthat::expect_error(output$s_transfer_ubb, "Please upload certification data to transfer Uncertainty values")
         }
       )
     )
@@ -52,37 +49,22 @@ testthat::test_that(
 )
 
 testthat::test_that(
-  desc = "Correct Warning if no U column is available in materialtabelle",
+  desc = "Correct Warnings if no C data or no U column are available",
   code = {
     rv_test <- eCerto::reactiveClass$new(eCerto::init_rv())
-    datreturn_test = eCerto::reactiveClass$new(init_datreturn())
-    mater_table = structure(
-      list(
-        analyte = c("Si", "Fe", "Cu", "Mn", "Mg", "Cr", "Ni"),
-        mean = c(0.0494, NA, 4.4072, 0.8092, NA, 0.0546, NA),
-        cert_val = c(0.0494, 1, 13.2216, 0.8092, 1, 0.0546, 1),
-        sd = c(0.0034, NA, 0.0551, 0.0022, NA, 8e-04, NA),
-        n = c(3L, NA, 3L, 3L, NA, 2L, NA),
-        char = c(0.0397366582033346, NA, 0.00721818838091042, 0.00156966212582449, NA, 0.0103605389184842, NA),
-        com = c(0.0397366582033346, 0.015535927030583, 0.00721818838091042, 0.00156966212582449, 0.015535927030583, 5.00001073406515, 0),
-        k = c(2, 2, 2, 2, 2, 2, 2),
-        U = c(0.0794733164066691, 0.031071854061166, 0.0144363767618208, 0.00313932425164898, 0.031071854061166, 10.0000214681303, 0)
-      ),
-      row.names = c("1", "2", "3", "4", "5", "6", "7"),
-      col_code = structure(list(ID = NULL, Name = NULL), row.names = NULL, class = "data.frame"), class = "data.frame"
-    )
-    shiny::isolate({setValue(datreturn_test,"mater_table",mater_table)})
     suppressMessages(
       shiny::testServer(
         app = eCerto::page_StabilityServer,
         args = list(
-          rv = rv_test,
-          datreturn = datreturn_test
+          rv = rv_test
         ),
         expr =  {
           eCerto::setValue(rv_test, c("Stability","data"), eCerto:::test_Stability_Excel() )
-          eCerto::setValue(rv_test, c("Stability","uploadsource"), "Excel")
-          testthat::expect_error(output$s_transfer_ubb,"Please specify a U column in material table to transfer Uncertainty values")
+          session$flushReact()
+          testthat::expect_error(output$s_transfer_ubb, "Please upload certification data to transfer Uncertainty values")
+          eCerto::setValue(rv, c("General","materialtabelle"), eCerto::init_materialTabelle("Si"))
+          session$flushReact()
+          testthat::expect_error(output$s_transfer_ubb, "Please specify a U column in material table to transfer Uncertainty values")
         }
       )
     )

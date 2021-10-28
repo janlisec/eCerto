@@ -7,10 +7,8 @@
 #' @param ... character vectors, specifying subdirectory and file(s)
 #' within your package. The default, none, returns the root of the app.
 #'
-#' @importFrom config get
-#'
 #' @noRd
-app_sys <- function(...){
+app_sys <- function(...) {
   system.file(..., package = "eCerto")
 }
 

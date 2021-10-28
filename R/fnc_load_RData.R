@@ -67,7 +67,7 @@ fnc_load_RData <- function(x = NULL) {
       }
       # Legacy upload
     } else {
-      if (!silent) message("RDataImport: Legacy upload started")
+      if (!silent) message("[RDataImport]: Legacy upload started")
       if ("Certification" %in% names(x) && !is.null(x$Certification)) {
         if (!silent) message("RDataImport_Server: Cert data transfered")
         setValue(rv,c("Certification","data"),x[["Certification"]][["data_input"]])
@@ -90,7 +90,10 @@ fnc_load_RData <- function(x = NULL) {
         setValue(rv,c("Certification_processing","opt"),x[["Certification"]][["opt"]])
         setValue(rv,c("Certification_processing","mstats"),x[["Certification"]][["mstats"]])
         # materialtabelle
-        setValue(rv,"materialtabelle",x[["Certification"]][["cert_vals"]])
+        setValue(rv,c("General","materialtabelle"),x[["Certification"]][["cert_vals"]])
+        # apm
+        setValue(rv,c("General","apm"),init_apm(x[["Certification"]][["data_input"]]))
+        #browser()
       }
       if ("Homogeneity" %in% names(x) && !is.null(x$Homogeneity)) {
         if (!silent) message("RDataImport_Server: Homog data transfered")

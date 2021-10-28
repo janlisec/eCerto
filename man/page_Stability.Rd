@@ -8,14 +8,12 @@
 \usage{
 page_StabilityUI(id)
 
-page_StabilityServer(id, rv, datreturn)
+page_StabilityServer(id, rv)
 }
 \arguments{
 \item{id}{Id when called in module.}
 
 \item{rv}{reactiveClass object.}
-
-\item{datreturn}{reactiveClass object.}
 }
 \value{
 Will return UI and Server logic for the stability page.
@@ -33,11 +31,9 @@ shiny::shinyApp(
    rv <- eCerto::reactiveClass$new(eCerto::init_rv()) # initiate persistent variables
    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
    shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
-   datreturn <- eCerto:::test_datreturn()
    page_StabilityServer(
      id = "test",
-     rv = rv,
-     datreturn = datreturn
+     rv = rv
    )
  }
 )

@@ -20,7 +20,6 @@
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-#'    datreturn <- eCerto:::test_datreturn()
 #'    page_startServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -116,18 +115,24 @@ page_startServer = function(id, rv, tde) {
       rv_rdatanames <- listNames(rv_rdata(), split = TRUE)
       # overwrite
       for (n in rv_rdatanames) {
-        setValue(rv,n,getValue(rv_rdata(),n))
+        setValue(rv, n, getValue(rv_rdata(), n))
       }
     }, ignoreNULL = TRUE)
 
     # when Excel was uploaded with LOAD-Button...
-    shiny::observeEvent(ExcelUp$data,{
+    shiny::observeEvent(ExcelUp$data, {
       # ToDo: make silent a global parameter
       #if (!silent) message("app_server: (Excel Upload) set rv.Data; set rv.Uploadsource")
       ex_frm <- input$moduleSelect
       setValue(rv, c(ex_frm, "data"), ExcelUp$data)
       setValue(rv, c(ex_frm, "input_files"), ExcelUp$input_files)
       setValue(rv, c(ex_frm, "uploadsource"), value = "Excel")
+      if (ex_frm=="Certification") {
+        # (re)initiate apm and materialtabelle
+        #browser()
+        setValue(rv, c("General","apm"), init_apm(getValue(rv, c("Certification", "data"))))
+        setValue(rv, c("General","materialtabelle"), init_materialTabelle(levels(getValue(rv, c("Certification", "data"))[,"analyte"])))
+      }
     })
 
     # Restart App --------------------------------------------------------------
@@ -162,7 +167,7 @@ page_startServer = function(id, rv, tde) {
     })
 
     shiny::observeEvent(input$confirmLoadTestData, {
-      res <- get("res", tde)
+      res <- base::get("res", tde)
       rv_test <- fnc_load_RData(x = res)
       rv_testnames <- listNames(rv_test, split = TRUE)
       # overwrite

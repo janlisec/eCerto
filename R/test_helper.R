@@ -1,63 +1,16 @@
 #' @keywords internal
-test_datreturn <- function() {
-  datreturnList = list(
-    # lab_statistics = structure(
-    #   list(
-    #     Lab = structure(1:3, .Label = c("L1", "L2", "L3"), class = "factor"),
-    #     mean = c(0.0453, 0.0513333333333333, 0.0511333333333333),
-    #     sd = c(0.00185202591774521, 0.00100664459136943,0.000351188458428424),
-    #     n = c(3L, 3L, 3L)),
-    #   class = "data.frame", row.names = c("L1","L2", "L3")
-    # ),
-    selectedAnalyteDataframe = structure(
-      list(
-        ID = c(1L,12L, 23L, 34L, 44L, 54L, 64L, 75L, 86L),
-        Lab = structure(c(1L,1L, 1L, 2L, 2L, 2L, 3L, 3L, 3L), .Label = c("L1", "L2", "L3"), class = "factor"),
-        analyte = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), .Label = c("Si",  "Fe", "Cu", "Mn", "Mg", "Cr", "Ni", "Zn", "Ti", "Sc", "Sn"), class = "factor"),
-        replicate = structure(c(1L, 2L, 3L,1L, 2L, 3L, 1L, 2L, 3L), .Label = c("1", "2", "3"), class = "factor"), value = c(0.0452, 0.0435, 0.0472, 0.0504, 0.0512, 0.0524,  0.0511, 0.0508, 0.0515),
-        unit = c("0.05", "0.05", "0.05", "0.05", "0.05", "0.05", "0.05", "0.05", "0.05"),
-        S_flt = c(FALSE,FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-        L_flt = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,  FALSE, FALSE)), row.names = c(1L, 12L, 23L, 34L, 44L, 54L, 64L, 75L, 86L), class = "data.frame"),
-    mater_table = structure(
-      list(
-        analyte = c("Si", "Fe", "Cu", "Mn", "Mg", "Cr", "Ni"),
-        mean = c(0.0494, NA, 4.4072, 0.8092, NA, 0.0546, NA),
-        F1 = c(1, 1, 3, 1, 1, 1, 1),
-        cert_val = c(0.0494, 1, 13.2216, 0.8092, 1, 0.0546, 1),
-        sd = c(0.0034, NA, 0.0551, 0.0022, NA, 8e-04, NA),
-        n = c(3L, NA, 3L, 3L, NA, 2L, NA),
-        char = c(0.0397366582033346, NA, 0.00721818838091042, 0.00156966212582449, NA, 0.0103605389184842, NA),
-        U1 = c(NA, 0.015535927030583, NA, NA, 0.015535927030583, 5, NA),
-        com = c(0.0397366582033346, 0.015535927030583, 0.00721818838091042, 0.00156966212582449, 0.015535927030583, 5.00001073406515, 0),
-        k = c(2, 2, 2, 2, 2, 2, 2),
-        U = c(0.0794733164066691, 0.031071854061166, 0.0144363767618208, 0.00313932425164898, 0.031071854061166, 10.0000214681303, 0)
-      ),
-      row.names = c("1", "2", "3", "4", "5", "6", "7"),
-      col_code = structure(list(ID = c("F1", "U1"), Name = c("F3", "Sven")), row.names = c(NA, -2L), class = "data.frame"), class = "data.frame"
-    ),
-    h_vals = structure(
-      list(
-        analyte = structure(c(1L, 1L, 2L, 2L), .Label = c("Fe", "Mg"), class = "factor"),
-        H_type = structure(c(1L, 2L, 1L, 2L), .Label = c("axial", "radial"), class = "factor"),
-        mean = c(0.290477358348616, 0.293019826162251, 0.290477358348616, 0.293492295767011),
-        n = c(3, 3, 3, 3),
-        N = c(8L, 7L, 8L, 7L),
-        MSamong = c(0.000161686454979397, 3.41774621935363e-05, 0.000161686454979397, 4.73597993286006e-05),
-        MSwithin = c(0.000172808526267238, 6.88779071226825e-05, 0.000172808526267238, 7.14527186024594e-05),
-        P = c(0.506515192644675, 0.800936689331988, 0.506515192644675, 0.680855084728865),
-        s_bb = c(0, 0, 0, 0),
-        s_bb_min = c(0.015535927030583, 0.0100532811338686, 0.015535927030583, 0.0102229805818161)), class = "data.frame", row.names = c(NA, -4L)
-    ),
-    transfer = NULL,
-    current_apm = NULL,
-    #lab_statistics = NULL,
-    cert_mean = NULL,
-    cert_sd = NULL
-  )
-  datreturn1 = do.call(shiny::reactiveValues, datreturnList)
-  datreturn1 = reactiveClass$new(datreturn1)
-  return(datreturn1)
+test_rv <- function() {
+  rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+  shiny::isolate({
+    testdata <- test_Certification_Excel()
+    setValue(rv, c("Certification","data"), testdata)
+    setValue(rv, c("General","apm"), init_apm(testdata))
+    an <- levels(testdata[,"analyte"])
+    setValue(rv, c("General","materialtabelle"), init_materialTabelle(an))
+  })
+  return(rv)
 }
+
 
 #' @keywords internal
 test_mod_xlsx_range <- function() {

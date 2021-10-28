@@ -221,7 +221,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
         out$data = s_dat
       }
 
-    })
+    }, ignoreInit = TRUE)
 
     shiny::observeEvent(out$data, {
       tmp <- uploaded_datasets()

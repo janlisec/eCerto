@@ -15,7 +15,6 @@
 #'   uploadsource or \code{NULL}. For example if Certification has been
 #'   uploaded, the argument would look like list("Certification" =
 #'   "Excel","Homogeneity"=NULL,"stability"=NULL).
-#' @param silent Option to print or omit status messages.
 #'
 #' @return rdata A reactive, but only for notifying the navbarpanel to change
 #'
@@ -53,11 +52,13 @@ m_RDataImport_UI <- function(id) {
 
 #' @rdname RDataImport
 #' @export
-m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
+m_RDataImport_Server = function(id, modules, uploadsources) {
 
   shiny::moduleServer(id, function(input, output, session) {
     rvreturn <- shiny::reactiveVal(NULL)
     continue <- shiny::reactiveVal(NULL) # NULL -> don't continue
+    ns <- session$ns
+    silent <- FALSE
 
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
@@ -82,7 +83,6 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
     shiny::observeEvent(rdata(), {
-      ns <- session$ns
       test <- sapply(modules(), function(x) {!is.null(uploadsources()[[x]])}, simplify = "array")
       if (any(test)){
         if (!silent) message("RDataImport: Found existing data. Overwrite?")
@@ -116,6 +116,7 @@ m_RDataImport_Server = function(id, modules, uploadsources, silent=FALSE) {
     shiny::observeEvent(continue(), {
       rv <- fnc_load_RData(x = rdata())
       continue(NULL)
+      #browser()
       rvreturn(rv)
     }, ignoreNULL = TRUE)
 

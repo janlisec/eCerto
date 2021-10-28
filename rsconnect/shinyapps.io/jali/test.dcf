@@ -5,9 +5,9 @@ account: jali
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4916649
-bundleId: 5174509
+bundleId: 5178180
 url: https://jali.shinyapps.io/test/
-when: 1635167628.34828
-lastSyncTime: 1635167628.34828
+when: 1635246220.32595
+lastSyncTime: 1635246220.32595
 asMultiple: FALSE
 asStatic: FALSE

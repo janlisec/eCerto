@@ -2,6 +2,7 @@
 #' @name page_Stability
 #'
 #' @param id Id when called in module.
+#' @param rv reactiveClass object.
 #'
 #' @return Will return UI and Server logic for the stability page.
 #' @export
@@ -16,11 +17,9 @@
 #'    rv <- eCerto::reactiveClass$new(eCerto::init_rv()) # initiate persistent variables
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
-#'    datreturn <- eCerto:::test_datreturn()
 #'    page_StabilityServer(
 #'      id = "test",
-#'      rv = rv,
-#'      datreturn = datreturn
+#'      rv = rv
 #'    )
 #'  }
 #' )
@@ -75,10 +74,8 @@ page_StabilityUI <- function(id) {
 }
 
 #' @rdname page_Stability
-#' @param rv reactiveClass object.
-#' @param datreturn reactiveClass object.
 #' @export
-page_StabilityServer <- function(id, rv, datreturn) {
+page_StabilityServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -154,8 +151,8 @@ page_StabilityServer <- function(id, rv, datreturn) {
         for (i in c("slope","SE_slope","U_Stab")) {
           s_vals[,i] <- pn(s_vals[,i], 4)
         }
-        if (!is.null(getValue(datreturn,"mater_table"))) {
-          c_vals <- getValue(datreturn,"mater_table")
+        if (!is.null(getValue(rv, c("General", "materialtabelle")))) {
+          c_vals <- getValue(rv, c("General", "materialtabelle"))
           s_vals[,"Present"] <- sapply(s_vals[,"analyte"], function(x) {
             ifelse(x %in% c_vals[,"analyte"], "Yes", "No")
           })
@@ -174,15 +171,15 @@ page_StabilityServer <- function(id, rv, datreturn) {
     shiny::observeEvent(input$s_sel_analyte, {
       # show/hide the input field to select a deviation type (will effect the Figure)
       shiny::req(input$s_sel_dev)
-      mt <- getValue(datreturn,"mater_table")
+      mt <- getValue(rv, c("General", "materialtabelle"))
       a <- input$s_sel_analyte
       test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
       shinyjs::toggle(id="s_sel_dev", condition = test)
     })
 
     output$s_sel_dev <- shiny::renderUI({
-      shiny::req(s_Data(), getValue(datreturn,"mater_table"), input$s_sel_analyte)
-      mt <- getValue(datreturn,"mater_table")
+      shiny::req(s_Data(), getValue(rv, c("General", "materialtabelle")), input$s_sel_analyte)
+      mt <- getValue(rv, c("General", "materialtabelle"))
       a <- input$s_sel_analyte
       # show element only once mat_tab is available and analyte and mean value exist
       shiny::req(a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"]))
@@ -209,7 +206,7 @@ page_StabilityServer <- function(id, rv, datreturn) {
       U <- 2*stats::sd(s[l,"Value"], na.rm=T)
       U_Def <- "2s"
       if (!is.null(input$s_sel_dev)) { # !is.null(input$sel_analyt) &
-        cert_vals <- getValue(datreturn,"mater_table")
+        cert_vals <- getValue(rv, c("General", "materialtabelle"))
         if (any(cert_vals[,"analyte"] %in% input$s_sel_analyte)) {
           CertVal <- cert_vals[cert_vals[,"analyte"] %in% input$s_sel_analyte,"cert_val"]
           U <- ifelse(input$s_sel_dev=="U", 1, 2)*cert_vals[cert_vals[,"analyte"] %in% input$s_sel_analyte, ifelse(input$s_sel_dev=="U", "U", "sd")]
@@ -232,7 +229,7 @@ page_StabilityServer <- function(id, rv, datreturn) {
 
     # The Dropdown-Menu to select the column of materialtabelle to transfer to
     output$s_transfer_ubb <- shiny::renderUI({
-      cert_vals <- getValue(datreturn,"mater_table")
+      cert_vals <- getValue(rv, c("General", "materialtabelle"))
       shiny::validate(shiny::need(cert_vals, message = "Please upload certification data to transfer Uncertainty values"))
 
       cc <- attr(cert_vals, "col_code")
@@ -257,12 +254,11 @@ page_StabilityServer <- function(id, rv, datreturn) {
     s_transfer_U <- m_TransferUServer(
       id = "s_transfer",
       dat = shiny::reactive({getValue(rv, c("Stability","s_vals"))}),
-      mat_tab = shiny::reactive({getValue(datreturn, "mater_table")})
+      mat_tab = shiny::reactive({getValue(rv, c("General", "materialtabelle"))})
     )
     shiny::observeEvent(s_transfer_U$changed, {
       message("Stability: observeEvent(s_transfer_U)")
-      setValue(datreturn, "mater_table", s_transfer_U$value)
-      setValue(datreturn, "transfer", 1) # trigger panel change in app_server
+      setValue(rv, c("General","materialtabelle"), s_transfer_U$value)
     }, ignoreInit = TRUE)
 
   })
