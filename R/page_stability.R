@@ -189,36 +189,42 @@ page_StabilityServer <- function(id, rv) {
     output$s_info <- shiny::renderUI({
       # text info shown below the Figure
       shiny::req(s_Data(), input$s_sel_analyte)
-      U_type <- ifelse(is.null(input$s_sel_dev), "2s", input$s_sel_dev)
-      U_source <- ifelse(is.null(input$s_sel_dev), "stability", "certification")
-      shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data for ", input$s_sel_analyte, "."))
+      an <- input$s_sel_analyte
+      aps <- getValue(rv, c("General", "apm"))
+      U_type <- "2s"
+      U_source <- "stability"
+      if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
+        U_type <- input$s_sel_dev
+        U_source <- "certification"
+      }
+      shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data for analyte ", an, "."))
     })
 
     # Figure
     output$s_plot <- shiny::renderPlot({
       shiny::req(s_Data(), input$s_sel_analyte)
       s <- s_Data()
-      l <- s[,"analyte"]==input$s_sel_analyte
+      an <- input$s_sel_analyte
+      aps <- getValue(rv, c("General", "apm"))
+      l <- s[,"analyte"]==an
 
       # Convert to format used in LTS modul
       # load SD and U from certification if available
       CertVal <- mean(s[l,"Value"], na.rm=T)
       U <- 2*stats::sd(s[l,"Value"], na.rm=T)
       U_Def <- "2s"
-      if (!is.null(input$s_sel_dev)) { # !is.null(input$sel_analyt) &
-        cert_vals <- getValue(rv, c("General", "materialtabelle"))
-        if (any(cert_vals[,"analyte"] %in% input$s_sel_analyte)) {
-          CertVal <- cert_vals[cert_vals[,"analyte"] %in% input$s_sel_analyte,"cert_val"]
-          U <- ifelse(input$s_sel_dev=="U", 1, 2)*cert_vals[cert_vals[,"analyte"] %in% input$s_sel_analyte, ifelse(input$s_sel_dev=="U", "U", "sd")]
-          U_Def <- input$s_sel_dev
-        }
+      if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
+        mt <- getValue(rv, c("General", "materialtabelle"))
+        CertVal <- mt[mt[,"analyte"] %in% an, "cert_val"]
+        U <- ifelse(input$s_sel_dev=="U", 1, 2) * mt[mt[,"analyte"] %in% an, ifelse(input$s_sel_dev=="U", "U", "sd")]
+        U_Def <- input$s_sel_dev
       }
       x <- list("val"=s[l,],
                 "def"=data.frame(
                   "CertVal" = CertVal,
                   "U"= U,
                   "U_Def" = U_Def,
-                  "KW" = input$s_sel_analyte,
+                  "KW" = an,
                   "KW_Def" = ifelse("KW_Def" %in% colnames(s), unique(s[l,"KW_Def"])[1],"KW_Def"),
                   "KW_Unit" = ifelse("KW_Unit" %in% colnames(s), unique(s[l,"KW_Unit"])[1],"KW_Unit"),
                   stringsAsFactors = FALSE
