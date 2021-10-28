@@ -4,9 +4,7 @@
 #'package system file (if available) or from www subdir (if online app).
 #'
 #'@param x Filename to search for without path but with extension.
-#'@param copy_to_tempdir If TRUE file is copied to a tempdir location.
-#'@param fsep The system path seperator.
-#'  to temp dir and this temp file path is returned.
+#'@param copy_to_tempdir If TRUE file is copied to a tempdir location and this temp file path is returned.
 #'
 #'@details Developing a shiny app as an R package in parallel leads to
 #'difficulties on where to find specific files after installation (e.g. font
@@ -26,7 +24,7 @@
 #'
 #'@export
 #'
-fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE, fsep=.Platform$file.sep) {
+fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE) {
   # es gibt 3 relevante Ordner für den www folder der App
   # (1) dev version "inst/app/www"
   # (2) shiny.io --> "www"
@@ -52,7 +50,7 @@ fnc_get_local_file <- function(x=NULL, copy_to_tempdir=TRUE, fsep=.Platform$file
   } else {
     out <- out[1]
     if (copy_to_tempdir) {
-      tmp_file <- file.path(fs::path_temp(), x, fsep=fsep)
+      tmp_file <- file.path(fs::path_temp(), x)
       file.copy(out, tmp_file, overwrite = TRUE)
       out <- tmp_file
     }

@@ -1,7 +1,7 @@
 Package: eCerto
 Title: The eCerto package of the Bundesanstalt für Materialforschung (BAM)
-Version: 0.1.21
-Date: 2021-10-14
+Version: 0.1.22
+Date: 2021-10-28
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
     person("Frederik", "Kreß", role = "aut"))
@@ -16,7 +16,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
     agricolae,
-    config,
     dgof,
     DT,
     fs,
@@ -29,20 +28,21 @@ Imports:
     moments,
     openxlsx,
     outliers,
-    pkgload,
     plyr,
     purrr,
     R6,
     rmarkdown,
-    rsconnect,
     shiny,
     shinyalert,
     shinyjs,
-    tinytex,
     tidyxl,
     rsvg
 Suggests: 
+    config,
+    pkgload,
+    rsconnect,
     shinytest,
     testthat (>= 3.0.0),
-    tibble
+    tibble,
+    tinytex
 Config/testthat/edition: 3

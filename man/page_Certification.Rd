@@ -8,14 +8,12 @@
 \usage{
 page_CertificationUI(id)
 
-page_CertificationServer(id, rv, datreturn)
+page_CertificationServer(id, rv)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
 \item{rv}{The whole R6 object.}
-
-\item{datreturn}{The session data object.}
 }
 \value{
 nothing
@@ -32,19 +30,20 @@ not yet
 if (interactive()) {
 shiny::shinyApp(
  ui = shiny::fluidPage(
+   shinyalert::useShinyalert(),
+   shinyjs::useShinyjs(),
    page_CertificationUI(id = "test")
  ),
  server = function(input, output, session) {
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-  shiny::isolate({setValue(rv, c("Certification","data"), eCerto:::test_Certification_Excel()) })
-  shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
-  datreturn <- reactiveClass$new(init_datreturn()) # initiate runtime variables
-
- page_CertificationServer(
-     id = "test",
-     rv = rv,
-     datreturn = datreturn
-   )
+  shiny::isolate({
+  testdata <- eCerto:::test_Certification_Excel()
+  eCerto::setValue(rv, c("Certification","data"), testdata)
+  eCerto::setValue(rv, c("General","apm"), eCerto::init_apm(testdata))
+  an <- levels(testdata[,"analyte"])
+  eCerto::setValue(rv, c("General","materialtabelle"), init_materialTabelle(an))
+  })
+ page_CertificationServer(id = "test", rv = rv)
  }
 )
 }

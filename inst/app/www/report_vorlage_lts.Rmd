@@ -39,7 +39,7 @@ plot_lts_data <- params[["fnc"]][["plot_lts_data"]]
 # show BAM Logo topright
 if (!(is.null(l) | is.na(l))) {
     logo_raster <- as.raster(magick::image_read_svg(path = l, width = 300))
-    par(mar=c(0,0,0,0))
+    par(mar=c(1,0,0,0))
     layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
     plot(1,1,axes=F,ann=F, type="n")
     mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)

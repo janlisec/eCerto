@@ -8,17 +8,15 @@
 \usage{
 m_materialtabelleUI(id)
 
-m_materialtabelleServer(id, rdataUpload, datreturn)
+m_materialtabelleServer(id, rv)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{rdataUpload}{if uploaded via RData - reactive({rv$Certification$materialtabelle})}
-
-\item{datreturn}{the session data (R6) object (ID Lab analyte replicate  value unit S_flt L_flt)}
+\item{rv}{The whole R6 object.}
 }
 \value{
-nothing directly
+The analyte name of the currently selected row of  mat_tab.
 }
 \description{
 \code{m_materialtabelle}
@@ -31,12 +29,12 @@ if (interactive()) {
 shiny::shinyApp(
  ui = shiny::fluidPage(shinyalert::useShinyalert(), m_materialtabelleUI(id = "test")),
  server = function(input, output, session) {
- fpath <- system.file("extdata", "SR3_Fe_v26chs.RData", package="ecerto")
- load(fpath)
- rdataUpload <- reactive({res[[1]][["cert_vals"]]})
- datreturn <- eCerto:::test_datreturn()
- m_materialtabelleServer(id = "test", rdataUpload=rdataUpload, datreturn=datreturn);
-  observe({eCerto::getValue(datreturn,"selectedAnalyteDataframe")})
+ rv <- reactiveClass$new(init_rv())
+ shiny::isolate(eCerto::setValue(rv, c("Certification","data"), eCerto:::test_certification()[["data"]]))
+ shiny::isolate(eCerto::setValue(rv, c("General","apm"), eCerto::init_apm(eCerto:::test_certification()[["data"]])))
+ shiny::isolate(eCerto::setValue(rv, c("General","materialtabelle"), eCerto::init_materialTabelle(names(eCerto::getValue(rv, c("General","apm"))))))
+ out <- m_materialtabelleServer(id = "test", rv=rv)
+ observeEvent(out(), {print(out())})
  }
 )
 }

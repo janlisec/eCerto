@@ -71,31 +71,37 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
     ns <- shiny::NS(id)
 
     shiny::observeEvent(input$user, {
-      if (!silent) message("RData-export: set rv$user to ", input$user)
-      setValue(rv,c("General","user"),input$user)
+      if (!identical(input$user, getValue(rv,c("General","user")))) {
+        if (!silent) message("RData-export: set rv$user to ", input$user)
+        setValue(rv,c("General","user"), input$user)
+      }
     })
-    shiny::observeEvent(getValue(rv,c("General","user")) , {
-      if (!silent) message("RData-export: user-input updated to ", getValue(rv,c("General","user")))
-      shiny::updateTextInput(
-        # session = session,
-        # inputId = "user",
-        #inputId = session$ns("user"),
-        inputId = ns("user"),
-        value = getValue(rv,c("General","user"))
-      )
+    shiny::observeEvent(getValue(rv,c("General","user")), {
+      if (!identical(input$user, getValue(rv,c("General","user")))) {
+        if (!silent) message("RData-export: user-input updated to ", getValue(rv,c("General","user")))
+        shiny::updateTextInput(
+          session = session,
+          inputId = "user",
+          value = getValue(rv,c("General","user"))
+        )
+      }
     })
 
     shiny::observeEvent(input$study_id, {
-      if (!silent) message("RData-export: set rv$study_id to ", input$study_id)
-      setValue(rv,c("General","study_id"),input$study_id)
+      if (!identical(input$study_id, getValue(rv,c("General","study_id")))) {
+        if (!silent) message("RData-export: set rv$study_id to ", input$study_id)
+        setValue(rv,c("General","study_id"), input$study_id)
+      }
     })
-    shiny::observeEvent(getValue(rv,c("General", "study_id")), {
-      if (!silent) message("RData-export: study_id-input updated to ", getValue(rv,c("General","study_id")))
-      shiny::updateTextInput(
-        session = session,
-        inputId = "study_id",
-        value =  getValue(rv,c("General", "study_id"))
-      )
+    shiny::observeEvent(getValue(rv, c("General", "study_id")), {
+      if (!identical(input$study_id, getValue(rv,c("General","study_id")))) {
+        if (!silent) message("RData-export: study_id-input updated to ", getValue(rv,c("General","study_id")))
+        shiny::updateTextInput(
+          session = session,
+          inputId = "study_id",
+          value =  getValue(rv,c("General", "study_id"))
+        )
+      }
     })
 
     # DOWNLOAD

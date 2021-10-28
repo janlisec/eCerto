@@ -5,7 +5,8 @@
 \title{Analyte Parameter List (apm)}
 \usage{
 init_apm(
-  x = data.frame(ID = 1:20, analyte = gl(n = 2, k = 10, labels = c("A1", "A2")))
+  x = data.frame(ID = 1:20, analyte = gl(n = 2, k = 10, labels = c("A1", "A2")), Lab =
+    rep(rep(c("L1", "L2"), each = 5), 2))
 )
 }
 \arguments{

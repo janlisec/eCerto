@@ -9,9 +9,9 @@
 #' @details not yet
 #'
 #' @param id Name when called as a module in a shiny app.
+#' @param rv The session R6 object.
 #' @param homog The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).
 #' @param cert The Certification table - shiny::reactive({getValue(rv,"Certification")}).
-#' @param datreturn session-only reactiveValues --> for transfer Module
 #'
 #' @examples
 #' if (interactive()) {
@@ -21,12 +21,11 @@
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-#'    datreturn = eCerto:::test_datreturn()
 #'    page_HomogeneityServer(
 #'      id = "test",
+#'      rv = rv,
 #'      homog = shiny::reactive({test_homog()}),
-#'      cert = shiny::reactive({test_certification()}),
-#'      datreturn = datreturn
+#'      cert = shiny::reactive({test_certification()})
 #'    )
 #'  }
 #' )
@@ -92,7 +91,7 @@ page_HomogeneityUI <- function(id) {
 
 #' @rdname page_Homogeneity
 #' @export
-page_HomogeneityServer = function(id, homog, cert, datreturn) {
+page_HomogeneityServer = function(id, rv, homog, cert) {
   stopifnot(shiny::is.reactive(homog))
   stopifnot(shiny::is.reactive(cert))
 
@@ -274,29 +273,14 @@ page_HomogeneityServer = function(id, homog, cert, datreturn) {
       stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))
     })
 
-    # --- --- --- --- --- --- --- --- --- --- ---
-    # t_H = m_TransferHomogeneityServer(
-    #   id = "trH",
-    #   homogData = shiny::reactive({getValue(datreturn,"h_vals")}),
-    #   matTab_col_code = shiny::reactive({attr(getValue(datreturn,"mater_table"), "col_code")}),
-    #   matTab_analytes = shiny::reactive({as.character(getValue(datreturn,"mater_table")[, "analyte"])})
-    # )
-    # # --- --- --- --- --- --- --- --- --- --- ---
-    # # to Certification page after Transfer of Homogeneity Data
-    # shiny::observeEvent(t_H(),{
-    #   message("app_server: t_H() changed, set datreturn.t_H")
-    #   setValue(datreturn,"t_H",t_H())
-    # })
-
     h_transfer_U <- m_TransferUServer(
       id = "h_transfer",
       dat = shiny::reactive({h_vals()}),
-      mat_tab = shiny::reactive({getValue(datreturn, "mater_table")})
+      mat_tab = shiny::reactive({getValue(rv, c("General","materialtabelle"))})
     )
     shiny::observeEvent(h_transfer_U$changed, {
       message("Homogeneity: observeEvent(h_transfer_U)")
-      setValue(datreturn, "mater_table", h_transfer_U$value)
-      setValue(datreturn, "transfer", 1) # trigger panel change in app_server
+      setValue(rv, c("General","materialtabelle"), h_transfer_U$value)
     }, ignoreInit = TRUE)
 
     return(h_vals)

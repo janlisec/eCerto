@@ -1,206 +1,247 @@
-#' @name m_analyte
-#' @aliases m_analyteUI
-#' @aliases m_analyteServer
+#' @description \code{m_analyte} Module for modification of analyte paramters.
 #'
-#' @title Analyte-module
-#'
-#' @description \code{m_analyte} Module for organizing the analyte panel, which
-#'  fill automatically after analytes are available and gives the user the
-#'  opportunity to select analytes as well as precision and filter samples.
-#'
-#' @details Note! This module will change a reactive variable apm() provided to the module as a parameter
+#' @details Note! This module will modify a reactive variable apm() provided to the module as a parameter
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param apm reactiveValues object, which gives available analytes, holds parameter, etc.
-#' @param renewTabs The order, to delete and renew Tabs, for example when new data is uploaded
-#' @param tablist list of current tabs (temporarily, see https://git.bam.de/fkress/ecerto/-/issues/46)
+#' @param apm reactiveValues object, which gives available parameters for each analyte.
+#' @param selected_tab The currently selected analyte (as valid name from apm). Reactive.
+#' @param allow_selection Set to TRUE for testing purposes only.
 #'
-#' @return the currently selected tab as character (e.g. "Si") and Other parameter via apm reactiveValues()
-#'
-#' @rdname m_analyte
-#' @export
-#' @examples
+#' @noRd
+#' @keywords internal
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'  shinyjs::useShinyjs(),
-#'    m_analyteUI(id = "test")
-#'  ),
+#'    shinyalert::useShinyalert(),
+#'    shinyjs::useShinyjs(),
+#'    m_analyteUI(id = "test")),
 #'  server = function(input, output, session) {
+#'    apm <- shiny::reactiveVal(eCerto::init_apm())
 #'    m_analyteServer(
 #'      id = "test",
-#'      apm = shiny::reactiveVal(eCerto::init_apm()),
-#'      renewTab = reactiveVal(1),
-#'      tablist = reactiveVal()
+#'      apm = apm,
+#'      selected_tab = shiny::reactiveVal("A1"),
+#'      allow_selection = TRUE
 #'    )
+#'    observeEvent(apm(), {print(apm())})
 #'  }
 #' )
 #' }
 #'
-m_analyteUI = function(id){
+m_analyteUI = function(id) {
+  ns <- shiny::NS(id)
+
   # empty tabset panel, to be filled by the analytes in the server Module
   shiny::tagList(
-    shinyjs::inlineCSS('.selct { background: green; color: white; border: 5px solid black; }'),
-    shiny::tabsetPanel(id = shiny::NS(id, "tabs"))
+    shiny::fluidRow(
+      shiny::column(
+        width = 3,
+        shiny::selectInput(
+          inputId = ns("Name"),
+          label = "Analyt Name",
+          choices = ""
+        )
+      ),
+      shiny::column(
+        width = 3,
+        shiny::selectizeInput(
+          inputId = ns("sample_filter"),
+          label = "Filter Sample IDs",
+          choices = "",
+          multiple = TRUE
+        )
+      ),
+      shiny::column(
+        width = 3,
+        shiny::numericInput(
+          inputId =ns("precision"),
+          label = "Precision (Input)",
+          value =  4, min = 0, max = 10, step = 1
+        )
+      ),
+      shiny::column(
+        width = 3,
+        shiny::helpText("")
+      )
+    ),
+    shiny::fluidRow(
+      shiny::column(
+        width = 3,
+        shiny::checkboxInput(
+          inputId = ns("pooling"),
+          label = "pooling",
+          value = FALSE
+        ),
+      ),
+      shiny::column(
+        width = 3,
+        shiny::selectizeInput(
+          inputId = ns("lab_filter"),
+          label = "Filter Lab IDs",
+          choices = "",
+          multiple = TRUE
+        )
+      ),
+      shiny::column(
+        width = 3,
+        shiny::numericInput(
+          inputId =ns("precision_export"),
+          label = "Precision (Export)",
+          value = 4, min = 0, max = 10, step = 1
+        )
+      ),
+      shiny::column(
+        width = 3,
+        shiny::helpText("")
+      )
+    )
   )
-
 }
 
-#' @rdname m_analyte
-#' @importFrom purrr '%>%'
-#' @export
-m_analyteServer = function(id, apm, renewTabs, tablist) {
+#' @noRd
+#' @keywords internal
+m_analyteServer = function(id, apm, selected_tab, allow_selection=FALSE) {
 
   stopifnot(shiny::is.reactive(apm))
+  stopifnot(shiny::is.reactive(selected_tab))
 
-  shiny::moduleServer(id, function(input, output, session){
+  shiny::moduleServer(id, function(input, output, session) {
 
-    ns <- session$ns # to get full namespace here in server function
-
-    selected_tab <- shiny::eventReactive(input$tabs, {
-      input$tabs
-    })
-
-    # change color of tab when selected by changing class
-    confirmedTabs <- shiny::reactiveVal()
-    markConfirmed <- function(tab) {
-      # message("color tab: ", tab)
-      # s = paste0("#",ns("tabs")," li a[data-value=",tab,"]")
-      s <- paste0(" li a[data-value=", tab, "]")
-      shinyjs::addClass(
-        selector = s,
-        class = "selct")
-    }
-    shiny::observeEvent(confirmedTabs(),{
-      for (i in confirmedTabs()) {
-        markConfirmed(i)
-      }
-    })
-
-    # upon upload of other data source we may need to renew the analyte tab-list
-    shiny::observeEvent(renewTabs(),{
-      message("m_analyte: Renew Tabs")
-      tablist() %>% purrr::walk(~shiny::removeTab("tabs", .x)) # remove old tabs
-      tablist(NULL)
-
-      # append/prepend a tab for each analyte available
-      for (a.name in names(shiny::isolate(apm()))) {
-        # message("append Tab: ", a.name)
-        tablist_tmp <- c(tablist(), a.name) # add to tablist for removing later
-        tablist(tablist_tmp)
-        shiny::appendTab(
-          inputId = "tabs",
-          select = FALSE,
-          shiny::tabPanel(
-            title=a.name,
-            htmltools::p(),
-            shiny::fluidRow(
-              shiny::column(
-                width = 6,
-                shiny::selectizeInput(
-                  inputId = ns(paste0("flt_samples",a.name)),#NS(id,paste0("flt_samples",a.name)),
-                  label = "Filter Sample IDs",
-                  choices = shiny::isolate(apm())[[a.name]]$sample_ids,
-                  selected = shiny::isolate(apm())[[a.name]]$sample_filter,
-                  multiple = TRUE
-                )
-              ),
-              shiny::column(
-                width = 3,
-                shiny::numericInput(
-                  inputId =ns(paste0("precision",a.name)),
-                  label = "Precision (Input)",
-                  value =  ifelse(
-                    !is.null(shiny::isolate(apm())[[a.name]]$precision),
-                    yes = shiny::isolate(apm())[[a.name]]$precision,
-                    no = 4
-                  )
-                )
-              ),
-              shiny::column(
-                width = 3,
-                shiny::numericInput(
-                  inputId =ns(paste0("precision_export",a.name)),
-                  label = "Precision (Export)",
-                  value =  ifelse(
-                    !is.null(shiny::isolate(apm())[[a.name]]$precision_export),
-                    yes = shiny::isolate(apm())[[a.name]]$precision_export,
-                    no = 4
-                  )
-                )
-              )
-            )
-          )
-        )
-      }
-      # select only first tab after tabs-creation
-      firstTab = names(shiny::isolate(apm()))[1]
-      shiny::updateTabsetPanel(
-        session = session,
-        inputId = "tabs",
-        selected =firstTab
+    if (!allow_selection) {
+      shiny::updateSelectInput(
+        inputId = "Name",
+        label = "Row selected in Tab.3",
       )
-      # set first selected Tab as confirmed
-      analytes_tmp <- shiny::isolate(apm())
-      analytes_tmp[[firstTab]]$confirmed <- TRUE
-      apm(analytes_tmp)
-
-      # Make confirmed Tabs (geht auch bestimmt schöner mit map() oder so)
-      l <- c()
-      for (i in shiny::isolate(apm())) {
-        if(i$confirmed == TRUE) {
-          l <- append(l,i$analytename)
-          markConfirmed(i$analytename)
-        }
-      }
-      confirmedTabs(l)
+      shinyjs::disable(id = "Name")
+    }
+    err_msg <- shiny::reactiveVal(NULL)
+    shiny::observeEvent(err_msg(), {
+      shinyalert::shinyalert(
+        title = "Error",
+        text = err_msg()
+      )
+      err_msg(NULL)
     }, ignoreNULL = TRUE)
 
-    shiny::observeEvent(selected_tab(),{
-      if(!selected_tab() %in% confirmedTabs()) {
-        ct <- confirmedTabs()
-        ct <- append(ct, selected_tab())
-        confirmedTabs(ct)
-      }
-      analytes_tmp <- shiny::isolate(apm())
-      analytes_tmp[[selected_tab()]]$confirmed = TRUE
-      apm(analytes_tmp)
-    }, ignoreInit = TRUE, ignoreNULL = TRUE)
-
-
-    # update precision
+    # update inputs when different analyte is selected
     shiny::observe({
-      shiny::req(selected_tab())
-      analytes_tmp <- shiny::isolate(apm())
-      if (!identical(input[[paste0("precision",selected_tab())]], analytes_tmp[[selected_tab()]]$precision)) {
-        message("m_analyte: Precision change")
-        analytes_tmp[[selected_tab()]]$precision <- input[[paste0("precision",selected_tab())]]
-        apm(analytes_tmp)
+      shiny::req(apm(), selected_tab())
+      message("[m_analyte] update parameter inputs for ", selected_tab())
+      shiny::updateSelectInput(
+        inputId = "Name",
+        choices = names(apm()),
+        selected = apm()[[selected_tab()]]$name
+      )
+      shiny::updateCheckboxInput(
+        inputId = "pooling",
+        value = apm()[[selected_tab()]]$pooling
+      )
+      shiny::updateSelectizeInput(
+        inputId = "sample_filter",
+        choices = apm()[[selected_tab()]]$sample_ids,
+        selected = apm()[[selected_tab()]]$sample_filter
+      )
+      shiny::updateSelectizeInput(
+        inputId = "lab_filter",
+        choices = apm()[[selected_tab()]]$lab_ids,
+        selected = apm()[[selected_tab()]]$lab_filter
+      )
+      shiny::updateNumericInput(
+        inputId = "precision",
+        value = apm()[[selected_tab()]]$precision
+      )
+      shiny::updateNumericInput(
+        inputId = "precision_export",
+        value = apm()[[selected_tab()]]$precision_export
+      )
+    })
+
+    # update apm in case of changes in precision inputs
+    shiny::observeEvent(input$precision, {
+      shiny::req(apm(), selected_tab())
+      tmp <- apm()
+      if (!identical(input$precision, tmp[[selected_tab()]]$precision)) {
+        message("[m_analyte] update 'precision'")
+        tmp[[selected_tab()]]$precision <- input$precision
+        apm(tmp)
       }
     })
 
-    # update precision2 (=precision_export)
-    shiny::observe({
-      shiny::req(selected_tab())
-      analytes_tmp <- shiny::isolate(apm())
-      if (!identical(input[[paste0("precision_export",selected_tab())]], analytes_tmp[[selected_tab()]]$precision_export)) {
-        message("m_analyte: Precision (Export) change")
-        analytes_tmp[[selected_tab()]]$precision_export <- input[[paste0("precision_export",selected_tab())]]
-        apm(analytes_tmp)
+    # update apm in case of changes in precision_export inputs
+    shiny::observeEvent(input$precision_export, {
+      shiny::req(apm(), selected_tab())
+      tmp <- apm()
+      if (!identical(input$precision_export, tmp[[selected_tab()]]$precision_export)) {
+        message("[m_analyte] update 'precision_export'")
+        tmp[[selected_tab()]]$precision_export <- input$precision_export
+        apm(tmp)
       }
     })
 
-    # update flt_samples (the sample filter)
-    shiny::observe({
-      shiny::req(selected_tab())
-      analytes_tmp <- shiny::isolate(apm())
-      if (!identical(input[[paste0("flt_samples",selected_tab())]], analytes_tmp[[selected_tab()]]$sample_filter)) {
-        message("m_analyte: flt_samples change")
-        analytes_tmp[[selected_tab()]]$sample_filter <- input[[paste0("flt_samples",selected_tab())]]
-        apm(analytes_tmp)
+    # update apm in case of changes in sample_filter inputs
+    shiny::observeEvent(input$sample_filter, {
+      shiny::req(apm(), selected_tab())
+      tmp <- apm()
+      if (!identical(input$sample_filter, tmp[[selected_tab()]]$sample_filter)) {
+        message("[m_analyte] update 'sample_filter'")
+        if (length(input$sample_filter) < length(tmp[[selected_tab()]]$sample_ids)-1) {
+          if (is.null(input$sample_filter)) {
+            tmp[[selected_tab()]]["sample_filter"] <- list(NULL)
+          } else {
+            tmp[[selected_tab()]]$sample_filter <- input$sample_filter
+          }
+          apm(tmp)
+        } else {
+          err_msg("Sorry. Please keep at least 2 replicates for non-filtered labs.")
+          shiny::updateSelectizeInput(
+            inputId = "sample_filter",
+            choices = apm()[[selected_tab()]]$sample_ids,
+            selected = apm()[[selected_tab()]]$sample_filter
+          )
+        }
       }
     })
 
-    return(selected_tab) # module returns currently selected analyte-tab
+    # update apm in case of changes in lab_filter inputs
+    shiny::observeEvent(input$lab_filter, {
+      shiny::req(apm(), selected_tab())
+      tmp <- apm()
+      if (!identical(input$lab_filter, tmp[[selected_tab()]]$lab_filter)) {
+        message("[m_analyte] update 'lab_filter'")
+        if (length(input$lab_filter) < length(tmp[[selected_tab()]]$lab_ids)-1) {
+          if (is.null(input$lab_filter)) {
+            tmp[[selected_tab()]]["lab_filter"] <- list(NULL)
+          } else {
+            tmp[[selected_tab()]]$lab_filter <- input$lab_filter
+          }
+          apm(tmp)
+        } else {
+          err_msg("Sorry. Please keep at least 2 labs as statistical tests will fail otherwise.")
+          shiny::updateSelectizeInput(
+            inputId = "lab_filter",
+            choices = apm()[[selected_tab()]]$lab_ids,
+            selected = apm()[[selected_tab()]]$lab_filter
+          )
+        }
+      }
+    }, ignoreNULL = FALSE, ignoreInit=TRUE)
+
+    # update apm in case of changes in module inputs
+    shiny::observeEvent(input$pooling, {
+      shiny::req(apm(), selected_tab())
+      tmp <- apm()
+      if (!identical(input$pooling, tmp[[selected_tab()]]$pooling)) {
+        message("[m_analyte] update 'pooling'")
+        tmp[[selected_tab()]]$pooling <- input$pooling
+        apm(tmp)
+      }
+    })
+
+    # update apm in case of changes in module inputs
+    shiny::observeEvent(input$Name, {
+      shiny::req(apm())
+      selected_tab(input$Name)
+    })
+
   })
 }

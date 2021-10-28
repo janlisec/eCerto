@@ -8,14 +8,14 @@
 \usage{
 m_DataViewUI(id)
 
-m_DataViewServer(id, dataset_flt, current_apm)
+m_DataViewServer(id, dataset_flt, precision = shiny::reactiveVal(3))
 }
 \arguments{
 \item{id}{Id when called in module.}
 
-\item{dataset_flt}{filtered data for particular measurements specified by user}
+\item{dataset_flt}{Filtered data for particular measurements specified by user.}
 
-\item{current_apm}{current analyte-parameter-list for selected analyte}
+\item{precision}{Precision to round the input values.}
 }
 \value{
 kompakt data representation
@@ -26,24 +26,13 @@ Data View Module
 \examples{
 if (interactive()) {
 shiny::shinyApp(
- ui = shiny::fluidPage(
-   m_DataViewUI(id = "test")
- ),
+ ui = shiny::fluidPage(m_DataViewUI(id = "test")),
  server = function(input, output, session) {
- datasetflt = reactiveVal(structure(
- list(
-   ID = c(1L,10L,18,25), Lab = factor(c("L1","L1","L2","L2")),
-   analyte = rep("Si",4), replicate = c(1,2,1,2),
-    value = runif(4, 0, 1),unit = rep("0.05",4),
-    File = rep("Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",4),
-    S_flt = rep(FALSE,4),L_flt = rep(FALSE, 4),
-    row.names = c(1L,10L,18,25),class = "data.frame")))
-
-   m_DataViewServer(
-     id = "test",
-     dataset_flt = datasetflt,
-     current_apm  = reactiveVal(list(precision = 3))
-   )
+   tmp <- reactiveVal(cbind(
+     eCerto::test_certification()[["data"]],
+     data.frame("File"="")
+   ))
+   m_DataViewServer(id = "test", dataset_flt = tmp)
  }
 )
 }

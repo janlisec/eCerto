@@ -8,7 +8,7 @@
 \usage{
 m_RDataImport_UI(id)
 
-m_RDataImport_Server(id, modules, uploadsources, silent = FALSE)
+m_RDataImport_Server(id, modules, uploadsources)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
@@ -19,8 +19,6 @@ m_RDataImport_Server(id, modules, uploadsources, silent = FALSE)
 uploadsource or \code{NULL}. For example if Certification has been
 uploaded, the argument would look like list("Certification" =
 "Excel","Homogeneity"=NULL,"stability"=NULL).}
-
-\item{silent}{Option to print or omit status messages.}
 }
 \value{
 rdata A reactive, but only for notifying the navbarpanel to change

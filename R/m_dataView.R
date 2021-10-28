@@ -2,8 +2,8 @@
 #' @name mod_DataView
 #'
 #' @param id Id when called in module.
-#' @param dataset_flt filtered data for particular measurements specified by user
-#' @param current_apm current analyte-parameter-list for selected analyte
+#' @param dataset_flt Filtered data for particular measurements specified by user.
+#' @param precision Precision to round the input values.
 #'
 #' @return kompakt data representation
 #' @export
@@ -11,24 +11,13 @@
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
-#'  ui = shiny::fluidPage(
-#'    m_DataViewUI(id = "test")
-#'  ),
+#'  ui = shiny::fluidPage(m_DataViewUI(id = "test")),
 #'  server = function(input, output, session) {
-#'  datasetflt = reactiveVal(structure(
-#'  list(
-#'    ID = c(1L,10L,18,25), Lab = factor(c("L1","L1","L2","L2")),
-#'    analyte = rep("Si",4), replicate = c(1,2,1,2),
-#'     value = runif(4, 0, 1),unit = rep("0.05",4),
-#'     File = rep("Ergebnisblatt_BAM-M321_Aleris_Duffel_m.xlsx",4),
-#'     S_flt = rep(FALSE,4),L_flt = rep(FALSE, 4),
-#'     row.names = c(1L,10L,18,25),class = "data.frame")))
-#'
-#'    m_DataViewServer(
-#'      id = "test",
-#'      dataset_flt = datasetflt,
-#'      current_apm  = reactiveVal(list(precision = 3))
-#'    )
+#'    tmp <- reactiveVal(cbind(
+#'      eCerto::test_certification()[["data"]],
+#'      data.frame("File"="")
+#'    ))
+#'    m_DataViewServer(id = "test", dataset_flt = tmp)
 #'  }
 #' )
 #' }
@@ -52,7 +41,7 @@ m_DataViewUI <- function(id) {
 
 #' @rdname mod_DataView
 #' @export
-m_DataViewServer <- function(id, dataset_flt, current_apm) {
+m_DataViewServer <- function(id, dataset_flt, precision = shiny::reactiveVal(3)) {
 
   shiny::moduleServer(id, function(input, output, session) {
     # Generate an HTML table view of filtered single analyt data
@@ -67,9 +56,6 @@ m_DataViewServer <- function(id, dataset_flt, current_apm) {
       }
     }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
 
-
-
-
     # prepare a compact version of the data table
     dataset_komp <- shiny::reactive({
       shiny::req(dataset_flt())
@@ -82,7 +68,7 @@ m_DataViewServer <- function(id, dataset_flt, current_apm) {
                ncol = length(n_reps),
                dimnames = list(NULL, paste0("R", n_reps)))
       }, .id = "Lab")
-      n <- current_apm()$precision
+      n <- precision()
       return(data.frame(
         data[, 1, drop = F],
         round(data[, -1, drop = F], digits = n),

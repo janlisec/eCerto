@@ -17,14 +17,14 @@ testthat::test_that(
           session$setInputs(in_file_ecerto_backup = rdat)
           # session$flushReact()
           testthat::expect_equal(sort(eCerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability" ))
-          testthat::expect_equal(eCerto::getValue(rvreturn(), c("General","user")),"FK4")
+          testthat::expect_equal(eCerto::getValue(rvreturn(), c("General","user")),"JL")
           # because time_stamp changes every runtime, exclude it for testing as follows
           general <- eCerto::getValue(rvreturn(),"General")
           testthat::expect_equal(is.null(general$apm), FALSE)
           testthat::expect_equal(is.null(general$dataformat_version), FALSE)
           testthat::expect_equal(is.null(getValue(rvreturn(),c("Certification","data"))), FALSE)
           testthat::expect_equal(is.null(getValue(rvreturn(),c("Homogeneity","data"))), FALSE)
-          # expect_equal(is.null(getValue(rvreturn(),c("Stability","data"))), FALSE)
+          testthat::expect_equal(is.null(getValue(rvreturn(),c("Stability","data"))), FALSE)
         }
       )
     )
