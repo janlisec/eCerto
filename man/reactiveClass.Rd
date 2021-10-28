@@ -16,8 +16,8 @@ shiny:::flushReact()
 rv$a <- 2
 shiny:::flushReact()
 test <- reactiveClass$new(eCerto:::init_rv())
-eCerto::getValue(test, c("Certification_processing","data"))
-shiny::observeEvent(eCerto::getValue(test, "Certification_processing")$data, {
+eCerto::getValue(test, c("Certification","data"))
+shiny::observeEvent(eCerto::getValue(test, "Certification")$data, {
   message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
 })
 eCerto::setValue(test, c("Certification","data"), 5)

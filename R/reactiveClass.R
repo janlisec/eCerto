@@ -19,8 +19,8 @@
 #' rv$a <- 2
 #' shiny:::flushReact()
 #' test <- reactiveClass$new(eCerto:::init_rv())
-#' eCerto::getValue(test, c("Certification_processing","data"))
-#' shiny::observeEvent(eCerto::getValue(test, "Certification_processing")$data, {
+#' eCerto::getValue(test, c("Certification","data"))
+#' shiny::observeEvent(eCerto::getValue(test, "Certification")$data, {
 #'   message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
 #' })
 #' eCerto::setValue(test, c("Certification","data"), 5)
@@ -62,9 +62,16 @@ reactiveClass = R6::R6Class(
     #' @return A new 'reactiveClass' object.
     set = function(keys=NULL, value){
       # value needs to be NULL, otherwise pluck() is going to delete the
-      # list entry
+      # list entry --> update [28.10.2021] I checked and this seems not to be the case
       if(!is.null(value)) {
         purrr::pluck(private$reactive_data, !!!keys) <- value
+      } else {
+        # if (length(keys)==1) return(private$reactive_data[keys] <- list(keys=NULL))
+        # if (length(keys)==2) return(private$reactive_data[[keys[1]]][keys[2]] <- list(keys[2]=NULL))
+        # if (length(keys)==3) return(private$reactive_data[keys] <- list(keys=NULL))
+        # browser()
+        # private$reactive_data
+        purrr::pluck(private$reactive_data, !!!keys) <- NULL
       }
       # if(!is.null(self$get(field))) {
       #   warning(paste0(field, " was ", self$get(field),"; overwritten now with ", x))

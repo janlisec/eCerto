@@ -155,34 +155,61 @@ page_startServer = function(id, rv, tde) {
 
     # Load Test Data -----------------------------------------------------------
     shiny::observeEvent(input$load_test_data, {
-      shiny::showModal(shiny::modalDialog(
-        easyClose = FALSE,
-        title="Sure you want to load test data?",
-        "This will erase all non-saved inputs!",
-        footer = shiny::tagList(
-          shiny::actionButton(session$ns("confirmLoadTestData"), "Load Test Data"),
-          shiny::modalButton("Cancel")
-        )
-      ))
+      # check if data was already uploaded or this is a new session
+      if (all(sapply(getValue(rv, "modules"), function(x) { is.null(getValue(rv, c(x,"data"))) }))) {
+        res <- base::get("res", tde)
+        rv_test <- fnc_load_RData(x = res)
+        rv_test_names <- listNames(rv_test, split = TRUE)
+        rv_name <- listNames(rv, split = TRUE)
+        if (identical(rv_test_names, rv_name)) {
+          for (n in rv_test_names) {
+            setValue(rv, n, getValue(rv_test, n))
+          }
+        } else {
+          message("Probably the format of 'rv' has changed. Please update 'testdata.RData'")
+        }
+      } else {
+        shiny::showModal(shiny::modalDialog(
+          easyClose = FALSE,
+          title="Warning",
+          "Please click 'Cancel' to save your current data or 'Overwrite' to proceed!",
+          footer = shiny::tagList(
+            shiny::modalButton("Cancel"),
+            shiny::actionButton(inputId = ns("overwrite"), label = "Overwrite", class = "btn btn-danger")
+          )
+        ))
+      }
     })
 
-    shiny::observeEvent(input$confirmLoadTestData, {
-      res <- base::get("res", tde)
-      rv_test <- fnc_load_RData(x = res)
-      rv_testnames <- listNames(rv_test, split = TRUE)
-      # overwrite
-      for (n in rv_testnames) {
-        setValue(rv, n, getValue(rv_test, n))
-      }
+    continue <- shiny::reactiveVal(NULL)
+    shiny::observeEvent(input$overwrite, {
+      continue(TRUE)
+      shiny::showNotification("Overwritten")
       shiny::removeModal()
     })
+    shiny::observeEvent(continue(), {
+      res <- base::get("res", tde)
+      rv_tmp <- fnc_load_RData(x = res)
+      shiny::updateNavbarPage(
+        session = session,
+        inputId = "navbarpage",
+        selected = "tP_certification"
+      )
+      continue(NULL)
+      rv_tmp_names <- listNames(rv_tmp, split = TRUE)
+      for (n in rv_tmp_names) {
+        setValue(rv, n, getValue(rv_tmp, n))
+      }
+    }, ignoreNULL = TRUE)
 
+    # Help section -------------------------------------------------------------
     # Action link for help
     shiny::observeEvent(input$moduleUploadHelp, {
-      switch (input$moduleSelect,
-              "Certification" = help_the_user("certification_dataupload", modal=TRUE),
-              "Homogeneity" = help_the_user("homogeneity_dataupload", modal=TRUE),
-              "Stability" = help_the_user("stability_dataupload", modal=TRUE)
+      switch(
+        input$moduleSelect,
+        "Certification" = help_the_user("certification_dataupload", modal=TRUE),
+        "Homogeneity" = help_the_user("homogeneity_dataupload", modal=TRUE),
+        "Stability" = help_the_user("stability_dataupload", modal=TRUE)
       )
     })
 

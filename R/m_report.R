@@ -86,6 +86,7 @@ m_report_server <- function(id, rv, selected_tab) {
         shiny::withProgress(
           expr = {
             incProgress(0.5)
+            #browser()
             out <- rmarkdown::render(
               input = rmdfile,
               output_file = file,

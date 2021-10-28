@@ -1,6 +1,6 @@
 Package: eCerto
 Title: The eCerto package of the Bundesanstalt für Materialforschung (BAM)
-Version: 0.1.23
+Version: 0.1.24
 Date: 2021-10-28
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
