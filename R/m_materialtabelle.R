@@ -389,7 +389,9 @@ m_materialtabelleServer <- function(id, rv) {
         # selectRows(proxy, selected=selected_row_idx())
       } else {
         if (input$matreport_rows_selected==selected_row_idx()) {
-          if (is.null(out()) || out()!= mater_table()[input$matreport_rows_selected,"analyte"]) out(mater_table()[input$matreport_rows_selected,"analyte"])
+          if (is.null(out()) || out()!= mater_table()[input$matreport_rows_selected,"analyte"]) {
+            out(as.character(mater_table()[input$matreport_rows_selected,"analyte"]))
+          }
         } else {
           selected_row_idx(input$matreport_rows_selected)
         }

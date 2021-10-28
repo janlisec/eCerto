@@ -90,10 +90,16 @@ fnc_load_RData <- function(x = NULL) {
         setValue(rv,c("Certification_processing","opt"),x[["Certification"]][["opt"]])
         setValue(rv,c("Certification_processing","mstats"),x[["Certification"]][["mstats"]])
         # materialtabelle
-        setValue(rv,c("General","materialtabelle"),x[["Certification"]][["cert_vals"]])
+        mt <- x[["Certification"]][["cert_vals"]]
+        setValue(rv,c("General","materialtabelle"), mt)
         # apm
         setValue(rv,c("General","apm"),init_apm(x[["Certification"]][["data_input"]]))
+        apm <- getValue(rv,c("General","apm"))
+        # ensure that analytes in apm and materialtabelle are in similar order
         #browser()
+        if (!all(names(apm)==as.character(mt[,"analyte"]))) {
+          setValue(rv,c("General","apm"), apm[sapply(as.character(mt[,"analyte"]), function(an) { which(names(apm)==an) })])
+        }
       }
       if ("Homogeneity" %in% names(x) && !is.null(x$Homogeneity)) {
         if (!silent) message("RDataImport_Server: Homog data transfered")
