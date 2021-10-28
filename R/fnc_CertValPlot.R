@@ -27,8 +27,8 @@ CertValPlot <- function(data=NULL, annotate_id=FALSE) {
   }
   graphics::par(mar=c(5,6,0,0)+0.2)
   # y range is minimized dependent if Sample-IDs are shown or not
-  y_range <- range(c(data.stats$MW+data.stats$SD, data.stats$MW-data.stats$SD))
-  if (annotate_id) y_range <- range(data[,"value"], na.rm=TRUE)
+  y_range <- range(c(data.stats$MW+data.stats$SD, data.stats$MW-data.stats$SD), na.rm=TRUE)
+  if (annotate_id) y_range <- range(c(y_range, data[,"value"]), na.rm=TRUE)
   plot(x=range(1:nrow(data.stats)), y=y_range, type="n", ann=FALSE, axes=FALSE, xlim=c(0.5,nrow(data.stats)+0.5))
   graphics::title(xlab="Lab")
   # compute number of lines we need to reserve fo the axis numbers
