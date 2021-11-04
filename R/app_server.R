@@ -33,15 +33,12 @@ app_server <- function( input, output, session ) {
   page_CertificationServer(id = "certification", rv = rv)
 
   # Homogeneity Modul
-  h_vals <- page_HomogeneityServer(
-    id = "Homogeneity",
-    rv = rv,
-    homog = shiny::reactive({getValue(rv,"Homogeneity")}),
-    cert = shiny::reactive({getValue(rv,"Certification")})
-  )
+  page_HomogeneityServer(id = "Homogeneity", rv = rv)
+
   # Stability Modul
   page_StabilityServer(id = "Stability", rv = rv)
-  # LTS Modul
+
+  # LTS Modul (will be removed to an independent app at some point)
   .longtermstabilityServer("lts")
 
   # some observers, mainly to use 'updateNavbarPage' depending on user action

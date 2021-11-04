@@ -8,19 +8,12 @@
 \usage{
 page_HomogeneityUI(id)
 
-page_HomogeneityServer(id, rv, homog, cert)
+page_HomogeneityServer(id, rv)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
 \item{rv}{The session R6 object.}
-
-\item{homog}{The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).}
-
-\item{cert}{The Certification table - shiny::reactive({getValue(rv,"Certification")}).}
-}
-\value{
-h_vals = The Homogeneity data (not the transferred ones yet)
 }
 \description{
 \code{page_Homogeneity} is the module for handling Homogeneity Data
@@ -35,12 +28,14 @@ shiny::shinyApp(
    page_HomogeneityUI(id = "test")
  ),
  server = function(input, output, session) {
-   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+   rv <- eCerto:::test_rv()
+   mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
+   attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
+   isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
+   isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
    page_HomogeneityServer(
      id = "test",
-     rv = rv,
-     homog = shiny::reactive({test_homog()}),
-     cert = shiny::reactive({test_certification()})
+     rv = rv
    )
  }
 )

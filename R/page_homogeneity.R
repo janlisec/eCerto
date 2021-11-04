@@ -10,8 +10,6 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv The session R6 object.
-#' @param homog The Homogeneity table - shiny::reactive({getValue(rv,"Homogeneity")}).
-#' @param cert The Certification table - shiny::reactive({getValue(rv,"Certification")}).
 #'
 #' @examples
 #' if (interactive()) {
@@ -20,22 +18,24 @@
 #'    page_HomogeneityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#'    rv <- eCerto:::test_rv()
+#'    mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
+#'    attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
+#'    isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
+#'    isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
 #'    page_HomogeneityServer(
 #'      id = "test",
-#'      rv = rv,
-#'      homog = shiny::reactive({test_homog()}),
-#'      cert = shiny::reactive({test_certification()})
+#'      rv = rv
 #'    )
 #'  }
 #' )
 #' }
 #'
-#' @return h_vals = The Homogeneity data (not the transferred ones yet)
 #' @rdname page_Homogeneity
 #' @export
 
 page_HomogeneityUI <- function(id) {
+  shinyjs::useShinyjs()
   ns <- shiny::NS(id)
   shiny::tabsetPanel(
     id = ns( "HomogeneityPanel"),
@@ -55,7 +55,7 @@ page_HomogeneityUI <- function(id) {
           width = 10,
           shiny::strong(
             shiny::actionLink(
-              inputId = ns("tab_link"),
+              inputId = ns("tab1_link"),
               label = "Tab.1 Homogeneity - calculation of uncertainty contribution"
             )
           ),
@@ -67,6 +67,12 @@ page_HomogeneityUI <- function(id) {
       shiny::fluidRow(
         shiny::column(
           width = 3,
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("tab2_link"),
+              label = "Tab.2 Homogeneity - specimen stats"
+            )
+          ),
           DT::dataTableOutput(ns("h_overview_stats"))
         ),
         shiny::column(
@@ -78,11 +84,9 @@ page_HomogeneityUI <- function(id) {
         ),
         shiny::column(
           width = 2,
-          shiny::uiOutput(ns("h_sel_analyt")),
-          shiny::numericInput(inputId=ns("h_Fig_width"), label="Figure Width", value=650),
-          shiny::numericInput(inputId=ns("h_precision"), label="Precision", value=4),
+          shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices=""),
           shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
-          shiny::downloadButton('h_Report', label="Download")
+          shiny::downloadButton(ns("h_Report"), label="Download")
         )
       )
     )
@@ -91,17 +95,22 @@ page_HomogeneityUI <- function(id) {
 
 #' @rdname page_Homogeneity
 #' @export
-page_HomogeneityServer = function(id, rv, homog, cert) {
-  stopifnot(shiny::is.reactive(homog))
-  stopifnot(shiny::is.reactive(cert))
+page_HomogeneityServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
     ns <- shiny::NS(id)
+
+    homog <- shiny::reactive({getValue(rv,"Homogeneity")})
+
     h_vals = shiny::reactiveVal(NULL)
 
-    shiny::observeEvent(input$tab_link,{
+    shiny::observeEvent(input$tab1_link,{
       help_the_user("homogeneity_uncertainty")
+    })
+
+    shiny::observeEvent(input$tab2_link,{
+      help_the_user("homogeneity_specimen_stats")
     })
 
     shiny::observeEvent(homog(), {
@@ -131,6 +140,11 @@ page_HomogeneityServer = function(id, rv, homog, cert) {
       # ensure that there is a third column 'Flasche' and convert to factor
       colnames(h_dat)[3] <- "Flasche"
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
+      # update analyte select input
+      lev <- levels(interaction(h_dat[,"analyte"],h_dat[,"H_type"]))
+      shiny::updateSelectInput(inputId="h_sel_analyt", label="Row selected in Tab.1", choices = lev, selected=lev[1])
+      shinyjs::disable("h_sel_analyt")
+      # return h_dat
       return(h_dat)
     })
 
@@ -155,15 +169,8 @@ page_HomogeneityServer = function(id, rv, homog, cert) {
     })
 
     shiny::observe({h_vals(newh_vals())})
-
-    output$h_fileUploaded <- shiny::reactive({
-      return(!is.null(h_Data()))
-    })
-
-    output$h_sel_analyt <- shiny::renderUI({
-      shiny::req(h_Data())
-      lev <- levels(interaction(h_Data()[,"analyte"],h_Data()[,"H_type"]))
-      shiny::selectInput(inputId=session$ns("h_sel_analyt"), label="analyte", choices=lev)
+    shiny::observeEvent(newh_vals(), {
+      setValue(rv, c("Homogeneity","h_vals"), newh_vals())
     })
 
     h_means <- shiny::reactive({
@@ -178,33 +185,41 @@ page_HomogeneityServer = function(id, rv, homog, cert) {
       return(out)
     })
 
-    # Error checks
-    h_errors <- shiny::reactive({
-      shiny::req(input$h_precision)
-      shiny::validate(shiny::need(is.numeric(input$h_precision) && input$h_precision>=0 && input$h_precision<=12, message="please check precision value"))
-      return("")
+    precision <- shiny::reactive({
+      shiny::req(input$h_sel_analyt)
+      prec <- 4
+      an <- as.character(h_vals()[interaction(h_vals()[,"analyte"], h_vals()[,"H_type"])==input$h_sel_analyt,"analyte"])
+      apm <- getValue(rv, c("General", "apm"))
+      if (an %in% names(apm)) {
+        prec <- apm[[an]][["precision_export"]]
+      }
+      #browser()
+      return(prec)
     })
-    output$h_error_message <- shiny::renderText(h_errors())
 
     # Tables
     output$h_overview_stats <- DT::renderDataTable({
-      shiny::req(h_means(), input$h_precision)
+      shiny::req(h_means(), precision())
       tab <- h_means()
-      for (i in c("mean","sd")) { tab[,i] <- pn(tab[,i], input$h_precision) }
+      for (i in c("mean","sd")) { tab[,i] <- pn(tab[,i], precision()) }
       return(tab)
-    }, options = list(paging = TRUE, searching = FALSE), rownames=NULL, selection = "none")
+    }, options = list(paging = FALSE, searching = FALSE, pageLength=100), rownames=NULL, selection = "none")
 
     h_vals_print <- shiny::reactive({
-      shiny::req(h_Data())
-      c_Data <- cert
+      shiny::req(h_Data(), precision())
+      mt <- getValue(rv, c("General", "materialtabelle"))
       h_vals_print <- h_vals()
-      for (cn in c("mean","MSamong","MSwithin","P","s_bb","s_bb_min")) {
-        h_vals_print[,cn] <- pn(h_vals_print[,cn], input$h_precision)
+      apm <- getValue(rv, c("General", "apm"))
+      for (i in 1:nrow(h_vals_print)) {
+        an <- as.character(h_vals_print[i,"analyte"])
+        h_vals_print[i,"mean"] <- pn(as.numeric(h_vals_print[i,"mean"]), ifelse(an %in% names(apm), apm[[an]][["precision_export"]], 4))
       }
-      if (!is.null(c_Data()$data)) {
-        mater_table <- c_Data()$data
+      for (cn in c("MSamong","MSwithin","P","s_bb","s_bb_min")) {
+        h_vals_print[,cn] <- pn(h_vals_print[,cn], 4)
+      }
+      if (!is.null(mt)) {
         h_vals_print[,"In_Cert_Module"] <- sapply(h_vals_print[,"analyte"], function(x) {
-          ifelse(is.null(mater_table),"cert table not found", ifelse(x %in% mater_table[,"analyte"], "Yes", "No"))
+          ifelse(x %in% mt[,"analyte"], "Yes", "No")
         })
       }
       return(h_vals_print)
@@ -218,19 +233,24 @@ page_HomogeneityServer = function(id, rv, homog, cert) {
     shiny::observeEvent(input$h_vals_rows_selected, {
       sel <- as.character(interaction(h_vals_print()[input$h_vals_rows_selected,1:2]))
       shiny::updateSelectInput(session = session, inputId = "h_sel_analyt", selected = sel)
+      #shinyjs::disable(id = "h_sel_analyt")
     })
 
     # Plots & Print
+    fig_width <- shiny::reactive({
+      shiny::req(h_Data(), input$h_sel_analyt)
+      x <- h_Data()
+      a <- input$h_sel_analyt
+      n <- length(levels(factor(x[interaction(x[,"analyte"], x[,"H_type"])==a,"Flasche"])))
+      return(150 + 40 * n)
+    })
     output$h_boxplot <- shiny::renderPlot({
-      shiny::req(h_Data(), input$h_sel_analyt, input$h_precision, input$h_Fig_width)
+      shiny::req(h_Data(), input$h_sel_analyt, precision())
       h_dat <- h_Data()
       h_dat <- h_dat[interaction(h_dat[,"analyte"], h_dat[,"H_type"])==input$h_sel_analyt,]
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
-      #
-      #plot(h_dat)
-      omn <- round(mean(h_dat[,"value"],na.rm=T), input$h_precision)
-      osd <- round(stats::sd(h_dat[,"value"],na.rm=T), input$h_precision)
-      anp <- pn(stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))$Pr[1], 2)
+      omn <- round(mean(h_dat[,"value"],na.rm=T), precision())
+      osd <- round(stats::sd(h_dat[,"value"],na.rm=T), precision())
       graphics::par(mar=c(5,4,6,0)+0.1)
       graphics::plot(x=c(0.6,0.4+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
       graphics::abline(h=omn, lty=2)
@@ -238,8 +258,7 @@ page_HomogeneityServer = function(id, rv, homog, cert) {
       graphics::boxplot(h_dat[,"value"] ~ h_dat[,"Flasche"], add=TRUE)
       graphics::mtext(text = paste("Overall mean =", omn), side = 3, line = 2.45, adj = 1)
       graphics::mtext(text = paste("Overall sd =", osd), side = 3, line = 1.3, adj = 1)
-      graphics::mtext(text = paste("ANOVA P =", anp), side = 3, line = 2.45, adj = 0)
-    }, height=500, width=shiny::reactive({input$h_Fig_width}))
+    }, height=500, width=shiny::reactive({fig_width()}))
 
     output$h_statement2 <- shiny::renderUI({
       shiny::req(h_Data(), input$h_sel_analyt)
@@ -266,13 +285,6 @@ page_HomogeneityServer = function(id, rv, homog, cert) {
       help_the_user("homogeneity_uncertainty")
     })
 
-    output$h_anova <- shiny::renderPrint({
-      shiny::req(h_Data(), input$h_sel_analyt)
-      h_dat <- h_Data()
-      h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
-      stats::anova(stats::lm(h_dat[,"value"] ~ h_dat[,"Flasche"]))
-    })
-
     h_transfer_U <- m_TransferUServer(
       id = "h_transfer",
       dat = shiny::reactive({h_vals()}),
@@ -283,7 +295,28 @@ page_HomogeneityServer = function(id, rv, homog, cert) {
       setValue(rv, c("General","materialtabelle"), h_transfer_U$value)
     }, ignoreInit = TRUE)
 
-    return(h_vals)
+    output$h_Report <- shiny::downloadHandler(
+      filename = function() { "Homogeneity_report.pdf" },
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it
+        rmdfile <- fnc_get_local_file("report_vorlage_homogeneity.Rmd")
+        # render the markdown file
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            out <- rmarkdown::render(
+              input = rmdfile,
+              output_file = file,
+              output_format = rmarkdown::pdf_document(),
+              params = list("Homogeneity" = shiny::reactiveValuesToList(getValue(rv,"Homogeneity"))),
+              envir = new.env(parent = globalenv())
+            )
+          },
+          message = "Rendering Homogeneity Report.."
+        )
+        return(out)
+      }
+    )
 
   })
 }

@@ -1,0 +1,5 @@
+### Homogeneity specimen stats
+
+To ensure the homogeneity of the reference material before conducting a collaborative trial, a number of specimen should be analyzed for the analytes of interest in $n$ replicate measurements.
+
+In Tab.2 each specimen has its unique ID (`Flasche`) and numeric values for `mean` and `sd`, complementary to the figure.

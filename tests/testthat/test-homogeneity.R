@@ -1,57 +1,43 @@
-testthat::test_that(
-  desc = "Successfull Upload Homogeneity",
-  code = {
-    rv <- reactiveClass$new(init_rv())
-    homog <- shiny::reactiveVal({eCerto:::test_homog()})
-    suppressMessages(
-      shiny::testServer(
-        app = eCerto::page_HomogeneityServer,
-        args = list(
-          rv = rv,
-          homog = homog,
-          cert = reactiveVal(NULL)
-        ),
-        expr =  {
-          session$flushReact()
-          testthat::expect_equal(
-            session$returned(),
-            structure(
-              list(
-                analyte = structure(c(1L, 1L, 2L, 2L), .Label = c("Fe", "Mg"), class = "factor"),
-                H_type = structure(c(1L, 2L, 1L, 2L), .Label = c("axial", "radial"), class = "factor"),
-                mean = c(0.290477358348616, 0.293019826162251, 0.290477358348616, 0.293492295767011),
-                n = c(3, 3, 3, 3),
-                N = c(8L, 7L, 8L, 7L),
-                MSamong = c(0.0001616864549794, 3.41774621935367e-05, 0.0001616864549794, 4.73597993286004e-05 ),
-                MSwithin = c(0.000172808526267237, 6.88779071226827e-05, 0.000172808526267237,7.14527186024597e-05),
-                P = c(0.506515192644658, 0.800936689331986, 0.506515192644658, 0.680855084728869),
-                s_bb = c(0, 0, 0, 0),
-                s_bb_min = c(0.0155359270305829, 0.0100532811338686, 0.0155359270305829,  0.0102229805818161)),
-              class = "data.frame", row.names = c(NA, -4L)))
-          # print(session$returned())
-        }
-      )
-    )
-  }
-)
+# testthat::test_that(
+#   desc = "Can generate H report",
+#   code = {
+#       app <- shinytest::ShinyDriver$new(
+#         shiny::shinyApp(
+#           ui = shiny::fluidPage(page_HomogeneityUI(id = "test")),
+#           server = function(input, output, session) {
+#             rv <- eCerto:::test_rv()
+#             mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
+#             attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
+#             isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
+#             isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
+#             page_HomogeneityServer(id = "test", rv = rv)
+#           }
+#         ), loadTimeout = 1e+05
+#       )
+#       #app$listWidgets()
+#       #app$getValue("test-h_sel_analyt")
+#       #app$getValue("test-h_statement2")
+#       app$click(name = "test-h_Report", iotype = "output")
+#   }
+# )
 
 testthat::test_that(
-  desc = "Successful Upload Homogeneity and Certification",
+  desc = "H analytes being found in C data",
   code = {
-    homog = shiny::reactiveVal({eCerto:::test_homog()})
-    cert = shiny::reactiveVal({eCerto:::test_certification()})
+    rv <- eCerto:::test_rv()
+    mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
+    attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
+    isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
+    isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
     shiny::testServer(
       app = eCerto::page_HomogeneityServer,
-      args = list(
-        homog = homog,
-        cert = cert
-      ),
+      args = list(rv = rv),
       expr =  {
-        session$setInputs(h_precision = 3)
+        session$setInputs(h_sel_analyt = "Fe.axial")
         session$flushReact()
         testthat::expect_equal(
           as.character(h_vals_print()[,"In_Cert_Module"]),
-          rep("Yes",4)
+          rep(c("Yes","No"), each=2)
         )
       }
     )
