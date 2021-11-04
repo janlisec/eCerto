@@ -118,59 +118,62 @@ page_CertificationUI = function(id) {
       # CertValPlot
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('CertValPlot') > -1",
-        ns = shiny::NS(id), # namespace of current module,
+        ns = shiny::NS(id),
         shiny::fluidRow(
           shiny::column(
-            width = 2,
+            width = 10,
             shiny::strong(
               shiny::actionLink(
                 inputId = ns("certifiedValuePlot_link"),
                 label = "Fig.1 Certified Value Plot"
               )
             ),
-            shiny::fluidRow(
-              shiny::column(
-                width = 6,
-                shiny::numericInput(
-                  inputId = ns("Fig01_width"),
-                  label = "width",
-                  value = 400
-                )
-              ),
-              shiny::column(
-                width = 6,
-                shiny::numericInput(
-                  inputId = ns("Fig01_height"),
-                  label = "height",
-                  value = 400
-                )
-              )
-            ),
-            shiny::fluidRow(
-              shiny::column(
-                width = 6,
-                shiny::strong("Download"),
-                shiny::br(),
-                shiny::downloadButton(outputId = ns('Fig01'), label = "Figure")
-              ),
-              shiny::column(
-                width = 6,
-                shiny::checkboxInput(inputId = ns("annotate_id"), label = "Show IDs", value = FALSE)
-              )
-            ),
-            shiny::p(),
-            shiny::fluidRow(
-              shiny::column(width = 6, shiny::strong("mean")),
-              shiny::column(width = 6, shiny::strong("sd"))
-            ),
-            shiny::fluidRow(
-              shiny::column(width = 6, shiny::textOutput(ns("cert_mean"))),
-              shiny::column(width = 6, shiny::textOutput(ns("cert_sd")))
-            ),
+            shiny::plotOutput(ns("overview_CertValPlot"), inline = FALSE)
           ),
-          shiny::column(width = 10, shiny::plotOutput(
-            ns("overview_CertValPlot"), inline = TRUE
-          ))
+          shiny::column(
+            width = 2,
+            shiny::wellPanel(
+              shiny::fluidRow(
+                shiny::column(
+                  width = 6,
+                  shiny::numericInput(
+                    inputId = ns("Fig01_width"),
+                    label = "width",
+                    value = 400
+                  )
+                ),
+                shiny::column(
+                  width = 6,
+                  shiny::numericInput(
+                    inputId = ns("Fig01_height"),
+                    label = "height",
+                    value = 400
+                  )
+                )
+              ),
+              shiny::fluidRow(
+                shiny::column(
+                  width = 6,
+                  shiny::strong("Download"),
+                  shiny::br(),
+                  shiny::downloadButton(outputId = ns('Fig01'), label = "Figure")
+                ),
+                shiny::column(
+                  width = 6,
+                  shiny::checkboxInput(inputId = ns("annotate_id"), label = "Show IDs", value = FALSE)
+                )
+              ),
+              shiny::p(),
+              shiny::fluidRow(
+                shiny::column(width = 6, shiny::strong("mean")),
+                shiny::column(width = 6, shiny::strong("sd"))
+              ),
+              shiny::fluidRow(
+                shiny::column(width = 6, shiny::textOutput(ns("cert_mean"))),
+                shiny::column(width = 6, shiny::textOutput(ns("cert_sd")))
+              )
+            )
+          )
         )
       ),
       # materialtabelle (mandatory)

@@ -26,15 +26,23 @@
 m_DataViewUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::wellPanel(
-      shiny::selectInput(
-        width = "200px",
-        inputId = ns("data_view_select"), # previously opt_show_files
-        label = "Data view",
-        choices = c("kompakt", "standard"),
-        selected = "none"
+    shiny::fluidRow(
+      shiny::column(
+        width = 10,
+        DT::dataTableOutput(ns("flt_Input_Data"))
       ),
-      DT::dataTableOutput(ns("flt_Input_Data"))
+      shiny::column(
+        width = 2,
+        shiny::wellPanel(
+          shiny::selectInput(
+            width = "200px",
+            inputId = ns("data_view_select"), # previously opt_show_files
+            label = "Data view",
+            choices = c("kompakt", "standard"),
+            selected = "none"
+          )
+        )
+      )
     )
   )
 }

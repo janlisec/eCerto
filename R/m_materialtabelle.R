@@ -46,28 +46,27 @@ m_materialtabelleUI <- function(id) {
 
   shiny::fluidRow(
     shiny::column(
-      width = 2,
+      width = 10,
       shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Tab.3 Material Certification")),
-      shiny::br(),
-      # shiny::checkboxInput(
-      #   inputId = ns("pooling"),
-      #   label = "pooling",
-      #   value = FALSE
-      # ),
-      shiny::fluidRow(
-        shiny::column(
-          width = 6, align = "center", "F",
-          shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = "110%"),
-          shiny::actionButton(inputId = ns("c_remF"), label = "Remove", width = "110%")
-        ),
-        shiny::column(
-          width = 6, align = "center", "U",
-          shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = "110%"),
-          shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "110%")
-        ),
-      )
+      DT::DTOutput(shiny::NS(id, "matreport"))
     ),
-    shiny::column(10, DT::DTOutput(shiny::NS(id, "matreport")))
+    shiny::column(
+      width = 2,
+      shiny::wellPanel(
+        shiny::fluidRow(
+          shiny::column(
+            width = 6, align = "center", "F",
+            shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = "110%"),
+            shiny::actionButton(inputId = ns("c_remF"), label = "Remove", width = "110%")
+          ),
+          shiny::column(
+            width = 6, align = "center", "U",
+            shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = "110%"),
+            shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "110%")
+          ),
+        )
+      )
+    )
   )
 }
 

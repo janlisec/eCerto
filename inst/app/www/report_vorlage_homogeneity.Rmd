@@ -14,16 +14,15 @@ params:
 ```{r data, echo=FALSE}
 # get a local representation of all data provided by Shiny
 H <- params$Homogeneity
-h_dat <- H[["data"]]
 ```
 
-`r ifelse(length(unique(h_dat[,"analyte"])>=2), "These are the Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
+`r ifelse(length(unique(H[["data"]][,"analyte"])>=2), "These are the Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
 
 ```{r, echo=FALSE, comment=NA}
 h_precision <- 4
-if (!("H_type" %in% colnames(h_dat))) h_dat[,"H_type"] <- factor(rep("hom",nrow(h_dat)))
-for (a in levels(interaction(h_dat[,"analyte"],h_dat[,"H_type"]))) {
-  tmp <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==a,]
+if (!("H_type" %in% colnames(H[["data"]]))) H[["data"]][,"H_type"] <- factor(rep("hom",nrow(H[["data"]])))
+for (a in levels(interaction(H[["data"]][,"analyte"],H[["data"]][,"H_type"]))) {
+  tmp <- H[["data"]][interaction(H[["data"]][,"analyte"],H[["data"]][,"H_type"])==a,]
   tmp[,"Flasche"] <- factor(tmp[,"Flasche"])
   omn <- round(mean(tmp[,"value"],na.rm=T), h_precision)
   osd <- round(stats::sd(tmp[,"value"],na.rm=T), h_precision)

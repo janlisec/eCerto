@@ -61,7 +61,7 @@ page_HomogeneityUI <- function(id) {
           ),
           DT::dataTableOutput(ns("h_vals"))
         ),
-        shiny::column(2, m_TransferUUI(ns("h_transfer")))
+        shiny::column(2, shiny::wellPanel(m_TransferUUI(ns("h_transfer"))))
       ),
       shiny::p(),
       shiny::fluidRow(
@@ -84,9 +84,11 @@ page_HomogeneityUI <- function(id) {
         ),
         shiny::column(
           width = 2,
-          shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices=""),
-          shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
-          shiny::downloadButton(ns("h_Report"), label="Download")
+          shiny::wellPanel(
+            shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices=""),
+            shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
+            shiny::downloadButton(ns("h_Report"), label="Download")
+          )
         )
       )
     )
@@ -251,13 +253,13 @@ page_HomogeneityServer = function(id, rv) {
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
       omn <- round(mean(h_dat[,"value"],na.rm=T), precision())
       osd <- round(stats::sd(h_dat[,"value"],na.rm=T), precision())
-      graphics::par(mar=c(5,4,6,0)+0.1)
+      graphics::par(mar=c(5,4,2.5,0)+0.1)
       graphics::plot(x=c(0.6,0.4+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
       graphics::abline(h=omn, lty=2)
       graphics::abline(h=omn+c(-1,1)*osd, lty=2, col=grDevices::grey(0.8))
       graphics::boxplot(h_dat[,"value"] ~ h_dat[,"Flasche"], add=TRUE)
-      graphics::mtext(text = paste("Overall mean =", omn), side = 3, line = 2.45, adj = 1)
-      graphics::mtext(text = paste("Overall sd =", osd), side = 3, line = 1.3, adj = 1)
+      graphics::mtext(text = paste("Overall mean =", omn), side = 3, line = 1.5, adj = 1)
+      graphics::mtext(text = paste("Overall sd =", osd), side = 3, line = 0.25, adj = 1)
     }, height=500, width=shiny::reactive({fig_width()}))
 
     output$h_statement2 <- shiny::renderUI({

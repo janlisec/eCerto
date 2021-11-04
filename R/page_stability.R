@@ -52,21 +52,25 @@ page_StabilityUI <- function(id) {
             ),
             DT::dataTableOutput(ns("s_vals"))
           ),
-          shiny::column(width = 2, m_TransferUUI(id = ns("s_transfer")))
+          shiny::column(width = 2, shiny::wellPanel(m_TransferUUI(id = ns("s_transfer"))))
         ),
         shiny::p(),
         shiny::fluidRow(
-          shiny::column(width = 4, DT::dataTableOutput(ns("s_overview"))),
+          shiny::column(width = 2, DT::dataTableOutput(ns("s_overview"))),
           shiny::column(
             width = 8,
-            shiny::fluidRow(
-              shiny::column(6,shiny::uiOutput(ns("s_sel_analyte"))),
-              shiny::column(6,shiny::uiOutput(ns("s_sel_dev")))),
             shiny::fluidRow(
               shiny::plotOutput(ns("s_plot")),
               shiny::uiOutput(ns("s_info"))
             )
-          )
+          ),
+          shiny::column(
+            width = 2,
+            shiny::wellPanel(
+              shiny::uiOutput(ns("s_sel_analyte")),
+              shiny::uiOutput(ns("s_sel_dev"))
+            )
+          ),
         )
       )
     )
