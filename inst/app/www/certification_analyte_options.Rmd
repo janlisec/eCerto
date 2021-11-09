@@ -1,0 +1,13 @@
+### Analyte Options
+
+For analytes under inspection (i.e. which are selected in `Tab.3 - Material certification`), several analyte specific parameters can be set. 
+
+![Possible options which can be set per individual analyte](C_Modul_AnalyteOptions.png)
+
+Samples can be filtered by ID (Hint: you can select to show sample IDs in Fig.1 to identify outlier IDs). These samples will not be used in any calculations. They are removed from downstream processing right after import. However, information of this filtering step is kept and included in reports.
+
+Labs can be excluded by Lab-ID. Please note, that this is done after statistical testing for mean and variance outliers. Filtered labs are even depicted in Fig.1 (using grey color). However, they are not used to calculate the certified value of the analyte.
+
+For material containing analyte entities measured at very different scales it is possible to specify independent rounding precision for data import (number of significant digits used in statistical tests) and data export (number of significant digits used in `Tab.3 - Material certification`). Please note that relative uncertainty terms are alway rounded using a fixed precision of 4 digits.
+
+`pooling` means that calculations in the material table (`mean`, `sd` and uncertainty columns) are not based on the lab means, but rather on all measured values. This is justified when the between lab variance is smaller than the within lab variance. Selecting this option will also affect `n` in `Tab.3 - Material certification` being either the number of included labs or the number of finite data points from these labs.

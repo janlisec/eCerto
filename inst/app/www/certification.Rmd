@@ -3,6 +3,9 @@
 ```{r child = 'certification_dataupload.Rmd'}
 ```
 
+```{r child = 'certification_analyte_options.Rmd'}
+```
+
 ```{r child = 'certification_laboratoryStatistics.Rmd'}
 ```
 

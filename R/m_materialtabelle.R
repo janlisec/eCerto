@@ -172,6 +172,12 @@ m_materialtabelleServer <- function(id, rv) {
     }
 
     # add a correction factor column
+    err_txt <- shiny::reactiveVal(NULL)
+    shiny::observeEvent(err_txt(), {
+      shinyalert::shinyalert(text = err_txt(), type = "info")
+      err_txt(NULL)
+    }, ignoreNULL = TRUE)
+
     shiny::observeEvent(input$c_addF, {
       cc <- attr(mater_table(), "col_code")
       # get smallest index number available
@@ -182,12 +188,16 @@ m_materialtabelleServer <- function(id, rv) {
         callbackR = function(value) {
           if (value) {
             mt <- mater_table()
-            cc <- rbind(cc, data.frame("ID"=paste0("F",n), "Name"=input$tmp))
-            nc <- matrix(rep(1,nrow(mt)), ncol=1, dimnames=list(rownames(mt), paste0("F",n)))
-            cp <- which(colnames(mt)=="cert_val")
-            mt <- cbind(mt[,1:(cp-1)], nc, mt[,cp:ncol(mt)])
-            attr(mt, "col_code") <- cc
-            mater_table(mt)
+            if (input$tmp %in% colnames(mt)) {
+              err_txt("Sorry, I can't add this column. Please specify a unique column name.")
+            } else {
+              cc <- rbind(cc, data.frame("ID"=paste0("F",n), "Name"=input$tmp))
+              nc <- matrix(rep(1,nrow(mt)), ncol=1, dimnames=list(rownames(mt), paste0("F",n)))
+              cp <- which(colnames(mt)=="cert_val")
+              mt <- cbind(mt[,1:(cp-1)], nc, mt[,cp:ncol(mt)])
+              attr(mt, "col_code") <- cc
+              mater_table(mt)
+            }
           }
         }
       )
@@ -199,7 +209,7 @@ m_materialtabelleServer <- function(id, rv) {
         choices <- cc[substr(cc[,"ID"],1,1)=="F","Name"]
         shinyalert::shinyalert(
           html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = session$ns("tmp"), label = "Select to remove", choices = choices)),
-          cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "xs",
+          cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "s",
           callbackR = function(value) {
             if (value) {
               mt <- mater_table()
@@ -224,7 +234,7 @@ m_materialtabelleServer <- function(id, rv) {
             shiny::selectInput(inputId = session$ns("tmp"), label = "Select F column", choices = choices),
             shiny::textInput(inputId = session$ns("tmp2"), label = "New Column Name")
           ),
-          cancelButtonText = "Cancel", confirmButtonText = "Rename", showCancelButton = TRUE, size = "xs",
+          cancelButtonText = "Cancel", confirmButtonText = "Rename", showCancelButton = TRUE, size = "s",
           callbackR = function(value) {
             if (value) {
               mt <- mater_table()
@@ -245,20 +255,23 @@ m_materialtabelleServer <- function(id, rv) {
       n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[,"ID"],1,1)=="U","ID"],2,2)))))
       shinyalert::shinyalert(
         html = TRUE, text = shiny::tagList(shiny::textInput(inputId = session$ns("tmp"), label = "Type name to add", value = paste0("U",n))),
-        cancelButtonText = "Cancel", confirmButtonText = "Add", showCancelButton = TRUE, size = "xs",
+        cancelButtonText = "Cancel", confirmButtonText = "Add", showCancelButton = TRUE, size = "s",
         callbackR = function(value) {
           if (value) {
             mt <- mater_table()
-            cc <- rbind(cc, data.frame("ID"=paste0("U",n), "Name"=input$tmp))
-            nc <- matrix(rep(0,nrow(mt)), ncol=1, dimnames=list(rownames(mt), paste0("U",n))) # new data column
-            cp <- which(colnames(mt)=="com") # column position where to include the new data
-            mt <- cbind(mt[,1:(cp-1)], nc, mt[,cp:ncol(mt)])
-            attr(mt, "col_code") <- cc
-            mater_table(mt)
+            if (input$tmp %in% colnames(mt)) {
+              err_txt("Sorry, I can't add this column. Please specify a unique column name.")
+            } else {
+              cc <- rbind(cc, data.frame("ID"=paste0("U",n), "Name"=input$tmp))
+              nc <- matrix(rep(0,nrow(mt)), ncol=1, dimnames=list(rownames(mt), paste0("U",n))) # new data column
+              cp <- which(colnames(mt)=="com") # column position where to include the new data
+              mt <- cbind(mt[,1:(cp-1)], nc, mt[,cp:ncol(mt)])
+              attr(mt, "col_code") <- cc
+              mater_table(mt)
+            }
           }
         }
       )
-
     })
     # remove a uncertainty factor column
     shiny::observeEvent(input$c_remU, {
@@ -268,7 +281,7 @@ m_materialtabelleServer <- function(id, rv) {
         choices <- cc[substr(cc[,"ID"],1,1)=="U","Name"]
         shinyalert::shinyalert(
           html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = session$ns("tmp"), label = "Select to remove", choices = choices)),
-          cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "xs",
+          cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "s",
           callbackR = function(value) {
             if (value) {
               mt <- mater_table()
@@ -293,7 +306,7 @@ m_materialtabelleServer <- function(id, rv) {
             shiny::selectInput(inputId = session$ns("tmp"), label = "Select U column", choices = choices),
             shiny::textInput(inputId = session$ns("tmp2"), label = "New Column Name")
           ),
-          cancelButtonText = "Cancel", confirmButtonText = "Rename", showCancelButton = TRUE, size = "xs",
+          cancelButtonText = "Cancel", confirmButtonText = "Rename", showCancelButton = TRUE, size = "s",
           callbackR = function(value) {
             if (value) {
               mt <- mater_table()
