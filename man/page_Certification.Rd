@@ -35,14 +35,7 @@ shiny::shinyApp(
    page_CertificationUI(id = "test")
  ),
  server = function(input, output, session) {
-  rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-  shiny::isolate({
-  testdata <- eCerto:::test_Certification_Excel()
-  eCerto::setValue(rv, c("Certification","data"), testdata)
-  eCerto::setValue(rv, c("General","apm"), eCerto::init_apm(testdata))
-  an <- levels(testdata[,"analyte"])
-  eCerto::setValue(rv, c("General","materialtabelle"), init_materialTabelle(an))
-  })
+  rv <- eCerto:::test_rv()
  page_CertificationServer(id = "test", rv = rv)
  }
 )

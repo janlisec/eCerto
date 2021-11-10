@@ -1,6 +1,6 @@
 #' Initializes material table for materialtabelle module
 #'
-#' @param analytes the available analytes
+#' @param analytes Character vector of analyte names.
 #'
 #' @return a data frame
 #' @export

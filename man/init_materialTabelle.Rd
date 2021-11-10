@@ -7,7 +7,7 @@
 init_materialTabelle(analytes)
 }
 \arguments{
-\item{analytes}{the available analytes}
+\item{analytes}{Character vector of analyte names.}
 }
 \value{
 a data frame

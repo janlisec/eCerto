@@ -1,8 +1,4 @@
-#' @name mod_materialtabelle
-#' @aliases m_materialtabelleUI
-#' @aliases m_materialtabelleServer
-#'
-#' @title Modul "Materialtabelle"
+#' @title m_materialtabelle.
 #'
 #'@description
 #'\code{m_materialtabelle}
@@ -18,26 +14,19 @@
 #'@examples
 #' if (interactive()) {
 #' shiny::shinyApp(
-#'  ui = shiny::fluidPage(shinyalert::useShinyalert(),
-#'    m_materialtabelleUI(id = "test")),
+#'  ui = shiny::fluidPage(
+#'    shinyalert::useShinyalert(),
+#'    m_materialtabelleUI(id = "test")
+#'  ),
 #'  server = function(input, output, session) {
-#'  rv <- reactiveClass$new(init_rv())
-#'  shiny::isolate({
-#'  eCerto::setValue(rv, c("Certification","data"),
-#'    eCerto:::test_certification()[["data"]])
-#'  eCerto::setValue(rv, c("General","apm"),
-#'    eCerto::init_apm(eCerto:::test_certification()[["data"]]))
-#'  an <- names(eCerto::getValue(rv, c("General","apm")))
-#'  eCerto::setValue(rv, c("General","materialtabelle"),
-#'    eCerto::init_materialTabelle(an))
-#'  })
+#'  rv <- eCerto:::test_rv()
 #'  out <- m_materialtabelleServer(id = "test", rv=rv)
 #'  observeEvent(out(), {print(out())})
 #'  }
 #' )
 #' }
 #'
-#' @rdname mod_materialtabelle
+#' @rdname materialtabelle
 #' @export
 #'
 m_materialtabelleUI <- function(id) {
@@ -72,7 +61,7 @@ m_materialtabelleUI <- function(id) {
   )
 }
 
-#' @rdname mod_materialtabelle
+#' @rdname materialtabelle
 #' @export
 m_materialtabelleServer <- function(id, rv) {
 
@@ -82,6 +71,13 @@ m_materialtabelleServer <- function(id, rv) {
 
     # analyte name of the currently selected row of  mat_tab
     out <- shiny::reactiveVal(NULL)
+
+    # use err_txt to provide error messages to the user
+    err_txt <- shiny::reactiveVal(NULL)
+    shiny::observeEvent(err_txt(), {
+      shinyalert::shinyalert(text = err_txt(), type = "info")
+      err_txt(NULL)
+    }, ignoreNULL = TRUE)
 
     pooling <- shiny::reactive({
       shiny::req(out())
@@ -104,7 +100,21 @@ m_materialtabelleServer <- function(id, rv) {
         mt <- cbind(mt, "U_abs"=NA)
         attr(mt, "col_code") <- cc
       }
-      # removal of unsed columns works for legacy data but is also removing just added columns if they have a standard name (e.g. 'F1')
+      # add a column for analyte unit if not yet present
+      if (!("unit" %in% colnames(mt))) {
+        cc <- attr(mt, "col_code")
+        df <- getValue(rv, c("Certification","data"))
+        units <- sapply(split(as.character(df[,"unit"]), df[,"analyte"]), unique)
+        if (identical(names(units), as.character(mt[,"analyte"]))) {
+          if (!silent) message("[materialtabelle] Set analyte units for 'mt' from 'rv C data'")
+          mt <- cbind(mt, "unit"=units)
+        } else {
+          err_txt("[materialtabelle] Can't set analyte units for Tab.3 - Material table")
+          mt <- cbind(mt, "unit"=rep("", nrow(mt)))
+        }
+        attr(mt, "col_code") <- cc
+      }
+      # removal of unused columns works for legacy data but is also removing just added columns if they have a standard name (e.g. 'F1')
       #mt <- remove_unused_cols(mt=mt)
       if (!identical(mater_table(), mt)) {
         if (!silent) message("[materialtabelle] set local 'mt' from 'rv'")
@@ -170,13 +180,6 @@ m_materialtabelleServer <- function(id, rv) {
       }
       invisible(mt)
     }
-
-    # add a correction factor column
-    err_txt <- shiny::reactiveVal(NULL)
-    shiny::observeEvent(err_txt(), {
-      shinyalert::shinyalert(text = err_txt(), type = "info")
-      err_txt(NULL)
-    }, ignoreNULL = TRUE)
 
     shiny::observeEvent(input$c_addF, {
       cc <- attr(mater_table(), "col_code")

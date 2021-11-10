@@ -79,6 +79,8 @@ page_startServer = function(id, rv, tde) {
 
     ns <- shiny::NS(id)
 
+    silent <- get_golem_config("silent")
+
     # Certification, Homogeneity, Stability -----------------------------------
     shiny::updateSelectInput(
       inputId = "moduleSelect",
@@ -119,15 +121,13 @@ page_startServer = function(id, rv, tde) {
 
     # when Excel was uploaded with LOAD-Button...
     shiny::observeEvent(ExcelUp$data, {
-      # ToDo: make silent a global parameter
-      #if (!silent) message("app_server: (Excel Upload) set rv.Data; set rv.Uploadsource")
+      if (!silent) message("[page_start] (Excel Upload) set rv.Data; set rv.Uploadsource")
       ex_frm <- input$moduleSelect
       setValue(rv, c(ex_frm, "data"), ExcelUp$data)
       setValue(rv, c(ex_frm, "input_files"), ExcelUp$input_files)
       setValue(rv, c(ex_frm, "uploadsource"), value = "Excel")
       if (ex_frm=="Certification") {
         # (re)initiate apm and materialtabelle
-        #browser()
         setValue(rv, c("General","apm"), init_apm(getValue(rv, c("Certification", "data"))))
         setValue(rv, c("General","materialtabelle"), init_materialTabelle(levels(getValue(rv, c("Certification", "data"))[,"analyte"])))
       }

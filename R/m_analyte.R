@@ -3,12 +3,14 @@
 #' @details Note! This module will modify a reactive variable apm() provided to the module as a parameter
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param apm reactiveValues object, which gives available parameters for each analyte.
+#' @param rv reactiveValues object, which gives available parameters for each analyte.
 #' @param selected_tab The currently selected analyte (as valid name from apm). Reactive.
 #' @param allow_selection Set to TRUE for testing purposes only.
 #'
 #' @noRd
 #' @keywords internal
+#'
+#' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
@@ -16,14 +18,16 @@
 #'    shinyjs::useShinyjs(),
 #'    m_analyteUI(id = "test")),
 #'  server = function(input, output, session) {
-#'    apm <- shiny::reactiveVal(eCerto::init_apm())
+#'    rv <- eCerto:::test_rv()
 #'    m_analyteServer(
 #'      id = "test",
-#'      apm = apm,
-#'      selected_tab = shiny::reactiveVal("A1"),
+#'      rv = rv,
+#'      selected_tab = shiny::reactiveVal("Si"),
 #'      allow_selection = TRUE
 #'    )
-#'    observeEvent(apm(), {print(apm())})
+#'    shiny::observeEvent(eCerto::getValue(rv, c("General","apm")), {
+#'      print(eCerto::getValue(rv, c("General","apm")))
+#'    })
 #'  }
 #' )
 #' }
@@ -100,12 +104,20 @@ m_analyteUI = function(id) {
 
 #' @noRd
 #' @keywords internal
-m_analyteServer = function(id, apm, selected_tab, allow_selection=FALSE) {
+m_analyteServer = function(id, rv, selected_tab, allow_selection=FALSE) {
 
-  stopifnot(shiny::is.reactive(apm))
   stopifnot(shiny::is.reactive(selected_tab))
 
   shiny::moduleServer(id, function(input, output, session) {
+
+    apm <- shiny::reactiveVal() # make a local copy of apm
+    shiny::observeEvent(getValue(rv, c("General","apm")), {
+      # attach the unit information if not yet present
+      #browser()
+      if (!identical(getValue(rv, c("General","apm")), apm())) {
+        apm(getValue(rv, c("General","apm")))
+      }
+    }, ignoreNULL = TRUE)
 
     if (!allow_selection) {
       shiny::updateSelectInput(
@@ -200,7 +212,7 @@ m_analyteServer = function(id, apm, selected_tab, allow_selection=FALSE) {
           )
         }
       }
-    })
+    }, ignoreNULL = FALSE, ignoreInit=TRUE)
 
     # update apm in case of changes in lab_filter inputs
     shiny::observeEvent(input$lab_filter, {
@@ -242,6 +254,14 @@ m_analyteServer = function(id, apm, selected_tab, allow_selection=FALSE) {
       shiny::req(apm())
       selected_tab(input$Name)
     })
+
+    # whenever the analyte parameter like lab filter, sample filter etc are changed
+    shiny::observeEvent(apm(), {
+      if (!identical(getValue(rv, c("General","apm")), apm())) {
+        message("[m_analyte] apm changed, set rv.apm")
+        setValue(rv, c("General","apm"), apm())
+      }
+    }, ignoreNULL = TRUE)
 
   })
 }

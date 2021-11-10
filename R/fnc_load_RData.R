@@ -24,8 +24,7 @@
 #'
 fnc_load_RData <- function(x = NULL) {
 
-  # ToDo make silent global parameter
-  silent <- FALSE
+  silent <- get_golem_config("silent")
 
   shiny::isolate({
     rv <- reactiveClass$new(init_rv())
@@ -93,10 +92,9 @@ fnc_load_RData <- function(x = NULL) {
         mt <- x[["Certification"]][["cert_vals"]]
         setValue(rv,c("General","materialtabelle"), mt)
         # apm
-        setValue(rv,c("General","apm"),init_apm(x[["Certification"]][["data_input"]]))
+        setValue(rv,c("General","apm"), init_apm(x[["Certification"]][["data_input"]]))
         apm <- getValue(rv,c("General","apm"))
         # ensure that analytes in apm and materialtabelle are in similar order
-        #browser()
         if (!all(names(apm)==as.character(mt[,"analyte"]))) {
           setValue(rv,c("General","apm"), apm[sapply(as.character(mt[,"analyte"]), function(an) { which(names(apm)==an) })])
         }
@@ -121,6 +119,7 @@ fnc_load_RData <- function(x = NULL) {
       }
       setValue(rv,c("General","time_stamp"),Sys.time())
     }
+    shinyalert::shinyalert(text = "This is an import from a previous data fromat. Please note that some additional parameters are available in the current version of eCerto which could not be restored from this RData file but are set to standard values (e.g. 'precision export' and 'pooling').", type = "info")
   })
 
   return(rv)

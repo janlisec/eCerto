@@ -21,13 +21,7 @@ A filtered data frame (S_flt, L_flt) without missing values.
 tbd.
 }
 \examples{
-rv <- reactiveClass$new(init_rv())
-shiny::isolate({
-eCerto::setValue(rv, c("Certification","data"),
- eCerto:::test_certification()[["data"]])
-eCerto::setValue(rv, c("General","apm"),
- eCerto::init_apm(eCerto:::test_certification()[["data"]]))
-fnc_filter_data(rv = rv, an="Si")
-})
+rv <- eCerto:::test_rv()
+shiny::isolate(fnc_filter_data(rv = rv, an="Si"))
 
 }

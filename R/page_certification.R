@@ -24,14 +24,8 @@
 #'    page_CertificationUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-#'   shiny::isolate({
-#'   testdata <- eCerto:::test_Certification_Excel()
-#'   eCerto::setValue(rv, c("Certification","data"), testdata)
-#'   eCerto::setValue(rv, c("General","apm"), eCerto::init_apm(testdata))
-#'   an <- levels(testdata[,"analyte"])
-#'   eCerto::setValue(rv, c("General","materialtabelle"), init_materialTabelle(an))
-#'   })
+
+#'   rv <- eCerto:::test_rv()
 #'  page_CertificationServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -188,14 +182,6 @@ page_CertificationServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    apm <- shiny::reactiveVal() # what will be returned by the module
-    shiny::observeEvent(getValue(rv, c("General","apm")), {
-      if (!identical(getValue(rv, c("General","apm")), apm())) {
-        apm(getValue(rv, c("General","apm")))
-      }
-    }, ignoreNULL = TRUE)
-
-    # --- --- --- --- --- --- --- --- --- --- ---
     # Materialtabelle is embedded in Certification-UI, that's why it is here
     selected_tab <- m_materialtabelleServer(id = "mat_cert", rv = rv)
 
@@ -214,7 +200,7 @@ page_CertificationServer = function(id, rv) {
 
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
-    m_analyteServer("analyteModule", apm, selected_tab, allow_selection=FALSE)
+    m_analyteServer("analyteModule", rv, selected_tab, allow_selection=FALSE)
 
     # --- --- --- --- --- --- --- --- --- --- ---
     # report module
@@ -223,7 +209,7 @@ page_CertificationServer = function(id, rv) {
     # --- --- --- --- --- --- --- --- --- --- ---
     precision <- shiny::reactive({
       shiny::req(selected_tab())
-      apm()[[selected_tab()]][["precision"]]
+      getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]]
     })
 
     # this data.frame contains the following columns for each analyte:
@@ -294,7 +280,7 @@ page_CertificationServer = function(id, rv) {
     # FIGURE DOWNLOAD
     output$Fig01 <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", apm()[[selected_tab()]][["name"]], "_Fig01.pdf")
+        paste0(getValue(rv, c("General","study_id")), "_", getValue(rv, c("General","apm"))[[selected_tab()]][["name"]], "_Fig01.pdf")
       },
       content = function(file) {
         grDevices::pdf(file = file, width = input$Fig01_width/72, height = input$Fig01_height/72)
@@ -310,7 +296,7 @@ page_CertificationServer = function(id, rv) {
           shiny::plotOutput(session$ns("qqplot")),
           size = "m",
           easyClose = TRUE,
-          title = paste("QQ Plot", apm()[[selected_tab()]][["name"]], sep=" - ")
+          title = paste("QQ Plot", getValue(rv, c("General","apm"))[[selected_tab()]][["name"]], sep=" - ")
         )
       )
     })
@@ -372,14 +358,6 @@ page_CertificationServer = function(id, rv) {
     shiny::observeEvent(input$certifiedValuePlot_link, {
       help_the_user("certification_boxplot")
     })
-
-    # whenever the analyte parameter like lab filter, sample filter etc are changed
-    shiny::observeEvent(apm(), {
-      if (!identical(getValue(rv, c("General","apm")), apm())) {
-        message("[certification] apm changed, set rv.apm")
-        setValue(rv, c("General","apm"), apm())
-      }
-    }, ignoreNULL = TRUE)
 
   })
 }
