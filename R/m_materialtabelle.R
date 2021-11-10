@@ -188,7 +188,7 @@ m_materialtabelleServer <- function(id, rv) {
         callbackR = function(value) {
           if (value) {
             mt <- mater_table()
-            if (input$tmp %in% colnames(mt)) {
+            if (input$tmp %in% c(colnames(mt), cc[,"Name"])) {
               err_txt("Sorry, I can't add this column. Please specify a unique column name.")
             } else {
               cc <- rbind(cc, data.frame("ID"=paste0("F",n), "Name"=input$tmp))
@@ -259,7 +259,7 @@ m_materialtabelleServer <- function(id, rv) {
         callbackR = function(value) {
           if (value) {
             mt <- mater_table()
-            if (input$tmp %in% colnames(mt)) {
+            if (input$tmp %in% c(colnames(mt), cc[,"Name"])) {
               err_txt("Sorry, I can't add this column. Please specify a unique column name.")
             } else {
               cc <- rbind(cc, data.frame("ID"=paste0("U",n), "Name"=input$tmp))
