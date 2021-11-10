@@ -118,8 +118,8 @@ fnc_load_RData <- function(x = NULL) {
         setValue(rv,c("Stability","s_vals"),x[["Stability"]][["s_vals"]])
       }
       setValue(rv,c("General","time_stamp"),Sys.time())
+      shinyalert::shinyalert(text = "This is an import from a previous data fromat. Please note that some additional parameters are available in the current version of eCerto which could not be restored from this RData file but are set to standard values (e.g. 'precision export' and 'pooling').", type = "info")
     }
-    shinyalert::shinyalert(text = "This is an import from a previous data fromat. Please note that some additional parameters are available in the current version of eCerto which could not be restored from this RData file but are set to standard values (e.g. 'precision export' and 'pooling').", type = "info")
   })
 
   return(rv)
