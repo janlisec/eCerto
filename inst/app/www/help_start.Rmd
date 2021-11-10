@@ -1,5 +1,5 @@
 ---
-title: "BAM tools help page"
+title: "*eCerto* help content"
 output:
   html_document:
     toc: true
@@ -24,7 +24,7 @@ output:
 
 # Long Term Stability (LTS)
 
-***Note!*** This module might be moved to an independent shiny app in the future.
+***Note!*** This module will probably be moved to an independent shiny app in the future.
 
 ```{r child = 'lts.Rmd'}
 ```

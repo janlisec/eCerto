@@ -8,14 +8,12 @@
 \usage{
 m_RDataExport_UI(id)
 
-m_RDataexport_Server(id, rv, silent = FALSE)
+m_RDataexport_Server(id, rv)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
 \item{rv}{ReavtiveValues $$.}
-
-\item{silent}{Option to print or omit status messages.}
 }
 \value{
 rdata A reactive, but only for notifying the navbarpanel to change

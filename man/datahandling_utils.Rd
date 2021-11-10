@@ -10,6 +10,7 @@
 \alias{roundMT}
 \alias{pn}
 \alias{update_reactivecell}
+\alias{sub_header}
 \title{setValue.}
 \usage{
 setValue(df, key, value)
@@ -27,6 +28,8 @@ roundMT(value, precision = NULL)
 pn(n = NULL, p = 4L)
 
 update_reactivecell(r, colname, analyterow = NULL, value)
+
+sub_header(txt = "test", l = 0, b = 2)
 }
 \arguments{
 \item{df}{An object of class R6.}
@@ -35,7 +38,7 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 
 \item{value}{value to be updated}
 
-\item{x}{data frame with uploaded excel table}
+\item{x}{Data frame with uploaded excel table.}
 
 \item{filepath}{the path to a single or multiple excel file(s)}
 
@@ -56,6 +59,12 @@ update_reactivecell(r, colname, analyterow = NULL, value)
 \item{colname}{name of the column}
 
 \item{analyterow}{name of the analyte-row. If NULL, whole column is updated}
+
+\item{txt}{The sub_header text to format.}
+
+\item{l}{Left margin in percent.}
+
+\item{b}{Bottom margin left in percent.}
 }
 \value{
 Nothing. The R6 object is updated automatically.
@@ -73,21 +82,40 @@ the rounded value
 numbers formatted
 
 nothing directly
+
+HTML to include in UI.
 }
 \description{
 General access to data object (so data object can maybe get changed without that much code edit)
 
 Returns element. If 'key' is used, reactivity not working correctly.
 Preferable way for calling \code{getValue(df, key)}, see example
+
+Creates long pivot table in laboratory style after load.
+
+Loads names of Excel sheets.
+
+Set source of upload for an element.
+
+Rounds material table.
+
+Format a number by rounding to a precision in same width as
+character using scientific notation for numbers < precision and rounding
+to precision otherwise.
+
+Update single or multiple cells of the final materialtabelle
+(formerly cert_vals) with new values.
+
+Format a text as bold paragraph and with specific left/bottom margin.
 }
 \examples{
-rv <- reactiveClass$new(init_rv())
 # Only run examples in interactive R sessions
 if (interactive()) {
- setValue(rv, c("Certification","data"), 5)
- getValue(rv, c("Certification","data")) # is 5?
- setValue(rv, c("General","user"),"Franz")
- getValue(rv, c("General","user"))
+  rv <- reactiveClass$new(init_rv())
+  setValue(rv, c("Certification","data"), 5)
+  getValue(rv, c("Certification","data")) # is 5?
+  setValue(rv, c("General","user"),"Franz")
+  getValue(rv, c("General","user"))
 }
 if (interactive()) {
   rv = init_rv()
@@ -95,4 +123,6 @@ if (interactive()) {
 }
 roundMT(34.3434,3)
 pn(n=c(1.23456, NA, 0, 0.00001, -0.00001))
+eCerto:::sub_header("test")
 }
+\keyword{internal}

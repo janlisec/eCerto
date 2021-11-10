@@ -2,8 +2,7 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{listNames}
 \alias{listNames}
-\title{listNames
-Provides names of nested list elements, but ignores data.frame column}
+\title{listNames}
 \usage{
 listNames(l, maxDepth = 2, split = FALSE)
 }
@@ -20,13 +19,13 @@ list if split == TRUE, otherwise character vector
 names. Refer to https://stackoverflow.com/q/68453593/6946122
 }
 \description{
-listNames
-Provides names of nested list elements, but ignores data.frame column
+Provides names of nested list elements, but ignores data.frame column.
 }
 \examples{
 a = list(
- b = list(df1 = data.frame(col = c(1, 2)), e = list(z = NULL)),
- c = NULL,
- df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4)))
-listNames(a,2) # [1] "b.df1" "b.e"   "c"     "df2"
+  b = list(df1 = data.frame(col = c(1, 2)), e = list(z = NULL)),
+  c = NULL,
+  df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4))
+)
+listNames(a,2)
 }

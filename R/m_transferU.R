@@ -75,14 +75,10 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
       shiny::validate(shiny::need(test, message = "Please specify a U column in material table to transfer uncertainty values"))
 
       shiny::tagList(
-        shiny::fluidRow(shiny::HTML(paste0(
-          "<p style=margin-left:6%;margin-bottom:-", switch(st(),"H"=3, "S"=0), "%><strong>Transfer ",
-          switch(st(),"H"="maximum from (s_bb, s_bb_min) of H_type", "S"="values from column"),
-          "</strong></p>"
-        ))),
+        sub_header(txt=paste("Transfer ", switch(st(),"H"="maximum from (s_bb, s_bb_min) of H_type", "S"="values from column")), b=3),
         shiny::selectInput(
           inputId=session$ns("H_Type"),
-          label="",
+          label=NULL,
           width='100%',
           selectize=TRUE,
           choices=switch(st(),"H"=levels(dat()[,"H_type"]), "S"="U_stab")
@@ -97,11 +93,6 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
         shiny::actionButton(inputId = session$ns("transfer_button"), label = "Transfer Now!")
       )
     })
-
-    # shiny::observeEvent(input$U_cols, {
-    #   #
-    #   shinyjs::toggleElement(id = "H_Type", condition = st()=="H")
-    # })
 
     shiny::observeEvent(input$transfer_button, {
       mt <- mat_tab()

@@ -7,7 +7,7 @@
 app_server <- function( input, output, session ) {
   # Your application server logic
   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
-  silent = FALSE ## ToDo: make silent a global option of the package like suggested by Golem-package devel
+  silent <- get_golem_config("silent")
 
   # preload testdata
   tde <- new.env()

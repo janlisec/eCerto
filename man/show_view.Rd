@@ -2,8 +2,7 @@
 % Please edit documentation in R/datahandling_utils.R
 \name{show_view}
 \alias{show_view}
-\title{Show View Returns a list of panels, which are marked to be shown in the
-accordingly used RData from previous analysis}
+\title{show_view}
 \usage{
 show_view(rv)
 }

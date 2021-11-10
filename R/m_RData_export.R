@@ -8,7 +8,6 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv ReavtiveValues $$.
-#' @param silent Option to print or omit status messages.
 #'
 #' @return rdata A reactive, but only for notifying the navbarpanel to change
 #'
@@ -53,6 +52,7 @@ m_RDataExport_UI <- function(id) {
             value = "CRM001"
           )
         ),
+        shiny::column(12, sub_header("Save Current Analysis")),
         shiny::column(
           width = 3,
           shiny::downloadButton(outputId = ns('ecerto_backup'), label = "Backup")
@@ -64,11 +64,13 @@ m_RDataExport_UI <- function(id) {
 
 #' @rdname mod_RDataExport
 #' @export
-m_RDataexport_Server = function(id, rv, silent=FALSE) {
-  # stopifnot(shiny::is.reactivevalues(rv$get()))
+m_RDataexport_Server = function(id, rv) {
+
   shiny::moduleServer(id, function(input, output, session) {
 
     ns <- shiny::NS(id)
+
+    silent <- get_golem_config("silent") # messages
 
     shiny::observeEvent(input$user, {
       if (!identical(input$user, getValue(rv,c("General","user")))) {
@@ -107,18 +109,16 @@ m_RDataexport_Server = function(id, rv, silent=FALSE) {
     # DOWNLOAD
     output$ecerto_backup <- shiny::downloadHandler(
       filename = function() {
-        paste0(
-          ifelse(
-            test = is.null(getValue(rv,c("General", "study_id"))),
-            yes =  "TEST",
-            no =  getValue(rv,c("General", "study_id")) )
-          , '.RData')
+        paste0(ifelse(is.null(getValue(rv,c("General", "study_id"))), "TEST", getValue(rv,c("General", "study_id"))) , '.RData')
       },
       content = function(file) {
         res <- sapply(rv$get(), function(x) {
-          if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x) else x
+          if (shiny::is.reactivevalues(x)) {
+            shiny::reactiveValuesToList(x)
+          } else {
+            x
+          }
         })
-
         res$General$dataformat_version = "2021-05-27"
         save(res, file = file)
       },

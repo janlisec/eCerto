@@ -41,15 +41,13 @@ page_startUI <- function(id) {
           shiny::fluidRow(
             shiny::column(
               width = 6,
-              shiny::strong("Restart Session"),
-              shiny::br(),
-              shiny::actionButton(inputId = ns("session_restart"), label = "Restart")
+              sub_header("Restart Session", b=3),
+              shiny::actionButton(inputId = ns("session_restart"), label = "Restart", width="80%")
             ),
             shiny::column(
               width = 6,
-              shiny::strong("Load Test Data"),
-              shiny::br(),
-              shiny::actionButton(inputId = ns("load_test_data"), label = "Load")
+              sub_header("Load Test Data", b=3),
+              shiny::actionButton(inputId = ns("load_test_data"), label = "Load", width="80%")
             )
           )
         ),

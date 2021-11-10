@@ -39,7 +39,7 @@ m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::wellPanel(
-      shiny::strong("Load"),
+      sub_header("Load", b=0),
       shiny::fileInput(
         inputId = ns("in_file_ecerto_backup"),
         label = "Select Previous Analysis",
@@ -55,10 +55,12 @@ m_RDataImport_UI <- function(id) {
 m_RDataImport_Server = function(id, modules, uploadsources) {
 
   shiny::moduleServer(id, function(input, output, session) {
+
     rvreturn <- shiny::reactiveVal(NULL)
     continue <- shiny::reactiveVal(NULL) # NULL -> don't continue
+
     ns <- session$ns
-    silent <- FALSE
+    silent <- get_golem_config("silent")
 
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {

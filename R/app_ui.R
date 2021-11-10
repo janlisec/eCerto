@@ -84,16 +84,15 @@ app_ui <- function(request) {
 #' @noRd
 golem_add_external_resources <- function(){
 
-  add_resource_path(
+  golem::add_resource_path(
     'www', app_sys('app/www')
   )
-  #browser()
-  tags$head(
-    bundle_resources(
+  shiny::tags$head(
+    golem::bundle_resources(
       path = app_sys('app/www'),
       app_title = 'eCerto'
     ),
-    favicon(ico = "BAMLogo.ico"),
+    golem::favicon(ico = "BAMLogo"),
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
     shinyjs::useShinyjs(),

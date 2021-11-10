@@ -16,13 +16,13 @@
 #'
 #' @rdname datahandling_utils
 #' @examples
-#' rv <- reactiveClass$new(init_rv())
 #' # Only run examples in interactive R sessions
 #' if (interactive()) {
-#'  setValue(rv, c("Certification","data"), 5)
-#'  getValue(rv, c("Certification","data")) # is 5?
-#'  setValue(rv, c("General","user"),"Franz")
-#'  getValue(rv, c("General","user"))
+#'   rv <- reactiveClass$new(init_rv())
+#'   setValue(rv, c("Certification","data"), 5)
+#'   getValue(rv, c("Certification","data")) # is 5?
+#'   setValue(rv, c("General","user"),"Franz")
+#'   getValue(rv, c("General","user"))
 #' }
 setValue <- function(df, key, value){
   if(R6::is.R6(df)){
@@ -31,7 +31,6 @@ setValue <- function(df, key, value){
     stop("Object of class ", class(df), " can't set value currently.")
   }
 }
-
 
 #' @title getValue.
 #'
@@ -57,9 +56,11 @@ getValue = function(df, key=NULL) {
 }
 
 
-#' @title creates long pivot table in laboratory style after load
+#' @title laboratory_dataframe.
 #'
-#' @param x data frame with uploaded excel table
+#' @description Creates long pivot table in laboratory style after load.
+#'
+#' @param x Data frame with uploaded excel table.
 #'
 #' @return another data frame with extracted laboratory parameters
 #' @rdname datahandling_utils
@@ -92,7 +93,9 @@ laboratory_dataframe = function(x) {
   return(x3)
 }
 
-#' Loads names of Excel sheets
+#' @title load_sheetnames.
+#'
+#' @description Loads names of Excel sheets.
 #'
 #' @param filepath the path to a single or multiple excel file(s)
 #'
@@ -120,7 +123,9 @@ load_sheetnames = function(filepath){
   return(a[[1]])
 }
 
-#' set source of upload for an element
+#' @title set_uploadsource.
+#'
+#' @description Set source of upload for an element.
 #'
 #' @param rv the list
 #' @param m one of "Certification","Homogeneity", "Stability"
@@ -158,8 +163,9 @@ set_uploadsource = function(rv, m, uploadsource) {
 
 
 
-#' Rounds material table.
+#' @title roundMT.
 #'
+#' @description Rounds material table.
 #'
 #' @param value the value to be rounded
 #' @param precision precision value
@@ -169,15 +175,17 @@ set_uploadsource = function(rv, m, uploadsource) {
 #' @rdname datahandling_utils
 #' @export
 #' @examples roundMT(34.3434,3)
-roundMT = function(value,precision = NULL) {
+roundMT = function(value, precision = NULL) {
   if(is.null(precision)) return(value)
   round(value,precision)
 }
 
 
-#' format a number by rounding to a precision in same width as character using
-#' scientific notation for numbers < precision and rounding to precision
-#' otherwise
+#' @title pn.
+#'
+#' @description  Format a number by rounding to a precision in same width as
+#'   character using scientific notation for numbers < precision and rounding
+#'   to precision otherwise.
 #'
 #' @param n numeric vector
 #' @param p requested precision after the decimal sign
@@ -202,8 +210,10 @@ pn <- function(n=NULL, p=4L) {
   }
 }
 
-#' Update single or multiple cells of the final materialtabelle (formerly cert_vals)
-#' with new values
+#' @title update_reactivecell.
+#'
+#' @description Update single or multiple cells of the final materialtabelle
+#'   (formerly cert_vals) with new values.
 #'
 #' @param r the reactive containing the data frame to be updated
 #' @param colname name of the column
@@ -250,6 +260,9 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
   r(df)
 }
 
+#' @title to_startPage.
+#' @param session session.
+#' @param  value value.
 #' @keywords internal
 #' to switch to Start Page
 to_startPage = function(session, value="Certification") {
@@ -268,7 +281,8 @@ to_startPage = function(session, value="Certification") {
 }
 
 #' @title listNames
-#' Provides names of nested list elements, but ignores data.frame column
+#'
+#' @description Provides names of nested list elements, but ignores data.frame column.
 #'
 #' @param l nested list or R6 containing reactiveValues or reactiveValues
 #' @param maxDepth the maximum depth, the names of list should be returned
@@ -282,10 +296,11 @@ to_startPage = function(session, value="Certification") {
 #'
 #' @examples
 #' a = list(
-#'  b = list(df1 = data.frame(col = c(1, 2)), e = list(z = NULL)),
-#'  c = NULL,
-#'  df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4)))
-#' listNames(a,2) # [1] "b.df1" "b.e"   "c"     "df2"
+#'   b = list(df1 = data.frame(col = c(1, 2)), e = list(z = NULL)),
+#'   c = NULL,
+#'   df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4))
+#' )
+#' listNames(a,2)
 listNames <- function(l, maxDepth = 2, split = FALSE) {
   if(R6::is.R6(l) | shiny::is.reactivevalues(l)){
     # decompose first if it is a R6 object
@@ -308,8 +323,9 @@ listNames <- function(l, maxDepth = 2, split = FALSE) {
   return(nms)
 }
 
-
-#' Show View Returns a list of panels, which are marked to be shown in the
+#' @title show_view
+#'
+#' @description Show View Returns a list of panels, which are marked to be shown in the
 #' accordingly used RData from previous analysis
 #'
 #' @param rv the R6 reactiveValues object
@@ -321,8 +337,8 @@ listNames <- function(l, maxDepth = 2, split = FALSE) {
 #' rv <- reactiveClass$new(init_rv()) # initiate persistent variables
 #' shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
 #' print(show_view(rv))
-show_view = function(rv){
-  nms = shiny::isolate(listNames(rv, maxDepth = 3, split = TRUE))
+show_view <- function(rv){
+  nms <- shiny::isolate(listNames(rv, maxDepth = 3, split = TRUE))
   visible = c()
   for (n in nms) {
     i = any(n %in% "show")
@@ -331,4 +347,24 @@ show_view = function(rv){
     }
   }
   return(visible)
+}
+
+#' @title sub_header.
+#'
+#' @description Format a text as bold paragraph and with specific left/bottom margin.
+#'
+#' @param txt The sub_header text to format.
+#' @param l Left margin in percent.
+#' @param b Bottom margin left in percent.
+#'
+#' @rdname datahandling_utils
+#'
+#' @return HTML to include in UI.
+#'
+#' @keywords internal
+#'
+#' @examples
+#' eCerto:::sub_header("test")
+sub_header <- function(txt="test", l=0, b=2) {
+  shiny::HTML(paste0("<p style=margin-left:", l, "%;margin-bottom:", b,"%><strong>", txt, "</strong></p>")  )
 }
