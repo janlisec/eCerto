@@ -16,11 +16,8 @@
 #'  server = function(input, output, session) {
 #'    rv <- eCerto::reactiveClass$new(eCerto::init_rv()) # initiate persistent variables
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
-#'    shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
-#'    page_StabilityServer(
-#'      id = "test",
-#'      rv = rv
-#'    )
+#'    shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel" )})
+#'    page_StabilityServer(id = "test", rv = rv)
 #'  }
 #' )
 #' }
@@ -28,51 +25,58 @@
 
 page_StabilityUI <- function(id) {
   ns <- shiny::NS(id)
-  shiny::tagList(
-    shiny::tabsetPanel(
-      id = ns("StabilityPanel"),
-      type = "hidden",
-      # when nothing is loaded
-      shiny::tabPanel(
-        title = "standby-Panel",
-        value  = "standby",
-        "nothing has uploaded yet"),
-      # when something is loaded
-      shiny::tabPanel(
-        title = "active-Panel",
-        value = "loaded",
-        shiny::fluidRow(
-          shiny::column(
-            width = 10,
-            shiny::strong(
-              shiny::actionLink(
-                inputId = ns("tab_link"),
-                label = "Tab.1 Stability - calculation of uncertainty contribution"
-              )
-            ),
-            DT::dataTableOutput(ns("s_vals"))
+  shiny::tabsetPanel(
+    id = ns("StabilityPanel"),
+    type = "hidden",
+    # when nothing is loaded
+    shiny::tabPanel(
+      title = "standby-Panel",
+      value  = "standby",
+      "nothing has uploaded yet"),
+    # when something is loaded
+    shiny::tabPanel(
+      title = "active-Panel",
+      value = "loaded",
+      shiny::fluidRow(
+        shiny::column(
+          width = 10,
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("tab_link"),
+              label = "Tab.1 Stability - calculation of uncertainty contribution"
+            )
           ),
-          shiny::column(width = 2, shiny::wellPanel(m_TransferUUI(id = ns("s_transfer"))))
+          DT::dataTableOutput(ns("s_vals"))
         ),
-        shiny::p(),
-        shiny::fluidRow(
-          shiny::column(width = 2, DT::dataTableOutput(ns("s_overview"))),
-          shiny::column(
-            width = 8,
-            shiny::fluidRow(
-              shiny::plotOutput(ns("s_plot")),
-              shiny::uiOutput(ns("s_info"))
-            )
-          ),
-          shiny::column(
-            width = 2,
-            shiny::wellPanel(
-              shiny::uiOutput(ns("s_sel_analyte")),
-              shiny::uiOutput(ns("s_sel_dev"))
-            )
-          ),
-        )
+        shiny::column(width = 2, shiny::wellPanel(m_TransferUUI(id = ns("s_transfer"))))
+      ),
+      shiny::p(),
+      shiny::fluidRow(
+        shiny::column(width = 2, DT::dataTableOutput(ns("s_overview"))),
+        shiny::column(
+          width = 8,
+          shiny::fluidRow(
+            shiny::plotOutput(ns("s_plot")),
+            shiny::uiOutput(ns("s_info"))
+          )
+        ),
+        shiny::column(
+          width = 2,
+          shiny::wellPanel(
+            shiny::uiOutput(outputId = ns("s_sel_analyte")),
+            shiny::uiOutput(outputId = ns("s_sel_dev")),
+            shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
+            #sub_header("Change View"),
+            shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
+            #p(),
+          )
+        ),
       )
+    ),
+    shiny::tabPanel(
+      title = "altern-Panel",
+      value = "tP_arrhenius",
+      m_arrheniusUI(id=ns("arrhenius"))
     )
   )
 }
@@ -87,30 +91,29 @@ page_StabilityServer <- function(id, rv) {
       help_the_user("stability_uncertainty")
     })
 
-    # Upload Notification. Since "uploadsource" is invalidated also when other
-    # parameters within Stability are changed (because of the reactiveValues
-    # thing), it has to be checked if it has changed value since the last change
-    # to verify an upload
-    uploadsource <- shiny::reactiveVal(NULL)
-    shiny::observeEvent(getValue(rv,c("Stability","uploadsource")),{
-      o.upload <- getValue(rv,c("Stability","uploadsource"))
-      # assign upload source if (a) hasn't been assigned yet or (b), if not
-      # null, has changed since the last time, for example because other data
-      # source has been uploaded
-      if(is.null(uploadsource()) || uploadsource() != o.upload ){
-        uploadsource(o.upload)
-        shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
-        message("Stability: Uploadsource changed to ", shiny::isolate(getValue(rv,c("Stability","uploadsource"))))
-        #
-        s_dat <- getValue(rv,c("Stability","data"))
-        s_vals <- plyr::ldply(split(s_dat, s_dat[,"analyte"]), function(x) {
-          x_lm <- stats::lm(Value ~ Date, data=x)
-          mon_diff <- max(mondf(x[,"Date"]))
-          x_slope <- summary(x_lm)$coefficients[2,1:2]
-          data.frame("mon_diff"=mon_diff, "slope"=x_slope[1], "SE_slope"=x_slope[2], "U_Stab"=abs(x_slope[1]*x_slope[2]))
-        }, .id="analyte")
-        setValue(rv, c("Stability","s_vals"), s_vals)
+    arrhenius_out <- m_arrheniusServer(id="arrhenius", rv=rv)
+    shiny::observeEvent(arrhenius_out$switch, {
+      shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "loaded")
+    }, ignoreInit = TRUE)
+
+    shiny::observeEvent(input$s_switch_arrhenius, {
+      shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "tP_arrhenius")
+    }, ignoreInit = TRUE)
+
+    shiny::observeEvent(getValue(rv, c("Stability", "data")), {
+      tmp <- getValue(rv, c("Stability", "data"))
+      shinyjs::toggle(id = "s_sel_temp", condition = "Temp" %in% colnames(tmp))
+      shinyjs::toggle(id = "s_switch_arrhenius", condition = "Temp" %in% colnames(tmp))
+      if ("Temp" %in% colnames(tmp)) {
+        lev <- levels(factor(tmp[,"Temp"]))
+        shiny::updateSelectInput(inputId = "s_sel_temp", choices = lev, selected = lev)
+      } else {
+        shiny::updateSelectInput(inputId = "s_sel_temp", choices = "")
       }
+    })
+
+    shiny::observeEvent(getValue(rv, c("Stability","uploadsource")), {
+      shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
     })
 
     # # TODO This is for saving; Has to be transformed to setValue()
@@ -129,10 +132,28 @@ page_StabilityServer <- function(id, rv) {
     # }, label="debug_s_res")
 
 
+    # the complete data table of stability data
     s_Data <- shiny::reactive({
+      #shiny::req(input$s_sel_temp)
       s_dat <- getValue(rv,c("Stability","data"))
       if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
+      if ("Temp" %in% colnames(s_dat) && input$s_sel_temp != "") {
+        s_dat <- s_dat[as.character(s_dat[,"Temp"]) %in% input$s_sel_temp,]
+      }
       return(s_dat)
+    })
+
+    # the summary of linear models per analyte to estimat U_stab
+    s_vals <- shiny::reactive({
+      shiny::req(s_Data())
+      out <- plyr::ldply(split(s_Data(), s_Data()[,"analyte"]), function(x) {
+        x_lm <- stats::lm(Value ~ Date, data=x)
+        mon_diff <- max(mondf(x[,"Date"]))
+        x_slope <- summary(x_lm)$coefficients[2,1:2]
+        data.frame("mon_diff"=mon_diff, "slope"=x_slope[1], "SE_slope"=x_slope[2], "U_Stab"=abs(x_slope[1]*x_slope[2]))
+      }, .id="analyte")
+      setValue(rv, c("Stability","s_vals"), out)
+      return(out)
     })
 
     # Specific UI and events
@@ -145,30 +166,28 @@ page_StabilityServer <- function(id, rv) {
     # Tables
     output$s_overview <- DT::renderDataTable({
       shiny::req(s_Data(), input$s_sel_analyte)
-      s <- getValue(rv,c("Stability","data"))
+      s <- s_Data()
       s[s[,"analyte"]==input$s_sel_analyte,c("Date","Value")]
     }, options = list(paging = TRUE, searching = FALSE), rownames=NULL)
 
     output$s_vals <- DT::renderDataTable({
-        shiny::req(s_Data())
-        s_vals <- getValue(rv, c("Stability","s_vals"))
+        shiny::req(s_vals())
+        s_vals_print <- s_vals()
         for (i in c("slope","SE_slope","U_Stab")) {
-          s_vals[,i] <- pn(s_vals[,i], 4)
+          s_vals_print[,i] <- pn(s_vals_print[,i], 4)
         }
         if (!is.null(getValue(rv, c("General", "materialtabelle")))) {
           c_vals <- getValue(rv, c("General", "materialtabelle"))
-          s_vals[,"Present"] <- sapply(s_vals[,"analyte"], function(x) {
+          s_vals_print[,"Present"] <- sapply(s_vals_print[,"analyte"], function(x) {
             ifelse(x %in% c_vals[,"analyte"], "Yes", "No")
           })
         }
-        return(s_vals)
-      },
-      options = list(dom = "t", pageLength=shiny::isolate(nrow(getValue(rv,c("Stability","s_vals"))))),
-      selection = list(mode="single", target="row"), rownames=NULL
+        return(s_vals_print)
+      }, options = list(dom = "t", pageLength=100), selection = list(mode="single", target="row"), rownames=NULL
     )
 
     shiny::observeEvent(input$s_vals_rows_selected, {
-      sel <- as.character(getValue(rv,c("Stability","s_vals"))[input$s_vals_rows_selected,"analyte"])
+      sel <- as.character(s_vals()[input$s_vals_rows_selected,"analyte"])
       shiny::updateSelectInput(session = session, inputId = "s_sel_analyte", selected = sel)
     })
 
@@ -209,8 +228,8 @@ page_StabilityServer <- function(id, rv) {
       shiny::req(s_Data(), input$s_sel_analyte)
       s <- s_Data()
       an <- input$s_sel_analyte
-      aps <- getValue(rv, c("General", "apm"))
       l <- s[,"analyte"]==an
+      aps <- getValue(rv, c("General", "apm"))
 
       # Convert to format used in LTS modul
       # load SD and U from certification if available
@@ -239,10 +258,10 @@ page_StabilityServer <- function(id, rv) {
 
     # The Dropdown-Menu to select the column of materialtabelle to transfer to
     output$s_transfer_ubb <- shiny::renderUI({
-      cert_vals <- getValue(rv, c("General", "materialtabelle"))
-      shiny::validate(shiny::need(cert_vals, message = "Please upload certification data to transfer Uncertainty values"))
+      mt <- getValue(rv, c("General", "materialtabelle"))
+      shiny::validate(shiny::need(mt, message = "Please upload certification data to transfer Uncertainty values"))
 
-      cc <- attr(cert_vals, "col_code")
+      cc <- attr(mt, "col_code")
       test <- nrow(cc)>0 && any(substr(cc[, "ID"], 1, 1) == "U")
       shiny::validate(shiny::need(test, message = "Please specify a U column in material table to transfer Uncertainty values"))
 
@@ -263,7 +282,7 @@ page_StabilityServer <- function(id, rv) {
     # allow transfer of U values
     s_transfer_U <- m_TransferUServer(
       id = "s_transfer",
-      dat = shiny::reactive({getValue(rv, c("Stability","s_vals"))}),
+      dat = s_vals,
       mat_tab = shiny::reactive({getValue(rv, c("General", "materialtabelle"))})
     )
     shiny::observeEvent(s_transfer_U$changed, {

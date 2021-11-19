@@ -30,11 +30,8 @@ shiny::shinyApp(
  server = function(input, output, session) {
    rv <- eCerto::reactiveClass$new(eCerto::init_rv()) # initiate persistent variables
    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
-   shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel")})
-   page_StabilityServer(
-     id = "test",
-     rv = rv
-   )
+   shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel" )})
+   page_StabilityServer(id = "test", rv = rv)
  }
 )
 }

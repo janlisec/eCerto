@@ -67,7 +67,7 @@ m_materialtabelleServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    silent <- get_golem_config("silent") # messages
+    silent <- get_golem_config("silent")
 
     # analyte name of the currently selected row of  mat_tab
     out <- shiny::reactiveVal(NULL)

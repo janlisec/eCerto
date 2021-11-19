@@ -38,7 +38,8 @@ plot_lts_data <- function(x=NULL, type=1) {
   # get specific data
   vals <- x[["val"]][,"Value"]
   rt <- x[["val"]][,"Date"]
-  mon <- mondf(rt)
+  #mon <- mondf(rt)
+  mon <- mondf(rt, type="day")/30.4167
 
   # establish linear model
   foo.lm <- stats::lm(vals~mon)

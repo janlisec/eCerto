@@ -12,7 +12,6 @@
 #' @param current_file_input Shiny fileInput referencing excel file(s).
 #' @param sheet Number of the sheet to preview.
 #' @param excelformat Selected sub format as reactive string.
-#' @param silent Option to print or omit status messages.
 #'
 #' @return A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt}
 #'
@@ -42,13 +41,6 @@
 #'          label = "Modul parameter: excelformat",
 #'          choices = c("Certification","Homogeneity","Stability")
 #'         )
-#'      ),
-#'      shiny::column(
-#'        3,
-#'        shiny::selectInput(
-#'          inputId = "silent",
-#'          label = "Modul parameter: silent", choices = c("TRUE","FALSE")
-#'        )
 #'      )
 #'    ),
 #'    shiny::hr(),
@@ -83,10 +75,11 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
 
   stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))
-  ns <- shiny::NS(id)
 
+  ns <- shiny::NS(id)
   shiny::moduleServer(id, function(input, output, session) {
 
+    silent <- get_golem_config("silent")
 
     getRngTxt <- function(sc=1, sr=1, ec=1, er=1) {
       paste0(LETTERS[sc], sr, ":", LETTERS[ec], er)
@@ -219,7 +212,6 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
       } else {
         str2 <- "You may select 2 cells (top left and bottom right) by mouse click to specify a range."
       }
-      #str3 <- paste("Currently selected range:", paste0(LETTERS[tab_param$start_col], tab_param$start_row, ":", LETTERS[tab_param$end_col], tab_param$end_row))
       str3 <- paste("Currently selected range:", tab_param$rng)
       shiny::HTML(paste(str1, str2, str3, sep = '<br/>'))
     })

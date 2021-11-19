@@ -24,8 +24,6 @@ m_xlsx_range_select_Server(
 \item{sheet}{Number of the sheet to preview.}
 
 \item{excelformat}{Selected sub format as reactive string.}
-
-\item{silent}{Option to print or omit status messages.}
 }
 \value{
 A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt}
@@ -62,13 +60,6 @@ shiny::shinyApp(
          label = "Modul parameter: excelformat",
          choices = c("Certification","Homogeneity","Stability")
         )
-     ),
-     shiny::column(
-       3,
-       shiny::selectInput(
-         inputId = "silent",
-         label = "Modul parameter: silent", choices = c("TRUE","FALSE")
-       )
      )
    ),
    shiny::hr(),

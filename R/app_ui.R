@@ -5,11 +5,18 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
-  tagList(
+  shiny::tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
 
     shiny::navbarPage(
+      # use an alternative theme
+      # currently difficult, as 'hidden' feature of tabPanel is not supported by bslib
+      # theme = bslib::bs_theme(
+      #   version = 3,
+      #   bootswatch = "readable",
+      #   base_font = bslib::font_google(c("Assistant", "Anonymous Pro")[1])
+      # ),
       id = "navbarpage",
       title = shiny::div(
         class = "verticalhorizontal",

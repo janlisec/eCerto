@@ -173,3 +173,36 @@ fnc_labmean_stats <- function(data=NULL, precision=4) {
   if (!class(test)=="try-error") out$Anscombe_p <- formatC(test$p.value,format="E",digits=2)
   return(out)
 }
+
+#' @title steyx.
+#'
+#' @description Translation of STEYX function Excel > R
+#'   Returns the standard error of the predicted y-value for each x in the regression.
+#'   http://office.microsoft.com/en-au/excel-help/steyx-function-HP010062545.aspx
+#'
+#' @param x x values.
+#' @param y y values.
+#'
+#' @keywords internal
+#' @noRd
+steyx <- function(x, y) {
+  # checks
+  if (missing(x))
+    stop("Parameter x missing.")
+  if (missing(y))
+    stop("Parameter y missing.")
+  if (length(x)!=length(y))
+    stop("x and y not of the same length...")
+  if (sum(is.finite(x) & is.finite(y))<=2)
+    stop("Number of finite value pairs from x and y are < 3.")
+
+  # calculations
+  flt <- which(is.finite(x) & is.finite(y))
+  x <- x[flt]
+  y <- y[flt]
+  n <- length(x)
+  out <- sqrt((1/(n-2))*(sum((y-mean(y))^2)-((sum((x-mean(x))*(y-mean(y))))^2)/(sum((x-mean(x))^2))))
+
+  # result
+  return(out)
+}

@@ -60,7 +60,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
 
   stopifnot(shiny::is.reactive(exl_fmt))
   ns <- shiny::NS(id)
-  silent <- FALSE
+  silent <- get_golem_config("silent")
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -146,15 +146,14 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
         if (!"analyte" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'analyte' found in input file.")
         if (!"value" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'value' found in input file.")
         if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUpload_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
-        out$data = tab_flt
+        out$data <- tab_flt
 
       } else if(exl_fmt() == "Certification") {
-        # CERTIFICATION
-        if(!silent) message("m_ExcelUpload_Server: Certification ")
+        if (!silent) message("[m_ExcelUpload_Server] Load Certification data")
         for (i in 1:length(tab_flt)) {
           tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_flt[[i]]))
         }
-        uploadExcel = function(){
+        error_modal <- function() {
           # perform minimal validation tests
           if (!length(tab_flt)>=2) message("m_ExcelUpload_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
           # Try-Catch any errors during upload and open a modal window if so
@@ -187,23 +186,40 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
             text = "You're trying to upload Certification data without selection of row and column. Are you sure to proceed?",
             showCancelButton = TRUE,
             showConfirmButton = TRUE,
-            callbackR = function(x) { if(x != FALSE) uploadExcel() }
+            callbackR = function(x) { if(x != FALSE) error_modal() }
           )
         } else {
-          uploadExcel()
+          error_modal()
         }
 
       } else if(exl_fmt() == "Stability") {
-        # STABILITY
+        # STABILITY data maycome in 3 versions
+        # (1) as simple two column format (Date, Value) with separate tables for each analyte
+        # (2) as LTS format with a meta data header containing machine infos, certification data etc.
+        # (3) as a dataframe giving Temp info additionally to compute Arrhenius estimate of uncertainty
         test_format <- tab_flt[[1]] # openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
-        if (ncol(test_format)>=3 && "KW" %in% colnames(test_format)) {
-          s_dat <- read_lts_input(
-            file = input$excel_file$datapath[1],
-            simplify=TRUE)
-          colnames(s_dat)[colnames(s_dat)=="KW"] <- "analyte"
+        if (ncol(test_format)>=4) {
+          if ("KW" %in% colnames(test_format)) {
+            # (2) as LTS format with a meta data header containing machine infos, certification data etc.
+            s_dat <- read_lts_input(
+              file = input$excel_file$datapath[1],
+              simplify=TRUE)
+            colnames(s_dat)[colnames(s_dat)=="KW"] <- "analyte"
+          } else {
+            # (3) as a dataframe giving Temp info additionally to compute Arrhenius estimate of uncertainty
+            s_dat <- tab_flt[[1]]
+            cns <- c("analyte","Value","Date","Temp")
+            shiny::validate(shiny::need(
+              expr = cns %in% colnames(s_dat),
+              message = paste("Require column(s)", paste(cns[!(cns %in% colnames(s_dat))], collapse=", "), "in input file.")
+            ))
+            # convert time to days relative to min(time)
+            s_dat[,"time"] <- as.numeric(s_dat[,"Date"]-min(s_dat[,"Date"]))
+          }
         } else {
-          sheetnames = load_sheetnames(input$excel_file$datapath[1])
-          s_dat = plyr::ldply(
+          # (1) as simple two column format (Date, Value) with separate tables for each analyte
+          sheetnames <- load_sheetnames(input$excel_file$datapath[1])
+          s_dat <- plyr::ldply(
             sheetnumber(),
             function(x) {
               cbind(
@@ -211,14 +227,19 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
                 tab_flt[[x]]
                 # "File" = current_file_input()$name
               )
-            })
+            }
+          )
         }
-        shiny::validate(shiny::need(c("analyte","Value","Date") %in% colnames(s_dat), "No all required input columns found in input file."))
+        cns <- c("analyte","Value","Date")
+        shiny::validate(shiny::need(
+          expr = all(cns %in% colnames(s_dat)),
+          message = paste("Require column(s)", paste(cns[!(cns %in% colnames(s_dat))], collapse=", "), "in input file.")
+        ))
         shiny::validate(shiny::need(is.numeric(s_dat[,"Value"]), "Column 'Value' in input file contains non-numeric values."))
         if (class(s_dat[,"Date"])!="Date") { s_dat[,"Date"] <- as.Date.character(s_dat[,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d")) }
         shiny::validate(shiny::need(class(s_dat[,"Date"])=="Date", "Sorry, could not convert column 'Date' into correct format."))
         s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
-        out$data = s_dat
+        out$data <- s_dat
       }
 
     }, ignoreInit = TRUE)
