@@ -71,7 +71,7 @@ m_xlsx_range_select_UI <- function(id) {
 
 #' @rdname xlsx_range_select
 #' @export
-m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"}), silent=FALSE) {
+m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"})) {
 
   stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))

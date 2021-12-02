@@ -12,8 +12,7 @@ m_xlsx_range_select_Server(
   id,
   current_file_input = NULL,
   sheet = NULL,
-  excelformat = shiny::reactive({     "Certification" }),
-  silent = FALSE
+  excelformat = shiny::reactive({     "Certification" })
 )
 }
 \arguments{
