@@ -39,6 +39,11 @@ page_startUI <- function(id) {
       shiny::wellPanel(
         shiny::wellPanel(
           shiny::fluidRow(
+            shiny::tagList("Click on", shiny::actionLink(inputId = ns("getHelp"), label = "this Link"), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!"))
+          )
+        ),
+        shiny::wellPanel(
+          shiny::fluidRow(
             shiny::column(
               width = 6,
               sub_header("Restart Session", b=3),
@@ -210,6 +215,8 @@ page_startServer = function(id, rv, tde) {
         "Stability" = help_the_user("stability_dataupload", modal=TRUE)
       )
     })
+
+    shiny::observeEvent(input$getHelp, { help_the_user("start_gethelp", modal=TRUE) })
 
   })
 

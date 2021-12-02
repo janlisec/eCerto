@@ -1,0 +1,9 @@
+### How to get help
+
+The statistics for reference material certification with  *eCerto* is implemented according to ISO GUIDE 35:2017.
+
+To make the calculations transparent for the user and facilitate using this tool, the relevant section of the documentation (from page `Help`) can be obtained in a modal/pop-up window by clicking on the respective links. 
+
+Links should be rendered in <span style="color: blue;">blue</span> color on your screen. Often, table or figure captions are used for this purpose, so watch out for help links close to the area you are working on.
+
+**Example**: to upload data, tables have to be prepared in Excel using specific formats or column names and column orders. To learn about these formats you can click on the help-link <span style="color: blue;">Module</span> right in the upload section on page `Start`.
