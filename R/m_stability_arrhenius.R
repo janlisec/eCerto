@@ -117,44 +117,44 @@ m_arrheniusServer <- function(id, rv) {
       pchs <- c(21:25,21:23)[as.numeric(tf)]
       cols <- c(1:8)[as.numeric(tf)]
       mns <- tapply(val, list(tmp[,"Temp"], time), mean, na.rm=TRUE)
-      sds <- tapply(val, list(tmp[,"Temp"], time), sd, na.rm=TRUE)
+      sds <- tapply(val, list(tmp[,"Temp"], time), stats::sd, na.rm=TRUE)
       xlim <- range(as.numeric(time), na.rm=TRUE)
       ylim <- range(c(mns-sds, mns+sds, val), na.rm=TRUE)
       ylim <- ifelse(plot_ln_relative, 0, 1)+c(-1,1)*max(abs(ylim-ifelse(plot_ln_relative, 0, 1)))
       cex_plot <- 1.5
-      par(mar=c(5.5,4.5,1,1))
-      par(mfrow=c(1,length(levels(tf))-1))
-      par(cex.lab=cex_plot*1.1, cex.axis=cex_plot*1.1)
+      graphics::par(mar=c(5.5,4.5,1,1))
+      graphics::par(mfrow=c(1,length(levels(tf))-1))
+      graphics::par(cex.lab=cex_plot*1.1, cex.axis=cex_plot*1.1)
       for (k in levels(tf)[-1]) {
         plot(xlim, ylim, xlab=ifelse(plot_in_month, "Month", "Days"), ylab=ifelse(plot_ln_relative, "log(Relative value)", "Relative value"), type="n", main="", axes=FALSE)
-        mtext(text = paste0(k, "\u00B0C"), side = 1, line = -1.8, adj = 0.98, cex = cex_plot)
-        axis(2)
-        abline(h=ifelse(plot_ln_relative, 0, 1), col=grey(0.9), lwd=3)
+        graphics::mtext(text = paste0(k, "\u00B0C"), side = 1, line = -1.8, adj = 0.98, cex = cex_plot)
+        graphics::axis(2)
+        graphics::abline(h=ifelse(plot_ln_relative, 0, 1), col=grDevices::grey(0.9), lwd=3)
         flt <- time==0
         if (show_reference_point) {
-          points(y=val[flt], x=time[flt], pch=21, bg=grey(0.9), cex=2)
-          abline(h=mean(val[flt], na.rm=TRUE)+c(-1,1)*sd(val[flt], na.rm=TRUE), col=grey(0.9), lwd=1, lty=2)
+          graphics::points(y=val[flt], x=time[flt], pch=21, bg=grDevices::grey(0.9), cex=2)
+          graphics::abline(h=mean(val[flt], na.rm=TRUE)+c(-1,1)*stats::sd(val[flt], na.rm=TRUE), col=grDevices::grey(0.9), lwd=1, lty=2)
         }
         if (plot_nominal_scale) {
           tmp.x <- 1:length(levels(factor(time)))
-          axis(1, at=tmp.x, labels = levels(factor(time)))
+          graphics::axis(1, at=tmp.x, labels = levels(factor(time)))
         } else {
           tmp.x <- as.numeric(levels(factor(time)))
-          axis(1)
+          graphics::axis(1)
         }
-        box()
-        lines(x=tmp.x, y=mns[k,]-sds[k,], col=unique(cols[tf==k]), lwd=1, lty=2)
-        lines(x=tmp.x, y=mns[k,], col=unique(cols[tf==k]), lwd=3)
-        lines(x=tmp.x, y=mns[k,]+sds[k,], col=unique(cols[tf==k]), lwd=1, lty=2)
+        graphics::box()
+        graphics::lines(x=tmp.x, y=mns[k,]-sds[k,], col=unique(cols[tf==k]), lwd=1, lty=2)
+        graphics::lines(x=tmp.x, y=mns[k,], col=unique(cols[tf==k]), lwd=3)
+        graphics::lines(x=tmp.x, y=mns[k,]+sds[k,], col=unique(cols[tf==k]), lwd=1, lty=2)
         flt <- tmp[,"Temp"]==k
-        points(y=val[flt], x=time[flt], pch=pchs[flt], bg=cols[flt], cex=2)
+        graphics::points(y=val[flt], x=time[flt], pch=pchs[flt], bg=cols[flt], cex=2)
         if (!plot_ln_relative) {
-          mtext(text = paste0("recovery = ", round(100*mean(val[flt], na.rm=T),1), "%"), side = 3, line = -1.8, adj = 0.02, cex = cex_plot)
-          mtext(text = paste0("(RSD = ", round(100*sd(val[flt], na.rm=T)/mean(val[flt], na.rm=T),1), "%)"), side = 3, line = -3.6, adj = 0.02, cex = cex_plot)
+          graphics::mtext(text = paste0("recovery = ", round(100*mean(val[flt], na.rm=T),1), "%"), side = 3, line = -1.8, adj = 0.02, cex = cex_plot)
+          graphics::mtext(text = paste0("(RSD = ", round(100*stats::sd(val[flt], na.rm=T)/mean(val[flt], na.rm=T),1), "%)"), side = 3, line = -3.6, adj = 0.02, cex = cex_plot)
         }
         if (plot_ln_relative & plot_in_month) {
-          lm_res <- coef(lm(val[flt] ~ as.numeric(as.character(time[flt]))))
-          mtext(text = paste("slope =", round(lm_res[2],4)), side = 3, line = -1.8, adj = 0.98, col=ifelse(lm_res[2]<0,3,2), cex = cex_plot)
+          lm_res <- stats::coef(stats::lm(val[flt] ~ as.numeric(as.character(time[flt]))))
+          graphics::mtext(text = paste("slope =", round(lm_res[2],4)), side = 3, line = -1.8, adj = 0.98, col=ifelse(lm_res[2]<0,3,2), cex = cex_plot)
         }
       }
       par(mfrow=c(1,1))
@@ -179,11 +179,11 @@ m_arrheniusServer <- function(id, rv) {
       val <- log(tmp[,"Value"])
       out <- plyr::ldply(levels(tf)[-1], function(k) {
         flt <- tmp[,"Temp"]==k
-        a <- coef(lm(val[flt] ~ time[flt]))[2]
+        a <- stats::coef(stats::lm(val[flt] ~ time[flt]))[2]
         return(data.frame(
           "T [\u00B0C]"=k,
           "Rec"=paste0(round(100*mean(tmp[flt,"Value"], na.rm=T),1), "%"),
-          "RSD"=paste0(round(100*sd(tmp[flt,"Value"], na.rm=T)/mean(tmp[flt,"Value"], na.rm=T),1), "%"),
+          "RSD"=paste0(round(100*stats::sd(tmp[flt,"Value"], na.rm=T)/mean(tmp[flt,"Value"], na.rm=T),1), "%"),
           "1/K"=round(1/(273.15+as.numeric(k)),4),
           "k_eff"=a,
           "log(-k_eff)"=ifelse(a<0, log(-a), NA),
@@ -227,7 +227,7 @@ m_arrheniusServer <- function(id, rv) {
     }, options = list(dom="t"), rownames = FALSE)
 
     expTab1 <- function(tab1, tab2) {
-      ce <- coef(lm(tab1[,"log(-k_eff)"] ~ tab1[,"1/K"]))
+      ce <- stats::coef(stats::lm(tab1[,"log(-k_eff)"] ~ tab1[,"1/K"]))
       a <- ce[2]
       b <- ce[1]
       out <- tab1
@@ -249,12 +249,12 @@ m_arrheniusServer <- function(id, rv) {
     getFig2 <- function(tab) {
       xlim <- range(tab[,"1/K"], na.rm=TRUE)
       ylim <- range(c(tab[,"log(-k_eff)"], tab[,"CI_upper"], tab[,"CI_lower"]), na.rm=TRUE)
-      par(mar=c(5,4,0.5,0.5))
+      graphics::par(mar=c(5,4,0.5,0.5))
       plot(xlim, ylim, xlab="1/K", ylab="log(-k_eff)", type="n", main="")
-      lines(x=tab[,"1/K"], y=tab[,"CI_upper"], col=2, lwd=1, lty=2)
-      lines(x=tab[,"1/K"], y=tab[,"log(k)_calc"], col=2, lwd=3)
-      lines(x=tab[,"1/K"], y=tab[,"CI_lower"], col=2, lwd=1, lty=2)
-      points(y=tab[,"log(-k_eff)"], x=tab[,"1/K"], pch=21, bg=4, cex=2)
+      graphics::lines(x=tab[,"1/K"], y=tab[,"CI_upper"], col=2, lwd=1, lty=2)
+      graphics::lines(x=tab[,"1/K"], y=tab[,"log(k)_calc"], col=2, lwd=3)
+      graphics::lines(x=tab[,"1/K"], y=tab[,"CI_lower"], col=2, lwd=1, lty=2)
+      graphics::points(y=tab[,"log(-k_eff)"], x=tab[,"1/K"], pch=21, bg=4, cex=2)
     }
     output$Fig2 <- shiny::renderPlot({
       shiny::req(tab1exp())
