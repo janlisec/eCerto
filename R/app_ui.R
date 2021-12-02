@@ -34,8 +34,9 @@ app_ui <- function(request) {
       windowTitle = "BAM eCerto",
       position = "static-top",
       footer = shiny::pre(shiny::HTML(
-        get_golem_config("golem_name"),
-        "( ver.", get_golem_config("golem_version"),")",
+        get_golem_config("golem_name"), "|",
+        get_golem_config("app_version"), "|",
+        get_golem_config("app_date"), "|",
         "jan.lisec@bam.de"
       )),
       shiny::tabPanel(

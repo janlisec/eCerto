@@ -1,6 +1,7 @@
 default:
   golem_name: eCerto
-  golem_version: 0.1.27
+  app_version: !expr as.character(utils::packageVersion("eCerto"))
+  app_date: !expr as.character(Sys.Date())
   app_prod: no
   silent: no
 production:
