@@ -127,7 +127,7 @@ m_arrheniusServer <- function(id, rv) {
       par(cex.lab=cex_plot*1.1, cex.axis=cex_plot*1.1)
       for (k in levels(tf)[-1]) {
         plot(xlim, ylim, xlab=ifelse(plot_in_month, "Month", "Days"), ylab=ifelse(plot_ln_relative, "log(Relative value)", "Relative value"), type="n", main="", axes=FALSE)
-        mtext(text = paste0(k, "°C"), side = 1, line = -1.8, adj = 0.98, cex = cex_plot)
+        mtext(text = paste0(k, "\u00B0C"), side = 1, line = -1.8, adj = 0.98, cex = cex_plot)
         axis(2)
         abline(h=ifelse(plot_ln_relative, 0, 1), col=grey(0.9), lwd=3)
         flt <- time==0
@@ -181,7 +181,7 @@ m_arrheniusServer <- function(id, rv) {
         flt <- tmp[,"Temp"]==k
         a <- coef(lm(val[flt] ~ time[flt]))[2]
         return(data.frame(
-          "T [°C]"=k,
+          "T [\u00B0C]"=k,
           "Rec"=paste0(round(100*mean(tmp[flt,"Value"], na.rm=T),1), "%"),
           "RSD"=paste0(round(100*sd(tmp[flt,"Value"], na.rm=T)/mean(tmp[flt,"Value"], na.rm=T),1), "%"),
           "1/K"=round(1/(273.15+as.numeric(k)),4),
