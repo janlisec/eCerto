@@ -1,6 +1,14 @@
 ### Homogeneity Uncertainty calculation
 
-Conducting an analysis of variance (ANOVA) on a one factor linear model we determine from $N$ bottles/containers with $n$ replicates each the variance within bottles $s_w$ (MS_within) and the variance between bottles $s_a$ (MS_among). Together with the overall mean vlaue $\mu$ (mean of all $N$ bottle means), we now can compute two relative uncertainties between bottles:
+Conducting an analysis of variance (ANOVA) on a one factor linear model we determine from $N$ bottles/containers with $n$ replicates each the variance within bottles $s_w$ (MS_within) and the variance between bottles $s_a$ (MS_among).
+
+***Note!*** To account for the case of different number of replicates over all $N$ bottles, $n$ is calculated according to ISO GUIDE 35 as:
+
+$$n=\frac{1}{N-1}*\left[\sum_{i=1}^N{n_i}-\frac{\sum_{i=1}^N{n_i^2}}{\sum_{i=1}^N{n_i}}\right]$$
+
+where $n_{i}$ is the vector of replicates per group.
+
+Together with the overall mean vlaue $\mu$ (mean of all $N$ bottle means), we now can compute two relative uncertainties between bottles:
 
 $$s_{bb}={\sqrt{s_a-s_w \over n} \over \mu}$$
 

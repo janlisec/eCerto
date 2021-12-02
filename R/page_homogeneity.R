@@ -158,8 +158,11 @@ page_HomogeneityServer = function(id, rv) {
             MSamong <- anm[1,"Mean Sq"]
             MSwithin <- anm[2,"Mean Sq"]
             mn <- mean(sapply(split(x[,"value"],x[,"Flasche"]),mean,na.rm=T),na.rm=T)
-            n <- round(mean(table(as.character(x[,"Flasche"]))))
-            N <- length(unique(x[,"Flasche"]))
+            n_i <- table(as.character(x[,"Flasche"]))
+            N <- length(n_i)
+            #n <- round(mean(table(as.character(x[,"Flasche"]))))
+            #[modified to ISO35[B.4] on suggestion of KV]
+            n <- 1/(N-1)*(sum(n_i)-sum(n_i^2)/sum(n_i))
             s_bb <- ifelse(MSamong>MSwithin, sqrt((MSamong-MSwithin)/n), 0)/mn
             s_bb_min <- (sqrt(MSwithin/n)*(2/(N*(n-1)))^(1/4))/mn
             return(data.frame("mean"=mn, "n"=n, "N"=N, "MSamong"=MSamong, "MSwithin"=MSwithin, "P"=anm$Pr[1], "s_bb"=s_bb, "s_bb_min"=s_bb_min))
