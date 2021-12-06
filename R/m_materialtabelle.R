@@ -107,7 +107,7 @@ m_materialtabelleServer <- function(id, rv) {
         units <- sapply(split(as.character(df[,"unit"]), df[,"analyte"]), unique)
         if (identical(names(units), as.character(mt[,"analyte"]))) {
           if (!silent) message("[materialtabelle] Set analyte units for 'mt' from 'rv C data'")
-          mt <- cbind(mt, "unit"=units)
+          mt <- cbind(mt, data.frame("unit"=units))
         } else {
           err_txt("[materialtabelle] Can't set analyte units for Tab.3 - Material table")
           mt <- cbind(mt, "unit"=rep("", nrow(mt)))

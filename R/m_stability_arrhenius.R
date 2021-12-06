@@ -157,7 +157,7 @@ m_arrheniusServer <- function(id, rv) {
           graphics::mtext(text = paste("slope =", round(lm_res[2],4)), side = 3, line = -1.8, adj = 0.98, col=ifelse(lm_res[2]<0,3,2), cex = cex_plot)
         }
       }
-      par(mfrow=c(1,1))
+      graphics::par(mfrow=c(1,1))
     }
 
     output$Fig1 <- shiny::renderPlot({

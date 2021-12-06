@@ -98,7 +98,20 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
         )
         # check if all tables have the same dimensions
         test <- length(unique(sapply(l, nrow)))==1 && length(unique(sapply(l, ncol)))==1
-        if (!test) { warning("m_xlsx_range_select_Server: Certification Excel Files contain different dimensions.") }
+        if (!test) {
+          warning("m_xlsx_range_select_Server: Certification Excel Files contain different dimensions.")
+          err_hint <- c(which(sapply(l, nrow)!=stats::median(sapply(l, nrow))), which(sapply(l, ncol)!=stats::median(sapply(l, ncol))))
+          err_hint <- ifelse(length(err_hint)>=1, paste("You might want to check file(s):", paste(current_file_input()$name[err_hint], collapse=", ")), "")
+          shiny::showNotification(
+            ui = shiny::tagList(
+              shiny::h3("Certification Excel Files contain different dimensions."),
+              shiny::p(err_hint)
+            ),
+            duration = NULL,
+            closeButton = TRUE,
+            type = "warning"
+          )
+        }
       } else if(shiny::isolate(excelformat())=="Stability") {
         # for Stability, all sheets are loaded in Background
         l <- lapply(sheet(),function(x) {

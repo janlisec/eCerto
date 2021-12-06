@@ -101,7 +101,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
       )
     })
 
-    # Excdel Sheet-number selector
+    # Excel Sheet-number selector
     shiny::observeEvent(input$excel_file, {
       sheetnames <- load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
@@ -137,10 +137,10 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
     shiny::observeEvent(input$go, {
       # Append File column
       message("ExcelUpload: Load-button clicked")
-      tab_flt = rv_xlsx_range_select$tab
+      tab_flt <- rv_xlsx_range_select$tab
       out$input_files = current_file_input()$name
       # perform minimal validation checks
-      if(exl_fmt()=="Homogeneity") {
+      if (exl_fmt()=="Homogeneity") {
         tab_flt <- tab_flt[[1]]
         tab_flt[["File"]] = rep(current_file_input()$name[1], nrow(tab_flt))
         if (!"analyte" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'analyte' found in input file.")
@@ -148,7 +148,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
         if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUpload_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
         out$data <- tab_flt
 
-      } else if(exl_fmt() == "Certification") {
+      } else if (exl_fmt() == "Certification") {
         if (!silent) message("[m_ExcelUpload_Server] Load Certification data")
         for (i in 1:length(tab_flt)) {
           tab_flt[[i]][["File"]] = rep(current_file_input()$name[i], nrow(tab_flt[[i]]))
@@ -192,7 +192,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
           error_modal()
         }
 
-      } else if(exl_fmt() == "Stability") {
+      } else if (exl_fmt() == "Stability") {
         # STABILITY data maycome in 3 versions
         # (1) as simple two column format (Date, Value) with separate tables for each analyte
         # (2) as LTS format with a meta data header containing machine infos, certification data etc.
