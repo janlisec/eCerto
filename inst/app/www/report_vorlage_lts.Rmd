@@ -66,6 +66,7 @@ s_xrel <- s_x/median(v[,"Value"])
 CI <- sd(v[,"Value"])*qt(0.975, nrow(v)-1)/sqrt(nrow(v)-1)
 U_ilc <- round(100*d[,"U"]/d[,"CertVal"],2)
 U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI/median(v[,"Value"]), "1sx"=s_xrel, "2sx"=2*s_xrel), 2)
+n_digits <- nchar(strsplit(as.character(d[,"CertVal"]), "[.]")[[1]][2])
 ```
 
 **RM Informations**
@@ -81,7 +82,7 @@ U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI
 
 |                            |                                                             |                                        |                                        |                                                             |
 |----------------------------|-------------------------------------------------------------|----------------------------------------|----------------------------------------|-------------------------------------------------------------|
-| Number of measurements:    | **`r nrow(v)`**                                             |                                        | Median:                                | **`r paste(round(median(v[,"Value"]), 2), d[,"KW_Unit"])`** |
+| Number of measurements:    | **`r nrow(v)`**                                             |                                        | Median:                                | **`r paste(round(median(v[,"Value"]), n_digits), d[,"KW_Unit"])`** |
 | Standarddeviation:         | **s=`r round(sd(v[,"Value"]), 2)`**                         | **s~rel~=`r round(100*U_lts_rel,2)`%** | **2s=`r round(2*sd(v[,"Value"]), 2)`** | **2s~rel~=`r round(2*100*U_lts_rel,2)`%**                   |
 | Standarddeviation of mean: | **s~x~=`r round(s_x, 4)`**                                  | **s~x,rel~=`r round(100*s_xrel,2)`%**  | **2s~x~=`r round(2*s_x, 4)`**          | **2s~x,rel~=`r round(2*100*s_xrel,2)`%**                    |
 | Confidence interval:       | CI~0.95~                                                    | **`r round(CI, 4)`**                   | CI~0.95,rel~                           | **`r round(100*CI/median(v[,"Value"]), 2)`%**               |
