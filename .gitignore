@@ -35,5 +35,7 @@ source/
 inst/extdata/deprecated/
 # inst/extdata/
 inst/doc
+inst/rmd
 shiny_bookmarks
 .Rproj.user
+rsconnect
