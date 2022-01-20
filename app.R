@@ -1,5 +1,5 @@
 # Launch the ShinyApp (Do not remove this comment)
-# To deploy: rsconnect::deployApp(appName = c("test","eCerto")[2])
+# To deploy: rsconnect::deployApp(appName = c("test","eCerto")[2], forceUpdate = TRUE)
 # To check for errors use: rsconnect::showLogs(appName = "test")
 # Or use the blue button on top of this file
 
