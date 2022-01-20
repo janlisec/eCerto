@@ -78,6 +78,12 @@ page_HomogeneityUI <- function(id) {
         shiny::column(
           width = 7,
           shiny::fluidRow(
+            shiny::strong(
+              shiny::actionLink(
+                inputId = ns("fig1_link"),
+                label = "Fig.1 Homogeneity - boxplot"
+              )
+            ), shiny::p(),
             shiny::plotOutput(ns("h_boxplot"), inline=TRUE),
             shiny::uiOutput(ns("h_statement2"))
           )
@@ -113,6 +119,10 @@ page_HomogeneityServer = function(id, rv) {
 
     shiny::observeEvent(input$tab2_link,{
       help_the_user("homogeneity_specimen_stats")
+    })
+
+    shiny::observeEvent(input$fig1_link,{
+      help_the_user("homogeneity_boxplot")
     })
 
     shiny::observeEvent(homog(), {

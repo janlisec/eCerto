@@ -9,6 +9,9 @@ The uncertainty contribution of the Homogeneity measurements `U_bb` (uncertainty
 
 ***Note!*** Transfer is only sucessfull in case that an analyte of matching name can be found found (see colum`In_Cert_Module`).
 
+```{r child = 'homogeneity_boxplot.Rmd'}
+```
+
 
 ```{r child = 'homogeneity_uncertainty.Rmd'}
 ```
