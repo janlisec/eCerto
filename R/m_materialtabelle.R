@@ -445,7 +445,7 @@ m_materialtabelleServer <- function(id, rv) {
           target = "cell",
           disable = list(columns = which(!(colnames(mater_table_print()) %in% c("k", attr(mater_table_print(), "col_code")[,"Name"])))-1)
         ),
-        options = list(dom="t"), rownames = NULL, selection = list(mode="single", target="row", selected=selected_row_idx())
+        options = list(dom="t", pageLength = isolate(nrow(mater_table_print()))), rownames = NULL, selection = list(mode="single", target="row", selected=selected_row_idx())
       ),
       server = TRUE
     )

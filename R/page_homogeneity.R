@@ -242,7 +242,7 @@ page_HomogeneityServer = function(id, rv) {
 
     output$h_vals <- DT::renderDataTable({
       h_vals_print()
-    }, options = list(paging = FALSE, searching = FALSE), rownames=NULL, selection = list(mode="single", target="row"))
+    }, options = list(paging = FALSE, searching = FALSE, pageLength=100), rownames=NULL, selection = list(mode="single", target="row"))
 
 
     shiny::observeEvent(input$h_vals_rows_selected, {
