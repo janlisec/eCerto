@@ -14,7 +14,6 @@
 .longtermstabilityUI = function(id) {
 
   # set up shinyAlert and ns function
-  shinyalert::useShinyalert()
   ns <- shiny::NS(id)
 
   shiny::wellPanel(
@@ -342,7 +341,7 @@
         font_file2 <- fnc_get_local_file("BAMKlavika-Medium.ttf")
         font_file3 <- fnc_get_local_file("BAMKlavika-LightItalic.ttf")
         font_file4 <- fnc_get_local_file("BAMKlavika-MediumItalic.ttf")
-        
+
         # Set up parameters to pass to Rmd document
         dat <- datalist[["lts_data"]]
         if (length(dat)>=2 & i()>=2) for (j in rev(1:(i()-1))) dat[j] <- NULL

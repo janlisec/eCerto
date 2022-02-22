@@ -102,9 +102,7 @@ golem_add_external_resources <- function(){
     ),
     golem::favicon(ico = "BAMLogo"),
     # Add here other external resources
-    # for example, you can add shinyalert::useShinyalert()
-    shinyjs::useShinyjs(),
-    shinyalert::useShinyalert()
+    shinyjs::useShinyjs()
   )
 }
 

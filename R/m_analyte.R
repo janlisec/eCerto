@@ -14,7 +14,6 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    shinyalert::useShinyalert(),
 #'    shinyjs::useShinyjs(),
 #'    m_analyteUI(id = "test")),
 #'  server = function(input, output, session) {

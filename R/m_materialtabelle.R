@@ -15,7 +15,6 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    shinyalert::useShinyalert(),
 #'    m_materialtabelleUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {

@@ -209,12 +209,16 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
             # (3) as a dataframe giving Temp info additionally to compute Arrhenius estimate of uncertainty
             s_dat <- tab_flt[[1]]
             cns <- c("analyte","Value","Date","Temp")
-            shiny::validate(shiny::need(
-              expr = cns %in% colnames(s_dat),
-              message = paste("Require column(s)", paste(cns[!(cns %in% colnames(s_dat))], collapse=", "), "in input file.")
-            ))
-            # convert time to days relative to min(time)
-            s_dat[,"time"] <- as.numeric(s_dat[,"Date"]-min(s_dat[,"Date"]))
+            if (!all(cns %in% colnames(s_dat))) {
+              shinyalert::shinyalert(
+                title = "Error in data upload",
+                text = paste0("Required column(s) '", paste(cns[!(cns %in% colnames(s_dat))], collapse="', '"), "' not found in input file."),
+                showCancelButton = FALSE,
+                showConfirmButton = TRUE,
+                callbackR = function(x) { s_dat <- NULL }
+              )
+            }
+            if ("Date" %in% colnames(s_dat)) s_dat[,"time"] <- as.numeric(s_dat[,"Date"]-min(s_dat[,"Date"]))
           }
         } else {
           # (1) as simple two column format (Date, Value) with separate tables for each analyte
