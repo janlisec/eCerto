@@ -32,7 +32,7 @@ app_ui <- function(request) {
       ),
       selected = "Start",
       windowTitle = "BAM eCerto",
-      position = "static-top",
+      position = "fixed-top",
       footer = shiny::pre(shiny::HTML(
         get_golem_config("golem_name"), "|",
         get_golem_config("app_version"), "|",
@@ -43,40 +43,40 @@ app_ui <- function(request) {
         id = "start",
         title = "Start",
         icon = shiny::icon("angle-right"),
-        page_startUI("Start")
+        shiny::div(style="padding-top: 60px;", page_startUI("Start"))
       ),
       shiny::tabPanel(
         id = "certif_tab",
         title = "Certification",
         value = "tP_certification",
         icon = shiny::icon("angle-right"),
-        page_CertificationUI("certification"),
+        shiny::div(style="padding-top: 60px;", page_CertificationUI("certification"))
       ),
       shiny::tabPanel(
         id = "homog_tab",
         title = "Homogeneity",
         icon = shiny::icon("angle-right"),
         value = "tP_homogeneity",
-        page_HomogeneityUI("Homogeneity")
+        shiny::div(style="padding-top: 60px;", page_HomogeneityUI("Homogeneity"))
       ),
       shiny::tabPanel(
         title = "Stability",
         icon = shiny::icon("angle-right"),
         value = "tP_stability",
-        page_StabilityUI("Stability")
+        shiny::div(style="padding-top: 60px;", page_StabilityUI("Stability"))
       ),
       # Long term stability
       shiny::tabPanel(
         title = "LTS",
         icon = shiny::icon("angle-right"),
         value = "tP_LTS",
-        .longtermstabilityUI("lts")
+        shiny::div(style="padding-top: 60px;", .longtermstabilityUI("lts"))
       ),
       shiny::tabPanel(
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        help_the_user(filename = "help_start", format = "html", modal = FALSE)
+        shiny::div(style="padding-top: 60px; float: left", help_the_user(filename = "help_start", format = "html", modal = FALSE))
       )
     )
   )
