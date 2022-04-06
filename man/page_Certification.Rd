@@ -30,7 +30,6 @@ not yet
 if (interactive()) {
 shiny::shinyApp(
  ui = shiny::fluidPage(
-   shinyalert::useShinyalert(),
    shinyjs::useShinyjs(),
    page_CertificationUI(id = "test")
  ),

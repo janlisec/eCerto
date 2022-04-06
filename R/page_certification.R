@@ -115,13 +115,15 @@ page_CertificationUI = function(id) {
         shiny::fluidRow(
           shiny::column(
             width = 10,
-            shiny::strong(
-              shiny::actionLink(
-                inputId = ns("certifiedValuePlot_link"),
-                label = "Fig.1 Certified Value Plot"
+            shiny::div(style="width=100%; margin-bottom: 5px;",
+                shiny::strong(
+                shiny::actionLink(
+                  inputId = ns("certifiedValuePlot_link"),
+                  label = "Fig.1 Certified Value Plot"
+                )
               )
             ),
-            shiny::plotOutput(ns("overview_CertValPlot"), inline = FALSE)
+            shiny::plotOutput(ns("overview_CertValPlot"), inline = TRUE)
           ),
           shiny::column(
             width = 2,
@@ -147,13 +149,15 @@ page_CertificationUI = function(id) {
               shiny::fluidRow(
                 shiny::column(
                   width = 6,
-                  shiny::strong("Download"),
-                  shiny::br(),
+                  #shiny::div(style="margin-bottom: 5px", shiny::strong("Download")),
+                  #shiny::br(),
+                  shiny::p(shiny::strong("Download")),
                   shiny::downloadButton(outputId = ns('Fig01'), label = "Figure")
                 ),
                 shiny::column(
                   width = 6,
-                  shiny::checkboxInput(inputId = ns("annotate_id"), label = "Show IDs", value = FALSE)
+                  shiny::checkboxInput(inputId = ns("annotate_id"), label = "Show IDs", value = FALSE),
+                  shiny::checkboxInput(inputId = ns("filename_labels"), label = "Filenames as labels", value = FALSE)
                 )
               ),
               shiny::p(),
@@ -256,7 +260,7 @@ page_CertificationServer = function(id, rv) {
 
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
-      CertValPlot(data = dat(), annotate_id=input$annotate_id)
+      CertValPlot(data = dat(), annotate_id=input$annotate_id, filename_labels=input$filename_labels)
     }, height = shiny::reactive({input$Fig01_height}), width = shiny::reactive({input$Fig01_width}))
 
     CertValPlot_list <- shiny::reactive({
@@ -265,7 +269,7 @@ page_CertificationServer = function(id, rv) {
       list(
         "show" = TRUE,
         "fnc" = deparse(CertValPlot),
-        "call" = str2lang('CertValPlot(data=data)'),
+        "call" = str2lang(paste0('CertValPlot(data=data, annotate_id=', input$annotate_id, ', filename_labels=', input$filename_labels, ')')),
         "Fig01_width" = input$Fig01_width,
         "Fig01_height" = input$Fig01_height
       )
@@ -283,7 +287,7 @@ page_CertificationServer = function(id, rv) {
       },
       content = function(file) {
         grDevices::pdf(file = file, width = input$Fig01_width/72, height = input$Fig01_height/72)
-        CertValPlot(data = dat(), annotate_id=input$annotate_id)
+          CertValPlot(data = dat(), annotate_id=input$annotate_id, filename_labels=input$filename_labels)
         grDevices::dev.off()
       },
       contentType = "image/pdf"

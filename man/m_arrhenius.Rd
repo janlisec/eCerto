@@ -24,7 +24,6 @@ m_stability_arrhenius.
 if (interactive()) {
 shiny::shinyApp(
  ui = shiny::fluidPage(
-   #shinyalert::useShinyalert(),
    m_arrheniusUI(id = "arrhenius")
  ),
  server = function(input, output, session) {
