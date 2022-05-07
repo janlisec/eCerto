@@ -10,6 +10,8 @@ CertValPlot(data = NULL, annotate_id = FALSE, filename_labels = FALSE)
 \item{data}{data.frame containing columns 'value', 'Lab' and 'L_flt'.}
 
 \item{annotate_id}{T/F to overlay the plot with ID as text if column 'ID' is present.}
+
+\item{filename_labels}{T/F to use imported file names as labels on x-axes.}
 }
 \value{
 A specific type of boxplot.

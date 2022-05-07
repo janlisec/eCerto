@@ -2,7 +2,7 @@
 
 For analytes under inspection (i.e. which are selected in `Tab.3 - Material certification`), several analyte specific parameters can be set. 
 
-![Possible options which can be set per individual analyte](C_Modul_AnalyteOptions.png)
+![Possible options which can be set per individual analyte](fig/C_Modul_AnalyteOptions.png)
 
 Samples can be filtered by ID (Hint: you can select to show sample IDs in Fig.1 to identify outlier IDs). These samples will not be used in any calculations. They are removed from downstream processing right after import. However, information of this filtering step is kept and included in reports.
 

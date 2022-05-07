@@ -76,7 +76,7 @@ app_ui <- function(request) {
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        shiny::div(style="padding-top: 60px; float: left", help_the_user(filename = "help_start", format = "html", modal = FALSE))
+        shiny::div(style="padding-top: 60px; float: left", shiny::withMathJax(shiny::includeCSS(path = get_local_file("help_start.html"))))
       )
     )
   )
@@ -90,11 +90,12 @@ app_ui <- function(request) {
 #' @import shiny
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @noRd
-golem_add_external_resources <- function(){
+golem_add_external_resources <- function() {
 
   golem::add_resource_path(
     'www', app_sys('app/www')
   )
+
   shiny::tags$head(
     golem::bundle_resources(
       path = app_sys('app/www'),
@@ -104,5 +105,5 @@ golem_add_external_resources <- function(){
     # Add here other external resources
     shinyjs::useShinyjs()
   )
-}
 
+}

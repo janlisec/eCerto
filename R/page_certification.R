@@ -353,13 +353,13 @@ page_CertificationServer = function(id, rv) {
     }, height = 400, width = 400)
 
     shiny::observeEvent(input$stat_link,{
-      help_the_user("certification_laboratoryStatistics", format = "rmd_with_link")
+      help_the_user_modal("certification_laboratoryStatistics")
     })
     shiny::observeEvent(input$stat2_link,{
-      help_the_user("certification_meanDistribution", format = "rmd_with_link")
+      help_the_user_modal("certification_meanDistribution")
     })
     shiny::observeEvent(input$certifiedValuePlot_link, {
-      help_the_user("certification_boxplot")
+      help_the_user_modal("certification_boxplot")
     })
 
   })

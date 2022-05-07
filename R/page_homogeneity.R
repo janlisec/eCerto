@@ -114,15 +114,15 @@ page_HomogeneityServer = function(id, rv) {
     h_vals = shiny::reactiveVal(NULL)
 
     shiny::observeEvent(input$tab1_link,{
-      help_the_user("homogeneity_uncertainty")
+      help_the_user_modal("homogeneity_uncertainty")
     })
 
     shiny::observeEvent(input$tab2_link,{
-      help_the_user("homogeneity_specimen_stats")
+      help_the_user_modal("homogeneity_specimen_stats")
     })
 
     shiny::observeEvent(input$fig1_link,{
-      help_the_user("homogeneity_boxplot")
+      help_the_user_modal("homogeneity_boxplot")
     })
 
     shiny::observeEvent(homog(), {
@@ -297,7 +297,7 @@ page_HomogeneityServer = function(id, rv) {
     })
 
     shiny::observeEvent(input$hom_help_modal, {
-      help_the_user("homogeneity_uncertainty")
+      help_the_user_modal("homogeneity_uncertainty")
     })
 
     h_transfer_U <- m_TransferUServer(
@@ -313,8 +313,7 @@ page_HomogeneityServer = function(id, rv) {
     output$h_Report <- shiny::downloadHandler(
       filename = function() { "Homogeneity_report.pdf" },
       content = function(file) {
-        # Copy the report file to a temporary directory before processing it
-        rmdfile <- fnc_get_local_file("report_vorlage_homogeneity.Rmd")
+        rmdfile <- get_local_file("report_vorlage_homogeneity.Rmd")
         # render the markdown file
         shiny::withProgress(
           expr = {

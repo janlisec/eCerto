@@ -88,7 +88,7 @@ page_StabilityServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
 
     shiny::observeEvent(input$tab_link,{
-      help_the_user("stability_uncertainty")
+      help_the_user_modal("stability_uncertainty")
     })
 
     arrhenius_out <- m_arrheniusServer(id="arrhenius", rv=rv)

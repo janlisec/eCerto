@@ -12,7 +12,6 @@ app_sys <- function(...) {
   system.file(..., package = "eCerto")
 }
 
-
 #' Read App Config
 #'
 #' @param value Value to retrieve from the config file.

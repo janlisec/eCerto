@@ -66,9 +66,8 @@ page_startUI <- function(id) {
         shiny::selectInput(
           inputId = ns("moduleSelect"),
           choices = NULL,
-          label = shiny::actionLink(inputId = ns("moduleUploadHelp"), label = "Module"),
+          label = shiny::tagList("Module (click", shiny::actionLink(inputId = ns("moduleUploadHelp"), label = "here"),  "to see example format)"),
           width = "50%"
-
         ),
         m_ExcelUpload_UI(ns("excelfile"))
       )
@@ -210,13 +209,13 @@ page_startServer = function(id, rv, tde) {
     shiny::observeEvent(input$moduleUploadHelp, {
       switch(
         input$moduleSelect,
-        "Certification" = help_the_user("certification_dataupload", modal=TRUE),
-        "Homogeneity" = help_the_user("homogeneity_dataupload", modal=TRUE),
-        "Stability" = help_the_user("stability_dataupload", modal=TRUE)
+        "Certification" = help_the_user_modal("certification_dataupload"),
+        "Homogeneity" = help_the_user_modal("homogeneity_dataupload"),
+        "Stability" = help_the_user_modal("stability_dataupload")
       )
     })
 
-    shiny::observeEvent(input$getHelp, { help_the_user("start_gethelp", modal=TRUE) })
+    shiny::observeEvent(input$getHelp, { help_the_user_modal("start_gethelp") })
 
   })
 

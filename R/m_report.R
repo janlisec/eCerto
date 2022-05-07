@@ -75,13 +75,8 @@ m_report_server <- function(id, rv, selected_tab) {
         ))
       },
       content = function(file) {
-        # Copy the report file to a temporary directory before processing it
-        rmdfile <- fnc_get_local_file("report_vorlage_analyt.Rmd")
-        # copy the word template (for font sizes and font types) to a temporary directory
-        fnc_get_local_file("template.docx")
-        # copy the BAM Logo to a temporary directory
-        logofile <- fnc_get_local_file("BAMLogo2015.png")
-
+        rmdfile <- get_local_file("report_vorlage_analyt.[Rr][Mm][Dd]$")
+        logofile <- "BAMLogo2015.png"
         # render the markdown file
         shiny::withProgress(
           expr = {
@@ -123,11 +118,8 @@ m_report_server <- function(id, rv, selected_tab) {
       },
       content = function(file) {
         # Copy the report file to a temporary directory before processing it
-        rmdfile <- fnc_get_local_file("report_vorlage_material.Rmd")
-        # copy the word template (for font sizes and font types) to a temporary directory
-        fnc_get_local_file("template.docx")
-        # copy the BAM Logo to a temporary directory
-        logofile <- fnc_get_local_file("BAMLogo2015.png")
+        rmdfile <- get_local_file("report_vorlage_material.[Rr][Mm][Dd]$")
+        logofile <- "BAMLogo2015.png"
         # render the markdown file
         shiny::withProgress(
           expr = {

@@ -2,7 +2,7 @@
 
 The material table combines all data collected within a certification trial to provide for each measured entity within the certified material the certified mean `cert_val` and the certified uncertainty `U`.
 
-![](C_Modul_Tab3.png)
+![material table](fig/C_Modul_Tab3.png)
 
 ***Note!*** Only for analytes which have been visually inspected by the user certified values will be transfered to this table to ensure that inspection took place.
 
@@ -26,6 +26,6 @@ The material table can be exported together with a report as PDF, Word or HTML d
 
 F and U columns can be added, removed or renamed using the respective parameter panel.
 
-![](C_Modul_Tab3_pars.png)
+![material table parameters](fig/C_Modul_Tab3_pars.png)
 
 ***Note!*** Numeric values are rounded to the number of digits specified by the user at the analyte selection panel (top).

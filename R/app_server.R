@@ -11,7 +11,7 @@ app_server <- function( input, output, session ) {
 
   # preload testdata
   tde <- new.env()
-  load(file = fnc_get_local_file("CRM001.RData", copy_to_tempdir = FALSE), envir = tde)
+  load(file = get_local_file("CRM001.RData"), envir = tde)
 
   page_startServer(id="Start", rv=rv, tde=tde)
 

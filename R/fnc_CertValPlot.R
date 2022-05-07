@@ -6,6 +6,7 @@
 #'
 #'@param data data.frame containing columns 'value', 'Lab' and 'L_flt'.
 #'@param annotate_id T/F to overlay the plot with ID as text if column 'ID' is present.
+#'@param filename_labels T/F to use imported file names as labels on x-axes.
 #'
 #'@return A specific type of boxplot.
 #'
@@ -25,7 +26,7 @@ CertValPlot <- function(data=NULL, annotate_id=FALSE, filename_labels=FALSE) {
   mar <- c(5,6,0,0)+0.2
   if (filename_labels) {
     xlabs <- sapply(xlabs, function(x) { unique(sub(pattern = "(.*?)\\..*$", replacement = "\\1", basename(data[data[,"Lab"]==x,"File"]))) })
-    mar <- c(floor(max(nchar(xlabs))*0.6),6,0,0)+0.2
+    mar <- c(3+floor(max(nchar(xlabs))*0.6),6,0,0)+0.2
     xlab <- NULL
   }
   #browser()

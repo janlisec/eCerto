@@ -11,7 +11,7 @@ assumes the first and second column to contain analyte names and units
 respectively and replicate measurements of this analyte in all remaining
 columns.
 
-![Data upload from Excel with preview](M_Modul_Dataupload.png)
+![Data upload from Excel with preview](fig/M_Modul_Dataupload.png)
 
 ***Note!*** Filenames will be stored for reference but imported labs will be
 consecutively numbered. In the example above you should import data from sheet

@@ -2,6 +2,6 @@
 
 Please prepare data in a single Excel file on seperate tables for each analyte as shown in the below example. Table names have to match analyte names from the Certification module. Column names need to be exactly `Value` and `Date` and column format should be numeric and date respectively.
 
-![](Import_sData_FixedFormat.png)
+![](fig/Import_sData_FixedFormat.png)
 
 Upload can be also achieved from a previousy created backup file. If a backup file does not contain any stability data, the Excel upload option will remain active but will be deactivated otherwise.

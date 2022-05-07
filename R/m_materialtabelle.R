@@ -488,7 +488,7 @@ m_materialtabelleServer <- function(id, rv) {
     })
 
     shiny::observeEvent(input$materheadline, {
-      help_the_user("materialtabelle")
+      help_the_user_modal("materialtabelle")
     })
 
     return(out)

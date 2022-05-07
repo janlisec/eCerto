@@ -2,4 +2,4 @@
 
 A report of the above analysis (single analyte) or for the material (all analytes) can be generated and exported in different formats.
 
-![Export Analyte Data or Certification Report](C_Modul_Report.png)
+![Export Analyte Data or Certification Report](fig/C_Modul_Report.png)

@@ -27,7 +27,7 @@
         accept = c("xls","xlsx","RData")
       ),
       shiny::helpText("Example Table"),
-      shiny::img(src = "www/Import_ltsData_FixedFormat.png")
+      shiny::img(src = "www/rmd/fig/Import_ltsData_FixedFormat.png")
     ),
     shiny::conditionalPanel(
       condition="output.LTS_fileUploaded == true",
@@ -332,15 +332,10 @@
     output$Report <- shiny::downloadHandler(
       filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf" ),
       content = function(file) {
-        # Copy the report file to a temporary directory before processing it, in
-        # case we don't have write permissions to the current working dir (which
-        # can happen when deployed).
-        rmdfile <- fnc_get_local_file("report_vorlage_lts.Rmd")
-        logofile <- fnc_get_local_file("BAMLogo2015.svg")
-        font_file1 <- fnc_get_local_file("BAMKlavika-Light.ttf")
-        font_file2 <- fnc_get_local_file("BAMKlavika-Medium.ttf")
-        font_file3 <- fnc_get_local_file("BAMKlavika-LightItalic.ttf")
-        font_file4 <- fnc_get_local_file("BAMKlavika-MediumItalic.ttf")
+        # ensure that logo file and font files are in the same folder as the Rmd.
+        rmdfile <- get_local_file("report_vorlage_lts.Rmd")
+        logofile <- "BAMLogo2015.svg"
+        # font files: "BAMKlavika-Light.ttf", "BAMKlavika-Medium.ttf", "BAMKlavika-LightItalic.ttf", "BAMKlavika-MediumItalic.ttf"
 
         # Set up parameters to pass to Rmd document
         dat <- datalist[["lts_data"]]
@@ -354,12 +349,18 @@
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).
-        rmarkdown::render(
-          input = rmdfile,
-          output_file = file,
-          output_format = "pdf_document",
-          params = params,
-          envir = new.env(parent = globalenv())
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            rmarkdown::render(
+              input = rmdfile,
+              output_file = file,
+              output_format = "pdf_document",
+              params = params,
+              envir = new.env(parent = globalenv())
+            )
+          },
+          message = "Rendering LTS Report.."
         )
       }
     )
@@ -376,7 +377,7 @@
     )
 
     shiny::observeEvent(input$InputHelp, {
-      help_the_user("lts_dataupload", modal = TRUE)
+      help_the_user_modal("lts_dataupload")
     })
 
   })

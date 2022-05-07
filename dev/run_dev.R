@@ -6,7 +6,7 @@ golem::detach_all_attached()
 # rm(list=ls(all.names = TRUE))
 
 # Document and reload your package
-golem::document_and_reload()
+golem::document_and_reload(pkg = "C:/Users/jlisec/Rpackages/Rpackage_eCerto/eCerto")
 
 # Run the application
-run_app()
+run_app(appDir = "C:/Users/jlisec/Rpackages/Rpackage_eCerto/eCerto")
