@@ -10,8 +10,6 @@
 #'
 #' @return nothing
 #'
-#' @importFrom htmltools p
-#'
 #' @examples
 #'if (interactive()) {
 #' shiny::shinyApp(
@@ -38,7 +36,7 @@ m_report_ui <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::fluidRow(shiny::strong("Download Report")),
-    p(),
+    shiny::p(),
     shiny::fluidRow(
       shiny::column(
         width = 5,

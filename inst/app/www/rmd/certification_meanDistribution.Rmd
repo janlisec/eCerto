@@ -11,9 +11,9 @@ Skewness and Kurtosis are computed additionally and grouped with their respectiv
 To compute the statistical tests *eCerto* uses functions from different packages available for **R**.
 Details regarding the conducted statistical test can be found using the following links:
 
-* <a href="https://rdrr.io/cran/stats/man/bartlett.test.html" target="_blank" rel="noopener noreferrer">Bartlett</a>
-* <a href="https://rdrr.io/cran/stats/man/anova.html" target="_blank" rel="noopener noreferrer">ANOVA</a>
-* <a href="https://rdrr.io/cran/dgof/man/ks.test.html" target="_blank" rel="noopener noreferrer">KS</a>
+* <a href="https://rdrr.io/r/stats/bartlett.test.html" target="_blank" rel="noopener noreferrer">Bartlett</a>
+* <a href="https://rdrr.io/r/stats/anova.html" target="_blank" rel="noopener noreferrer">ANOVA</a>
+* <a href="https://rdrr.io/r/stats/ks.test.html" target="_blank" rel="noopener noreferrer">KS</a>
 * <a href="https://rdrr.io/cran/moments/man/skewness.html" target="_blank" rel="noopener noreferrer">Skewness</a>
 * <a href="https://rdrr.io/cran/moments/man/agostino.test.html" target="_blank" rel="noopener noreferrer">Agostino</a>
 * <a href="https://rdrr.io/cran/moments/man/kurtosis.html" target="_blank" rel="noopener noreferrer">Kurtosis</a>

@@ -91,7 +91,7 @@ m_RDataImport_Server = function(id, modules, uploadsources) {
         shiny::showModal(
           shiny::modalDialog(
             title = "Existent data",
-            htmltools::HTML("Modul(s) <u>", paste(names(which(test)), collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
+            shiny::HTML("Modul(s) <u>", paste(names(which(test)), collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
             footer = shiny::tagList(
               shiny::actionButton(inputId = ns("cancel"), label = "Cancel"),
               shiny::actionButton(inputId = ns("overwrite"), label = "Overwrite", class = "btn btn-danger")

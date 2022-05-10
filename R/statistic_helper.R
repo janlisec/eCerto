@@ -145,7 +145,6 @@ Cochran <- function(data=NULL) {
 #' @description BAMTool, Modul: Certification, Lab-mean stats
 #' @param data Table with columns 'Lab' and 'value'.
 #' @param precision Rounding precision.
-#' @importFrom dgof ks.test
 #' @noRd
 fnc_labmean_stats <- function(data=NULL, precision=4) {
   #lab_means <- plyr::ldply(split(data$value, data$Lab), function(x) {data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
@@ -160,8 +159,10 @@ fnc_labmean_stats <- function(data=NULL, precision=4) {
     #"Bartlett_p"=pn(stats::bartlett.test(value~Lab, data=data)$p.value, precision),
     "ANOVA_p"=formatC(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],format="E",digits=2),
     #"ANOVA_p"=pn(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],precision),
-    "KS_p"=formatC(suppressWarnings(dgof::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), format="E", digits=2),
-    #"KS_p"=pn(suppressWarnings(dgof::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), precision),
+    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), format="E", digits=2),
+    #"KS_p"=pn(suppressWarnings(stats::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), precision),
+    # [JL 20220510 ks.test() substituted from dgof against stats version again, as the later got fixed]
+    #"KS_p"=formatC(suppressWarnings(dgof::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), format="E", digits=2),
     "Skewness"=round(moments::skewness(x = x),precision),
     "Agostino_p"=NA,
     "Kurtosis"=round(moments::kurtosis(x = x),precision),
