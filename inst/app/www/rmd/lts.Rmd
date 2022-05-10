@@ -5,9 +5,9 @@
 
 The Tool calculates the expected life time of a reference material in several steps:
 
-- calculating a linear model for the measurement data $y=m*x+n$, where $y$ represent measured values and $x$ represents time (expressed in month) and
-- correcting the intercept $n$ for the difference between the mean obtained from LTS data and the mean reported as certified value on import $n'=n+mean-cert\_val$
-- using the corrected $n'$ and $m$ to estimate the timepoint when the value of the certified analyte is expected to  exceede the range of $cert\_val\pm~U$.
+1. calculating a linear model for the measurement data $y=m \times x+n$, where $y$ represent measured values and $x$ represents time (expressed in month)
+2. correcting the intercept $n$ for the difference between the mean obtained from LTS data and the mean reported as certified value on import $n'=n+mean-cert\_val$
+3. using the corrected $n'$ and $m$ to estimate the timepoint when the value of the certified analyte is expected to  exceede the range of $cert\_val\pm~U$
 
 ### User interaction
 
@@ -17,6 +17,6 @@ After data upload, the user can:
 - add comments to any data point
 - download a PDF report
 
-### Report
+### LTS Report
 
 The user can export a PDF report containing all imported, edited and calculated data and figures.

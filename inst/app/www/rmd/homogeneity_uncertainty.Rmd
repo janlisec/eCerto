@@ -1,10 +1,12 @@
 ### Homogeneity Uncertainty calculation
 
-Conducting an analysis of variance (ANOVA) on a one factor linear model we determine from $N$ bottles/containers with $n$ replicates each the variance within bottles $s_w$ (MS_within) and the variance between bottles $s_a$ (MS_among).
+We first conduct an analysis of variance (ANOVA) on a one factor linear model for $N$ bottles (or containers) with $n$ replicate measurements each.
+This yields the variance within bottles $s_w$ (MS\_within) and the variance between bottles $s_a$ (MS\_among).
 
-***Note!*** To account for the case of different number of replicates over all $N$ bottles, $n$ is calculated according to ISO GUIDE 35 as:
+***Note!*** 
+To account for the case of different number of replicates over all $N$ bottles, $n$ is calculated according to ISO GUIDE 35 as:
 
-$$n=\frac{1}{N-1}*\left[\sum_{i=1}^N{n_i}-\frac{\sum_{i=1}^N{n_i^2}}{\sum_{i=1}^N{n_i}}\right]$$
+$$n=\frac{1}{N-1} \times \left[\sum_{i=1}^N{n_i}-\frac{\sum_{i=1}^N{n_i^2}}{\sum_{i=1}^N{n_i}}\right]$$
 
 where $n_{i}$ is the vector of replicates per group.
 
@@ -14,8 +16,9 @@ $$s_{bb}={\sqrt{s_a-s_w \over n} \over \mu}$$
 
 and
 
-$$s_{bb, min}={\sqrt{s_w/n}*\frac{2}{N*(n-1)}^{1/4} \over \mu}$$
+$$s_{bb, min}={\sqrt{s_w/n} \times \frac{2}{N \times (n-1)}^{1/4} \over \mu}$$
 
-The larger of both values, $s_{bb}$ and $s_{bb,min}$, is selected as uncertainty contribution. 
+The larger of both values, $s_{bb}$ and $s_{bb,min}$, is selected as uncertainty contribution when the user decides to transfer an uncertainty value to the material table. 
 
-***Note!*** $s_{bb}=0$ for $s_{a} < s{_w}$
+***Note!*** 
+When $s_{a} < s{_w}$ we set $s_{bb}=0$.
