@@ -19,6 +19,7 @@ H <- params$Homogeneity
 `r ifelse(length(unique(H[["data"]][,"analyte"])>=2), "These are the Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
 
 ```{r, echo=FALSE, comment=NA}
+# this need to become a function in the future similar to the was it is loved in the LTS Report/Module
 h_precision <- 4
 if (!("H_type" %in% colnames(H[["data"]]))) H[["data"]][,"H_type"] <- factor(rep("hom",nrow(H[["data"]])))
 for (a in levels(interaction(H[["data"]][,"analyte"],H[["data"]][,"H_type"]))) {

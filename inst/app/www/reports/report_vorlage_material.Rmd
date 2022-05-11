@@ -1,47 +1,57 @@
 ---
+title-meta: Material-Report
 params:
   materialtabelle: NA
   General: NA
   logo_file: NA
 output:
-  html_document:
-    df_print: paged
   word_document: 
     reference_docx: template.docx
+  html_document:
+    df_print: paged
   pdf_document:
     latex_engine: lualatex
 fontsize: 11pt
 ---
 
 ```{r setup, include=FALSE}
-  knitr::opts_chunk$set(echo = FALSE)
-  testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
-  if (testing) {
-    fnc_get_local_file <- function(x=NULL) {
-      pkg_path <- system.file(package = "ecerto")
-      file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-      return(file.path(pkg_path, file_path, fsep="/"))
-    }
-    tmp <- new.env()
-    load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp)
-    res <- get(x = "res", envir = tmp)
-    M <- res$materialtabelle
-    G <- res$General
-    A <- paste(names(G$apm), collapse=", ")
-    L <- fnc_get_local_file(x="BAMLogo2015.png")
-  } else {
-    M <- params[["materialtabelle"]]
-    G <- params[["General"]]
-    A <- paste(names(G[["apm"]]), collapse=", ")
-    L <- params[["logo_file"]]
+knitr::opts_chunk$set(echo = FALSE)
+testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
+if (testing) {
+  report_file <- "report_vorlage_material.Rmd"
+  logo_file <- "BAMLogo2015.png"
+  fnc_get_local_file <- function(x=NULL) {
+    pkg_path <- system.file(package = "eCerto")
+    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
+    return(file.path(pkg_path, file_path, fsep="/"))
   }
+  tmp <- new.env()
+  load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp)
+  res <- get(x = "res", envir = tmp)
+  M <- res$General$materialtabelle
+  G <- res$General
+  A <- paste(names(G[["apm"]]), collapse=", ")
+  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
+    warning(paste(logo_file, "is not in same folder as", report_file))
+  }
+  L <- logo_file
+} else {
+  M <- params[["materialtabelle"]]
+  G <- params[["General"]]
+  A <- paste(names(G[["apm"]]), collapse=", ")
+  L <- params[["logo_file"]]
+}
 ```
+
+---
+
+***Note!*** This is a Report template for demonstration purpose. Specific layouts can be generated on demand.
+
+---
 
 ```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
   knitr::include_graphics(L)
 ```
-
-## *eCerto* Material Report
 
 ### Meta Data
 
@@ -64,6 +74,3 @@ fontsize: 11pt
   }
 ```
 
----
-
-***Note!*** This is a Report template for demonstration purpose. Specific layouts can be generated on demand.

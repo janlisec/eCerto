@@ -1,4 +1,5 @@
 ---
+title-meta: LTS-Report
 output: 
   pdf_document:
     latex_engine: lualatex
@@ -27,18 +28,42 @@ params:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+# the number of lines for the table fitting on a page
 l_max <- 45
+# the index of the KW which the report is generated for (currently fixed to 1)
 i <- 1
-d <- params[["dat"]][[i]][["def"]]
-v <- params[["dat"]][[i]][["val"]]
-l <- params[["logo_file"]]
-plot_lts_data <- params[["fnc"]][["plot_lts_data"]]
+
+# is the Rmd processing in testing mode (not called by the Shiny App)
+testing <- length(params$dat)==1L && (is.na(params$dat) | params$dat=="NA")
+if (testing) {
+  report_file <- "report_vorlage_lts.Rmd"
+  fnc_get_local_file <- function(x=NULL) {
+    pkg_path <- system.file(package = "eCerto")
+    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
+    return(file.path(pkg_path, file_path, fsep="/"))
+  }
+  tmp.env <- new.env()
+  load(file = fnc_get_local_file(x="LTS001.RData"), envir = tmp.env)
+  dat <- get(x = "LTS_dat", envir = tmp.env)
+  d <- dat[[i]][["def"]]
+  v <- dat[[i]][["val"]]
+  l <- "BAMLogo2015.png"
+  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), params[["logo_file"]]))) {
+    warning(params[["logo_file"]], " is not in same folder as ", report_file)
+  }
+  plot_lts_data <- eCerto::plot_lts_data
+} else {
+  d <- params[["dat"]][[i]][["def"]]
+  v <- params[["dat"]][[i]][["val"]]
+  l <- params[["logo_file"]]
+  plot_lts_data <- params[["fnc"]][["plot_lts_data"]]
+}
 ```
 
 ```{r logo, echo=FALSE, fig.align='right', fig.height = 0.5}
 # show BAM Logo topright
 if (!(is.null(l) | is.na(l))) {
-    logo_raster <- as.raster(magick::image_read_svg(path = l, width = 300))
+    logo_raster <- as.raster(magick::image_read(path = l))
     par(mar=c(1,0,0,0))
     layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
     plot(1,1,axes=F,ann=F, type="n")
@@ -54,8 +79,9 @@ if (!(is.null(l) | is.na(l))) {
   # 2 plots as in App version
   par(mar=c(5,4,4,2)+0.1)
   par(mfrow=c(1,2))
-    plot_lts_data(x = params$dat[[i]], type=1)
-    lts <- plot_lts_data(x = params$dat[[i]], type=2)
+    x <- list("val"=v, "def"=d)
+    plot_lts_data(x = x, type=1)
+    lts <- plot_lts_data(x = x, type=2)
   par(mfrow=c(1,1))
 ```
 
@@ -80,12 +106,12 @@ n_digits <- nchar(strsplit(as.character(d[,"CertVal"]), "[.]")[[1]][2])
 
 **Statistical Information monitoring (LTS)**
 
-|                            |                                                             |                                        |                                        |                                                             |
-|----------------------------|-------------------------------------------------------------|----------------------------------------|----------------------------------------|-------------------------------------------------------------|
-| Number of measurements:    | **`r nrow(v)`**                                             |                                        | Median:                                | **`r paste(round(median(v[,"Value"]), n_digits), d[,"KW_Unit"])`** |
-| Standarddeviation:         | **s=`r round(sd(v[,"Value"]), 2)`**                         | **s~rel~=`r round(100*U_lts_rel,2)`%** | **2s=`r round(2*sd(v[,"Value"]), 2)`** | **2s~rel~=`r round(2*100*U_lts_rel,2)`%**                   |
-| Standarddeviation of mean: | **s~x~=`r round(s_x, 4)`**                                  | **s~x,rel~=`r round(100*s_xrel,2)`%**  | **2s~x~=`r round(2*s_x, 4)`**          | **2s~x,rel~=`r round(2*100*s_xrel,2)`%**                    |
-| Confidence interval:       | CI~0.95~                                                    | **`r round(CI, 4)`**                   | CI~0.95,rel~                           | **`r round(100*CI/median(v[,"Value"]), 2)`%**               |
+|                            |                                      |                                        |                                        |                                                                    |
+|----------------------------|--------------------------------------|----------------------------------------|----------------------------------------|--------------------------------------------------------------------|
+| Number of measurements:    | **`r nrow(v)`**                      |                                        | Median:                                | **`r paste(round(median(v[,"Value"]), n_digits), d[,"KW_Unit"])`** |
+| Standarddeviation:         | **s=`r round(sd(v[,"Value"]), 2)`**  | **s~rel~=`r round(100*U_lts_rel,2)`%** | **2s=`r round(2*sd(v[,"Value"]), 2)`** | **2s~rel~=`r round(2*100*U_lts_rel,2)`%**                          |
+| Standarddeviation of mean: | **s~x~=`r round(s_x, 4)`**           | **s~x,rel~=`r round(100*s_xrel,2)`%**  | **2s~x~=`r round(2*s_x, 4)`**          | **2s~x,rel~=`r round(2*100*s_xrel,2)`%**                           |
+| Confidence interval:       | CI~0.95~                             | **`r round(CI, 4)`**                   | CI~0.95,rel~                           | **`r round(100*CI/median(v[,"Value"]), 2)`%**                      |
 
 **Results**
 

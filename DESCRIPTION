@@ -1,11 +1,13 @@
 Package: eCerto
 Title: The eCerto package of the Bundesanstalt für Materialforschung und -prüfung (BAM)
-Version: 0.1.30
-Date: 2022-05-10
+Version: 0.1.31
+Date: 2022-05-11
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
     person("Frederik", "Kreß", role = "aut"))
-Description: The package contains a shiny app which provides various functionality to load, process and backup data for the statistical evaluation of analyses conducted during the production of certified reference materials (CRMs).
+Description: The package contains a shiny app which provides various functionality to load, 
+    process and backup data for the statistical evaluation of analyses conducted during 
+    the production of certified reference materials (CRMs).
 License: MIT + file LICENSE
 Depends:
   R(>= 3.5.0)
@@ -32,8 +34,7 @@ Imports:
     shiny,
     shinyalert,
     shinyjs,
-    tidyxl,
-    rsvg
+    tidyxl
 Suggests: 
     config,
     pkgload,

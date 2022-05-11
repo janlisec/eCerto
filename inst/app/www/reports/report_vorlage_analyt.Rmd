@@ -1,4 +1,5 @@
 ---
+title-meta: Analyt-Report
 params:
   General: NA
   Certification: NA
@@ -6,12 +7,12 @@ params:
   selected_tab: NA
   logo_file: NA
 output:
-  html_document:
-    df_print: paged
-  word_document: 
-    reference_docx: template.docx
   pdf_document:
     latex_engine: lualatex
+  word_document: 
+    reference_docx: template.docx
+  html_document:
+    df_print: paged
 fontsize: 11pt
 ---
 
@@ -19,31 +20,41 @@ fontsize: 11pt
   knitr::opts_chunk$set(echo = FALSE)
   testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
   if (testing) {
+    report_file <- "report_vorlage_analyt.Rmd"
+    logo_file <- "BAMLogo2015.png"
     fnc_get_local_file <- function(x=NULL) {
-      pkg_path <- system.file(package = "ecerto")
+      pkg_path <- system.file(package = "eCerto")
       file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
       return(file.path(pkg_path, file_path, fsep="/"))
     }
-    tmp <- new.env()
-    load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp)
-    res <- get(x = "res", envir = tmp)
+    tmp.env <- new.env()
+    load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp.env)
+    res <- get(x = "res", envir = tmp.env)
     G <- res$General
     C <- res$Certification
     CP <- res$Certification_processing
-    #CP$CertValPlot
     A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
     D <- G$apm[[A]]
-    L <- fnc_get_local_file(x="BAMLogo2015.png")
+    if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
+      warning(paste(logo_file, "is not in same folder as", report_file))
+    }
+    L <- logo_file
   } else {
     G <- params$General
     C <- params$Certification
     CP <- params$Certification_processing
     A <- ifelse(params$selected_tab %in% names(G$apm), params$selected_tab, names(G$apm)[1])
     D <- G$apm[[A]]
-    #L <- ifelse(exists(params[["logo_file"]]), params[["logo_file"]], NA)
     L <- params[["logo_file"]]
   }
 ```
+
+---
+
+***Note!*** 
+This is a Report template for demonstration purpose. Specific layouts can be generated on demand.
+
+---
 
 ```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
   knitr::include_graphics(L)
@@ -136,7 +147,3 @@ cat(paste(D$lab_filter, collapse=", "))
 ### Certified Value and uncertainty contributions
 
 Here we could include the Tab.3 from the App including the certified values. However, this might be better done in the Material Report/Certificate.
-
----
-
-***Note!*** This is a Report template for demonstration purpose. Specific layouts can be generated on demand.
