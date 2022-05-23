@@ -17,7 +17,7 @@ Show View Returns a list of panels, which are marked to be shown in the
 accordingly used RData from previous analysis
 }
 \examples{
-rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
 shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
 print(show_view(rv))
 }

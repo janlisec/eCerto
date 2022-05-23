@@ -17,7 +17,7 @@
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(m_RDataExport_UI(id = "test"), shiny::actionButton("insert","insert rv")),
 #'  server = function(input, output, session) {
-#'  rv_test <- reactiveClass$new(init_rv())
+#'  rv_test <- eCerto::eCerto$new(init_rv())
 #'    m_RDataexport_Server(id = "test", rv = rv_test)
 #'    observeEvent(input$insert,{
 #'    shiny::isolate({setValue(rv_test, c("Certification","data"), test_Certification_Excel()) })

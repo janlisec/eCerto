@@ -1,15 +1,14 @@
-#' Initializes material table for materialtabelle module
+#'Initializes material table for m_materialtabelle
 #'
-#' @param analytes Character vector of analyte names.
+#'@param analytes Character vector of analyte names.
 #'
-#' @return a data frame
-#' @export
+#'@return a data frame
+#'@export
 #'
-#' @examples
-#' analytes = c("Si","Ar")
-#' matTab = init_materialTabelle(analytes)
-init_materialTabelle <- function(analytes) {
-  c = data.frame(
+#'@examples
+#'matTab <- init_materialtabelle(analytes = c("Si","Ar"))
+init_materialtabelle <- function(analytes) {
+  mt <- data.frame(
     "analyte" =  analytes,
     "mean" = NA,
     "cert_val" = NA,
@@ -20,9 +19,12 @@ init_materialTabelle <- function(analytes) {
     "k" = 2,
     "U" = NA
   )
-  attr(c, "col_code") <-
-    data.frame("ID" = "", "Name" = "", stringsAsFactors = FALSE)[-1,,drop=FALSE]
-  return(c)
+  attr(mt, "col_code") <- data.frame(
+    "ID" = character(),
+    "Name" = character(),
+    stringsAsFactors = FALSE
+  )
+  return(mt)
 }
 
 #' Initialize permanent reactive values
@@ -36,9 +38,9 @@ init_materialTabelle <- function(analytes) {
 #' @return a reactiveValues
 #' @export
 #'
-#' @examples rv = init_rv()
+#' @examples rv <- init_rv()
 init_rv <- function() {
-  rv <- list(
+  list(
     "modules" = c("Certification","Homogeneity","Stability"), # names of the modules
     "General" = shiny::reactiveValues(
       # save
@@ -108,12 +110,30 @@ init_rv <- function() {
 #'   which sample ids are available to be filtered at all and, for completion,
 #'   the analyte name in case the list name fails
 #'
-#' @param x data frame of analyte names and sample IDs
+#' @param x Analyte data frame containing at least columns `ID`, `analyte` and `Lab`.
 #'
-#' @return A empty list (if no data frame is provided) or a apm-List otherwise.
+#' @return The analyte parameter list (apm) including all individually settable options.
 #'
 #' @export
-init_apm <- function(x = data.frame("ID"=1:20, "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")), "Lab"=rep(rep(c("L1","L2"),each=5),2))) {
+init_apm <- function(x) {
+  if (missing(x)) {
+    # default example data
+    x <- data.frame(
+      "ID"=1:20,
+      "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")),
+      "Lab"=rep(rep(c("L1","L2"),each=5),2)
+    )
+  } else {
+    # check x
+    stopifnot("'init_apm(x)' requires a data.frame as input" = is.data.frame(x))
+    stopifnot("'init_apm(x)' is missing column 'ID' in data.frame 'x'" = "ID" %in% colnames(x))
+    stopifnot("'init_apm(x)' is missing column 'analyte' in data.frame 'x'" = "analyte" %in% colnames(x))
+    stopifnot("'init_apm(x)' is missing column 'Lab' in data.frame 'x'" = "Lab" %in% colnames(x))
+    if (!is.factor(x[, "analyte"])) {
+      x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
+    }
+  }
+  # the output template used for every analyte
   templ <- list(
     "name" = NULL,
     "sample_ids" = NULL, # which samples are available for the filter
@@ -125,23 +145,16 @@ init_apm <- function(x = data.frame("ID"=1:20, "analyte"=gl(n = 2, k = 10, label
     "precision" = 4, # rounding precision for imported data
     "precision_export" = 4 # rounding precision for export
   )
-  if (!is.null(x) && is.data.frame(x) && all(c("ID","analyte","Lab") %in% colnames(x))) {
-    if (!is.factor(x[, "analyte"])) {
-      x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
-    }
-    # create list with lists of all analytes (i.e. a nested list)
-    apm <- sapply(levels(x[, "analyte"]), function(an) {
-      out <- templ
-      out$name <- an
-      out$sample_ids <- x[as.character(x[,"analyte"])==an,"ID"]
-      y <- x[as.character(x[,"analyte"])==an,,drop=FALSE]
-      out$lab_ids <- unique(as.character(y[,"Lab"]))
-      if ("S_flt" %in% colnames(y) && any(y[,"S_flt"])) out$sample_filter <- y[which(y[,"S_flt"]),"ID"]
-      if ("L_flt" %in% colnames(y) && any(y[,"L_flt"])) out$lab_filter <- unique(as.character(y[which(y[,"L_flt"]),"Lab"]))
-      return(out)
-    }, simplify = FALSE)
-    return(apm)
-  } else {
-    return(list())
-  }
+  # create list with lists of all analytes (i.e. a nested list)
+  apm <- sapply(levels(x[, "analyte"]), function(an) {
+    out <- templ
+    out$name <- an
+    out$sample_ids <- x[as.character(x[,"analyte"])==an,"ID"]
+    y <- x[as.character(x[,"analyte"])==an,,drop=FALSE]
+    out$lab_ids <- unique(as.character(y[,"Lab"]))
+    if ("S_flt" %in% colnames(y) && any(y[,"S_flt"])) out$sample_filter <- y[which(y[,"S_flt"]),"ID"]
+    if ("L_flt" %in% colnames(y) && any(y[,"L_flt"])) out$lab_filter <- unique(as.character(y[which(y[,"L_flt"]),"Lab"]))
+    return(out)
+  }, simplify = FALSE)
+  return(apm)
 }

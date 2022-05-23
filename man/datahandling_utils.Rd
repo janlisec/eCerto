@@ -111,7 +111,7 @@ Format a text as bold paragraph and with specific left/bottom margin.
 \examples{
 # Only run examples in interactive R sessions
 if (interactive()) {
-  rv <- reactiveClass$new(init_rv())
+  rv <- eCerto$new(init_rv())
   setValue(rv, c("Certification","data"), 5)
   getValue(rv, c("Certification","data")) # is 5?
   setValue(rv, c("General","user"),"Franz")

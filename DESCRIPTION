@@ -1,7 +1,7 @@
 Package: eCerto
 Title: The eCerto package of the Bundesanstalt für Materialforschung und -prüfung (BAM)
-Version: 0.1.31
-Date: 2022-05-11
+Version: 0.1.32
+Date: 2022-05-23
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
     person("Frederik", "Kreß", role = "aut"))
@@ -15,7 +15,7 @@ biocViews:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Imports: 
     agricolae,
     DT,

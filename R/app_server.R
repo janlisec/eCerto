@@ -6,7 +6,8 @@
 #' @noRd
 app_server <- function( input, output, session ) {
   # Your application server logic
-  rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+  #rv <- eCerto$new(init_rv()) # initiate persistent variables
+  rv <- eCerto$new(init_rv()) # initiate persistent variables
   silent <- get_golem_config("silent")
 
   # preload testdata
@@ -43,7 +44,7 @@ app_server <- function( input, output, session ) {
 
   # some observers, mainly to use 'updateNavbarPage' depending on user action
   # when the user initiates a transfer of U values from H or S Modules --> show material_table
-  shiny::observeEvent(getValue(rv, c("General","materialtabelle")), {
+  shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
     shiny::updateNavbarPage(
       session = session,
       inputId = "navbarpage",

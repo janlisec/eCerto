@@ -17,5 +17,5 @@ in OOP style. Note: If other modules besides Certification, Homogeneity and
 Stability added, adapt the modules list
 }
 \examples{
-rv = init_rv()
+rv <- init_rv()
 }

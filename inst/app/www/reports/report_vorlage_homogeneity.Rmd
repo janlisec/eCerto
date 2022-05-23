@@ -1,6 +1,13 @@
 ---
+title: "&nbsp;"
+title-meta: Homogeneity-Report
 params:
   Homogeneity: NA
+---
+
+***Note!*** 
+This is a Report template for demonstration purpose. Specific layouts can be generated on demand.
+
 ---
 
 ## eCerto Report Homogeneity

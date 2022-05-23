@@ -19,7 +19,7 @@
 #'    page_startUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#'    rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
 #'    page_startServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -133,7 +133,7 @@ page_startServer = function(id, rv, tde) {
       if (ex_frm=="Certification") {
         # (re)initiate apm and materialtabelle
         setValue(rv, c("General","apm"), init_apm(getValue(rv, c("Certification", "data"))))
-        setValue(rv, c("General","materialtabelle"), init_materialTabelle(levels(getValue(rv, c("Certification", "data"))[,"analyte"])))
+        setValue(rv, c("General","materialtabelle"), init_materialtabelle(levels(getValue(rv, c("Certification", "data"))[,"analyte"])))
       }
     })
 

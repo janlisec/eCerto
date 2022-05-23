@@ -1,7 +1,7 @@
 testthat::test_that(
   desc = "RDataExport can set user and study_id correctly",
   code = {
-    rv_test <- eCerto::reactiveClass$new(eCerto::init_rv())
+    rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
         app = eCerto::m_RDataexport_Server,
@@ -32,7 +32,7 @@ testthat::test_that(
 # test_that(
 #   desc = "RDataExport works for General$user",
 #   code = {
-#     rv_test <- eCerto::reactiveClass$new(eCerto::init_rv())
+#     rv_test <- eCerto::eCerto$new(eCerto::init_rv())
 #     shiny::isolate({setValue(rv_test, c("Certification","data"), test_Certification_Excel()) })
 #     shiny::isolate({setValue(rv_test, c("General", "user"), "FK4") })
 #     shiny::isolate({set_uploadsource(rv_test, "Certification", uploadsource = "Excel") })

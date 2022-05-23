@@ -33,7 +33,7 @@ shiny::shinyApp(
    page_startUI(id = "test")
  ),
  server = function(input, output, session) {
-   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+   rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
    page_startServer(id = "test", rv = rv)
  }
 )

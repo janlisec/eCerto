@@ -4,16 +4,13 @@
 \alias{init_apm}
 \title{Analyte Parameter List (apm)}
 \usage{
-init_apm(
-  x = data.frame(ID = 1:20, analyte = gl(n = 2, k = 10, labels = c("A1", "A2")), Lab =
-    rep(rep(c("L1", "L2"), each = 5), 2))
-)
+init_apm(x)
 }
 \arguments{
-\item{x}{data frame of analyte names and sample IDs}
+\item{x}{Analyte data frame containing at least columns \code{ID}, \code{analyte} and \code{Lab}.}
 }
 \value{
-A empty list (if no data frame is provided) or a apm-List otherwise.
+The analyte parameter list (apm) including all individually settable options.
 }
 \description{
 \code{init_apm} creates for each analyte the

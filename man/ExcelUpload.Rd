@@ -8,9 +8,12 @@
 \usage{
 m_ExcelUpload_UI(id)
 
-m_ExcelUpload_Server(id, exl_fmt = shiny::reactive({
-    ""
-}))
+m_ExcelUpload_Server(
+  id,
+  exl_fmt = shiny::reactive({
+     ""
+ })
+)
 }
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}

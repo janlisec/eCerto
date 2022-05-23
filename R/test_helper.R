@@ -1,12 +1,11 @@
 #' @keywords internal
 test_rv <- function() {
-  rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+  rv <- eCerto$new(init_rv()) # initiate persistent variables
   shiny::isolate({
     testdata <- test_Certification_Excel()
     setValue(rv, c("Certification","data"), testdata)
     setValue(rv, c("General","apm"), init_apm(testdata))
-    an <- levels(testdata[,"analyte"])
-    setValue(rv, c("General","materialtabelle"), init_materialTabelle(an))
+    setValue(rv, c("General","materialtabelle"), init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]})))
   })
   return(rv)
 }

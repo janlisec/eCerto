@@ -1,7 +1,7 @@
 testthat::test_that(
   desc = "Stability$s_vals correctly initiated",
   code = {
-    rv_test <- eCerto::reactiveClass$new(eCerto::init_rv())
+    rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
         app = eCerto::page_StabilityServer,
@@ -32,7 +32,7 @@ testthat::test_that(
 testthat::test_that(
   desc = "Correct error if no Certification has been uploaded yet",
   code = {
-    rv_test <- eCerto::reactiveClass$new(eCerto::init_rv())
+    rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
         app = eCerto::page_StabilityServer,
@@ -51,7 +51,7 @@ testthat::test_that(
 testthat::test_that(
   desc = "Correct Warnings if no C data or no U column are available",
   code = {
-    rv_test <- eCerto::reactiveClass$new(eCerto::init_rv())
+    rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
         app = eCerto::page_StabilityServer,
@@ -62,7 +62,7 @@ testthat::test_that(
           eCerto::setValue(rv_test, c("Stability","data"), eCerto:::test_Stability_Excel() )
           session$flushReact()
           testthat::expect_error(output$s_transfer_ubb, "Please upload certification data to transfer Uncertainty values")
-          eCerto::setValue(rv, c("General","materialtabelle"), eCerto::init_materialTabelle("Si"))
+          eCerto::setValue(rv, c("General","materialtabelle"), eCerto::init_materialtabelle("Si"))
           session$flushReact()
           testthat::expect_error(output$s_transfer_ubb, "Please specify a U column in material table to transfer Uncertainty values")
         }

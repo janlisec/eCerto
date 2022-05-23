@@ -18,7 +18,8 @@ fnc_load_RData <- function(x = NULL) {
   silent <- get_golem_config("silent")
 
   shiny::isolate({
-    rv <- reactiveClass$new(init_rv())
+    #rv <- eCerto$new(init_rv())
+    rv <- eCerto$new(init_rv())
     if ("General.dataformat_version" %in% names(unlist(x, recursive = FALSE))) {
       # import functions for defined data_format schemes
       if (x$General$dataformat_version=="2021-05-27") {
@@ -65,51 +66,59 @@ fnc_load_RData <- function(x = NULL) {
         # setValue(rv,c("Certification","uploadsource"),value = "RData")
         set_uploadsource(rv = rv, m = "Certification", uploadsource = "RData")
         # save
-        setValue(rv,c("General","user"),x$Certification$user)
-        setValue(rv,c("General","study_id"),x$Certification$study_id)
+        setValue(rv,c("General","user"), x[["Certification"]][["user"]])
+        setValue(rv,c("General","study_id"), x[["Certification"]][["study_id"]])
         # processing
-        setValue(rv,c("Certification_processing","lab_means"), x[["Certification"]][["lab_means"]])
-        setValue(rv,c("Certification_processing","cert_mean"),x[["Certification"]][["cert_mean"]])
-        setValue(rv,c("Certification_processing","cert_sd"),x[["Certification"]][["cert_sd"]])
-        setValue(rv,c("Certification_processing","normality_statement"),x[["Certification"]][["normality_statement"]])
-        setValue(rv,c("Certification_processing","precision"),x[["Certification"]][["precision"]])
-        setValue(rv,c("Certification_processing","data_kompakt"),x[["Certification"]][["data_kompakt"]])
-        setValue(rv,c("Certification_processing","CertValPlot"),x[["Certification"]][["CertValPlot"]])
-        setValue(rv,c("Certification_processing","stats"),x[["Certification"]][["stats"]])
-        setValue(rv,c("Certification_processing","boxplot"),x[["Certification"]][["boxplot"]])
-        setValue(rv,c("Certification_processing","opt"),x[["Certification"]][["opt"]])
-        setValue(rv,c("Certification_processing","mstats"),x[["Certification"]][["mstats"]])
+        setValue(rv, c("Certification_processing","lab_means"), x[["Certification"]][["lab_means"]])
+        setValue(rv, c("Certification_processing","cert_mean"), x[["Certification"]][["cert_mean"]])
+        setValue(rv, c("Certification_processing","cert_sd"), x[["Certification"]][["cert_sd"]])
+        setValue(rv, c("Certification_processing","normality_statement"), x[["Certification"]][["normality_statement"]])
+        setValue(rv, c("Certification_processing","precision"), x[["Certification"]][["precision"]])
+        setValue(rv, c("Certification_processing","data_kompakt"), x[["Certification"]][["data_kompakt"]])
+        setValue(rv, c("Certification_processing","CertValPlot"), x[["Certification"]][["CertValPlot"]])
+        setValue(rv, c("Certification_processing","stats"), x[["Certification"]][["stats"]])
+        setValue(rv, c("Certification_processing","boxplot"), x[["Certification"]][["boxplot"]])
+        setValue(rv, c("Certification_processing","opt"), x[["Certification"]][["opt"]])
+        setValue(rv, c("Certification_processing","mstats"), x[["Certification"]][["mstats"]])
         # materialtabelle
         mt <- x[["Certification"]][["cert_vals"]]
-        setValue(rv,c("General","materialtabelle"), mt)
-        # apm
-        setValue(rv,c("General","apm"), init_apm(x[["Certification"]][["data_input"]]))
-        apm <- getValue(rv,c("General","apm"))
+        setValue(rv, c("General","materialtabelle"), mt)
+        # apm (this is a new object in eCerto data structure)
+        apm <- init_apm(x[["Certification"]][["data_input"]])
         # ensure that analytes in apm and materialtabelle are in similar order
         if (!all(names(apm)==as.character(mt[,"analyte"]))) {
-          setValue(rv,c("General","apm"), apm[sapply(as.character(mt[,"analyte"]), function(an) { which(names(apm)==an) })])
+          consistent_order <- sapply(as.character(mt[,"analyte"]), function(an) { which(names(apm)==an) })
+          apm <- apm[consistent_order]
         }
+        setValue(rv, c("General","apm"), apm)
       }
       if ("Homogeneity" %in% names(x) && !is.null(x$Homogeneity)) {
         if (!silent) message("RDataImport_Server: Homog data transfered")
-        setValue(rv,c("Homogeneity","data"),x[["Homogeneity"]][["h_dat"]])
+        setValue(rv, c("Homogeneity","data"), x[["Homogeneity"]][["h_dat"]])
         set_uploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
-        setValue(rv,c("Homogeneity","input_files"),x[["Homogeneity"]][["h_file"]])
+        setValue(rv, c("Homogeneity","input_files"), x[["Homogeneity"]][["h_file"]])
         # Processing
-        setValue(rv,c("Homogeneity","h_vals"),x[["Homogeneity"]][["h_vals"]])
-        setValue(rv,c("Homogeneity","h_sel_analyt"),x[["Homogeneity"]][["h_sel_analyt"]])
-        setValue(rv,c("Homogeneity","h_precision"),x[["Homogeneity"]][["h_precision"]])
-        setValue(rv,c("Homogeneity","h_Fig_width"),x[["Homogeneity"]][["h_Fig_width"]])
+        setValue(rv, c("Homogeneity","h_vals"), x[["Homogeneity"]][["h_vals"]])
+        setValue(rv, c("Homogeneity","h_sel_analyt"), x[["Homogeneity"]][["h_sel_analyt"]])
+        setValue(rv, c("Homogeneity","h_precision"), x[["Homogeneity"]][["h_precision"]])
+        setValue(rv, c("Homogeneity","h_Fig_width"), x[["Homogeneity"]][["h_Fig_width"]])
       }
       if ("Stability" %in% names(x) && !is.null(x$Stability)) {
         if (!silent) message("RDataImport_Server: Stab data transfered")
-        setValue(rv,c("Stability","input_files"),x[["Stability"]][["s_file"]])
-        setValue(rv,c("Stability","data"),x[["Stability"]][["s_dat"]])
+        setValue(rv, c("Stability","input_files"), x[["Stability"]][["s_file"]])
+        setValue(rv, c("Stability","data"), x[["Stability"]][["s_dat"]])
         set_uploadsource(rv = rv, m = "Stability", uploadsource = "RData")
-        setValue(rv,c("Stability","s_vals"),x[["Stability"]][["s_vals"]])
+        setValue(rv, c("Stability","s_vals"), x[["Stability"]][["s_vals"]])
       }
-      setValue(rv,c("General","time_stamp"),Sys.time())
-      shinyalert::shinyalert(text = "This is an import from a previous data fromat. Please note that some additional parameters are available in the current version of eCerto which could not be restored from this RData file but are set to standard values (e.g. 'precision export' and 'pooling').", type = "info")
+      setValue(rv, c("General","time_stamp"), Sys.time())
+      shinyalert::shinyalert(
+        text = paste("This is an import from a previous data format.",
+        "Please note that some additional parameters are available",
+        "in the current version of eCerto which could not be restored",
+        "from this RData file but are set to standard values",
+        "(e.g. 'precision export' and 'pooling')."),
+        type = "info"
+      )
     }
   })
 

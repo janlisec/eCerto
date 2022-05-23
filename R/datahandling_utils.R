@@ -18,7 +18,7 @@
 #' @examples
 #' # Only run examples in interactive R sessions
 #' if (interactive()) {
-#'   rv <- reactiveClass$new(init_rv())
+#'   rv <- eCerto$new(init_rv())
 #'   setValue(rv, c("Certification","data"), 5)
 #'   getValue(rv, c("Certification","data")) # is 5?
 #'   setValue(rv, c("General","user"),"Franz")
@@ -26,7 +26,7 @@
 #' }
 setValue <- function(df, key, value){
   if(R6::is.R6(df)){
-    df$set(key, value) # in reactiveClass.R
+    df$set(key, value) # in eCerto.R
   } else {
     stop("Object of class ", class(df), " can't set value currently.")
   }
@@ -334,7 +334,7 @@ listNames <- function(l, maxDepth = 2, split = FALSE) {
 #' @export
 #'
 #' @examples
-#' rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+#' rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
 #' shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
 #' print(show_view(rv))
 show_view <- function(rv){

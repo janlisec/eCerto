@@ -13,7 +13,7 @@ m_report_server(id, rv, selected_tab)
 \arguments{
 \item{id}{module ID}
 
-\item{rv}{the rv-reactiveClass object}
+\item{rv}{the rv eCerto object}
 
 \item{selected_tab}{which analyte-tab is currently selected}
 }
@@ -30,7 +30,7 @@ shiny::shinyApp(
    m_report_ui(id = "test")
  ),
  server = function(input, output, session) {
-   rv <- reactiveClass$new(init_rv()) # initiate persistent variables
+   rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
    shiny::isolate({setValue(rv, c("Certification","data"), eCerto:::test_Certification_Excel()) })
    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
