@@ -5,3 +5,6 @@
 
 ```{r child = 'stability_uncertainty.Rmd'}
 ```
+
+```{r child = 'stability_arrhenius.Rmd'}
+```

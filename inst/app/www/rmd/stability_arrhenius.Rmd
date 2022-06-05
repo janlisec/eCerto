@@ -1,9 +1,21 @@
-### Stability Arrhenius calculation
+### Stability Accelerated studies (Arrhenius)
 
 ***Note!***
 This section is currently under development and will be subject to future changes.
 
-The Arrhenius approach is one way to estimate the stability of a reference material from the perspective of storage time.
+The Arrhenius approach is one way to estimate the stability of a reference material from the perspective of storage time or shelf life.
+As implemented in *eCerto*, the estimation is based on time series data of analytes at different temperature levels $T_i$.
 
-The storage time is calculated for each evaluated temperature level using $ln({c_i-s_i \over c_i})$
+$T_{min}$ is used as a reference point. For each $T_i$ a linear model is calculated, yielding potentially a slope $m_i$ indicative of analyte degradation.
+Combining all $m_i$ allows to estimate the dependency of analyte stability on temperature and, consequently, the expected storage time at a given $T$.
 
+The calculations are performed according to the recommendations for accelerated stability studies in ISO GUIDE 35:2017.
+
+```{r child = 'stability_arrhenius_fig1.Rmd'}
+```
+
+```{r child = 'stability_arrhenius_tab1.Rmd'}
+```
+
+```{r child = 'stability_arrhenius_fig2.Rmd'}
+```

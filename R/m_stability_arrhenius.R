@@ -26,12 +26,24 @@ m_arrheniusUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::fluidRow(
-      shiny::column(10, shiny::plotOutput(outputId = ns("Fig1"))),
+      shiny::column(
+        width = 10,
+        shiny::div(
+          style="width=100%; margin-bottom: 5px;",
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("ArrheniusPlot1_link"),
+              label = "Fig.1 Determining temperature-dependent reaction rates"
+            )
+          )
+        ),
+        shiny::plotOutput(outputId = ns("Fig1"))
+      ),
       shiny::column(2, shiny::wellPanel(
         shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
         sub_header("Change View"),
         shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model"),
-        p(),
+        shiny::p(),
         shiny::checkboxGroupInput(
           inputId = ns("s_opt_Fig1"),
           label = "Options Fig.1",
@@ -48,6 +60,15 @@ m_arrheniusUI <- function(id) {
     shiny::fluidRow(
       shiny::column(
         width = 10,
+        shiny::div(
+          style="width=100%; margin-bottom: 5px;",
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("ArrheniusTab_link"),
+              label = "Tab.1 Calculation of possible storage time"
+            )
+          )
+        ),
         shiny::fluidRow(
           shiny::column(width = 6, DT::DTOutput(outputId = ns("Tab1"))),
           shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
@@ -55,7 +76,18 @@ m_arrheniusUI <- function(id) {
         ),
         DT::DTOutput(outputId = ns("Tab2"))
       ),
-      shiny::column(2, shiny::plotOutput(outputId = ns("Fig2")))
+      shiny::column(
+        width = 2,
+        shiny::div(
+          style="width=100%; margin-bottom: 5px;",
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("ArrheniusPlot2_link"),
+              label = "Fig.2 Arrhenius Model"
+            )
+          )
+        ),
+        shiny::plotOutput(outputId = ns("Fig2")))
     )
   )
 }
@@ -278,7 +310,20 @@ m_arrheniusServer <- function(id, rv) {
       getFig2(tab=tab1exp())
     })
 
+    shiny::observeEvent(input$ArrheniusPlot1_link, {
+      help_the_user_modal("stability_arrhenius_fig1")
+    })
+
+    shiny::observeEvent(input$ArrheniusTab_link, {
+      help_the_user_modal("stability_arrhenius_tab1")
+    })
+
+    shiny::observeEvent(input$ArrheniusPlot2_link, {
+      help_the_user_modal("stability_arrhenius_fig2")
+    })
+
     return(out)
 
   })
+
 }

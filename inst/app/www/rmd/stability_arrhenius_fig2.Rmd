@@ -1,0 +1,3 @@
+#### Arrhenius model for analyte stability
+
+The model parameters calculated in Tab.1 are visualized in Fig.2 plotting $k_{eff}(T)$ over the inverse temperature [1/K].

@@ -116,7 +116,7 @@ page_CertificationUI = function(id) {
           shiny::column(
             width = 10,
             shiny::div(style="width=100%; margin-bottom: 5px;",
-                shiny::strong(
+              shiny::strong(
                 shiny::actionLink(
                   inputId = ns("certifiedValuePlot_link"),
                   label = "Fig.1 Certified Value Plot"

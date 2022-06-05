@@ -7,5 +7,9 @@ Please prepare data in a single Excel file on seperate tables for each analyte a
 Table names have to match analyte names from the Certification module to be properly assigned. 
 Column names need to be exactly `Value` and `Date` with Excel column formats set to *numeric* and *date* respectively.
 
+Stability data can also be uploaded using a more complex data format to allow shelf life calculations based on the Arrhenius model.
+To this end, the user needs to prepare a single Excel table including the columns `analyte`, `Temp`, `Date`, `Value` and `unit`.
+
+**Note!**
 Upload can be also achieved from a previousy created backup file. 
 If a backup file does not contain any stability data, the Excel upload option will remain active (and will be deactivated if stbility data are contained).
