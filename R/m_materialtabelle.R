@@ -93,6 +93,13 @@ m_materialtabelleServer <- function(id, rv) {
 
     shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
       mt <- getValue(rv, c("General", "materialtabelle"))
+      # rename previous "char" column to "u_char" for legacy reasons
+      if (any(c("char","com") %in% colnames(mt))) {
+        if ("char" %in% colnames(mt)) colnames(mt)[colnames(mt)=="char"] <- "u_char"
+        if ("com" %in% colnames(mt)) colnames(mt)[colnames(mt)=="com"] <- "u_com"
+        # notify user
+        shinyalert::shinyalert(text = "Columns 'char' and 'com' in the material table have been renamed to 'u_char' and 'u_com'.", type = "info")
+      }
       # add a column for absolute uncertainty if not yet present
       if (!("U_abs" %in% colnames(mt))) {
         cc <- attr(mt, "col_code")
@@ -143,11 +150,11 @@ m_materialtabelleServer <- function(id, rv) {
     }
 
     # helper function to get column indexes for U and F columns
-    get_UF_cols <- function(mt=NULL, type=c("U","F")[1]) {
+    get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
       switch(
         type,
-        "U" = unlist(sapply(c("char", paste0("U", 1:9)), function(x) { which(colnames(mt)==x) })),
-        "U_round" = unlist(sapply(c("char", "com", "U", paste0("U", 1:9)), function(x) { which(colnames(mt)==x) })),
+        "U" = unlist(sapply(c("u_char", paste0("U", 1:9)), function(x) { which(colnames(mt)==x) })),
+        "U_round" = unlist(sapply(c("u_char", "u_com", "U", paste0("U", 1:9)), function(x) { which(colnames(mt)==x) })),
         "F" = unlist(sapply(c("mean", paste0("F", 1:9)), function(x) { which(colnames(mt)==x) }))
       )
     }
@@ -162,15 +169,15 @@ m_materialtabelleServer <- function(id, rv) {
         update_reactivecell(r = mater_table, colname = "cert_val", value = mt[,"cert_val"])
 
         # update the 'char'acteristic uncertainty
-        mt[,"char"] <- mt[, "sd"] / (sqrt(mt[, "n"]) * mt[, "mean"])
-        update_reactivecell(r = mater_table, colname = "char", value = mt[,"char"])
+        mt[,"u_char"] <- mt[, "sd"] / (sqrt(mt[, "n"]) * mt[, "mean"])
+        update_reactivecell(r = mater_table, colname = "u_char", value = mt[,"u_char"])
 
         # update the 'com'bined uncertainty
-        mt[,"com"] <- apply(mt[,get_UF_cols(mt, "U"),drop=FALSE], 1, function(x) { sqrt(sum(x ^ 2, na.rm = T)) })
-        update_reactivecell(r = mater_table, colname = "com", value = mt[,"com"])
+        mt[,"u_com"] <- apply(mt[,get_UF_cols(mt, "U"),drop=FALSE], 1, function(x) { sqrt(sum(x ^ 2, na.rm = T)) })
+        update_reactivecell(r = mater_table, colname = "u_com", value = mt[,"u_com"])
 
         # update the overall uncertainty
-        mt[,"U"] <- mt[, "k"] * mt[, "com"]
+        mt[,"U"] <- mt[, "k"] * mt[, "u_com"]
         update_reactivecell(r = mater_table, colname = "U", value = mt[,"U"])
 
         # update the absolute uncertainty
@@ -256,7 +263,7 @@ m_materialtabelleServer <- function(id, rv) {
       # get smallest index number available
       n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[,"ID"],1,1)=="U","ID"],2,2)))))
       shinyalert::shinyalert(
-        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = session$ns("tmp"), label = "Type name to add", value = paste0("U",n))),
+        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = session$ns("tmp"), label = "Type name to add", value = paste0("u_",n))),
         cancelButtonText = "Cancel", confirmButtonText = "Add", showCancelButton = TRUE, size = "s",
         callbackR = function(value) {
           if (value) {
@@ -266,7 +273,7 @@ m_materialtabelleServer <- function(id, rv) {
             } else {
               cc <- rbind(cc, data.frame("ID"=paste0("U",n), "Name"=input$tmp))
               nc <- matrix(rep(0,nrow(mt)), ncol=1, dimnames=list(rownames(mt), paste0("U",n))) # new data column
-              cp <- which(colnames(mt)=="com") # column position where to include the new data
+              cp <- which(colnames(mt)=="u_com") # column position where to include the new data
               mt <- cbind(mt[,1:(cp-1)], nc, mt[,cp:ncol(mt)])
               attr(mt, "col_code") <- cc
               mater_table(mt)

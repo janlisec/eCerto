@@ -49,8 +49,9 @@ m_arrheniusUI <- function(id) {
       shiny::column(
         width = 10,
         shiny::fluidRow(
-          shiny::column(width = 8, DT::DTOutput(outputId = ns("Tab1"))),
-          shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp")))
+          shiny::column(width = 6, DT::DTOutput(outputId = ns("Tab1"))),
+          shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
+          shiny::column(width = 2, DT::DTOutput(outputId = ns("outTab")))
         ),
         DT::DTOutput(outputId = ns("Tab2"))
       ),
@@ -183,7 +184,7 @@ m_arrheniusServer <- function(id, rv) {
           "T [\u00B0C]"=k,
           "Rec"=paste0(round(100*mean(tmp[flt,"Value"], na.rm=T),1), "%"),
           "RSD"=paste0(round(100*stats::sd(tmp[flt,"Value"], na.rm=T)/mean(tmp[flt,"Value"], na.rm=T),1), "%"),
-          "1/K"=round(1/(273.15+as.numeric(k)),4),
+          "1/K"=round(1/(273.15+as.numeric(k)),5),
           "k_eff"=a,
           "log(-k_eff)"=ifelse(a<0, log(-a), NA),
           check.names=FALSE))
@@ -245,11 +246,28 @@ m_arrheniusServer <- function(id, rv) {
       return(out)
     }, options = list(dom="t"), rownames = FALSE)
 
+    output$outTab <- DT::renderDT({
+      req(tab1exp())
+      mt <- getValue(rv, c("General", "materialtabelle"))
+      validate(need(expr = mt, message = "An existing material table is needed to extract the certified value used in subsequent calculations."))
+      l <- which(mt[,"analyte"]==input$analyte)
+      validate(need(expr = length(l)==1, message = paste("Could not find analyte", input$analyte, "within column 'analyte' of current material table.")))
+      cert_val <- mt[l,"cert_val"]
+      U_abs <- mt[l,"U_abs"]
+      coef <- log((cert_val-U_abs)/cert_val)
+      validate(need(expr = is.finite(coef), message = "cert_val and sd do not yield a finite value"))
+      out <- tab1exp()
+      out[,"month"] <- round(coef/(-1*exp(out[,"CI_upper"])))
+      return(out[,c(1,10)])
+    }, options = list(dom="t"), rownames = FALSE)
+
+
     getFig2 <- function(tab) {
       xlim <- range(tab[,"1/K"], na.rm=TRUE)
       ylim <- range(c(tab[,"log(-k_eff)"], tab[,"CI_upper"], tab[,"CI_lower"]), na.rm=TRUE)
-      graphics::par(mar=c(5,4,0.5,0.5))
+      graphics::par(mar=c(5,4,2.5,1))
       plot(xlim, ylim, xlab="1/K", ylab="log(-k_eff)", type="n", main="")
+      graphics::axis(side = 3, at = 1/(273.15+as.numeric(tab[,1])), labels = tab[,1])
       graphics::lines(x=tab[,"1/K"], y=tab[,"CI_upper"], col=2, lwd=1, lty=2)
       graphics::lines(x=tab[,"1/K"], y=tab[,"log(k)_calc"], col=2, lwd=3)
       graphics::lines(x=tab[,"1/K"], y=tab[,"CI_lower"], col=2, lwd=1, lty=2)

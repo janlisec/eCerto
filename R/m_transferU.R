@@ -81,7 +81,7 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
           label=NULL,
           width='100%',
           selectize=TRUE,
-          choices=switch(st(),"H"=levels(dat()[,"H_type"]), "S"="U_stab")
+          choices=switch(st(),"H"=levels(dat()[,"H_type"]), "S"="u_stab")
         ),
         shiny::selectInput(
           inputId=session$ns("U_cols"),
@@ -98,7 +98,7 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
       mt <- mat_tab()
       cc <- attr(mt, "col_code")
       U_col <- cc[cc[, "Name"] == input$U_cols,"ID"]
-      T_col <- switch(st(),"H"=c("s_bb","s_bb_min"), "S"="U_Stab")
+      T_col <- switch(st(),"H"=c("s_bb","s_bb_min"), "S"="u_Stab")
       T_row <- switch(st(),"H"=which(dat()[,"H_type"]==input$H_Type), "S"=1:nrow(dat()))
       for (i in T_row) {
         j <- which(as.character(mt[,"analyte"])==as.character(dat()[i,"analyte"]))

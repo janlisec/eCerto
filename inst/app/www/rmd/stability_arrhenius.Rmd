@@ -1,0 +1,9 @@
+### Stability Arrhenius calculation
+
+***Note!***
+This section is currently under development and will be subject to future changes.
+
+The Arrhenius approach is one way to estimate the stability of a reference material from the perspective of storage time.
+
+The storage time is calculated for each evaluated temperature level using $ln({c_i-s_i \over c_i})$
+

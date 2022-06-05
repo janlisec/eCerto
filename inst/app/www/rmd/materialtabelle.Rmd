@@ -10,7 +10,7 @@ Several columns of the material table can be edited by the user by clicking in a
 
 Table column descriptions:
 
--   `char` describes the *char*acteristic uncertainty, calculated as $\frac{sd}{\sqrt{n} \times mean}$
+-   `u_char` describes the *char*acteristic uncertainty, calculated as $u_{char}=\frac{sd}{\sqrt{n} \times mean}$
 -   `mean` and `sd` give the arithmetric mean and standard deviation for this analyte (dependent on `pooling`)
 -   `n` describes the amount of values used for calculting arithmetic average. 
     Example: We have an arbitrary analyte measured in three laboratories with five replicas each. 
@@ -22,10 +22,10 @@ Table column descriptions:
 
 ***Note!*** 
 `U` columns containing different uncertainty contributions are always expressed relative to the mean to allow and easy combination of the individual terms. 
-Only `U_abs` is expressed as an absolute value.
+Only `U_abs` is expressed as an absolute value. All relative `U` columns are depicted with fixed 4 digits precision.
 
--   `com` describes the *com*bined uncertainty from all U columns: $\sqrt{sum(x^2)}$
--   `k` is an additional expansion factor for the uncertainty $U=com \times k$
+-   `u_com` is the *com*bined uncertainty from all U columns, where all relative uncertainty components $x$ are combined using formula $u_{com}=\sqrt{sum(x^2)}$
+-   `k` is an additional expansion factor for the uncertainty $U=u_{com} \times k$
 -   `U_abs` specifies the absolute uncertainty and is calculated by $U_{abs}=U \times cert\_val$
 
 The material table can be exported together with a report as PDF, Word or HTML document using the donload section on top of the page.

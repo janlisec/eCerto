@@ -14,8 +14,8 @@ init_materialtabelle <- function(analytes) {
     "cert_val" = NA,
     "sd" = NA,
     "n" = NA,
-    "char" = 0,
-    "com" = NA,
+    "u_char" = 0,
+    "u_com" = NA,
     "k" = 2,
     "U" = NA
   )

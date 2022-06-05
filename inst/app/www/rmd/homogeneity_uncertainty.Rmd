@@ -1,7 +1,8 @@
 ### Homogeneity Uncertainty calculation
 
 We first conduct an analysis of variance (ANOVA) on a one factor linear model for $N$ bottles (or containers) with $n$ replicate measurements each.
-This yields the variance within bottles $s_w$ (MS\_within) and the variance between bottles $s_a$ (MS\_among).
+The ANOVA is preformed for each `analyte` and `H_type` (if specified during upload) independently.
+The `P`-value of each ANOVA is provided in Tab.1 together with the variance within bottles $s_w$ (`M_within`) and the variance between bottles $s_a$ (`M_between`).
 
 ***Note!*** 
 To account for the case of different number of replicates over all $N$ bottles, $n$ is calculated according to ISO GUIDE 35 as:
@@ -18,7 +19,8 @@ and
 
 $$s_{bb, min}={\sqrt{s_w/n} \times \frac{2}{N \times (n-1)}^{1/4} \over \mu}$$
 
-The larger of both values, $s_{bb}$ and $s_{bb,min}$, is selected as uncertainty contribution when the user decides to transfer an uncertainty value to the material table. 
+The larger of both values, $s_{bb}$ and $s_{bb,min}$, is selected as uncertainty contribution when the user decides to transfer an uncertainty value to the material table.
+A transfer is only possible for analytes which have been found in the material table as indicated in column `In_Cert_Module`.
 
 ***Note!*** 
 When $s_{a} < s{_w}$ we set $s_{bb}=0$.

@@ -1,9 +1,12 @@
 ### Stability Uncertainty calculation
 
-The uncertainty contribution of the stability measurements `U_Stab` is calculated for each analyte based on a linear model of `Value` on `Date`. 
-The parameters of each model are combined using formula $$U_{Stab}=abs(m \times err)$$ where $m$ is the `slope` of the linear model and $err$ is the standard error `SE` of the slope. 
+The uncertainty contribution of the stability measurements `u_stab` is calculated for each analyte based on a linear model of `Value` on `Date`. 
+The parameters of each model are combined using formula $$u_{stab}=abs(m \times err)$$ where $m$ is the `slope` of the linear model and $err$ is the standard error `SE` of the slope. 
+
+To determine if the slope $m$ is significantly different from $m=0$ we perform a t-test by calculating the t-statistic $t_m={|m| \over s(m)}$ and 
+comparing this with the two-tailed critical value of Student’s t for n − 2 degrees of freedom.
 
 ***Note!***
 Clicking on a table row will display the analysis for this analyte.
 
-`U_Stab` can be transfered to the material table of the certification module in case that matching analyte names are found.
+`u_stab` can be transfered to the material table of the certification module in case that matching analyte names are found.

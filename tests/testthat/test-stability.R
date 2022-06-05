@@ -13,13 +13,14 @@ testthat::test_that(
           eCerto::setValue(rv_test, c("Stability","uploadsource"), "Excel")
           session$flushReact()
           # testthat::expect_equal(input$certification_view,NULL)
-          s_vals_cmp = structure(
+          s_vals_cmp <- structure(
             list(
               analyte = structure(1:2, .Label = c("Mn", "Si"), class = "factor"),
               mon_diff = c(88, 88),
               slope = c(-2.2127100652636e-05, -6.43527130414118e-07),
               SE_slope = c(0.000120729714146033, 1.55668609869576e-07),
-              U_Stab = c(-2.67139853667325e-09, -1.00176973804923e-13)),
+              u_stab = c(-2.67139853667325e-09, -1.00176973804923e-13),
+              P = c(0.855321094, 0.000135937)),
             class = "data.frame", row.names = c(NA,-2L)
           )
           testthat::expect_equal(getValue(rv,c("Stability","s_vals")),s_vals_cmp)

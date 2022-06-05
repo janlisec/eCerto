@@ -143,14 +143,21 @@ page_StabilityServer <- function(id, rv) {
       return(s_dat)
     })
 
-    # the summary of linear models per analyte to estimat U_stab
+    # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data())
       out <- plyr::ldply(split(s_Data(), s_Data()[,"analyte"]), function(x) {
         x_lm <- stats::lm(Value ~ Date, data=x)
         mon_diff <- max(mondf(x[,"Date"]))
         x_slope <- summary(x_lm)$coefficients[2,1:2]
-        data.frame("mon_diff"=mon_diff, "slope"=x_slope[1], "SE_slope"=x_slope[2], "U_Stab"=abs(x_slope[1]*x_slope[2]))
+        # according to B.3.4 from ISO Guide 35
+        p_val <- 2 * stats::pt(abs(x_slope[1]/x_slope[2]), df = stats::df.residual(x_lm), lower.tail = FALSE)
+        data.frame(
+          "mon_diff"=mon_diff,
+          "slope"=x_slope[1],
+          "SE_slope"=x_slope[2],
+          "u_stab"=abs(x_slope[1]*x_slope[2]),
+          "P"=p_val)
       }, .id="analyte")
       setValue(rv, c("Stability","s_vals"), out)
       return(out)
@@ -173,7 +180,7 @@ page_StabilityServer <- function(id, rv) {
     output$s_vals <- DT::renderDataTable({
         shiny::req(s_vals())
         s_vals_print <- s_vals()
-        for (i in c("slope","SE_slope","U_Stab")) {
+        for (i in c("slope","SE_slope","u_stab","P")) {
           s_vals_print[,i] <- pn(s_vals_print[,i], 4)
         }
         if (!is.null(getValue(rv, c("General", "materialtabelle")))) {
@@ -267,7 +274,7 @@ page_StabilityServer <- function(id, rv) {
 
       shiny::column(
         width = 12,
-        shiny::fluidRow(shiny::HTML("<p style=margin-bottom:-3%;><strong>Transfer 'U_stab' to column</strong></p>"), align="right"),
+        shiny::fluidRow(shiny::HTML("<p style=margin-bottom:-3%;><strong>Transfer 'u_stab' to column</strong></p>"), align="right"),
         shiny::selectInput(
           inputId=session$ns("s_transfer_ubb"),
           label="",
