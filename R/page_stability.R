@@ -52,11 +52,17 @@ page_StabilityUI <- function(id) {
       ),
       shiny::p(),
       shiny::fluidRow(
-        shiny::column(width = 2, DT::dataTableOutput(ns("s_overview"))),
+        shiny::column(width = 2, DT::dataTableOutput(ns("s_tab2"))),
         shiny::column(
           width = 8,
           shiny::fluidRow(
-            shiny::plotOutput(ns("s_plot")),
+            shiny::strong(
+              shiny::actionLink(
+                inputId = ns("fig1_link"),
+                label = "Fig.1 Stability - linear model"
+              )
+            ), shiny::p(),
+            shiny::plotOutput(ns("s_plot"), height = "500px"),
             shiny::uiOutput(ns("s_info"))
           )
         ),
@@ -137,8 +143,10 @@ page_StabilityServer <- function(id, rv) {
       #shiny::req(input$s_sel_temp)
       s_dat <- getValue(rv,c("Stability","data"))
       if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
-      if ("Temp" %in% colnames(s_dat) && input$s_sel_temp != "") {
+      if ("Temp" %in% colnames(s_dat)) {
+        validate(need(expr = input$s_sel_temp != "", message = "Please select a Temp level."))
         s_dat <- s_dat[as.character(s_dat[,"Temp"]) %in% input$s_sel_temp,]
+        validate(need(expr = diff(range(s_dat[,"time"]))>0, message = "Please select Temp levels such that independent time points exist."))
       }
       return(s_dat)
     })
@@ -171,27 +179,52 @@ page_StabilityServer <- function(id, rv) {
     })
 
     # Tables
-    output$s_overview <- DT::renderDataTable({
+    output$s_tab2 <- DT::renderDataTable({
       shiny::req(s_Data(), input$s_sel_analyte)
-      s <- s_Data()
-      s[s[,"analyte"]==input$s_sel_analyte,c("Date","Value")]
-    }, options = list(paging = TRUE, searching = FALSE), rownames=NULL)
+      dt <- DT::datatable(
+        data = s_Data()[s_Data()[,"analyte"]==input$s_sel_analyte,c("Date","Value")],
+        options = list(paging = TRUE, searching = FALSE), rownames=NULL
+      )
+      prec <- try(getValue(rv, c("General","apm"))[[input$s_sel_analyte]][["precision"]])
+      prec <- ifelse(is.finite(prec), prec, 4)
+      dt <- DT::formatCurrency(table = dt, columns = 2, currency = "", digits = prec)
+      return(dt)
+    })
 
     output$s_vals <- DT::renderDataTable({
-        shiny::req(s_vals())
-        s_vals_print <- s_vals()
-        for (i in c("slope","SE_slope","u_stab","P")) {
-          s_vals_print[,i] <- pn(s_vals_print[,i], 4)
-        }
-        if (!is.null(getValue(rv, c("General", "materialtabelle")))) {
-          c_vals <- getValue(rv, c("General", "materialtabelle"))
-          s_vals_print[,"Present"] <- sapply(s_vals_print[,"analyte"], function(x) {
-            ifelse(x %in% c_vals[,"analyte"], "Yes", "No")
-          })
-        }
-        return(s_vals_print)
-      }, options = list(dom = "t", pageLength=100), selection = list(mode="single", target="row"), rownames=NULL
-    )
+      shiny::req(s_vals())
+      s_vals_print <- s_vals()
+      for (i in c("slope","SE_slope","u_stab","P")) {
+        s_vals_print[,i] <- pn(s_vals_print[,i], 4)
+      }
+      if (!is.null(getValue(rv, c("General", "materialtabelle")))) {
+        c_vals <- getValue(rv, c("General", "materialtabelle"))
+        s_vals_print[,"style_analyte"] <- sapply(s_vals_print[,"analyte"], function(x) {
+          ifelse(x %in% c_vals[,"analyte"], "black", "red")
+        })
+      }
+      dt <- DT::datatable(
+        data = s_vals_print,
+        options = list(
+          dom = "t",
+          pageLength=NULL,
+          columnDefs = list(
+            list(visible = FALSE, targets = 6),
+            list(className = 'dt-right', targets='_all')
+          )
+        ),
+        selection = list(mode="single", target="row"),
+        rownames=NULL
+      )
+      dt <- DT::formatStyle(
+        table = dt,
+        columns = "analyte",
+        valueColumns = "style_analyte",
+        target = "cell",
+        color = DT::styleValue()
+      )
+      return(dt)
+    })
 
     shiny::observeEvent(input$s_vals_rows_selected, {
       sel <- as.character(s_vals()[input$s_vals_rows_selected,"analyte"])
@@ -234,6 +267,7 @@ page_StabilityServer <- function(id, rv) {
     output$s_plot <- shiny::renderPlot({
       shiny::req(s_Data(), input$s_sel_analyte)
       s <- s_Data()
+      mt <- getValue(rv, c("General", "materialtabelle"))
       an <- input$s_sel_analyte
       l <- s[,"analyte"]==an
       aps <- getValue(rv, c("General", "apm"))
@@ -244,19 +278,21 @@ page_StabilityServer <- function(id, rv) {
       U <- 2*stats::sd(s[l,"Value"], na.rm=T)
       U_Def <- "2s"
       if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
-        mt <- getValue(rv, c("General", "materialtabelle"))
         CertVal <- mt[mt[,"analyte"] %in% an, "cert_val"]
-        U <- ifelse(input$s_sel_dev=="U", 1, 2) * mt[mt[,"analyte"] %in% an, ifelse(input$s_sel_dev=="U", "U", "sd")]
+        U <- ifelse(input$s_sel_dev=="U", 1, 2) * mt[mt[,"analyte"] %in% an, ifelse(input$s_sel_dev=="U", "U_abs", "sd")]
         U_Def <- input$s_sel_dev
       }
+      KW_Def <- ifelse("KW_Def" %in% colnames(s), unique(s[l,"KW_Def"])[1], an)
+      KW_Unit <- mt[which(mt[,"analyte"] == an), "unit"]
+      KW_Unit <- ifelse("KW_Unit" %in% colnames(s), unique(s[l,"KW_Unit"])[1], KW_Unit)
       x <- list("val"=s[l,],
                 "def"=data.frame(
                   "CertVal" = CertVal,
                   "U"= U,
                   "U_Def" = U_Def,
-                  "KW" = an,
-                  "KW_Def" = ifelse("KW_Def" %in% colnames(s), unique(s[l,"KW_Def"])[1],"KW_Def"),
-                  "KW_Unit" = ifelse("KW_Unit" %in% colnames(s), unique(s[l,"KW_Unit"])[1],"KW_Unit"),
+                  "KW" = ifelse(an==KW_Def, NA, an),
+                  "KW_Def" = KW_Def,
+                  "KW_Unit" = KW_Unit,
                   stringsAsFactors = FALSE
                 )
       )
@@ -296,6 +332,12 @@ page_StabilityServer <- function(id, rv) {
       message("Stability: observeEvent(s_transfer_U)")
       setValue(rv, c("General","materialtabelle"), s_transfer_U$value)
     }, ignoreInit = TRUE)
+
+    shiny::observeEvent(input$fig1_link,{
+      help_the_user_modal("stability_plot")
+    })
+
+
 
   })
 }

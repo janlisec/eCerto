@@ -59,7 +59,7 @@ page_HomogeneityUI <- function(id) {
               label = "Tab.1 Homogeneity - calculation of uncertainty contribution"
             )
           ),
-          DT::dataTableOutput(ns("h_vals"))
+          DT::dataTableOutput(ns("h_tab1"))
         ),
         shiny::column(2, shiny::wellPanel(m_TransferUUI(ns("h_transfer"))))
       ),
@@ -73,7 +73,7 @@ page_HomogeneityUI <- function(id) {
               label = "Tab.2 Homogeneity - specimen stats"
             )
           ),
-          DT::dataTableOutput(ns("h_overview_stats"))
+          DT::dataTableOutput(ns("h_tab2"))
         ),
         shiny::column(
           width = 7,
@@ -91,7 +91,7 @@ page_HomogeneityUI <- function(id) {
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices=""),
+            shinyjs::hidden(shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices="")),
             shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
             shiny::downloadButton(ns("h_Report"), label="Download")
           )
@@ -111,7 +111,7 @@ page_HomogeneityServer = function(id, rv) {
 
     homog <- shiny::reactive({getValue(rv,"Homogeneity")})
 
-    h_vals = shiny::reactiveVal(NULL)
+    h_vals <- shiny::reactiveVal(NULL)
 
     shiny::observeEvent(input$tab1_link,{
       help_the_user_modal("homogeneity_uncertainty")
@@ -173,7 +173,7 @@ page_HomogeneityServer = function(id, rv) {
             #n <- round(mean(table(as.character(x[,"Flasche"]))))
             #[modified to ISO35[B.4] on suggestion of KV]
             n <- 1/(N-1)*(sum(n_i)-sum(n_i^2)/sum(n_i))
-            s_bb <- ifelse(M_between>M_within, sqrt((M_between-M_within)/n), 0)/mn
+            s_bb <- ifelse(M_between>M_within, sqrt((M_between-M_within)/n)/mn, 0)
             s_bb_min <- (sqrt(M_within/n)*(2/(N*(n-1)))^(1/4))/mn
             return(data.frame("mean"=mn, "n"=n, "N"=N, "M_between"=M_between, "M_within"=M_within, "P"=anm$Pr[1], "s_bb"=s_bb, "s_bb_min"=s_bb_min))
           } else {
@@ -202,51 +202,117 @@ page_HomogeneityServer = function(id, rv) {
 
     precision <- shiny::reactive({
       shiny::req(input$h_sel_analyt)
+      #message("[H] setting precision")
       prec <- 4
       an <- as.character(h_vals()[interaction(h_vals()[,"analyte"], h_vals()[,"H_type"])==input$h_sel_analyt,"analyte"])
       apm <- getValue(rv, c("General", "apm"))
       if (an %in% names(apm)) {
-        prec <- apm[[an]][["precision_export"]]
+        #prec <- apm[[an]][["precision_export"]]
+        prec <- apm[[an]][["precision"]]
       }
-      #browser()
       return(prec)
     })
 
     # Tables
-    output$h_overview_stats <- DT::renderDataTable({
+    output$h_tab2 <- DT::renderDataTable({
       shiny::req(h_means(), precision())
       tab <- h_means()
-      for (i in c("mean","sd")) { tab[,i] <- pn(tab[,i], precision()) }
+      #message("[H] rendering tab2")
+      cols <- which(colnames(tab) %in% c("mean","sd"))
+      for (i in cols) tab[,i] <- pn(tab[,i], precision())
+      tab <- DT::datatable(
+        data = tab,
+        options = list(
+          dom = "t",
+          pageLength = NULL,
+          columnDefs = list(
+            list(className = 'dt-right', targets='_all')
+          )
+        ),
+        rownames=NULL, selection = "none"
+      )
+      #DT::formatCurrency(table = tab, columns = cols, currency = "", digits = precision())
+      #DT::formatSignif(table = tab, columns = cols, digits = precision())
       return(tab)
-    }, options = list(paging = FALSE, searching = FALSE, pageLength=100), rownames=NULL, selection = "none")
+    })
 
     h_vals_print <- shiny::reactive({
-      shiny::req(h_Data(), precision())
+      shiny::req(h_Data())
       mt <- getValue(rv, c("General", "materialtabelle"))
       h_vals_print <- h_vals()
       apm <- getValue(rv, c("General", "apm"))
       for (i in 1:nrow(h_vals_print)) {
         an <- as.character(h_vals_print[i,"analyte"])
-        h_vals_print[i,"mean"] <- pn(as.numeric(h_vals_print[i,"mean"]), ifelse(an %in% names(apm), apm[[an]][["precision_export"]], 4))
+        h_vals_print[i,"mean"] <- pn(as.numeric(h_vals_print[i,"mean"]), ifelse(an %in% names(apm), apm[[an]][["precision"]], 4))
       }
+      # round the following columns with fixed precision of 4 digits
       for (cn in c("M_between","M_within","P","s_bb","s_bb_min")) {
         h_vals_print[,cn] <- pn(h_vals_print[,cn], 4)
       }
+      # check if analyte is present in C modul
       if (!is.null(mt)) {
-        h_vals_print[,"In_Cert_Module"] <- sapply(h_vals_print[,"analyte"], function(x) {
-          ifelse(x %in% mt[,"analyte"], "Yes", "No")
+        h_vals_print[,"style_analyte"] <- sapply(h_vals_print[,"analyte"], function(x) {
+          ifelse(x %in% mt[,"analyte"], "black", "red")
         })
       }
+      h_vals_print[,"style_s_bb"] <- c("bold","normal")[1+as.numeric(h_vals_print[,"s_bb"]<h_vals_print[,"s_bb_min"])]
+      h_vals_print[,"style_s_bb_min"] <- c("bold","normal")[1+as.numeric(h_vals_print[,"s_bb"]>=h_vals_print[,"s_bb_min"])]
       return(h_vals_print)
     })
 
-    output$h_vals <- DT::renderDataTable({
-      h_vals_print()
-    }, options = list(paging = FALSE, searching = FALSE, pageLength=100), rownames=NULL, selection = list(mode="single", target="row"))
+    output$h_tab1 <- DT::renderDataTable({
+      #message("[H] rendering tab1")
+      dt <- h_vals_print()
+      inv_cols <- grep("style_", colnames(dt))-1
+      if (length(unique(dt[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
+      dt <- DT::datatable(
+        data = h_vals_print(),
+        options = list(
+          dom = "t",
+          pageLength = NULL,
+          columnDefs = list(
+            list(visible = FALSE, targets = inv_cols),
+            list(width = '30px', targets = c(3,4)),
+            list(width = '60px', targets = c(5:9)),
+            list(className = 'dt-right', targets='_all')
+          )
+        ),
+        rownames=NULL, selection = list(mode="single", target="row")
+      )
+      dt <- DT::formatStyle(
+        table = dt,
+        columns = "analyte",
+        valueColumns = "style_analyte",
+        target = "cell",
+        color = DT::styleValue()
+      )
+      dt <- DT::formatStyle(
+        table = dt,
+        columns = "s_bb",
+        valueColumns = "style_s_bb",
+        target = "cell",
+        fontWeight = DT::styleValue()
+      )
+      dt <- DT::formatStyle(
+        table = dt,
+        columns = "s_bb_min",
+        valueColumns = "style_s_bb_min",
+        target = "cell",
+        fontWeight = DT::styleValue()
+      )
+      dt <- DT::formatStyle(
+        table = dt,
+        columns = "P",
+        target = "cell",
+        color = DT::styleInterval(cuts = 0.05, values = c("red","black")),
+        fontWeight = DT::styleInterval(cuts = 0.05, values = c("bold","normal"))
+      )
+      return(dt)
+    })
 
 
-    shiny::observeEvent(input$h_vals_rows_selected, {
-      sel <- as.character(interaction(h_vals_print()[input$h_vals_rows_selected,1:2]))
+    shiny::observeEvent(input$h_tab1_rows_selected, {
+      sel <- as.character(interaction(h_vals_print()[input$h_tab1_rows_selected,1:2]))
       shiny::updateSelectInput(session = session, inputId = "h_sel_analyt", selected = sel)
       #shinyjs::disable(id = "h_sel_analyt")
     })
@@ -262,12 +328,13 @@ page_HomogeneityServer = function(id, rv) {
     output$h_boxplot <- shiny::renderPlot({
       shiny::req(h_Data(), input$h_sel_analyt, precision())
       h_dat <- h_Data()
+      an <- ifelse(length(unique(h_dat[,"H_type"]))==1, as.character(h_dat[interaction(h_dat[,"analyte"], h_dat[,"H_type"])==input$h_sel_analyt,"analyte"]), input$h_sel_analyt)
       h_dat <- h_dat[interaction(h_dat[,"analyte"], h_dat[,"H_type"])==input$h_sel_analyt,]
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
       omn <- round(mean(h_dat[,"value"],na.rm=T), precision())
       osd <- round(stats::sd(h_dat[,"value"],na.rm=T), precision())
       graphics::par(mar=c(5,4,2.5,0)+0.1)
-      graphics::plot(x=c(0.6,0.4+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(input$h_sel_analyt, " [", unique(h_dat["unit"]),"]"), axes=F)
+      graphics::plot(x=c(0.6,0.4+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(an, " [", unique(h_dat["unit"]),"]"), axes=F)
       graphics::abline(h=omn, lty=2)
       graphics::abline(h=omn+c(-1,1)*osd, lty=2, col=grDevices::grey(0.8))
       graphics::boxplot(h_dat[,"value"] ~ h_dat[,"Flasche"], add=TRUE)
@@ -276,9 +343,11 @@ page_HomogeneityServer = function(id, rv) {
     }, height=500, width=shiny::reactive({fig_width()}))
 
     output$h_statement2 <- shiny::renderUI({
-      shiny::req(h_Data(), input$h_sel_analyt)
-      ansd <- max(h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,c("s_bb","s_bb_min")])
-      anp <- h_vals()[interaction(h_vals()[,"analyte"],h_vals()[,"H_type"])==input$h_sel_analyt,"P"]
+      shiny::req(h_vals(), input$h_sel_analyt)
+      h_dat <- h_vals()
+      an <- ifelse(length(unique(h_dat[,"H_type"]))==1, as.character(h_dat[interaction(h_dat[,"analyte"], h_dat[,"H_type"])==input$h_sel_analyt,"analyte"]), input$h_sel_analyt)
+      ansd <- max(h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,c("s_bb","s_bb_min")])
+      anp <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,"P"]
       if (anp<0.05) {
         h2 <- "<font color=\"#FF0000\"><b>significantly different</b></font>"
         h4 <- "<b>Please check your method and data!</b>"
@@ -289,7 +358,7 @@ page_HomogeneityServer = function(id, rv) {
       return(
         shiny::fluidRow(shiny::column(12,
           shiny::HTML("The tested items (Flasche) are ", h2, "(ANOVA P-value = ", pn(anp,2), ").<p>",
-                      "The uncertainty value for analyte ", input$h_sel_analyt),
+                      "The uncertainty value for analyte ", an),
           shiny::actionLink(inputId = ns("hom_help_modal"), label = "was determined as"),
           shiny::HTML("<b>", pn(ansd), "</b>.<p>", h4)
         ))

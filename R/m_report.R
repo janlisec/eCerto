@@ -31,11 +31,11 @@
 #' }
 #'
 #' @rdname mod_report
-#' @export
-m_report_ui <- function(id) {
+#' @keywords internal
+m_reportUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::fluidRow(shiny::strong("Download Report")),
+    shiny::fluidRow(shiny::column(width = 12, shiny::strong("Download Report"))),
     shiny::p(),
     shiny::fluidRow(
       shiny::column(
@@ -59,7 +59,7 @@ m_report_ui <- function(id) {
 
 #' @rdname mod_report
 #' @export
-m_report_server <- function(id, rv, selected_tab) {
+m_reportServer <- function(id, rv, selected_tab) {
 
   shiny::moduleServer(id, function(input, output, session) {
 

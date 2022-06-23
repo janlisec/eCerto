@@ -36,8 +36,8 @@ testthat::test_that(
         session$setInputs(h_sel_analyt = "Fe.axial")
         session$flushReact()
         testthat::expect_equal(
-          as.character(h_vals_print()[,"In_Cert_Module"]),
-          rep(c("Yes","No"), each=2)
+          as.character(h_vals_print()[,"style_analyte"]),
+          rep(c("black","red"), each=2)
         )
       }
     )

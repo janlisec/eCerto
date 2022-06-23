@@ -41,9 +41,11 @@ m_arrheniusUI <- function(id) {
       ),
       shiny::column(2, shiny::wellPanel(
         shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
-        sub_header("Change View"),
-        shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model"),
-        shiny::p(),
+        shiny::fluidRow(
+          shiny::column(width = 6, sub_header("Change View", b=4), shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")),
+          shiny::column(width = 6, shiny::numericInput(inputId = ns("user_temp"), label = "Storage Temp", value = -20, min = -80, max = 23, step = 1, width = "100%"))
+        ),
+        #shiny::p(),
         shiny::checkboxGroupInput(
           inputId = ns("s_opt_Fig1"),
           label = "Options Fig.1",
@@ -74,7 +76,8 @@ m_arrheniusUI <- function(id) {
           shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
           shiny::column(width = 2, DT::DTOutput(outputId = ns("outTab")))
         ),
-        DT::DTOutput(outputId = ns("Tab2"))
+        DT::DTOutput(outputId = ns("Tab2")),
+        shiny::uiOutput(outputId = ns("user_month"))
       ),
       shiny::column(
         width = 2,
@@ -278,8 +281,7 @@ m_arrheniusServer <- function(id, rv) {
       return(out)
     }, options = list(dom="t"), rownames = FALSE)
 
-    output$outTab <- DT::renderDT({
-      req(tab1exp())
+    analyte_cert_vals <- shiny::reactive({
       mt <- getValue(rv, c("General", "materialtabelle"))
       validate(need(expr = mt, message = "An existing material table is needed to extract the certified value used in subsequent calculations."))
       l <- which(mt[,"analyte"]==input$analyte)
@@ -288,11 +290,25 @@ m_arrheniusServer <- function(id, rv) {
       U_abs <- mt[l,"U_abs"]
       coef <- log((cert_val-U_abs)/cert_val)
       validate(need(expr = is.finite(coef), message = "cert_val and sd do not yield a finite value"))
+      return(coef)
+    })
+
+    output$outTab <- DT::renderDT({
+      req(tab1exp(), analyte_cert_vals())
       out <- tab1exp()
-      out[,"month"] <- round(coef/(-1*exp(out[,"CI_upper"])))
+      out[,"month"] <- round(analyte_cert_vals()/(-1*exp(out[,"CI_upper"])))
       return(out[,c(1,10)])
     }, options = list(dom="t"), rownames = FALSE)
 
+    output$user_month <- shiny::renderUI({
+      shiny::req(input$user_temp, tab1(), analyte_cert_vals(), tab2())
+      ce <- stats::coef(stats::lm(tab1()[,"log(-k_eff)"] ~ tab1()[,"1/K"]))
+      ut_K <- 1/(273.15+input$user_temp)
+      m <- as.numeric(round(analyte_cert_vals()/(-1*exp(ce[2]*ut_K + ce[1]))))
+      m_CIup <- sqrt(tab2()[,"u(i)"]^2 + tab2()[,"u(s)"]^2*ut_K^2 + 2*tab2()[,"cov"]*ut_K) + (ce[2]*ut_K + ce[1])
+      m_CIup <- as.numeric(round(analyte_cert_vals()/(-1*exp(m_CIup))))
+      shiny::HTML("At the specified temperature of", input$user_temp, " the analyte is expected to be stable for", m, "month (mean) or", m_CIup, "month (CI_upper) respectively.")
+    })
 
     getFig2 <- function(tab) {
       xlim <- range(tab[,"1/K"], na.rm=TRUE)

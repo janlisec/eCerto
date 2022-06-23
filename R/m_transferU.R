@@ -61,27 +61,31 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
     # source type 'st' (is it homogeneity or stability data we want to transfer?)
     st <- shiny::reactive({
       shiny::req(dat())
-      ifelse("H_type" %in% colnames(dat()), "H", "S")
+      st <- ifelse("H_type" %in% colnames(dat()), "H", "S")
+      if (st=="H") {
+        if (length(unique(dat()[,"H_type"]))==1) st <- "H_simple"
+      }
+      return(st)
     })
 
     # The Dropdown-Menu to select the column of materialtabelle to transfer to
     output$transfer <- shiny::renderUI({
-      #
-      shiny::validate(shiny::need(dat(), message = paste("Please upload", switch(st(),"H"="homogeneity", "S"="stability"), "data")))
+
+      shiny::validate(shiny::need(dat(), message = paste("Please upload", switch(st(), "S"="stability", "homogeneity"), "data")))
       shiny::validate(shiny::need(mat_tab(), message = "Please upload certification data to enable transfer of uncertainty values"))
 
       cc <- attr(mat_tab(), "col_code")
       test <- nrow(cc)>0 && any(substr(cc[, "ID"], 1, 1) == "U")
-      shiny::validate(shiny::need(test, message = "Please specify a U column in material table to transfer uncertainty values"))
+      shiny::validate(shiny::need(test, message = "Please specify a new U column in material table to transfer uncertainty values"))
 
       shiny::tagList(
-        sub_header(txt=paste("Transfer ", switch(st(),"H"="maximum from (s_bb, s_bb_min) of H_type", "S"="values from column")), b=3),
+        sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'")), b=3),
         shiny::selectInput(
           inputId=session$ns("H_Type"),
           label=NULL,
           width='100%',
           selectize=TRUE,
-          choices=switch(st(),"H"=levels(dat()[,"H_type"]), "S"="u_stab")
+          choices=switch(st(),"H"=levels(dat()[,"H_type"]), "H_simple"="hom", "S"="u_stab")
         ),
         shiny::selectInput(
           inputId=session$ns("U_cols"),
@@ -94,19 +98,23 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
       )
     })
 
+    shiny::observeEvent(input$H_Type, {
+      # show H_Type selecion widget if several H_Types exist
+      shinyjs::toggle(id = "H_Type", condition = st()=="H")
+    })
+
     shiny::observeEvent(input$transfer_button, {
       mt <- mat_tab()
       cc <- attr(mt, "col_code")
       U_col <- cc[cc[, "Name"] == input$U_cols,"ID"]
-      T_col <- switch(st(),"H"=c("s_bb","s_bb_min"), "S"="u_Stab")
-      T_row <- switch(st(),"H"=which(dat()[,"H_type"]==input$H_Type), "S"=1:nrow(dat()))
+      T_col <- switch(st(),"H"=c("s_bb","s_bb_min"), "H_simple"=c("s_bb","s_bb_min"), "S"="u_stab")
+      T_row <- switch(st(),"H"=which(dat()[,"H_type"]==input$H_Type), "H_simple"=1:nrow(dat()), "S"=1:nrow(dat()))
       for (i in T_row) {
         j <- which(as.character(mt[,"analyte"])==as.character(dat()[i,"analyte"]))
         if (length(j)==1) {
           mt[j, U_col] <- max(dat()[i, T_col], na.rm=TRUE)
         }
       }
-      #print(mt)
       mt_out$value <- mt
       mt_out$changed <- mt_out$changed + 1
     }, ignoreInit = TRUE)

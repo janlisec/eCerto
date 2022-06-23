@@ -2,13 +2,15 @@
 % Please edit documentation in R/m_report.R
 \name{mod_report}
 \alias{mod_report}
+\alias{m_reportUI}
 \alias{m_report_ui}
 \alias{m_report_server}
+\alias{m_reportServer}
 \title{report}
 \usage{
-m_report_ui(id)
+m_reportUI(id)
 
-m_report_server(id, rv, selected_tab)
+m_reportServer(id, rv, selected_tab)
 }
 \arguments{
 \item{id}{module ID}
@@ -44,3 +46,4 @@ shiny::shinyApp(
 }
 
 }
+\keyword{internal}

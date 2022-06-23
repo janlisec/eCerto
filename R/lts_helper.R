@@ -49,7 +49,7 @@ plot_lts_data <- function(x=NULL, type=1) {
   # extract relevant values from definition part
   U <- x[["def"]][,"U"]
   mn <- x[["def"]][,"CertVal"]
-  ylab <- paste0(x[["def"]][,"KW_Def"]," (",x[["def"]][,"KW"],")"," [",x[["def"]][,"KW_Unit"],"]")
+  ylab <- paste0(x[["def"]][,"KW_Def"], ifelse(is.na(x[["def"]][,"KW"]), "", paste0(" (",x[["def"]][,"KW"],")")), " [", x[["def"]][,"KW_Unit"],"]")
   main <- x[["def"]][,"KW"]
   sub <- x[["def"]][,"U_Def"]
 
@@ -59,6 +59,9 @@ plot_lts_data <- function(x=NULL, type=1) {
 
   # color comment datapoints differently
   if ("Comment" %in% colnames(x[["val"]])) com <- x[["val"]][,"Comment"] else com <- rep(NA, nrow(x[["val"]]))
+
+  # $$ToDo$$ end date estimation is only approximate (based on ~30d/month or precisely on 365/12=30.42)
+  days_per_month <- 30.42
 
   if (type==1) {
     # generate 'real time window' plot
@@ -89,14 +92,13 @@ plot_lts_data <- function(x=NULL, type=1) {
       sub=sub,
       main=paste(main, "(adjusted)")
     )
-    # $$ToDo$$ end date estimation is only approximate (based on ~30d/month or precisely on 365/12=30.42)
-    graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1]+foo_lts*30.42))
+    graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1]+foo_lts*days_per_month))
     graphics::abline(stats::lm(foo_adj~mon), lty=2, col=4)
     graphics::abline(h=mn+c(-1,0,1)*U, lty=c(2,1,2), col=c(3,2,3))
     graphics::text(x=foo_lts, y=mn+b*foo_lts, pos=2, labels = paste("n =",foo_lts))
   }
 
-  names(foo_lts) <- as.character(as.POSIXlt(as.Date(rt[1]+foo_lts*30.42, origin="1900-01-01")))
+  names(foo_lts) <- as.character(as.POSIXlt(as.Date(rt[1]+foo_lts*days_per_month, origin="1900-01-01")))
   invisible(foo_lts)
 }
 

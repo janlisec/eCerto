@@ -5,42 +5,41 @@
 #'    from the beginning (no function like "addVariable" should exist!) and that
 #'    (2) functions to calculate the mean or plot current data can be implemented
 #'    here directly.#'
-#'@param rv ReactiveValues object.
-#'@param field Field name of R6 object for get and set methods.
-#'@param value Value for set method.
 #'@name eCerto_R6Class
 #'@examples
-#' if(interactive()) {
+#' if (interactive()) {
 #' rv <- shiny::reactiveValues(a=1)
 #' shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
 #' shiny:::flushReact()
 #' rv$a <- 2
 #' shiny:::flushReact()
 #' test <- eCerto$new(eCerto:::init_rv())
-#' eCerto::getValue(test, c("Certification","data"))
-#' shiny::observeEvent(eCerto::getValue(test, "Certification")$data, {
+#' shiny::isolate(eCerto::getValue(test, c("Certification","data")))
+#' shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
 #'   message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
 #' })
-#' eCerto::setValue(test, c("Certification","data"), 5)
-#' eCerto::getValue(test, c("Certification","data"))
+#' shiny::isolate(eCerto::setValue(test, c("Certification","data"), 5))
+#' shiny::isolate(eCerto::getValue(test, c("Certification","data")))
 #' shiny:::flushReact()
 #' }
+#' tmp <- eCerto$new()
+#' tmp$c_plot()
+#' tmp$c_lab_means()
 #'@export
 eCerto <- R6::R6Class(
   classname = "eCerto",
   private = list(
-    # #' @field reactive_data The 'reactiveValues' object parsed on initialize.
-    ..eData = NULL
+    # the 'reactiveValues' object parsed on initialize.
+    ..eData = NULL,
+    ..current_analyte = NULL
   ),
   public = list(
-
     #' @description
     #' Write the (reactive) value of element 'keys' from list 'l'.
     #' @param rv 'reactiveValues' object.
     #' @return A new 'eCerto' object.
     initialize = function(rv) {
       # message("Initiate R6 object")
-      # stopifnot(shiny::is.reactivevalues(rv))
       if (missing(rv)) {
         # set up internal data structure and fill with test data
         rv <- init_rv()
@@ -49,23 +48,23 @@ eCerto <- R6::R6Class(
         rv[["General"]][["apm"]] <- init_apm(testdata)
         rv[["General"]][["materialtabelle"]] <- init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]}))
         private$..eData = rv
+        #private$..cAnalyte = shiny::isolate(rv[["General"]][["apm"]][[1]][["Name"]])
       } else {
         # [ToDo] implement testing (copy from RData upload module)
         private$..eData = rv
+        #private$..cAnalyte = shiny::isolate(rv[["General"]][["apm"]][[1]][["Name"]])
       }
     },
-
     #' @description Read the value of field element of R6 object.
     #' @param keys Name of list element.
     #' @return Current value of field.
     get = function(keys=NULL) {
       purrr::chuck(private$..eData, !!!keys)
     },
-
-    #' @description Write the value to field element of R6 object.
-    #' @param keys Name of list element.
+    #' @description Set element of R6 object defined by 'keys' to new value.
+    #' @param keys Name(s) of list element.
     #' @param value New value.
-    #' @return New value of field (invisible).
+    #' @return New value of element (invisible).
     set = function(keys=NULL, value){
       if(!is.null(value)) {
         purrr::pluck(private$..eData, !!!keys) <- value
@@ -75,25 +74,50 @@ eCerto <- R6::R6Class(
         # the behavior is different: one can assign NULL to an reactiveValue-Item BUT (!!!)
         # assigning NULL to the reactiveValue-List itself would delete it
         # this case needs to be taken care of here
-        if (length(keys)>=2 && is.reactivevalues(purrr::pluck(private$reactive_data, !!!keys[-length(keys)]))) {
-          purrr::pluck(private$reactive_data, !!!keys) <- NULL
+        if (length(keys)>=2 && is.reactivevalues(purrr::pluck(private$..eData, !!!keys[-length(keys)]))) {
+          purrr::pluck(private$..eData, !!!keys) <- NULL
         } else {
           warning(paste("Can't assign NULL to a standard list element: ", paste(keys, collapse=", ")))
         }
       }
       invisible(purrr::chuck(private$..eData, !!!keys))
     },
-
     #' @description Plot the certification data either provided by the user or from the private slot of self.
-    #' @param data data.frame containing columns 'value', 'Lab' and 'L_flt'.
+    #' @param data data.frame containing columns 'value', 'Lab' and 'L_flt' for a specific analyte.
     #' @param annotate_id T/F to overlay the plot with ID as text if column 'ID' is present.
     #' @param filename_labels T/F to use imported file names as labels on x-axes.
     #' @return A plot.
     c_plot = function(data, annotate_id = FALSE, filename_labels = FALSE) {
       if (missing(data)) {
         data <- isolate(private$..eData[["Certification"]][["data"]])
+        data <- data[data[,"analyte"]==levels(data[,"analyte"])[1],,drop=FALSE]
       }
       eCerto::CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
+    },
+    #' @description Compute the analyte means for .
+    #' @param data data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.
+    #' @param analyte_name Specify the analyte you want the lab mean statistics for.
+    #' @return A plot.
+    c_lab_means = function(data, analyte_name) {
+      if (missing(analyte_name)) {
+        analyte_name <- 1
+      }
+      c_apm <- shiny::isolate(private$..eData[["General"]][["apm"]][[analyte_name]])
+      if (missing(data)) {
+        data <- shiny::isolate(private$..eData[["Certification"]][["data"]])
+      }
+      stopifnot(c("value", "Lab") %in% colnames(data))
+      f_data <- c_filter_data(x = data, c_apm = c_apm)
+      out <- plyr::ldply(split(f_data$value, f_data$Lab), function(x) {
+        data.frame(
+          "mean" = round(mean(x, na.rm = T), c_apm[["precision_export"]]),
+          "sd" = round(stats::sd(x, na.rm = T), c_apm[["precision_export"]]),
+          "n" = sum(is.finite(x)),
+          stringsAsFactors = FALSE
+        )
+      }, .id = "Lab")
+      rownames(out) <- out$Lab
+      return(out)
     }
   )
 )

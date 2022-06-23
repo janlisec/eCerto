@@ -3,6 +3,9 @@
 ```{r child = 'stability_dataupload.Rmd'}
 ```
 
+```{r child = 'stability_plot.Rmd'}
+```
+
 ```{r child = 'stability_uncertainty.Rmd'}
 ```
 

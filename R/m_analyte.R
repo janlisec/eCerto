@@ -57,9 +57,12 @@ m_analyteUI = function(id) {
       shiny::column(
         width = 3,
         shiny::numericInput(
-          inputId =ns("precision"),
-          label = "Precision (Input)",
-          value =  4, min = 0, max = 10, step = 1
+          inputId = ns("precision"),
+          label = shiny::actionLink(
+            inputId = ns("analyte_help_link"),
+            label = "Precision (stats)"
+          ),
+          value = 4, min = 0, max = 10, step = 1
         )
       ),
       shiny::column(
@@ -89,7 +92,7 @@ m_analyteUI = function(id) {
         width = 3,
         shiny::numericInput(
           inputId =ns("precision_export"),
-          label = "Precision (Export)",
+          label = "Precision (cert)",
           value = 4, min = 0, max = 10, step = 1
         )
       ),
@@ -137,34 +140,36 @@ m_analyteServer = function(id, rv, selected_tab, allow_selection=FALSE) {
     # update inputs when different analyte is selected
     shiny::observe({
       shiny::req(apm(), selected_tab())
-      message("[m_analyte] update parameter inputs for ", selected_tab())
-      shiny::updateSelectInput(
-        inputId = "Name",
-        choices = names(apm()),
-        selected = apm()[[selected_tab()]]$name
-      )
-      shiny::updateCheckboxInput(
-        inputId = "pooling",
-        value = apm()[[selected_tab()]]$pooling
-      )
-      shiny::updateSelectizeInput(
-        inputId = "sample_filter",
-        choices = apm()[[selected_tab()]]$sample_ids,
-        selected = apm()[[selected_tab()]]$sample_filter
-      )
-      shiny::updateSelectizeInput(
-        inputId = "lab_filter",
-        choices = apm()[[selected_tab()]]$lab_ids,
-        selected = apm()[[selected_tab()]]$lab_filter
-      )
-      shiny::updateNumericInput(
-        inputId = "precision",
-        value = apm()[[selected_tab()]]$precision
-      )
-      shiny::updateNumericInput(
-        inputId = "precision_export",
-        value = apm()[[selected_tab()]]$precision_export
-      )
+      if (selected_tab() != input$Name) {
+        message("[m_analyte] update parameter inputs for ", selected_tab())
+        shiny::updateSelectInput(
+          inputId = "Name",
+          choices = names(apm()),
+          selected = apm()[[selected_tab()]]$name
+        )
+        shiny::updateCheckboxInput(
+          inputId = "pooling",
+          value = apm()[[selected_tab()]]$pooling
+        )
+        shiny::updateSelectizeInput(
+          inputId = "sample_filter",
+          choices = apm()[[selected_tab()]]$sample_ids,
+          selected = apm()[[selected_tab()]]$sample_filter
+        )
+        shiny::updateSelectizeInput(
+          inputId = "lab_filter",
+          choices = apm()[[selected_tab()]]$lab_ids,
+          selected = apm()[[selected_tab()]]$lab_filter
+        )
+        shiny::updateNumericInput(
+          inputId = "precision",
+          value = apm()[[selected_tab()]]$precision
+        )
+        shiny::updateNumericInput(
+          inputId = "precision_export",
+          value = apm()[[selected_tab()]]$precision_export
+        )
+      }
     })
 
     # update apm in case of changes in precision inputs
@@ -261,6 +266,10 @@ m_analyteServer = function(id, rv, selected_tab, allow_selection=FALSE) {
         setValue(rv, c("General","apm"), apm())
       }
     }, ignoreNULL = TRUE)
+
+    shiny::observeEvent(input$analyte_help_link,{
+      help_the_user_modal("certification_analyte_options")
+    })
 
   })
 }

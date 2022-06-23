@@ -24,12 +24,11 @@ CertValPlot <- function(data=NULL, annotate_id=FALSE, filename_labels=FALSE) {
   xlabs <- as.character(data.stats$Lab)
   xlab <- "Lab"
   mar <- c(5,6,0,0)+0.2
-  if (filename_labels & "File" %in% colnames(data.stats)) {
+  if (filename_labels & "File" %in% colnames(data)) {
     xlabs <- sapply(xlabs, function(x) { unique(sub(pattern = "(.*?)\\..*$", replacement = "\\1", basename(data[data[,"Lab"]==x,"File"]))) })
     mar <- c(3+floor(max(nchar(xlabs))*0.6),6,0,0)+0.2
     xlab <- NULL
   }
-  #browser()
   if (all(c("analyte","unit") %in% colnames(data))) {
     ylab <- paste0(unique(data[,"analyte"])[1], " [",unique(data[,"unit"])[1],"]")
   } else {

@@ -55,14 +55,25 @@ m_DataViewServer <- function(id, dataset_flt, precision = shiny::reactiveVal(3))
     # Generate an HTML table view of filtered single analyt data
     output$flt_Input_Data <- DT::renderDataTable({
       if (input$data_view_select == "kompakt") {
-        return(dataset_komp())
+        #browser()
+        dt <- DT::datatable(
+          data = dataset_komp(),
+          options = list(paging = FALSE, searching = FALSE), rownames = NULL
+        )
+        # round with input precision
+        dt <- DT::formatCurrency(table = dt, columns = 2:(ncol(dataset_komp())-2), currency = "", digits = precision())
+        # round with output precision (JL: currently the same; adjust and remove comment if requested by users)
+        dt <- DT::formatCurrency(table = dt, columns = (ncol(dataset_komp())-1):ncol(dataset_komp()), currency = "", digits = precision())
       }
       if (input$data_view_select == "standard") {
-        return(dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")])
-      } else {
-        return()
+        dt <- DT::datatable(
+          data = dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")],
+          options = list(paging = FALSE, searching = FALSE), rownames = NULL
+        )
+        dt <- DT::formatCurrency(table = dt, columns = 3, currency = "", digits = precision())
       }
-    }, options = list(paging = FALSE, searching = FALSE), rownames = NULL)
+      return(dt)
+    })
 
     # prepare a compact version of the data table
     dataset_komp <- shiny::reactive({

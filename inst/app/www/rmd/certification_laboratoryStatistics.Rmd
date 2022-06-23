@@ -12,7 +12,7 @@ To compute the statistical tests *eCerto* uses functions from different packages
 Details regarding the conducted statistical test (implementation, parameters) can be found using the following links:
   
 * <a href="https://rdrr.io/cran/agricolae/man/scheffe.test.html" target="_blank" rel="noopener noreferrer">Scheffe</a> 
-***Note!*** Similar letters indicate similar group and hence no difference.
+***Note!*** Similar letters indicate similar group and hence no difference. The test is performed at two $\alpha$ levels (.01 and .05).
 * <a href="https://rdrr.io/cran/outliers/man/dixon.test.html" target="_blank" rel="noopener noreferrer">Dixon</a>
 * <a href="https://rdrr.io/cran/outliers/man/grubbs.test.html" target="_blank" rel="noopener noreferrer">Grubbs</a>
 ***Note!*** Test is performed as single (only the most extreme value at each end of the distribution is tested) 
@@ -25,5 +25,4 @@ If significant, it is removed and the procedure is repeated.
 
 ***Note!***
 Most tests require at least 3 data points (Labs) and finite differences in Lab means and Lab variance.
-Depending on the selcted digit precision in rounding these conditions might not be fulfilled.
-In such a case `Error` would be reported instead of a P-value.
+If these conditions are not be fulfilled `Error` might be reported instead of a P-value.

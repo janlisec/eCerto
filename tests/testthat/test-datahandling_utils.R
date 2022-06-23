@@ -27,8 +27,8 @@ testthat::test_that(
   code = {
     rv <- eCerto$new(init_rv()) # initiate persistent variables
     nms = shiny::isolate(listNames(l = rv))
-    testthat::expect_gte(length(nms),2)
-    testthat::expect_equal(class(nms),"character")
+    testthat::expect_gte(length(nms), 2)
+    testthat::expect_equal(class(nms), "character")
   }
 )
 
@@ -37,6 +37,6 @@ testthat::test_that(
   code = {
     rv <- eCerto$new(init_rv()) # initiate persistent variables
     shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
-    testthat::expect_equal(show_view(rv),"CertValPlot")
+    testthat::expect_equal(show_view(rv), "CertValPlot")
   }
 )

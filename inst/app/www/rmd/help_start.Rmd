@@ -3,6 +3,10 @@ title: "*eCerto* help content"
 output:
   html_document:
     toc: true
+  #pagedown::html_paged:
+    # change to true for a self-contained document, but it'll be a litte slower for Pandoc to render
+    self_contained: true
+  #  toc: true
 ---
 
 # *eCerto* (Certification statistics)
@@ -22,9 +26,13 @@ output:
 ```{r child = 'materialtabelle.Rmd'}
 ```
 
-# Long Term Stability (LTS)
+## Long Term Stability (LTS)
+
+---
 
 ***Note!*** This module will probably be moved to an independent shiny app in the future.
+
+---
 
 ```{r child = 'lts.Rmd'}
 ```

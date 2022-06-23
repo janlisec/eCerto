@@ -138,7 +138,7 @@ init_apm <- function(x) {
     "name" = NULL,
     "sample_ids" = NULL, # which samples are available for the filter
     "sample_filter" = NULL, # saving which samples where selected for filter
-    "lab_ids" = NULL, # which labs have mesasured this analyte
+    "lab_ids" = NULL, # which labs have measured this analyte
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "confirmed" = FALSE, # has the analyte manually been confirmed?
     "pooling" = FALSE, # s pooling allowed for this analyte

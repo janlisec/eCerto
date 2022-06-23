@@ -333,7 +333,7 @@ m_materialtabelleServer <- function(id, rv) {
     # data frame of selected analyte
     selectedAnalyteDataframe <- shiny::reactive({
       shiny::req(getValue(rv,c("Certification","data")), getValue(rv,c("General","apm")), out())
-      fnc_filter_data(rv=rv, an=out())
+      c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[out()]])
     })
 
     n <- shiny::reactive({

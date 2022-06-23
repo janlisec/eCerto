@@ -13,21 +13,24 @@ from the beginning (no function like "addVariable" should exist!) and that
 here directly.#'
 }
 \examples{
-if(interactive()) {
+if (interactive()) {
 rv <- shiny::reactiveValues(a=1)
 shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
 shiny:::flushReact()
 rv$a <- 2
 shiny:::flushReact()
 test <- eCerto$new(eCerto:::init_rv())
-eCerto::getValue(test, c("Certification","data"))
-shiny::observeEvent(eCerto::getValue(test, "Certification")$data, {
+shiny::isolate(eCerto::getValue(test, c("Certification","data")))
+shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
   message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
 })
-eCerto::setValue(test, c("Certification","data"), 5)
-eCerto::getValue(test, c("Certification","data"))
+shiny::isolate(eCerto::setValue(test, c("Certification","data"), 5))
+shiny::isolate(eCerto::getValue(test, c("Certification","data")))
 shiny:::flushReact()
 }
+tmp <- eCerto$new()
+tmp$c_plot()
+tmp$c_lab_means()
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -36,6 +39,7 @@ shiny:::flushReact()
 \item \href{#method-eCerto-get}{\code{eCerto$get()}}
 \item \href{#method-eCerto-set}{\code{eCerto$set()}}
 \item \href{#method-eCerto-c_plot}{\code{eCerto$c_plot()}}
+\item \href{#method-eCerto-c_lab_means}{\code{eCerto$c_lab_means()}}
 \item \href{#method-eCerto-clone}{\code{eCerto$clone()}}
 }
 }
@@ -83,7 +87,7 @@ Current value of field.
 \if{html}{\out{<a id="method-eCerto-set"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-set}{}}}
 \subsection{Method \code{set()}}{
-Write the value to field element of R6 object.
+Set element of R6 object defined by 'keys' to new value.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{eCerto$set(keys = NULL, value)}\if{html}{\out{</div>}}
 }
@@ -91,14 +95,14 @@ Write the value to field element of R6 object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{keys}}{Name of list element.}
+\item{\code{keys}}{Name(s) of list element.}
 
 \item{\code{value}}{New value.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-New value of field (invisible).
+New value of element (invisible).
 }
 }
 \if{html}{\out{<hr>}}
@@ -113,11 +117,33 @@ Plot the certification data either provided by the user or from the private slot
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{data.frame containing columns 'value', 'Lab' and 'L_flt'.}
+\item{\code{data}}{data.frame containing columns 'value', 'Lab' and 'L_flt' for a specific analyte.}
 
 \item{\code{annotate_id}}{T/F to overlay the plot with ID as text if column 'ID' is present.}
 
 \item{\code{filename_labels}}{T/F to use imported file names as labels on x-axes.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A plot.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-eCerto-c_lab_means"></a>}}
+\if{latex}{\out{\hypertarget{method-eCerto-c_lab_means}{}}}
+\subsection{Method \code{c_lab_means()}}{
+Compute the analyte means for .
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_means(data, analyte_name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{data}}{data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.}
+
+\item{\code{analyte_name}}{Specify the analyte you want the lab mean statistics for.}
 }
 \if{html}{\out{</div>}}
 }

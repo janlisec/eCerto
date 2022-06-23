@@ -71,10 +71,10 @@ page_CertificationUI = function(id) {
           width=8,
           shiny::wellPanel(style = "height:172px", m_analyteUI(ns("analyteModule")))
         ),
-        # Report-Teil
+        # Report-Section
         shiny::column(
           width = 2,
-          shiny::wellPanel(style = "height:172px", m_report_ui(ns("report")))
+          shiny::wellPanel(style = "height:172px", m_reportUI(ns("report")))
         )
       ),
       # Data View
@@ -207,7 +207,7 @@ page_CertificationServer = function(id, rv) {
 
     # --- --- --- --- --- --- --- --- --- --- ---
     # report module
-    m_report_server(id = "report", rv = rv, selected_tab = selected_tab)
+    m_reportServer(id = "report", rv = rv, selected_tab = selected_tab)
 
     # --- --- --- --- --- --- --- --- --- --- ---
     precision <- shiny::reactive({
@@ -219,7 +219,7 @@ page_CertificationServer = function(id, rv) {
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactive({
       shiny::req(selected_tab())
-      return(fnc_filter_data(rv=rv, an=selected_tab()))
+      return(c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[selected_tab()]]))
     })
 
     # -- -- -- -- -- -- --
@@ -307,14 +307,33 @@ page_CertificationServer = function(id, rv) {
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
       shiny::req(dat())
-      fnc_outlier_stats(data = dat(), precision = precision())
+      lab_means <- rv$c_lab_means(data=dat(), analyte_name=selected_tab())
+      out <- data.frame(
+        lab_means,
+        Scheffe(data = dat()),
+        Dixon(lab_means = lab_means),
+        Grubbs(lab_means = lab_means),
+        Nalimov(lab_means = lab_means),
+        Cochran(data = dat()),
+        stringsAsFactors = FALSE
+      )
+      return(out[order(out[, "mean"]), ])
     })
     shiny::observeEvent(overview_stats_pre(), {
       setValue(rv, c("Certification_processing","stats"), overview_stats_pre())
     })
     output$overview_stats <- DT::renderDataTable({
-      overview_stats_pre()
-    }, options = list(dom = "t", pageLength=100, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+      dt <- DT::datatable(
+        data = overview_stats_pre(),
+        options = list(dom = "t", pageLength=100, scrollX = TRUE),
+        selection=list(mode = 'single', target = 'row'),
+        rownames = NULL
+      )
+      dt <- DT::formatCurrency(
+        table = dt, columns = c(2,3), currency = "", digits = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]]
+      )
+      return(dt)
+    })
 
     # Tab.2 Labmean statistics
     labmean_stats_pre <- shiny::reactive({
@@ -325,8 +344,18 @@ page_CertificationServer = function(id, rv) {
       setValue(rv, c("Certification_processing","mstats"), labmean_stats_pre())
     })
     output$overview_mstats <- DT::renderDataTable({
-      labmean_stats_pre()
-    }, options = list(dom = "t", pageLength=1, scrollX = TRUE), selection=list(mode = 'single', target = 'row'), rownames = NULL)
+      #labmean_stats_pre()
+      dt <- DT::datatable(
+        data = labmean_stats_pre(),
+        options = list(dom = "t", pageLength=1, scrollX = TRUE),
+        selection=list(mode = 'single', target = 'row'),
+        rownames = NULL
+      )
+      dt <- DT::formatCurrency(
+        table = dt, columns = c(1,2,3), currency = "", digits = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]]
+      )
+      return(dt)
+    })
 
     # Normality statement
     output$tab2_statement <- shiny::renderUI({

@@ -1,31 +1,33 @@
-#'@title fnc_filter_data.
+#'@title c_filter_data.
 #'
 #'@description
-#'\code{fnc_filter_data} will check parameters in 'apm' and limit imported data from 'rv' for a specified analyte.
+#'\code{c_filter_data} will limit imported data from 'rv' for a specified analyte
+#'  according to parameters specified in 'apm'.
 #'
 #'@details
 #'tbd.
 #'
-#'@param rv The session R6 object.
-#'@param an The name of the current analyte.
+#'@param x The Cert data from an session R6 object.
+#'@param c_apm The parameters of the current analyte from an session R6 object.
 #'
 #'@examples
 #'rv <- eCerto:::test_rv()
-#'shiny::isolate(fnc_filter_data(rv = rv, an="Si"))
+#'shiny::isolate(c_filter_data(
+#'  x = getValue(rv, c("Certification","data")),
+#'  c_apm = getValue(rv, c("General","apm"))[["Si"]]
+#'))
 #'
 #'@return
-#'A filtered data frame (S_flt, L_flt) without missing values.
+#'A filtered data frame (S_flt, L_flt) without missing values and rounded to a specified precision.
 #'
 #'@export
 #'
-fnc_filter_data <- function(rv, an) {
-  message("[fnc_filter_data] filter dataset for analyte ", an)
-  #shiny::isolate(
-  x <- getValue(rv, c("Certification","data")) # take the uploaded certification
-  c_apm <- getValue(rv, c("General","apm"))[[an]]
-  if (an %in% x[, "analyte"]) {
-    x[, "value"] <- round(x[, "value"], c_apm[["precision"]])
-    x <- x[x[, "analyte"] %in% an, ]
+c_filter_data <- function(x, c_apm) {
+  message("[c_filter_data] filter certification dataset for analyte ", c_apm$name)
+  if (c_apm$name %in% x[, "analyte"]) {
+    # REMINDER! Do not round numbers before calculations but only round the result
+    #x[, "value"] <- round(x[, "value"], c_apm[["precision"]])
+    x <- x[x[, "analyte"] %in% c_apm$name, ]
     x <- x[!(x[, "ID"] %in% c_apm[["sample_filter"]]), ]
     x[, "L_flt"] <- x[, "Lab"] %in% c_apm[["lab_filter"]]
     # adjust factor levels

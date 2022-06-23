@@ -10,6 +10,8 @@ Column names need to be exactly `Value` and `Date` with Excel column formats set
 Stability data can also be uploaded using a more complex data format to allow shelf life calculations based on the Arrhenius model.
 To this end, the user needs to prepare a single Excel table including the columns `analyte`, `Temp`, `Date`, `Value` and `unit`.
 
-**Note!**
+![](fig/Import_sData_ArrheniusFormat.png)
+
+***Note!***
 Upload can be also achieved from a previousy created backup file. 
-If a backup file does not contain any stability data, the Excel upload option will remain active (and will be deactivated if stbility data are contained).
+If a backup file does not contain any stability data, the Excel upload option will remain active (and will become deactivated if stability data are contained).
