@@ -1,10 +1,15 @@
 ### Homogeneity boxplot
 
 Statistical differences between groups are nicely visualized using boxplots. 
-While the ANOVA allows to calculate a probability testing the hypothesis that the mean values of different groups are similar or not, 
-the boxplot visualizes the distribution of values within each group.
+While the ANOVA allows to calculate a probability testing the hypothesis that 
+the mean values of different groups are similar or not, the boxplot visualizes 
+the distribution of values within each group.
 
 ![Statistical values used to draw a boxplot](fig/H_Modul_Fig1.png)
 
-The box comprises 50% of the measured values of a group (from 25% to 75% quartile) and highlights the median (50% quartile). 
-Overlapping boxes indicate that a t-test would not yield a significant P-value.
+The box comprises 50% of the measured values of a group (from 25% to 75% quartile) 
+and highlights the median (50% quartile). Overlapping boxes indicate that a t-test 
+would not yield a significant P-value.
+
+Within **Fig.1** dashed black and grey lines indicate $\mu$ and $s$ of the
+distribution of specimen means from **Tab.2**.

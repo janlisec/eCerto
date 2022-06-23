@@ -1,7 +1,11 @@
 ### Stability Accelerated studies (Arrhenius)
 
+---
+
 ***Note!***
 This section is currently under development and will be subject to future changes.
+
+---
 
 The Arrhenius approach is one way to estimate the stability of a reference material 
 from the perspective of storage time or shelf life. As implemented in *eCerto*, 

@@ -46,7 +46,7 @@ page_StabilityUI <- function(id) {
               label = "Tab.1 Stability - calculation of uncertainty contribution"
             )
           ),
-          DT::dataTableOutput(ns("s_vals"))
+          DT::dataTableOutput(ns("s_tab1"))
         ),
         shiny::column(width = 2, shiny::wellPanel(m_TransferUUI(id = ns("s_transfer"))))
       ),
@@ -186,12 +186,12 @@ page_StabilityServer <- function(id, rv) {
         options = list(paging = TRUE, searching = FALSE), rownames=NULL
       )
       prec <- try(getValue(rv, c("General","apm"))[[input$s_sel_analyte]][["precision"]])
-      prec <- ifelse(is.finite(prec), prec, 4)
+      prec <- ifelse(!is.null(prec) && is.finite(prec), prec, 4)
       dt <- DT::formatCurrency(table = dt, columns = 2, currency = "", digits = prec)
       return(dt)
     })
 
-    output$s_vals <- DT::renderDataTable({
+    output$s_tab1 <- DT::renderDataTable({
       shiny::req(s_vals())
       s_vals_print <- s_vals()
       for (i in c("slope","SE_slope","u_stab","P")) {
@@ -202,6 +202,8 @@ page_StabilityServer <- function(id, rv) {
         s_vals_print[,"style_analyte"] <- sapply(s_vals_print[,"analyte"], function(x) {
           ifelse(x %in% c_vals[,"analyte"], "black", "red")
         })
+      } else {
+        s_vals_print[,"style_analyte"] <- "red"
       }
       dt <- DT::datatable(
         data = s_vals_print,
@@ -226,8 +228,8 @@ page_StabilityServer <- function(id, rv) {
       return(dt)
     })
 
-    shiny::observeEvent(input$s_vals_rows_selected, {
-      sel <- as.character(s_vals()[input$s_vals_rows_selected,"analyte"])
+    shiny::observeEvent(input$s_tab1_rows_selected, {
+      sel <- as.character(s_vals()[input$s_tab1_rows_selected,"analyte"])
       shiny::updateSelectInput(session = session, inputId = "s_sel_analyte", selected = sel)
     })
 
@@ -267,23 +269,23 @@ page_StabilityServer <- function(id, rv) {
     output$s_plot <- shiny::renderPlot({
       shiny::req(s_Data(), input$s_sel_analyte)
       s <- s_Data()
-      mt <- getValue(rv, c("General", "materialtabelle"))
       an <- input$s_sel_analyte
       l <- s[,"analyte"]==an
       aps <- getValue(rv, c("General", "apm"))
-
       # Convert to format used in LTS modul
-      # load SD and U from certification if available
+      # load SD, CertVal, unit and U from certification if available
       CertVal <- mean(s[l,"Value"], na.rm=T)
       U <- 2*stats::sd(s[l,"Value"], na.rm=T)
       U_Def <- "2s"
+      KW_Unit <- NA
       if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
+        mt <- getValue(rv, c("General", "materialtabelle"))
         CertVal <- mt[mt[,"analyte"] %in% an, "cert_val"]
         U <- ifelse(input$s_sel_dev=="U", 1, 2) * mt[mt[,"analyte"] %in% an, ifelse(input$s_sel_dev=="U", "U_abs", "sd")]
         U_Def <- input$s_sel_dev
+        KW_Unit <- mt[which(mt[,"analyte"] == an), "unit"]
       }
       KW_Def <- ifelse("KW_Def" %in% colnames(s), unique(s[l,"KW_Def"])[1], an)
-      KW_Unit <- mt[which(mt[,"analyte"] == an), "unit"]
       KW_Unit <- ifelse("KW_Unit" %in% colnames(s), unique(s[l,"KW_Unit"])[1], KW_Unit)
       x <- list("val"=s[l,],
                 "def"=data.frame(

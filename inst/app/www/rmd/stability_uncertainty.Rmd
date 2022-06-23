@@ -14,4 +14,4 @@ critical value of Student’s $t$ for n − 2 degrees of freedom to obtain the P
 Clicking on a table row will display the analysis for the analyte specified in this row.
 
 Values from column `u_stab` can be transfered to the material table of the certification module 
-in case that matching analyte names are found (indicated in column `Present`).
+in case that matching analyte names are found (analyte names are depicted in red if not found).

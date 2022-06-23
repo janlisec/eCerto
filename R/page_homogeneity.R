@@ -191,7 +191,8 @@ page_HomogeneityServer = function(id, rv) {
     h_means <- shiny::reactive({
       shiny::req(h_Data(), input$h_sel_analyt)
       h_dat <- h_Data()
-      h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,]
+      h_dat <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,,drop=FALSE]
+      validate(need(expr = nrow(h_dat)>=1, message = "Not enough data."))
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
       out <- plyr::ldply(split(h_dat[,"value"], h_dat[,"Flasche"]), function(x) {
         data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x)))
@@ -254,6 +255,8 @@ page_HomogeneityServer = function(id, rv) {
         h_vals_print[,"style_analyte"] <- sapply(h_vals_print[,"analyte"], function(x) {
           ifelse(x %in% mt[,"analyte"], "black", "red")
         })
+      } else {
+        h_vals_print[,"style_analyte"] <- "red"
       }
       h_vals_print[,"style_s_bb"] <- c("bold","normal")[1+as.numeric(h_vals_print[,"s_bb"]<h_vals_print[,"s_bb_min"])]
       h_vals_print[,"style_s_bb_min"] <- c("bold","normal")[1+as.numeric(h_vals_print[,"s_bb"]>=h_vals_print[,"s_bb_min"])]
@@ -272,8 +275,8 @@ page_HomogeneityServer = function(id, rv) {
           pageLength = NULL,
           columnDefs = list(
             list(visible = FALSE, targets = inv_cols),
-            list(width = '30px', targets = c(3,4)),
-            list(width = '60px', targets = c(5:9)),
+            #list(width = '30px', targets = c(3,4)),
+            #list(width = '60px', targets = c(5:9)),
             list(className = 'dt-right', targets='_all')
           )
         ),
@@ -333,6 +336,7 @@ page_HomogeneityServer = function(id, rv) {
       h_dat[,"Flasche"] <- factor(h_dat[,"Flasche"])
       omn <- round(mean(h_dat[,"value"],na.rm=T), precision())
       osd <- round(stats::sd(h_dat[,"value"],na.rm=T), precision())
+      shiny::validate(shiny::need(expr = any(is.finite(h_dat[,"value"])), message = "Not enough finite values to generate a plot."))
       graphics::par(mar=c(5,4,2.5,0)+0.1)
       graphics::plot(x=c(0.6,0.4+length(levels(h_dat[,"Flasche"]))), y=range(h_dat[,"value"],na.rm=T), type="n", xlab="Flasche", ylab=paste0(an, " [", unique(h_dat["unit"]),"]"), axes=F)
       graphics::abline(h=omn, lty=2)

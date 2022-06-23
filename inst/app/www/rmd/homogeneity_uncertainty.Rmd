@@ -26,12 +26,11 @@ and
 
 $$s_{bb, min}=\frac{ \sqrt{ \frac{s_w}{n} } \times \sqrt[4]{ \frac{2}{N \times (n-1)} }}{\mu}$$
 
-The larger of both values, $s_{bb}$ and $s_{bb,min}$, is selected as uncertainty contribution 
-when the user decides to transfer an uncertainty value to the material table. The larger of both values
-is rendered in bold font.
-
-A transfer is only possible for analytes which have been found in the table of certified values
-(**Tab.3** in the C modul). Analytes not present there will be rendered in red.
-
 ***Note!*** 
 When $s_{a} < s{_w}$ we set $s_{bb}=0$.
+
+The larger of both values, $s_{bb}$ and $s_{bb,min}$ (rendered in bold font), is selected as uncertainty 
+contribution when the user decides to transfer an uncertainty value to the material table.
+
+A transfer is only possible for analytes which have been found in the table of certified values
+(**Tab.3** in the Certification modul). Analytes not present there will be rendered in red.
