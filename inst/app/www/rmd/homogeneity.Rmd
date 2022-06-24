@@ -3,7 +3,7 @@
 ```{r child = 'homogeneity_dataupload.Rmd'}
 ```
 
-### Homogeneity Statistics
+### Homogeneity statistics
 
 The uncertainty contribution of the Homogeneity measurements `U_bb` (uncertainty between bottles) is calculated for each analyte 
 based on variance obtained by an ANOVA and is transfered to a user specified column in the material table of the certification module.

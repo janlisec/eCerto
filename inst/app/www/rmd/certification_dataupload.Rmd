@@ -1,4 +1,4 @@
-### Certification Data upload (Excel)
+### Certification data upload (Excel)
 
 To process a new analysis, please collect all data which should be retuned in
 pre-defined Excel-Files by your certification trial partners and stored within
@@ -7,12 +7,11 @@ position within each file (table name, row and column range) and that one file
 per laboratory exists.
 
 ***Note!*** 
-Please select the range without a header. *eCerto*
-assumes the first and second column to contain analyte names and units
-respectively and replicate measurements of this analyte in all remaining
-columns.
+Please select the range without a header. *eCerto* assumes the first and second 
+column to contain analyte names and units respectively and replicate measurements 
+of this analyte in all remaining columns.
 
-![Data upload from Excel with preview](fig/M_Modul_Dataupload.png)
+![**User Options** Data upload from Excel with preview](fig/M_Modul_Dataupload.png)
 
 Filenames will be stored for reference but imported labs will be consecutively 
 numbered. In the example above you should import data from sheet 1 of each Excel 

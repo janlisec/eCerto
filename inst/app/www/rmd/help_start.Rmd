@@ -9,9 +9,9 @@ output:
   #  toc: true
 ---
 
-# *eCerto* (Certification statistics)
+# *eCerto* (Statistics for CRM production)
 
-```{r child = 'ecerto_home.Rmd'}
+```{r child = 'start.Rmd'}
 ```
 
 ```{r child = 'certification.Rmd'}
@@ -23,7 +23,7 @@ output:
 ```{r child = 'stability.Rmd'}
 ```
 
-```{r child = 'materialtabelle.Rmd'}
+```{r child = 'certification_materialtabelle.Rmd'}
 ```
 
 ## Long Term Stability (LTS)

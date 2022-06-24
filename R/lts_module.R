@@ -27,7 +27,7 @@
         accept = c("xls","xlsx","RData")
       ),
       shiny::helpText("Example Table"),
-      shiny::img(src = "www/rmd/fig/Import_ltsData_FixedFormat.png")
+      shiny::img(src = "www/rmd/fig/L_Modul_Import.png")
     ),
     shiny::conditionalPanel(
       condition="output.LTS_fileUploaded == true",

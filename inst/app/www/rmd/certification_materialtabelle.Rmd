@@ -1,21 +1,21 @@
 ## Table of certified values
 
-The table of certified values (**Tab.3**) combines all data collected within a certification trial to provide for each 
+The table of certified values (**Tab.C3**) combines all data collected within a certification trial to provide for each 
 measured entity within the certified material the certified mean $\mu_c$ (`cert_val`) and the certified uncertainty `U`.
 
-![Table of certified values](fig/C_Modul_Tab3.png)
+![**Tab.C3** Table of certified values](fig/C_Modul_Tab3.png)
 
 ***Note!*** 
 Only for analytes which have been visually inspected by the user certified values will be transfered to this table
-to ensure that inspection took place. The reported `mean` is similar to the value obtained in **Fig.1** but will be 
-different to **Tab.2** when Labs are filtered for an analyte.
+to ensure that inspection took place. The reported `mean` is similar to the value obtained in **Fig.C1** but will be 
+different to **Tab.C2** when Labs are filtered for an analyte.
 
 Several columns of the material table can be edited by the user by clicking in an individual cell and entering a new value.
 
 Table column descriptions:
 
 -   `mean` and `sd` give the arithmetric mean $\mu$ and standard deviation $s$ for `n` analytical values of this analyte 
-    similar to **Fig.1**
+    similar to **Fig.C1**
 -   `n` is dependent on `pooling` and gives the number of values used for calculting $\mu$ and $s$.
     To this end, `n` is either similar to the number of finite measurement values (`pooling` allowed)
     or similar to the number of labs included in the analysis (`pooling`not allowed).
@@ -40,11 +40,11 @@ Table column descriptions:
 -   `k` is an additional expansion factor for the uncertainty $U=u_{com} \times k$
 -   `U_abs` specifies the absolute uncertainty and is calculated by $U_{abs}=U \times \mu_c$
 
-**Tab.3** can be exported together with a report as PDF, Word or HTML document using the download section on top of the page.
+**Tab.C3** can be exported together with a report as PDF, Word or HTML document using the download section on top of the page.
 
 `F` and `U` columns can be added, removed or renamed using the respective parameter panel next to the table.
 
-![User interaction regarding F and U columns](fig/C_Modul_Tab3_pars.png)
+![**User Options** Modify F and U columns in **Tab.C3** to adjust $\mu_c$ and $U_{abs}$](fig/C_Modul_Tab3_pars.png)
 
 ***Note!*** 
 Numeric values are rounded to the number of digits specified by the user at the analyte selection panel (top, `Precision (cert)`).

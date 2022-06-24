@@ -43,7 +43,7 @@ page_StabilityUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("tab_link"),
-              label = "Tab.1 Stability - calculation of uncertainty contribution"
+              label = "Tab.S1 Stability - calculation of uncertainty contribution"
             )
           ),
           DT::dataTableOutput(ns("s_tab1"))
@@ -59,7 +59,7 @@ page_StabilityUI <- function(id) {
             shiny::strong(
               shiny::actionLink(
                 inputId = ns("fig1_link"),
-                label = "Fig.1 Stability - linear model"
+                label = "Fig.S1 Stability - linear model"
               )
             ), shiny::p(),
             shiny::plotOutput(ns("s_plot"), height = "500px"),

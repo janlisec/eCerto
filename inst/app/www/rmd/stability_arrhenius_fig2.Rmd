@@ -1,3 +1,8 @@
 #### Arrhenius model for analyte stability
 
-The model parameters calculated in **Tab.1** are visualized in **Fig.2** plotting $k_{eff}(T)$ over the inverse temperature [1/K].
+The model parameters calculated in **Tab.S2** are visualized in **Fig.S3** plotting the log transformed
+negative $k_{eff}(T)$ over the inverse temperature [1/K].
+
+![**Fig.S3** Arrhenius model plot](fig/S_Modul_Fig3.png)
+
+The axis at the top of **Fig.S3** indicates the corresponding temperature level for each data point in $°C$.

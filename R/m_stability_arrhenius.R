@@ -33,7 +33,7 @@ m_arrheniusUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("ArrheniusPlot1_link"),
-              label = "Fig.1 Determining temperature-dependent reaction rates"
+              label = "Fig.S2 Determining temperature-dependent reaction rates"
             )
           )
         ),
@@ -48,7 +48,7 @@ m_arrheniusUI <- function(id) {
         #shiny::p(),
         shiny::checkboxGroupInput(
           inputId = ns("s_opt_Fig1"),
-          label = "Options Fig.1",
+          label = "Options Fig.S2",
           choices = list(
             "Show Ref Data" = "show_reference_point",
             "Use ordinal time" = "plot_nominal_scale",
@@ -67,7 +67,7 @@ m_arrheniusUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("ArrheniusTab_link"),
-              label = "Tab.1 Calculation of possible storage time"
+              label = "Tab.S2 Calculation of possible storage time"
             )
           )
         ),
@@ -86,7 +86,7 @@ m_arrheniusUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("ArrheniusPlot2_link"),
-              label = "Fig.2 Arrhenius Model"
+              label = "Fig.S3 Arrhenius model"
             )
           )
         ),

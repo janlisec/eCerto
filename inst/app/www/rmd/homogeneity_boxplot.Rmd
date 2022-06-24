@@ -5,11 +5,11 @@ While the ANOVA allows to calculate a probability testing the hypothesis that
 the mean values of different groups are similar or not, the boxplot visualizes 
 the distribution of values within each group.
 
-![Statistical values used to draw a boxplot](fig/H_Modul_Fig1.png)
+![**Info** Statistical values used to draw a boxplot](fig/H_Modul_boxplot_explanation.png)
 
 The box comprises 50% of the measured values of a group (from 25% to 75% quartile) 
 and highlights the median (50% quartile). Overlapping boxes indicate that a t-test 
 would not yield a significant P-value.
 
-Within **Fig.1** dashed black and grey lines indicate $\mu$ and $s$ of the
-distribution of specimen means from **Tab.2**.
+Within **Fig.H1** dashed black and grey lines indicate $\mu$ and $s$ of the
+distribution of specimen means from **Tab.H2**.

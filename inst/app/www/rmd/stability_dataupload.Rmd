@@ -1,17 +1,21 @@
-### Stability Data upload (Excel)
+### Stability data upload (Excel)
 
-Please prepare data in a single Excel file on seperate tables for each analyte as shown in the below example.
+Please prepare data in a single Excel file on seperate tables for each analyte as shown 
+in the below example.
 
-![](fig/Import_sData_FixedFormat.png)
+![**Info** Excel import format for stability data](fig/S_Modul_Import.png)
 
 Table names have to match analyte names from the Certification module to be properly assigned. 
-Column names need to be exactly `Value` and `Date` with Excel column formats set to *numeric* and *date* respectively.
+Column names need to be exactly `Value` and `Date` with Excel column formats set to 
+*numeric* and *date* respectively.
 
-Stability data can also be uploaded using a more complex data format to allow shelf life calculations based on the Arrhenius model.
-To this end, the user needs to prepare a single Excel table including the columns `analyte`, `Temp`, `Date`, `Value` and `unit`.
+Stability data can also be uploaded using a more complex data format to allow shelf life 
+calculations based on the Arrhenius model. To this end, the user needs to prepare a single 
+Excel table including the columns `analyte`, `Temp`, `Date`, `Value` and `unit`.
 
-![](fig/Import_sData_ArrheniusFormat.png)
+![**Info** Excel import format for stability data including temperature](fig/S_Modul_Import_Arrhenius.png)
 
 ***Note!***
-Upload can be also achieved from a previousy created backup file. 
-If a backup file does not contain any stability data, the Excel upload option will remain active (and will become deactivated if stability data are contained).
+Upload can be also achieved from a previousy created backup file. If a backup file does not 
+contain any stability data, the Excel upload option will remain active (and will become 
+deactivated if stability data are contained).

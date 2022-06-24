@@ -1,4 +1,4 @@
-### Stability Accelerated studies (Arrhenius)
+### Stability accelerated studies (Arrhenius)
 
 ---
 
@@ -12,11 +12,12 @@ from the perspective of storage time or shelf life. As implemented in *eCerto*,
 the estimation is based on time series data of analytes at different temperature levels $T_i$.
 
 $T_{min}$ is used as a reference point. For each $T_i$ a linear model is calculated, 
-yielding potentially a slope $m_i$ indicative of analyte degradation. Combining all $m_i$ 
+yielding potentially a slope $k_{eff}(T)$ indicative of analyte degradation. Combining all $k_{eff}$ 
 allows to estimate the dependency of analyte stability on temperature and, consequently, 
 the expected storage time at a given $T$.
 
-The calculations are performed according to the recommendations for accelerated stability studies in ISO GUIDE 35:2017.
+The calculations are performed according to the recommendations for accelerated stability 
+studies in ISO GUIDE 35:2017.
 
 ```{r child = 'stability_arrhenius_fig1.Rmd'}
 ```

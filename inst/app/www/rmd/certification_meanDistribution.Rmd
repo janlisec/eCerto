@@ -4,9 +4,10 @@ The distribution of lab means is evaluated using a variety of recommended tests.
 Normality of the distribution is tested using the KS-Test. 
 Besides `mean` and `sd` the robust alternatives `median` and `MAD`are provided. 
 Columns which end on `_p` provide P-values of the respective tests. 
-Skewness and Kurtosis are computed additionally and grouped with their respective tests (Agostino and Anscombe).
+Skewness and Kurtosis are computed additionally and grouped with their respective 
+tests (Agostino and Anscombe).
 
-![Statistics regarding Lab mean distribution](fig/C_Modul_Tab2.png)
+![**Tab.C2** Statistics on the lab mean distribution](fig/C_Modul_Tab2.png)
 
 To compute the statistical tests *eCerto* uses functions from different packages available for **R**.
 Details regarding the conducted statistical test can be found using the following links:
@@ -19,7 +20,9 @@ Details regarding the conducted statistical test can be found using the followin
 * <a href="https://rdrr.io/cran/moments/man/kurtosis.html" target="_blank" rel="noopener noreferrer">Kurtosis</a>
 * <a href="https://rdrr.io/cran/moments/man/anscombe.test.html" target="_blank" rel="noopener noreferrer">Anscombe</a>
 
-***Note!*** Some tests need a minimum number of replicates and will not yield a result if this criteria is not met (i.e. Agostino).
+***Note!*** 
+Some tests need a minimum number of replicates and will not yield a result if this 
+criteria is not met (i.e. Agostino).
 
 The `KS test` is used to compare the distribution of Lab means against a normal distribution.
 Besides the respective P-value, also a QQ-plot can be opened using the respective link.

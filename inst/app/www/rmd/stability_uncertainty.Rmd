@@ -1,6 +1,6 @@
-### Stability Uncertainty calculation
+### Stability uncertainty calculation
 
-The parameters of all linear models are collected in **Tab.1** and obtained from formula 
+The parameters of all linear models are collected in **Tab.S1** and obtained from formula 
 $u_{stab}=|m \times err|$ where $m$ is the `slope` of the linear model and $err$ is 
 the standard error `SE` of the slope. 
 
@@ -8,7 +8,7 @@ To determine if the slope $m$ is significantly different from $m=0$ we perform a
 calculating the t-statistic $t_m = |m| / s(m)$ and comparing the result with the two-tailed 
 critical value of Student’s $t$ for n − 2 degrees of freedom to obtain the P-values in column `P`.
 
-![Stability Modul Tab.1](fig/S_Modul_Tab1.png)
+![**Tab.S1** Calculation of uncertainty contributions from stability assay](fig/S_Modul_Tab1.png)
 
 ***Note!***
 Clicking on a table row will display the analysis for the analyte specified in this row.

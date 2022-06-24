@@ -7,3 +7,5 @@ relative to this mean, *eCerto* calculates and annotates the recovery and RSD fo
 When the above ratios are log-transformed and the x-axis (time) is set to month, *eCerto* 
 calculates the temperature-dependent reaction rates $k_{eff}(T)$ as the slope for each 
 linear model of $T_i$.
+
+![**Fig.S2** Calculation of degradation constant $k_{eff}$ for tested temperature levels$ ](fig/S_Modul_Fig2.png)

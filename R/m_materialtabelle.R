@@ -35,7 +35,7 @@ m_materialtabelleUI <- function(id) {
   shiny::fluidRow(
     shiny::column(
       width = 10,
-      shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Tab.3 Material Certification")),
+      shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Tab.C3 Certified values within material")),
       DT::DTOutput(shiny::NS(id, "matreport"))
     ),
     shiny::column(
@@ -495,7 +495,7 @@ m_materialtabelleServer <- function(id, rv) {
     })
 
     shiny::observeEvent(input$materheadline, {
-      help_the_user_modal("materialtabelle")
+      help_the_user_modal("certification_materialtabelle")
     })
 
     return(out)

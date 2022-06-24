@@ -1,7 +1,7 @@
 ```{r child = 'lts_dataupload.Rmd'}
 ```
 
-### LTS Statistics
+### LTS statistics
 
 The Tool calculates the expected life time of a reference material in several steps:
 
@@ -17,6 +17,6 @@ After data upload, the user can:
 - add comments to any data point
 - download a PDF report
 
-### LTS Report
+### LTS report
 
 The user can export a PDF report containing all imported, edited and calculated data and figures.

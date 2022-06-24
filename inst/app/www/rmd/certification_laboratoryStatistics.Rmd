@@ -4,7 +4,7 @@ For the selected analyte various statistical tests regarding lab means and varia
 and outlying values will be indicated if observed at the **.05** and **.01** level respectively. 
 `n.s.` and `.` indicate either that the test probability was >0.05 or that this lab was not tested.
 
-![Laboratory statistics example](fig/C_Modul_Tab1.png)
+![**Tab.C1** Laboratory statistics](fig/C_Modul_Tab1.png)
 
 Except for `Cochran`, which tests for outliers with respect to variance, all other columns indicate potential outliers regarding lab means.
 
