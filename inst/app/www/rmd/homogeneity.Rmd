@@ -17,7 +17,7 @@ Transfer is only sucessfull in case that an analyte of matching name can be foun
 ```{r child = 'homogeneity_uncertainty.Rmd'}
 ```
 
-### Homogeneity Report
+### Homogeneity report
 
 Figures and tables can currently be exported in PDF format. 
 

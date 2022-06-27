@@ -1,5 +1,5 @@
-### Analyte Report
+### Analyte and material reports
 
 A report of the above analysis (single analyte) or for the material (all analytes) can be generated and exported in different formats.
 
-![Export Analyte Data or Certification Report](fig/C_Modul_Report.png)
+![**User Option** Export Analyte Data or Certification Report](fig/C_Modul_Report.png)

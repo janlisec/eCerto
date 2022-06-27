@@ -47,5 +47,6 @@ Table column descriptions:
 ![**User Options** Modify F and U columns in **Tab.C3** to adjust $\mu_c$ and $U_{abs}$](fig/C_Modul_Tab3_pars.png)
 
 ***Note!*** 
-Numeric values are rounded to the number of digits specified by the user at the analyte selection panel (top, `Precision (cert)`).
-However, all relative `U` columns are depicted with fixed 4 digits precision.
+Numeric values of $\mu_c$ and $U_{abs}$ are rounded to the number of digits specified by the user at the analyte selection 
+panel (top, `Precision (cert)`). A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all relative `U` 
+columns are depicted with fixed 4 digits precision.

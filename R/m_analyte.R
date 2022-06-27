@@ -93,7 +93,7 @@ m_analyteUI = function(id) {
         shiny::numericInput(
           inputId =ns("precision_export"),
           label = "Precision (cert)",
-          value = 4, min = 0, max = 10, step = 1
+          value = 4, min = -2, max = 6, step = 1
         )
       ),
       shiny::column(
@@ -165,9 +165,13 @@ m_analyteServer = function(id, rv, selected_tab, allow_selection=FALSE) {
           inputId = "precision",
           value = apm()[[selected_tab()]]$precision
         )
+        #browser()
+        mt <- getValue(rv, c("General", "materialtabelle"))
+        n <- n_round_DIN1333(x = mt[mt[,"analyte"]==selected_tab(),"U_abs"])
         shiny::updateNumericInput(
           inputId = "precision_export",
-          value = apm()[[selected_tab()]]$precision_export
+          value = apm()[[selected_tab()]]$precision_export,
+          label = paste("Precision (cert); n_DIN =", n)
         )
       }
     })

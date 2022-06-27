@@ -35,7 +35,7 @@ m_materialtabelleUI <- function(id) {
   shiny::fluidRow(
     shiny::column(
       width = 10,
-      shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Tab.C3 Certified values within material")),
+      shiny::strong(shiny::actionLink(inputId = ns("materheadline"), label = "Tab.C3 - Certified values within material")),
       DT::DTOutput(shiny::NS(id, "matreport"))
     ),
     shiny::column(
@@ -68,7 +68,7 @@ m_materialtabelleServer <- function(id, rv) {
 
     silent <- get_golem_config("silent")
 
-    # analyte name of the currently selected row of  mat_tab
+    # analyte name of the currently selected row of mat_tab
     out <- shiny::reactiveVal(NULL)
 
     # use err_txt to provide error messages to the user
@@ -87,6 +87,24 @@ m_materialtabelleServer <- function(id, rv) {
       shiny::req(out())
       getValue(rv, c("General","apm"))[[out()]][["precision_export"]]
     })
+
+    # helper function to remove unused user columns
+    remove_unused_cols <- function(mt=NULL) {
+      # strip unused F and U columns from 'mater_table'
+      cc <- attr(mt, "col_code")
+      if (nrow(cc)>=1) {
+        flt <- sapply(1:nrow(cc), function(i) {
+          # only proceed of Name and ID of the attribute are equal && set to default values
+          cc[i, "ID"] == cc[i, "Name"] && (all(mt[, cc[i, "Name"]] == 1) | all(mt[, cc[i, "Name"]] == 0))
+        })
+        if (any(flt)) {
+          mt <- mt[,!(colnames(mt) %in% cc[flt,"Name"])]
+          cc <- cc[!flt,,drop=FALSE]
+          attr(mt, "col_code") <- cc
+        }
+      }
+      return(mt)
+    }
 
     # define table as reactiveVal to update it at different places within the module
     mater_table <- shiny::reactiveVal(NULL)
@@ -128,26 +146,8 @@ m_materialtabelleServer <- function(id, rv) {
       }
     })
 
-    # this is a fixed value to round the uncertainty columns; 4 should be appropriate here
+    # this is a fixed value to round the relative uncertainty columns; 4 should be appropriate here
     precision_U <- 4
-
-    # helper function to remove unused user columns
-    remove_unused_cols <- function(mt=NULL) {
-      # strip unused F and U columns from 'mater_table'
-      cc <- attr(mt, "col_code")
-      if (nrow(cc)>=1) {
-        flt <- sapply(1:nrow(cc), function(i) {
-          # only proceed of Name and ID of the attribute are equal && set to default values
-          cc[i, "ID"] == cc[i, "Name"] && (all(mt[, cc[i, "Name"]] == 1) | all(mt[, cc[i, "Name"]] == 0))
-        })
-        if (any(flt)) {
-          mt <- mt[,!(colnames(mt) %in% cc[flt,"Name"])]
-          cc <- cc[!flt,,drop=FALSE]
-          attr(mt, "col_code") <- cc
-        }
-      }
-      return(mt)
-    }
 
     # helper function to get column indexes for U and F columns
     get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
@@ -336,6 +336,7 @@ m_materialtabelleServer <- function(id, rv) {
       c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[out()]])
     })
 
+    # number of items (either labes or measurements)
     n <- shiny::reactive({
       shiny::req(selectedAnalyteDataframe())
       x <- selectedAnalyteDataframe()
@@ -346,20 +347,24 @@ m_materialtabelleServer <- function(id, rv) {
       ))
     })
 
+    # calculate cert_mean
     cert_mean <- shiny::reactive({
       shiny::req(selectedAnalyteDataframe())
       if (!silent) message("[materialtabelle] recalc cert_mean")
       data <- selectedAnalyteDataframe()[!selectedAnalyteDataframe()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs from calculation of cert mean while keeping it in Figure
       data[, "Lab"] <- factor(data[, "Lab"])
-      ifelse(pooling(),
-             roundMT(mean(data[, "value"], na.rm = T), precision_export()),
-             roundMT(mean(sapply(
-               split(data[, "value"], data[, "Lab"]), mean, na.rm = T
-             )), precision_export())
+      ifelse(
+        pooling(),
+        mean(data[, "value"], na.rm = T),
+        mean(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = T))
       )
     })
+    shiny::observeEvent(cert_mean(),{
+      setValue(rv, c("Certification_processing","cert_mean"), cert_mean())
+    })
 
+    # calculate cert_sd
     cert_sd <- shiny::reactive({
       shiny::req(selectedAnalyteDataframe())
       if (!silent) message("[materialtabelle] recalc cert_sd")
@@ -369,19 +374,17 @@ m_materialtabelleServer <- function(id, rv) {
       data[, "Lab"] <- factor(data[, "Lab"])
       # build either standard deviation of all values or standard deviation of
       # average per lab
-      ifelse(pooling(),
-             roundMT(stats::sd(data[, "value"], na.rm = T), precision_export()),
-             roundMT(stats::sd(sapply(
-               split(data[, "value"], data[, "Lab"]), mean, na.rm = T
-             )), precision_export()))
-    })
-
-    shiny::observeEvent(cert_mean(),{
-      setValue(rv, c("Certification_processing","cert_mean"), cert_mean())
+      ifelse(
+        pooling(),
+        stats::sd(data[, "value"], na.rm = T),
+        stats::sd(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = T))
+      )
     })
     shiny::observeEvent(cert_sd(),{
       setValue(rv, c("Certification_processing","cert_sd"), cert_sd())
     })
+
+    # update mt
     shiny::observeEvent(mater_table(),{
       # set result as new value in the R6 object
       mt <- recalc_mat_table(mt=mater_table())
@@ -409,20 +412,7 @@ m_materialtabelleServer <- function(id, rv) {
     # monitor table editing and update if necessary
     mater_table_print <- shiny::eventReactive(mater_table(), {
       mt <- mater_table()
-      for (k in get_UF_cols(mt, "U_round")) {
-        # apply precision_U to all relative uncertainty columns
-        mt[, k] <- roundMT(mt[, k], precision_U)
-      }
-      # apply analyte specific precision for U_abs
-      prec_exp <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision_export"]]} ))
-      if (class(prec_exp)!="try-error" && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(mt)) {
-        mt[,"U_abs"] <- sapply(1:nrow(mt), function(i) { round(mt[i,"U_abs"], prec_exp[i]) })
-      }
       # set rows with non-confirmed analytes to NA
-      # non_conf <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["confirmed"]]} ))
-      # if (class(non_conf)!="try-error" && is.logical(non_conf) && length(non_conf)==nrow(mt) && any(!non_conf)) {
-      #   mt[!non_conf,-1,drop=FALSE] <- NA
-      # }
       non_conf <- is.na(mt[,"mean"])
       if (any(non_conf)) {
         for (i in which(non_conf)) {
@@ -444,17 +434,42 @@ m_materialtabelleServer <- function(id, rv) {
 
     # the rendered, editable mat_table as seen by user
     selected_row_idx <- shiny::reactiveVal(1)
-    output$matreport <- DT::renderDT(
-      DT::datatable(
-        data = mater_table_print(),
+    output$matreport <- DT::renderDT({
+      #browser()
+      dt <- mater_table_print()
+      # apply analyte specific precision for mean and sd
+      prec <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision"]]} ))
+      if (class(prec)!="try-error" && is.numeric(prec) && all(is.finite(prec)) && length(prec)==nrow(dt)) {
+        dt[,"mean"] <- sapply(1:nrow(dt), function(i) { round(dt[i,"mean"], prec[i]) })
+        dt[,"sd"] <- sapply(1:nrow(dt), function(i) { round(dt[i,"sd"], prec[i]) })
+      }
+      # apply analyte specific precision for U_abs and cert_val
+      prec_exp <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision_export"]]} ))
+      if (class(prec_exp)!="try-error" && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(dt)) {
+        #determine number of decimal places required according to DIN1333
+        #n <- n_round_DIN1333(x = mt[,"U_abs"])
+        dt[,"cert_val"] <- roundK(x = dt[,"cert_val"], n = prec_exp)
+        # ***Note!*** U_abs is always rounded up
+        dt[,"U_abs"] <- round_up(x = dt[,"U_abs"], n = prec_exp)
+      }
+      dt <- DT::datatable(
+        data = dt,
         editable = list(
           target = "cell",
-          disable = list(columns = which(!(colnames(mater_table_print()) %in% c("k", attr(mater_table_print(), "col_code")[,"Name"])))-1)
+          disable = list(columns = which(!(colnames(dt) %in% c("k", attr(dt, "col_code")[,"Name"])))-1)
         ),
-        options = list(dom="t", pageLength = isolate(nrow(mater_table_print()))), rownames = NULL, selection = list(mode="single", target="row", selected=selected_row_idx())
-      ),
-      server = TRUE
-    )
+        options = list(
+          dom="t",
+          pageLength = NULL,
+          columnDefs = list(
+            list(className = 'dt-right', targets=which(colnames(dt) %in% c("mean","sd","cert_val","U_abs"))-1)
+          )
+        ),
+        rownames = NULL, selection = list(mode="single", target="row", selected=selected_row_idx())
+      )
+      dt <- DT::formatCurrency(table = dt, columns = get_UF_cols(isolate(mater_table()), "U_round"), currency = "", digits = precision_U)
+      return(dt)
+    }, server = TRUE)
 
     shiny::observeEvent(input$matreport_rows_selected, {
       shiny::req(mater_table())
