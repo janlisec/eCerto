@@ -1,4 +1,4 @@
-#' @description \code{m_analyte} Module for modification of analyte paramters.
+#' @description \code{m_analyte} Module for modification of analyte parameters.
 #'
 #' @details Note! This module will modify a reactive variable apm() provided to the module as a parameter
 #'

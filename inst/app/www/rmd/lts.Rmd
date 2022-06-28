@@ -1,3 +1,11 @@
+## Long Term Stability (LTS)
+
+---
+
+***Note!*** This module will probably be moved to an independent shiny app in the future.
+
+---
+
 ```{r child = 'lts_dataupload.Rmd'}
 ```
 

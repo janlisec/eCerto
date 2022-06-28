@@ -1,15 +1,13 @@
 ---
-title: "*eCerto* help content"
+title: "*eCerto* (Statistics for CRM production)"
 output:
   html_document:
     toc: true
   #pagedown::html_paged:
     # change to true for a self-contained document, but it'll be a litte slower for Pandoc to render
-    self_contained: true
+    # self_contained: true
   #  toc: true
 ---
-
-# *eCerto* (Statistics for CRM production)
 
 ```{r child = 'start.Rmd'}
 ```
@@ -25,14 +23,6 @@ output:
 
 ```{r child = 'certification_materialtabelle.Rmd'}
 ```
-
-## Long Term Stability (LTS)
-
----
-
-***Note!*** This module will probably be moved to an independent shiny app in the future.
-
----
 
 ```{r child = 'lts.Rmd'}
 ```

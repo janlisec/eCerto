@@ -90,7 +90,7 @@ page_CertificationUI = function(id) {
         shiny::strong(
           shiny::actionLink(
             inputId = ns("stat_link"),
-            label = "Tab.C1 Statistics regarding lab variances and outlier detection"
+            label = "Tab.C1 - Statistics regarding lab variances and outlier detection"
           )
         ),
         DT::dataTableOutput(ns("overview_stats"))
@@ -102,7 +102,7 @@ page_CertificationUI = function(id) {
         shiny::strong(
           shiny::actionLink(
             inputId = ns("stat2_link"),
-            label = "Tab.C2 Statistics regarding lab mean distribution"
+            label = "Tab.C2 - Statistics regarding lab mean distribution"
           )
         ),
         DT::dataTableOutput(ns("overview_mstats")),
@@ -119,7 +119,7 @@ page_CertificationUI = function(id) {
               shiny::strong(
                 shiny::actionLink(
                   inputId = ns("certifiedValuePlot_link"),
-                  label = "Fig.C1 Certified Value Plot"
+                  label = "Fig.C1 - Certified Value Plot"
                 )
               )
             ),

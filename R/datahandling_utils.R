@@ -180,10 +180,9 @@ roundMT = function(value, precision = NULL) {
   round(value,precision)
 }
 
-
 #' @title pn.
 #'
-#' @description  Format a number by rounding to a precision in same width as
+#' @description Format a number by rounding to a precision in same width as
 #'   character using scientific notation for numbers < precision and rounding
 #'   to precision otherwise.
 #'

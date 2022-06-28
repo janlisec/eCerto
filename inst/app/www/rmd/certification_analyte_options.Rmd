@@ -16,20 +16,22 @@ mean and variance outliers (**Tab.C1** and **Tab.C2**). Filtered labs are depict
 Because analytes within an RM might be measured at very different scales it is possible to specify 
 independent precision values for rounding. The `precision (stats)` value is used for all displayed values 
 in tables except for **Tab.C3**. Here, `precision (cert)` might be specified as an independet precision 
-depending on the DIN regulations which apply to the certificate.
+depending on the DIN/ISO regulations which apply to the certificate.
 
-*eCerto* suggests the rounding precision for $\mu_c$ and $U_{abs}$ according to DIN 1333. Here, the position
-of the significant digit is determined based on the first non-zero digit in $U_{abs}$. Once found, the
-respective digit will be rounded up for $\mu_c$ if the consecutive digit is $\ge 5$ and down otherwise.
-For $U_{abs}$ the rounding procedure is a bit more complicated. If the respective digit is 1 or 2, than
-the consecutive digit will be rounded up. If the respective digit is $\ge 3$, than it will be rounded up itself.
+*eCerto* suggests the rounding precision for $\mu_c$ and $U_{abs}$ according to DIN 1333. The position
+of the significant digit is determined based on the first non-zero digit in $U_{abs}$. The position will be
+shown above the analyte parameter `Precision (cert)` upon selection of an analyte in **Tab.C3**. Once found, 
+the respective digit will be rounded up for $\mu_c$ if the consecutive digit is $\ge 5$ and down otherwise.
+For $U_{abs}$ the rounding procedure is a bit more complicated. If the respective digit is 1 or 2, than the 
+consecutive digit will be rounded up. If the respective digit is $\ge 3$, than it will be rounded up itself.
 
-The user can specify negative numbers for `Precision (cert)`, *i.e.* $-1$ to round an uncertainty of 13 up to 14
-or $-2$ to round 13 up to 20. If the uncertainty is even larger, the user should consider to upload data using
-a different (more appropriate) unit and, for instance, switch from mg/L to g/L.
+The user can specify negative numbers for `Precision (cert)`, *i.e.* $-1$ to round an uncertainty of 13.1 up 
+to 14 or $-2$ to round 13.1 up to 20. If the uncertainty is even larger, the user should consider to upload 
+data using a different (more appropriate) unit and, for instance, switch from mg/L to g/L.
 
 ***Note!***
-Internally, all calculations are performed on non-rounded values (as imported).
+Internally, all calculations are performed on non-rounded values (as imported). Only the visual output to
+th user is diplayed rounded to improve readability.
 
 `pooling` means that calculations in the material table (`mean`, `sd` and uncertainty columns) are 
 not based on the lab means, but rather on all measured values. This is justified when the between lab 

@@ -56,7 +56,7 @@ page_HomogeneityUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("tab1_link"),
-              label = "Tab.H1 Homogeneity - calculation of uncertainty contribution"
+              label = "Tab.H1 - calculation of uncertainty contribution"
             )
           ),
           DT::dataTableOutput(ns("h_tab1"))
@@ -70,7 +70,7 @@ page_HomogeneityUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("tab2_link"),
-              label = "Tab.H2 Homogeneity - specimen stats"
+              label = "Tab.H2 - specimen stats"
             )
           ),
           DT::dataTableOutput(ns("h_tab2"))
@@ -81,7 +81,7 @@ page_HomogeneityUI <- function(id) {
             shiny::strong(
               shiny::actionLink(
                 inputId = ns("fig1_link"),
-                label = "Fig.H1 Homogeneity - boxplot"
+                label = "Fig.H1 - boxplot of specimen values"
               )
             ), shiny::p(),
             shiny::plotOutput(ns("h_boxplot"), inline=TRUE),

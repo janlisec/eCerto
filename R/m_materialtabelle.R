@@ -1,4 +1,4 @@
-#' @title m_materialtabelle.
+#'@title m_materialtabelle.
 #'
 #'@description
 #'\code{m_materialtabelle}
@@ -6,14 +6,14 @@
 #'@details
 #'not yet
 #'
-#' @param id Name when called as a module in a shiny app.
-#' @param rv The whole R6 object.
+#'@param id Name when called as a module in a shiny app.
+#'@param rv The whole R6 object.
 #'
 #'@return The analyte name of the currently selected row of  mat_tab.
 #'
 #'@examples
-#' if (interactive()) {
-#' shiny::shinyApp(
+#'if (interactive()) {
+#'shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    m_materialtabelleUI(id = "test")
 #'  ),
@@ -22,11 +22,11 @@
 #'  out <- m_materialtabelleServer(id = "test", rv=rv)
 #'  observeEvent(out(), {print(out())})
 #'  }
-#' )
-#' }
+#')
+#'}
 #'
-#' @rdname materialtabelle
-#' @export
+#'@rdname materialtabelle
+#'@keywords internal
 #'
 m_materialtabelleUI <- function(id) {
 
@@ -60,8 +60,8 @@ m_materialtabelleUI <- function(id) {
   )
 }
 
-#' @rdname materialtabelle
-#' @export
+#'@rdname materialtabelle
+#'@keywords internal
 m_materialtabelleServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {

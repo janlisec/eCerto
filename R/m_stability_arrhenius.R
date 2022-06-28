@@ -33,7 +33,7 @@ m_arrheniusUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("ArrheniusPlot1_link"),
-              label = "Fig.S2 Determining temperature-dependent reaction rates"
+              label = "Fig.S2 - determining temperature-dependent reaction rates"
             )
           )
         ),
@@ -41,14 +41,15 @@ m_arrheniusUI <- function(id) {
       ),
       shiny::column(2, shiny::wellPanel(
         shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
-        shiny::fluidRow(
-          shiny::column(width = 6, sub_header("Change View", b=4), shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")),
-          shiny::column(width = 6, shiny::numericInput(inputId = ns("user_temp"), label = "Storage Temp", value = -20, min = -80, max = 23, step = 1, width = "100%"))
-        ),
-        #shiny::p(),
+        # shiny::fluidRow(
+        #   shiny::column(width = 6, sub_header("Change View", b=4), shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")),
+        #   shiny::column(width = 6, shiny::numericInput(inputId = ns("user_temp"), label = "Storage Temp", value = -20, min = -80, max = 23, step = 1, width = "100%"))
+        # ),
+        shiny::p(),
+        sub_header("Options Fig.S2", b=6),
         shiny::checkboxGroupInput(
           inputId = ns("s_opt_Fig1"),
-          label = "Options Fig.S2",
+          label = NULL,
           choices = list(
             "Show Ref Data" = "show_reference_point",
             "Use ordinal time" = "plot_nominal_scale",
@@ -56,7 +57,8 @@ m_arrheniusUI <- function(id) {
             "log-tansform values" = "plot_ln_relative"
           ),
           selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
-        )
+        ),
+        shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")
       ))
     ),
     shiny::fluidRow(
@@ -67,7 +69,7 @@ m_arrheniusUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("ArrheniusTab_link"),
-              label = "Tab.S2 Calculation of possible storage time"
+              label = "Tab.S2 - calculation of possible storage time"
             )
           )
         ),
@@ -76,8 +78,7 @@ m_arrheniusUI <- function(id) {
           shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
           shiny::column(width = 2, DT::DTOutput(outputId = ns("outTab")))
         ),
-        DT::DTOutput(outputId = ns("Tab2")),
-        shiny::uiOutput(outputId = ns("user_month"))
+        DT::DTOutput(outputId = ns("Tab2"))
       ),
       shiny::column(
         width = 2,
@@ -86,11 +87,21 @@ m_arrheniusUI <- function(id) {
           shiny::strong(
             shiny::actionLink(
               inputId = ns("ArrheniusPlot2_link"),
-              label = "Fig.S3 Arrhenius model"
+              label = "Fig.S3 - Arrhenius model"
             )
           )
         ),
         shiny::plotOutput(outputId = ns("Fig2")))
+    ),
+    shiny::fluidRow(
+      shiny::column(
+        width = 10,
+        shiny::uiOutput(outputId = ns("user_month"))
+      ),
+      shiny::column(
+        width = 2,
+        shiny::wellPanel(shiny::numericInput(inputId = ns("user_temp"), label = "Potential Storage Temp", value = -20, min = -80, max = 23, step = 1, width = "100%"))
+      )
     )
   )
 }
@@ -307,7 +318,7 @@ m_arrheniusServer <- function(id, rv) {
       m <- as.numeric(round(analyte_cert_vals()/(-1*exp(ce[2]*ut_K + ce[1]))))
       m_CIup <- sqrt(tab2()[,"u(i)"]^2 + tab2()[,"u(s)"]^2*ut_K^2 + 2*tab2()[,"cov"]*ut_K) + (ce[2]*ut_K + ce[1])
       m_CIup <- as.numeric(round(analyte_cert_vals()/(-1*exp(m_CIup))))
-      shiny::HTML("At the specified temperature of", input$user_temp, " the analyte is expected to be stable for", m, "month (mean) or", m_CIup, "month (CI_upper) respectively.")
+      shiny::HTML("At the specified temperature of", input$user_temp, " the analyte ", input$analyte, " is expected to be stable for", m, "month (mean) or", m_CIup, "month (CI_upper) respectively.")
     })
 
     getFig2 <- function(tab) {

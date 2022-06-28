@@ -3,3 +3,11 @@
 A report of the above analysis (single analyte) or for the material (all analytes) can be generated and exported in different formats.
 
 ![**User Option** Export Analyte Data or Certification Report](fig/C_Modul_Report.png)
+
+---
+
+***Note!***
+The current report layouts are for demonstration purpose only. Very likely, we will implement a set of recommended report layouts
+in the future upon user suggestions.
+
+---
