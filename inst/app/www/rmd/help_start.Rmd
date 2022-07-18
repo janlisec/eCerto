@@ -21,8 +21,10 @@ output:
 ```{r child = 'stability.Rmd'}
 ```
 
-```{r child = 'certification_materialtabelle.Rmd'}
+```{r child = 'certified_values.Rmd'}
 ```
+
+---
 
 ```{r child = 'lts.Rmd'}
 ```

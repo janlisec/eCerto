@@ -7,17 +7,22 @@
 show_view(rv)
 }
 \arguments{
-\item{rv}{the R6 reactiveValues object}
+\item{rv}{The eCerto R6 object.}
 }
 \value{
-a list of panels to be shown
+A character vector of panels to be shown or more precisely the parent list names
+which contain a sub item 'show' that is set to TRUE.
 }
 \description{
 Show View Returns a list of panels, which are marked to be shown in the
-accordingly used RData from previous analysis
+accordingly used RData from previous analysis. This is currently not evaluated
+but could be useful in the future. Keep for now and don't delete,
 }
 \examples{
 rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
 shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
-print(show_view(rv))
+print(eCerto:::show_view(rv))
+shiny::isolate({setValue(rv, c("Certification_processing","mstats","show"),TRUE) })
+print(eCerto:::show_view(rv))
 }
+\keyword{internal}

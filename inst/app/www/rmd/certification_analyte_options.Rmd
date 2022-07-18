@@ -31,7 +31,7 @@ data using a different (more appropriate) unit and, for instance, switch from mg
 
 ***Note!***
 Internally, all calculations are performed on non-rounded values (as imported). Only the visual output to
-th user is diplayed rounded to improve readability.
+the user is diplayed rounded to improve readability.
 
 `pooling` means that calculations in the material table (`mean`, `sd` and uncertainty columns) are 
 not based on the lab means, but rather on all measured values. This is justified when the between lab 

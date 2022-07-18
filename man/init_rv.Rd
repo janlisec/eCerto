@@ -7,7 +7,7 @@
 init_rv()
 }
 \value{
-a reactiveValues
+A list of different reactiveValues sublists to be stored in the eCerto R6 class.
 }
 \description{
 \code{init_rv} initializes the main reactive value (rv) to store

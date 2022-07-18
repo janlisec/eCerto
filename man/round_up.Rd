@@ -15,7 +15,7 @@ round_up(x, n = 0)
 Round always up.
 }
 \examples{
-x <- c(0.011, 0.021, 0.0299999, 0.03, 0.031, 0.000299, 29.01, 3.01, 200, 300)
+x <- c(0.011, -0.021, 0.0299999, 0.03, 0.031, 0.000299, 29.01, 3.01, 200, -300)
 eCerto:::round_up(x, n=2)
 eCerto:::round_up(x=x, n=eCerto:::n_round_DIN1333(x))
 }

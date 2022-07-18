@@ -1,7 +1,8 @@
-## Table of certified values
+### Table of certified values
 
 The table of certified values (**Tab.C3**) combines all data collected within a certification trial to provide for each 
-measured entity within the certified material the certified mean $\mu_c$ (`cert_val`) and the certified uncertainty `U`.
+measured entity within the certified material the certified mean $\mu_c$ (`cert_val`) and the certified uncertainty 
+`U_abs`.
 
 ![**Tab.C3** Table of certified values](fig/C_Modul_Tab3.png)
 
@@ -40,13 +41,9 @@ Table column descriptions:
 -   `k` is an additional expansion factor for the uncertainty $U=u_{com} \times k$
 -   `U_abs` specifies the absolute uncertainty and is calculated by $U_{abs}=U \times \mu_c$
 
-**Tab.C3** can be exported together with a report as PDF, Word or HTML document using the download section on top of the page.
-
-`F` and `U` columns can be added, removed or renamed using the respective parameter panel next to the table.
-
-![**User Options** Modify F and U columns in **Tab.C3** to adjust $\mu_c$ and $U_{abs}$](fig/C_Modul_Tab3_pars.png)
-
 ***Note!*** 
 Numeric values of $\mu_c$ and $U_{abs}$ are rounded to the number of digits specified by the user at the analyte selection 
 panel (top, `Precision (cert)`). A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all relative `U` 
 columns are depicted with fixed 4 digits precision.
+
+**Tab.C3** can be exported together with a report as PDF, Word or HTML document using the download section on top of the page.
