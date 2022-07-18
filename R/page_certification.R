@@ -15,6 +15,8 @@
 #'
 #' @return nothing
 #'
+#' @importFrom gargoyle init watch
+#'
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
@@ -23,8 +25,7 @@
 #'    page_CertificationUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-
-#'   rv <- eCerto:::test_rv()
+#'  rv <- eCerto:::test_rv()
 #'  page_CertificationServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -185,8 +186,23 @@ page_CertificationServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
+    gargoyle::init("update_c_analyte")
+
     # Materialtabelle is embedded in Certification-UI, that's why it is here
-    selected_tab <- m_materialtabelleServer(id = "mat_cert", rv = rv)
+    m_materialtabelleServer(id = "mat_cert", rv = rv)
+
+    # --- --- --- --- --- --- --- --- --- --- ---
+    # selected analyte, sample filter, precision
+    m_analyteServer(id = "analyteModule", rv = rv)
+
+    # --- --- --- --- --- --- --- --- --- --- ---
+    # report module
+    m_reportServer(id = "report", rv = rv)
+
+    selected_tab <- reactiveVal(NULL)
+    shiny::observeEvent(gargoyle::watch("update_c_analyte"), {
+      selected_tab(rv$c_analyte)
+    }, ignoreInit = TRUE)
 
     shiny::observeEvent(getValue(rv, c("Certification", "data")), {
       if (is.null(getValue(rv, c("Certification", "data")))) {
@@ -202,14 +218,6 @@ page_CertificationServer = function(id, rv) {
     }, ignoreNULL = FALSE)
 
     # --- --- --- --- --- --- --- --- --- --- ---
-    # selected analyte, sample filter, precision
-    m_analyteServer("analyteModule", rv, selected_tab, allow_selection=FALSE)
-
-    # --- --- --- --- --- --- --- --- --- --- ---
-    # report module
-    m_reportServer(id = "report", rv = rv, selected_tab = selected_tab)
-
-    # --- --- --- --- --- --- --- --- --- --- ---
     precision <- shiny::reactive({
       shiny::req(selected_tab())
       getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]]
@@ -220,13 +228,12 @@ page_CertificationServer = function(id, rv) {
     dat <- shiny::reactive({
       shiny::req(selected_tab())
       return(c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[selected_tab()]]))
+      #browser()
+      #rv$c_fltData()
     })
 
     # -- -- -- -- -- -- --
-    dataset_komp <- m_DataViewServer("dv", dat, precision)
-    shiny::observeEvent(dataset_komp(), {
-      setValue(rv,c("Certification_processing","data_kompakt"), dataset_komp())
-    })
+    m_DataViewServer(id = "dv", rv = rv)
 
     # store Fig options
     shiny::observeEvent(input$Fig01_width, {
@@ -239,7 +246,7 @@ page_CertificationServer = function(id, rv) {
 
     shiny::observeEvent(getValue(rv, c("Certification_processing","CertValPlot")), {
       shiny::updateNumericInput(
-        session=session,
+        session = session,
         inputId = "Fig01_width",
         value = getValue(rv, c("Certification_processing","CertValPlot","Fig01_width"))
       )
@@ -260,6 +267,7 @@ page_CertificationServer = function(id, rv) {
 
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
+      shiny::req(dat())
       CertValPlot(data = dat(), annotate_id=input$annotate_id, filename_labels=input$filename_labels)
     }, height = shiny::reactive({input$Fig01_height}), width = shiny::reactive({input$Fig01_width}))
 
@@ -293,20 +301,13 @@ page_CertificationServer = function(id, rv) {
       contentType = "image/pdf"
     )
 
-    shiny::observeEvent(input$qqplot_link, {
-      shiny::showModal(
-        shiny::modalDialog(
-          shiny::plotOutput(session$ns("qqplot")),
-          size = "m",
-          easyClose = TRUE,
-          title = paste("QQ Plot", getValue(rv, c("General","apm"))[[selected_tab()]][["name"]], sep=" - ")
-        )
-      )
-    })
-
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
       shiny::req(dat())
+      #getValue(rv, c("General","apm"))
+      #gargoyle::watch("update_lab_means")
+      #shiny::validate(shiny::need(expr = rv$c_analyte==selected_tab(), message = "analyte selection is inconsistent"))
+      #lab_means <- rv$c_lab_means(data = rv$c_fltData(recalc = TRUE), analyte_name = rv$c_analyte)
       lab_means <- rv$c_lab_means(data=dat(), analyte_name=selected_tab())
       out <- data.frame(
         lab_means,
@@ -344,7 +345,6 @@ page_CertificationServer = function(id, rv) {
       setValue(rv, c("Certification_processing","mstats"), labmean_stats_pre())
     })
     output$overview_mstats <- DT::renderDataTable({
-      #labmean_stats_pre()
       dt <- DT::datatable(
         data = labmean_stats_pre(),
         options = list(dom = "t", pageLength=1, scrollX = TRUE),
@@ -357,7 +357,7 @@ page_CertificationServer = function(id, rv) {
       return(dt)
     })
 
-    # Normality statement
+    # Normality statement and QQ plot
     output$tab2_statement <- shiny::renderUI({
       KS_p <- labmean_stats_pre()[,"KS_p"]
       return(
@@ -373,14 +373,21 @@ page_CertificationServer = function(id, rv) {
         )
       )
     })
-
-    # QQ Plot
+    shiny::observeEvent(input$qqplot_link, {
+      shiny::showModal(
+        shiny::modalDialog(
+          shiny::plotOutput(session$ns("qqplot")),
+          size = "m", easyClose = TRUE, title = NULL, footer = NULL
+        )
+      )
+    })
     output$qqplot <- shiny::renderPlot({
       y <- overview_stats_pre()[, "mean"]
-      stats::qqnorm(y = y)
+      stats::qqnorm(y = y, main = paste("QQ plot for analyte", rv$c_analyte))
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
 
+    # Help Files
     shiny::observeEvent(input$stat_link,{
       help_the_user_modal("certification_laboratoryStatistics")
     })

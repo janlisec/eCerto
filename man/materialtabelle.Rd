@@ -12,16 +12,18 @@ m_materialtabelleServer(id, rv)
 \arguments{
 \item{id}{Name when called as a module in a shiny app.}
 
-\item{rv}{The whole R6 object.}
+\item{rv}{eCerto R6 object, which includes a 'materialtabelle'.}
 }
 \value{
-The analyte name of the currently selected row of  mat_tab.
+Nothing. Will update 'materialtabelle' in eCerto R6 object and trigger
+an observer 'update_c_analyte' to be listened to externally.
 }
 \description{
 \code{m_materialtabelle}
 }
 \details{
-not yet
+This module will show the reactive value 'materialtabelle' from the
+eCerto R6 object in an editable table along with some action buttons.
 }
 \examples{
 if (interactive()) {
@@ -31,8 +33,9 @@ shiny::shinyApp(
  ),
  server = function(input, output, session) {
  rv <- eCerto:::test_rv()
- out <- m_materialtabelleServer(id = "test", rv=rv)
- observeEvent(out(), {print(out())})
+ gargoyle::init("update_c_analyte")
+ m_materialtabelleServer(id = "test", rv=rv)
+ observeEvent(gargoyle::watch("update_c_analyte"), {print(rv$c_analyte)}, ignoreInit=TRUE)
  }
 )
 }

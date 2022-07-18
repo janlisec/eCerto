@@ -10,7 +10,7 @@
 \usage{
 m_reportUI(id)
 
-m_reportServer(id, rv, selected_tab)
+m_reportServer(id, rv)
 }
 \arguments{
 \item{id}{module ID}
@@ -29,17 +29,15 @@ report
 if (interactive()) {
 shiny::shinyApp(
  ui = shiny::fluidPage(
-   m_report_ui(id = "test")
+   m_reportUI(id = "test")
  ),
  server = function(input, output, session) {
-   rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
+   rv <- eCerto::eCerto$new() # initiate persistent variables
    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-   shiny::isolate({setValue(rv, c("Certification","data"), eCerto:::test_Certification_Excel()) })
    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
-   m_report_server(
+   m_reportServer(
      id = "test",
-     rv = rv,
-     selected_tab = reactiveVal("Si")
+     rv = rv
    )
  }
 )

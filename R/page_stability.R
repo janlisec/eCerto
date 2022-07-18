@@ -183,7 +183,7 @@ page_StabilityServer <- function(id, rv) {
       shiny::req(s_Data(), input$s_sel_analyte)
       dt <- DT::datatable(
         data = s_Data()[s_Data()[,"analyte"]==input$s_sel_analyte,c("Date","Value")],
-        options = list(paging = TRUE, searching = FALSE), rownames=NULL
+        options = list(paging = TRUE, searching = FALSE), rownames=NULL, selection = "none"
       )
       prec <- try(getValue(rv, c("General","apm"))[[input$s_sel_analyte]][["precision"]])
       prec <- ifelse(!is.null(prec) && is.finite(prec), prec, 4)
@@ -191,8 +191,10 @@ page_StabilityServer <- function(id, rv) {
       return(dt)
     })
 
+    s_tab1_current <- shiny::reactiveValues("row"=1, "redraw"=0)
     output$s_tab1 <- DT::renderDataTable({
       shiny::req(s_vals())
+      s_tab1_current$redraw
       s_vals_print <- s_vals()
       for (i in c("slope","SE_slope","u_stab","P")) {
         s_vals_print[,i] <- pn(s_vals_print[,i], 4)
@@ -215,7 +217,7 @@ page_StabilityServer <- function(id, rv) {
             list(className = 'dt-right', targets='_all')
           )
         ),
-        selection = list(mode="single", target="row"),
+        selection = list(mode="single", target="row", selected=s_tab1_current$row),
         rownames=NULL
       )
       dt <- DT::formatStyle(
@@ -229,9 +231,15 @@ page_StabilityServer <- function(id, rv) {
     })
 
     shiny::observeEvent(input$s_tab1_rows_selected, {
-      sel <- as.character(s_vals()[input$s_tab1_rows_selected,"analyte"])
-      shiny::updateSelectInput(session = session, inputId = "s_sel_analyte", selected = sel)
-    })
+      if (is.null(input$s_tab1_rows_selected)) {
+        # trigger a redraw of s_tab1 if the user deselects the current row
+        s_tab1_current$redraw <- s_tab1_current$redraw+1
+      } else {
+        s_tab1_current$row <- input$s_tab1_rows_selected
+        sel <- as.character(s_vals()[input$s_tab1_rows_selected,"analyte"])
+        shiny::updateSelectInput(session = session, inputId = "s_sel_analyte", selected = sel)
+      }
+    }, ignoreNULL = FALSE)
 
     shiny::observeEvent(input$s_sel_analyte, {
       # show/hide the input field to select a deviation type (will effect the Figure)

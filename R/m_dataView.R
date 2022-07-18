@@ -1,26 +1,29 @@
 #' @title Data View Module
 #' @name mod_DataView
 #'
-#' @param id Id when called in module.
-#' @param dataset_flt Filtered data for particular measurements specified by user.
-#' @param precision Precision to round the input values.
+#'@param id Name when called as a module in a shiny app.
+#'@param rv eCerto R6 object, which includes a 'materialtabelle'.
 #'
-#' @return kompakt data representation
-#' @export
+#'@return Nothing. Will show the imported data for one analyte from an eCerto R6 object.
+#'@noRd
+#'@keywords internal
 #'
-#' @examples
-#' if (interactive()) {
-#' shiny::shinyApp(
+#'@examples
+#'if (interactive()) {
+#'shiny::shinyApp(
 #'  ui = shiny::fluidPage(m_DataViewUI(id = "test")),
 #'  server = function(input, output, session) {
-#'    tmp <- reactiveVal(cbind(
-#'      eCerto::test_certification()[["data"]],
-#'      data.frame("File"="")
-#'    ))
-#'    m_DataViewServer(id = "test", dataset_flt = tmp)
+#'    rv <- eCerto:::test_rv()
+#'    # set S_flt and L_flt for testing
+#'    shiny::isolate(apm <- getValue(rv, c("General","apm")))
+#'    apm[[rv$c_analyte]][["sample_filter"]] <- 4
+#'    apm[[rv$c_analyte]][["lab_filter"]] <- "L1"
+#'    shiny::isolate(setValue(rv, c("General","apm"), apm))
+#'    gargoyle::init("update_c_analyte")
+#'    m_DataViewServer(id = "test", rv = rv)
 #'  }
-#' )
-#' }
+#')
+#'}
 #'
 
 m_DataViewUI <- function(id) {
@@ -29,7 +32,7 @@ m_DataViewUI <- function(id) {
     shiny::fluidRow(
       shiny::column(
         width = 10,
-        DT::dataTableOutput(ns("flt_Input_Data"))
+        DT::dataTableOutput(ns("tab1"))
       ),
       shiny::column(
         width = 2,
@@ -47,19 +50,42 @@ m_DataViewUI <- function(id) {
   )
 }
 
-#' @rdname mod_DataView
-#' @export
-m_DataViewServer <- function(id, dataset_flt, precision = shiny::reactiveVal(3)) {
+#'@noRd
+#'@keywords internal
+m_DataViewServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
+
+    precision <- shiny::reactiveVal(4)
+    # observeEvent(getValue(rv, c("General","apm")) {
+    #
+    # })
+    dataset_flt <- shiny::reactive({
+      #browser()
+      gargoyle::watch("update_c_analyte")
+      df <- getValue(rv, c("Certification","data"))
+      apm <- getValue(rv, c("General","apm"))
+      an <- rv$c_analyte
+      precision(apm[[an]][["precision"]])
+      df <- df[df[,"analyte"]==an,]
+      if (!"File" %in% colnames(df)) df <- cbind(df, "File"="")
+      #df[df[,"S_flt"] %in% apm[[an]][["sample_filter"]],"S_flt"]
+      return(df)
+    })
     # Generate an HTML table view of filtered single analyt data
-    output$flt_Input_Data <- DT::renderDataTable({
+    output$tab1 <- DT::renderDataTable({
+      apm <- getValue(rv, c("General","apm"))[[rv$c_analyte]]
       if (input$data_view_select == "kompakt") {
         #browser()
+        # $$ToDo$$ color filtered samples similar to standard table
         dt <- DT::datatable(
           data = dataset_komp(),
-          options = list(paging = FALSE, searching = FALSE), rownames = NULL
+          options = list(
+            paging = FALSE, searching = FALSE
+          ),
+          rownames = NULL,
         )
+        idx <- attr(dataset_komp(), "id_idx")
         # round with input precision
         dt <- DT::formatCurrency(table = dt, columns = 2:(ncol(dataset_komp())-2), currency = "", digits = precision())
         # round with output precision (JL: currently the same; adjust and remove comment if requested by users)
@@ -68,9 +94,22 @@ m_DataViewServer <- function(id, dataset_flt, precision = shiny::reactiveVal(3))
       if (input$data_view_select == "standard") {
         dt <- DT::datatable(
           data = dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")],
-          options = list(paging = FALSE, searching = FALSE), rownames = NULL
+          options = list(
+            paging = FALSE, searching = FALSE,
+            autoWidth = TRUE, scrollY = "250px", pageLength = -1
+          ), rownames = NULL
         )
         dt <- DT::formatCurrency(table = dt, columns = 3, currency = "", digits = precision())
+        dt <- DT::formatStyle(
+          table = dt, columns = "ID",
+          color = DT::styleEqual(levels = apm[["sample_filter"]], values = "red"),
+          fontWeight = DT::styleEqual(levels = apm[["sample_filter"]], values = "bold")
+        )
+        dt <- DT::formatStyle(
+          table = dt, columns = "Lab",
+          color = DT::styleEqual(levels = apm[["lab_filter"]], values = "red"),
+          fontWeight = DT::styleEqual(levels = apm[["lab_filter"]], values = "bold")
+        )
       }
       return(dt)
     })
@@ -78,23 +117,27 @@ m_DataViewServer <- function(id, dataset_flt, precision = shiny::reactiveVal(3))
     # prepare a compact version of the data table
     dataset_komp <- shiny::reactive({
       shiny::req(dataset_flt())
-      data <- dataset_flt()
-      n_reps <- sort(unique(data$replicate))
-      data <- plyr::ldply(split(data, data$Lab), function(x) {
+      df <- dataset_flt()
+      n_reps <- sort(unique(df$replicate))
+      data <- plyr::ldply(split(df, df$Lab), function(x) {
         out <- rep(NA, length(n_reps))
         out[x$replicate] <- x$value
-        matrix(out,
-               ncol = length(n_reps),
-               dimnames = list(NULL, paste0("R", n_reps)))
+        matrix(out, ncol = length(n_reps), dimnames = list(NULL, paste0("R", n_reps)))
       }, .id = "Lab")
-      n <- precision()
-      return(data.frame(
+      id_idx <- plyr::ldply(split(df, df$Lab), function(x) {
+        out <- rep(NA, length(n_reps))
+        out[x$replicate] <- x$ID
+        matrix(out, ncol = length(n_reps), dimnames = list(NULL, paste0("R", n_reps)))
+      }, .id = "Lab")
+      df <- data.frame(
         data[, 1, drop = F],
-        round(data[, -1, drop = F], digits = n),
-        "mean" = round(apply(data[, -1, drop = F], 1, mean, na.rm = T), digits = n),
-        "sd" = round(apply(data[, -1, drop = F], 1, stats::sd, na.rm = T), digits = n)
-      ))
+        round(data[, -1, drop = F], digits = precision()),
+        "mean" = round(apply(data[, -1, drop = F], 1, mean, na.rm = T), digits = precision()),
+        "sd" = round(apply(data[, -1, drop = F], 1, stats::sd, na.rm = T), digits = precision())
+      )
+      attr(df, "id_idx") <- id_idx
+      return(df)
     })
-    return(dataset_komp)
+
   })
 }

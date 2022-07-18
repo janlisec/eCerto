@@ -7,7 +7,6 @@
 \alias{laboratory_dataframe}
 \alias{load_sheetnames}
 \alias{set_uploadsource}
-\alias{roundMT}
 \alias{pn}
 \alias{update_reactivecell}
 \alias{sub_header}
@@ -22,8 +21,6 @@ laboratory_dataframe(x)
 load_sheetnames(filepath)
 
 set_uploadsource(rv, m, uploadsource)
-
-roundMT(value, precision = NULL)
 
 pn(n = NULL, p = 4L)
 
@@ -47,8 +44,6 @@ sub_header(txt = "test", l = 0, b = 2)
 \item{m}{one of "Certification","Homogeneity", "Stability"}
 
 \item{uploadsource}{the source of upload}
-
-\item{precision}{precision value}
 
 \item{n}{numeric vector}
 
@@ -77,8 +72,6 @@ the names of sheets
 
 nothing directly, but via rv
 
-the rounded value
-
 numbers formatted
 
 nothing directly
@@ -96,8 +89,6 @@ Creates long pivot table in laboratory style after load.
 Loads names of Excel sheets.
 
 Set source of upload for an element.
-
-Rounds material table.
 
 Format a number by rounding to a precision in same width as
 character using scientific notation for numbers < precision and rounding
@@ -121,7 +112,6 @@ if (interactive()) {
   rv = init_rv()
   set_uploadsource(rv,"Certification","Excel")
 }
-roundMT(34.3434,3)
 pn(n=c(1.23456, NA, 0, 0.00001, -0.00001))
 eCerto:::sub_header("test")
 }

@@ -14,17 +14,15 @@
 #'if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_report_ui(id = "test")
+#'    m_reportUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
+#'    rv <- eCerto::eCerto$new() # initiate persistent variables
 #'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-#'    shiny::isolate({setValue(rv, c("Certification","data"), eCerto:::test_Certification_Excel()) })
 #'    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
-#'    m_report_server(
+#'    m_reportServer(
 #'      id = "test",
-#'      rv = rv,
-#'      selected_tab = reactiveVal("Si")
+#'      rv = rv
 #'    )
 #'  }
 #' )
@@ -69,13 +67,13 @@ m_reportUI <- function(id) {
 
 #' @rdname mod_report
 #' @export
-m_reportServer <- function(id, rv, selected_tab) {
+m_reportServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
     output$AnalyteReport <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", selected_tab(), '.', switch(
+        paste0(getValue(rv, c("General","study_id")), "_", rv$c_analyte, '.', switch(
           input$output_file_format,
           PDF = 'pdf',
           HTML = 'html',
@@ -89,7 +87,6 @@ m_reportServer <- function(id, rv, selected_tab) {
         shiny::withProgress(
           expr = {
             incProgress(0.5)
-            #browser()
             out <- rmarkdown::render(
               input = rmdfile,
               output_file = file,
@@ -103,7 +100,7 @@ m_reportServer <- function(id, rv, selected_tab) {
                 "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
                 "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
                 "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
-                "selected_tab" = selected_tab(),
+                "selected_tab" = rv$c_analyte,
                 "logo_file" = logofile
               ),
               envir = new.env(parent = globalenv())

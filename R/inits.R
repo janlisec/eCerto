@@ -17,7 +17,9 @@ init_materialtabelle <- function(analytes) {
     "u_char" = 0,
     "u_com" = NA,
     "k" = 2,
-    "U" = NA
+    "U" = NA,
+    "U_abs" = NA,
+    "unit" = "U"
   )
   attr(mt, "col_code") <- data.frame(
     "ID" = character(),
@@ -35,7 +37,7 @@ init_materialtabelle <- function(analytes) {
 #'   in OOP style. Note: If other modules besides Certification, Homogeneity and
 #'   Stability added, adapt the modules list
 #'
-#' @return a reactiveValues
+#' @return A list of different reactiveValues sublists to be stored in the eCerto R6 class.
 #' @export
 #'
 #' @examples rv <- init_rv()
@@ -61,12 +63,8 @@ init_rv <- function() {
     ),
     # processing
     "Certification_processing" = shiny::reactiveValues(
-      "lab_means" = NULL,
       "cert_mean" = NULL,
       "cert_sd" = NULL,
-      "normality_statement" = NULL,
-      "precision" = NULL,
-      "data_kompakt" = NULL,
       "CertValPlot" = list(
         "show" = NULL,
         "fnc" = NULL,
@@ -75,7 +73,6 @@ init_rv <- function() {
         "Fig01_height" = NULL
       ),
       "stats" = NULL,
-      "boxplot" = NULL,
       "opt" = NULL,
       "mstats" = list(
         "show" = NULL,
@@ -86,11 +83,10 @@ init_rv <- function() {
       # upload
       "input_files" = NULL,
       "uploadsource" = NULL,
-      "data" = NULL, # formerly h_dat
+      "data" = NULL,
       # Processing
       "h_vals" = NULL,
       "h_sel_analyt" = NULL,
-      "h_precision" = NULL,
       "h_Fig_width" = NULL
     ),
     "Stability" = shiny::reactiveValues(
@@ -142,8 +138,9 @@ init_apm <- function(x) {
     "lab_filter" = NULL, # filter of laboratories (e.g. L1)
     "confirmed" = FALSE, # has the analyte manually been confirmed?
     "pooling" = FALSE, # s pooling allowed for this analyte
-    "precision" = 4, # rounding precision for imported data
-    "precision_export" = 4 # rounding precision for export
+    "precision" = 4, # rounding precision for displayed values
+    "precision_export" = 4, # rounding precision for certified value and uncertainty
+    "unit" = "U" # unit this analyte is measured in
   )
   # create list with lists of all analytes (i.e. a nested list)
   apm <- sapply(levels(x[, "analyte"]), function(an) {

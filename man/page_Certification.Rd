@@ -34,7 +34,7 @@ shiny::shinyApp(
    page_CertificationUI(id = "test")
  ),
  server = function(input, output, session) {
-  rv <- eCerto:::test_rv()
+ rv <- eCerto:::test_rv()
  page_CertificationServer(id = "test", rv = rv)
  }
 )

@@ -10,7 +10,7 @@ contained 'reactiveValues'. Elements should be accessed via \code{\link[=getValu
 Possible advantages are that (1) structure of 'reactiveValues' is clear
 from the beginning (no function like "addVariable" should exist!) and that
 (2) functions to calculate the mean or plot current data can be implemented
-here directly.#'
+here directly.
 }
 \examples{
 if (interactive()) {
@@ -29,8 +29,24 @@ shiny::isolate(eCerto::getValue(test, c("Certification","data")))
 shiny:::flushReact()
 }
 tmp <- eCerto$new()
-tmp$c_plot()
+shiny::isolate(tmp$c_plot())
 tmp$c_lab_means()
+tmp$c_analyte
+tmp$c_analytes()
+shiny::isolate(tmp$c_analyte <- "Cu")
+tmp$c_lab_means()
+tmp$c_fltData()
+x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
+x[[tmp$c_analyte]][["lab_filter"]] <- "L2"
+shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
+tmp$c_fltData()
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{c_analyte}}{Set or return the current analyte via an active binding.}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -40,6 +56,8 @@ tmp$c_lab_means()
 \item \href{#method-eCerto-set}{\code{eCerto$set()}}
 \item \href{#method-eCerto-c_plot}{\code{eCerto$c_plot()}}
 \item \href{#method-eCerto-c_lab_means}{\code{eCerto$c_lab_means()}}
+\item \href{#method-eCerto-c_analytes}{\code{eCerto$c_analytes()}}
+\item \href{#method-eCerto-c_fltData}{\code{eCerto$c_fltData()}}
 \item \href{#method-eCerto-clone}{\code{eCerto$clone()}}
 }
 }
@@ -148,7 +166,40 @@ Compute the analyte means for .
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A plot.
+A data.frame of lab means.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-eCerto-c_analytes"></a>}}
+\if{latex}{\out{\hypertarget{method-eCerto-c_analytes}{}}}
+\subsection{Method \code{c_analytes()}}{
+Return analyte names currently in apm.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_analytes()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A named character vector.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-eCerto-c_fltData"></a>}}
+\if{latex}{\out{\hypertarget{method-eCerto-c_fltData}{}}}
+\subsection{Method \code{c_fltData()}}{
+Filter the full dataset for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_fltData(recalc = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{recalc}}{If TRUE triggers a recalculation and returns current object if FALSE..}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A data.frame with filtered data of a single analyte.
 }
 }
 \if{html}{\out{<hr>}}
