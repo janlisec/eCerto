@@ -162,24 +162,6 @@ set_uploadsource = function(rv, m, uploadsource) {
 }
 
 
-
-#' @title roundMT.
-#'
-#' @description Rounds material table.
-#'
-#' @param value the value to be rounded
-#' @param precision precision value
-#'
-#' @return the rounded value
-#'
-#' @rdname datahandling_utils
-#' @export
-#' @examples roundMT(34.3434,3)
-roundMT = function(value, precision = NULL) {
-  if(is.null(precision)) return(value)
-  round(value,precision)
-}
-
 #' @title pn.
 #'
 #' @description Format a number by rounding to a precision in same width as
@@ -322,20 +304,20 @@ listNames <- function(l, maxDepth = 2, split = FALSE) {
   return(nms)
 }
 
-#' @title show_view
-#'
-#' @description Show View Returns a list of panels, which are marked to be shown in the
-#' accordingly used RData from previous analysis
-#'
-#' @param rv the R6 reactiveValues object
-#'
-#' @return a list of panels to be shown
-#' @export
-#'
-#' @examples
-#' rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
-#' shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
-#' print(show_view(rv))
+#'@title show_view
+#'@description Show View Returns a list of panels, which are marked to be shown in the
+#'   accordingly used RData from previous analysis. This is currently not evaluated
+#'   but could be useful in the future. Keep for now and don't delete,
+#'@param rv The eCerto R6 object.
+#'@return A character vector of panels to be shown or more precisely the parent list names
+#'   which contain a sub item 'show' that is set to TRUE.
+#'@keywords internal
+#'@examples
+#'rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
+#'shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
+#'print(eCerto:::show_view(rv))
+#'shiny::isolate({setValue(rv, c("Certification_processing","mstats","show"),TRUE) })
+#'print(eCerto:::show_view(rv))
 show_view <- function(rv){
   nms <- shiny::isolate(listNames(rv, maxDepth = 3, split = TRUE))
   visible = c()

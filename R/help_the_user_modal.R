@@ -12,11 +12,17 @@ help_the_user_modal <- function(filename) {
   #browser()
   file_in <- list.files(path = shiny::resourcePaths()["www"], pattern = paste0(filename, ".[Rr][Mm][Dd]$"), recursive = TRUE, full.names = TRUE)
   help_text <- NULL
-  if (!file.exists(file_in)) {
-    message("[help_the_user_modal] cant find help file: ", filename)
-  } else {
+  if (length(file_in)==1 && file.exists(file_in)) {
     message("[help_the_user_modal] Rendering Rmd file: ", file_in)
-    help_text <- shiny::withMathJax(shiny::HTML(markdown::markdownToHTML(file = file_in, fragment.only = TRUE, extensions = c("tables","autolink","latex_math"))))
+    help_text <- shiny::withMathJax(
+      shiny::HTML(
+        markdown::markdownToHTML(
+          file = file_in,
+          fragment.only = TRUE,
+          extensions = c("tables","autolink","latex_math")
+        )
+      )
+    )
     shiny::showModal(
       shiny::modalDialog(
         help_text,
@@ -26,6 +32,8 @@ help_the_user_modal <- function(filename) {
         title = NULL
       )
     )
+  } else {
+    message("[help_the_user_modal] cant find help file: ", filename)
   }
   return(help_text)
 }

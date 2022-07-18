@@ -6,6 +6,7 @@ test_rv <- function() {
     setValue(rv, c("Certification","data"), testdata)
     setValue(rv, c("General","apm"), init_apm(testdata))
     setValue(rv, c("General","materialtabelle"), init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]})))
+    rv$c_analyte <- "Si"
   })
   return(rv)
 }
@@ -63,7 +64,7 @@ test_homog <- function() {
       unit = rep(c("mM/L", "mg/mL"), each=45),
       File = rep("Homog_test.xlsx", 90)
     ), row.names = c(NA, 90L), class = "data.frame"),
-    uploadsource = "Excel", h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_precision = NULL, h_Fig_width = NULL)
+    uploadsource = "Excel", h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_Fig_width = NULL)
 }
 
 #' @keywords internal
@@ -139,9 +140,8 @@ test_certification = function() {
     class = "data.frame", row.names = c(NA, 162L)),
     input_files = NULL, uploadsource = "Excel", user = "FK",
     study_id = "TEST", time_stamp = structure(0, class = "Date"),
-    dataformat_version = "2021-05-27", lab_means = NULL, cert_mean = NULL,
-    cert_sd = NULL, normality_statement = NULL, precision = NULL,
-    data_kompakt = NULL, CertValPlot = NULL, stats = NULL, boxplot = NULL,
+    dataformat_version = "2021-05-27", cert_mean = NULL,
+    cert_sd = NULL, CertValPlot = NULL, stats = NULL,
     opt = NULL, mstats = NULL, materialtabelle = NULL)
 }
 

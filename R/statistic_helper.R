@@ -193,6 +193,7 @@ steyx <- function(x, y) {
 #'eCerto:::n_round_DIN1333(x)
 #'@keywords internal
 n_round_DIN1333 <- function(x) {
+  if(!(is.numeric(x) && length(x)==1)) return(NA)
   xc <- as.character(x + sqrt(.Machine$double.eps))
   non_zero_pos <- sapply(gregexpr("[123456789]", as.character(x)), function(y) {y[1]})
   dec_pos <- sapply(gregexpr("[.]", xc), function(y) {y[1]})
@@ -227,7 +228,7 @@ roundK <- function(x, n=0) {
 #'@param x A number.
 #'@param n precision after decimal.
 #'@examples
-#'x <- c(0.011, 0.021, 0.0299999, 0.03, 0.031, 0.000299, 29.01, 3.01, 200, 300)
+#'x <- c(0.011, -0.021, 0.0299999, 0.03, 0.031, 0.000299, 29.01, 3.01, 200, -300)
 #'eCerto:::round_up(x, n=2)
 #'eCerto:::round_up(x=x, n=eCerto:::n_round_DIN1333(x))
 #'@keywords internal

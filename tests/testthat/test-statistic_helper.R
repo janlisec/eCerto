@@ -56,16 +56,19 @@ testthat::test_that(
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
       setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
-      suppressMessages(lab_means <- rv$c_lab_means())
+      suppressMessages({
+        rv$c_analyte <- "Si"
+        lab_means <- rv$c_lab_means()
+      })
     })
     # test qualitative Dixon method
     out_alpha <- eCerto:::Dixon(lab_means = lab_means, fmt = "alpha")
     testthat::expect_equal(class(out_alpha[,"Dixon_p"]), "character")
-    testthat::expect_equal(out_alpha[,"Dixon_p"], c('n.s.', '.', '.', '.', 'n.s.', '.', '.', 'n.s.', '.', '.'))
+    testthat::expect_equal(out_alpha[,"Dixon_p"], c('.', '.', '.', '.', 'n.s.', '.', '.', 'n.s.', '.', '.'))
     # test quantitative Dixon method
     out_pval <- eCerto:::Dixon(lab_means = lab_means, fmt = "pval")
     testthat::expect_equal(class(out_pval[,"Dixon_p"]), "numeric")
-    testthat::expect_equal(out_pval[c("L01","L07","L13"),"Dixon_p"], c(0.9937500, 0.9937500, 0.6096514))
+    testthat::expect_equal(out_pval[c("L07","L13"),"Dixon_p"], c(0.98506944, 0.60879367))
   }
 )
 
@@ -78,20 +81,23 @@ testthat::test_that(
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
       setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
-      suppressMessages(lab_means <- rv$c_lab_means())
+      suppressMessages({
+        rv$c_analyte <- "Si"
+        lab_means <- rv$c_lab_means()
+      })
     })
     # test qualitative Grubbs method
     out_alpha <- eCerto:::Grubbs(lab_means = lab_means, fmt = "alpha")
     testthat::expect_equal(class(out_alpha[,"Grubbs1_p"]), "character")
     testthat::expect_equal(class(out_alpha[,"Grubbs2_p"]), "character")
-    testthat::expect_equal(out_alpha[,"Grubbs1_p"], c('n.s.', '.', '.', '.', '.', '.', '.', 'n.s.', '.', '.'))
+    testthat::expect_equal(out_alpha[,"Grubbs1_p"], c('.', '.', '.', '.', 'n.s.', '.', '.', 'n.s.', '.', '.'))
     testthat::expect_equal(out_alpha[,"Grubbs2_p"], c('n.s.', 'n.s.', '.', '.', 'n.s.', '.', '.', 'n.s.', '.', '.'))
     # test quantitative Grubbs method
     out_pval <- eCerto:::Grubbs(lab_means = lab_means, fmt = "pval")
     testthat::expect_equal(class(out_pval[,"Grubbs1_p"]), "numeric")
     testthat::expect_equal(class(out_pval[,"Grubbs2_p"]), "numeric")
-    testthat::expect_equal(out_pval[c("L01","L13"),"Grubbs1_p"], c(0.458561233, 0.904057805))
-    testthat::expect_equal(out_pval[c("L01","L02","L07","L13"),"Grubbs2_p"], c(0.106854944, 0.842278298, 0.106854944, 0.842278298))
+    testthat::expect_equal(out_pval[c("L07","L13"),"Grubbs1_p"], c(0.45250505, 0.90129343))
+    testthat::expect_equal(out_pval[c("L01","L02","L07","L13"),"Grubbs2_p"], c(0.105435887, 0.840986945, 0.105435887, 0.840986945))
   }
 )
 
@@ -105,7 +111,10 @@ testthat::test_that(
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
       setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
-      suppressMessages(lab_means <- rv$c_lab_means())
+      suppressMessages({
+        rv$c_analyte <- "Si"
+        lab_means <- rv$c_lab_means()
+      })
     })
     # test qualitative Nalimov method
     out <- eCerto:::Nalimov(lab_means = lab_means)

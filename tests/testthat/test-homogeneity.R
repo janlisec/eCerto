@@ -22,25 +22,28 @@
 # )
 
 testthat::test_that(
-  desc = "H analytes being found in C data",
+  desc = "H analytes being found or not in C data",
   code = {
-    rv <- eCerto:::test_rv()
-    mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
-    attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
-    isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
-    isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
-    shiny::testServer(
-      app = eCerto::page_HomogeneityServer,
-      args = list(rv = rv),
-      expr =  {
-        session$setInputs(h_sel_analyt = "Fe.axial")
-        session$flushReact()
-        testthat::expect_equal(
-          as.character(h_vals_print()[,"style_analyte"]),
-          rep(c("black","red"), each=2)
-        )
-      }
-    )
+    suppressMessages({
+      x <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
+      o1 <- eCerto:::styleTabH1(x = x)
+      testthat::expect_equal(
+        as.character(o1[,"style_analyte"]),
+        rep("red", each=4)
+      )
+      mt <- data.frame("analyte"="Fe")
+      o2 <- eCerto:::styleTabH1(x = x, mt = mt)
+      testthat::expect_equal(
+        as.character(o2[,"style_analyte"]),
+        rep(c("black","red"), each=2)
+      )
+      apm <- list("Fe"=list("precision"=2))
+      o3 <- eCerto:::styleTabH1(x = x, apm = apm)
+      testthat::expect_equal(
+        o3[,"mean"],
+        c("0.29","0.29","0.2905","0.2935")
+      )
+    })
   }
 )
 
