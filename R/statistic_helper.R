@@ -20,7 +20,7 @@ Scheffe <- function(data=NULL) {
 Dixon <- function(lab_means=NULL, fmt=c("alpha", "pval")[1]) {
   x <- lab_means[,"mean"]
   out <- rep(NA, length(x))
-  if (length(x)>=3 && diff(range(x))>0) {
+  if (length(x)>=3 && length(x)<=30 && diff(range(x))>0) {
     smallest_is_extreme <- (max(x) - mean(x)) <= (mean(x) - min(x))
     # calculate outlier p to the max
     l_max <- x==max(x)
@@ -43,7 +43,7 @@ Dixon <- function(lab_means=NULL, fmt=c("alpha", "pval")[1]) {
 Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval")[1]) {
   out <- data.frame("Grubbs1_p" = rep(NA, nrow(lab_means)), row.names = row.names(lab_means))
   x <- lab_means[, "mean"]
-  if (length(x)>=3 && diff(range(x))>0) {
+  if (length(x)>=3 && length(x)<=30 && diff(range(x))>0) {
     smallest_is_extreme <- (max(x) - mean(x)) <= (mean(x) - min(x))
     out$Grubbs1_p[which.max(x)] <- outliers::grubbs.test(x = x, type = 10, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, TRUE, FALSE))$p.value
     out$Grubbs1_p[which.min(x)] <- outliers::grubbs.test(x = x, type = 10, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, FALSE, TRUE))$p.value
