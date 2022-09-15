@@ -41,8 +41,7 @@ m_DataViewUI <- function(id) {
             width = "200px",
             inputId = ns("data_view_select"), # previously opt_show_files
             label = "Data view",
-            choices = c("kompakt", "standard"),
-            selected = "none"
+            choices = c("kompakt", "standard")
           )
         )
       )
@@ -76,8 +75,6 @@ m_DataViewServer <- function(id, rv) {
     output$tab1 <- DT::renderDataTable({
       apm <- getValue(rv, c("General","apm"))[[rv$c_analyte]]
       if (input$data_view_select == "kompakt") {
-        #browser()
-        # $$ToDo$$ color filtered samples similar to standard table
         dt <- DT::datatable(
           data = dataset_komp(),
           options = list(
@@ -86,6 +83,27 @@ m_DataViewServer <- function(id, rv) {
           rownames = NULL,
         )
         idx <- attr(dataset_komp(), "id_idx")
+        if (!is.null(apm[["sample_filter"]])) {
+          for (s_idx in apm[["sample_filter"]]) {
+            coln <- colnames(idx)[ceiling(which(idx==s_idx)/nrow(idx))]
+            cval <- unlist(dataset_komp())[which(idx==s_idx)]
+            dt <- DT::formatStyle(
+              table = dt, columns = coln,
+              color = DT::styleEqual(levels = cval, values = "red"),
+              fontWeight = DT::styleEqual(levels = cval, values = "bold")
+            )
+          }
+        }
+        if (!is.null(apm[["lab_filter"]])) {
+          for (l_idx in apm[["lab_filter"]]) {
+            rown <- which(idx[,"Lab"]==apm[["lab_filter"]])
+            dt <- DT::formatStyle(
+              table = dt, target = 'row', columns = 2:ncol(idx), rows = rown,
+              color = DT::styleRow(rows = rown, values = "red"),
+              fontWeight = DT::styleRow(rows = rown, values = "bold")
+            )
+          }
+        }
         # round with input precision
         dt <- DT::formatCurrency(table = dt, columns = 2:(ncol(dataset_komp())-2), currency = "", digits = precision())
         # round with output precision (JL: currently the same; adjust and remove comment if requested by users)
@@ -100,16 +118,20 @@ m_DataViewServer <- function(id, rv) {
           ), rownames = NULL
         )
         dt <- DT::formatCurrency(table = dt, columns = 3, currency = "", digits = precision())
-        dt <- DT::formatStyle(
-          table = dt, columns = "ID",
-          color = DT::styleEqual(levels = apm[["sample_filter"]], values = "red"),
-          fontWeight = DT::styleEqual(levels = apm[["sample_filter"]], values = "bold")
-        )
-        dt <- DT::formatStyle(
-          table = dt, columns = "Lab",
-          color = DT::styleEqual(levels = apm[["lab_filter"]], values = "red"),
-          fontWeight = DT::styleEqual(levels = apm[["lab_filter"]], values = "bold")
-        )
+        if (!is.null(apm[["sample_filter"]])) {
+          dt <- DT::formatStyle(
+            table = dt, columns = "ID",
+            color = DT::styleEqual(levels = apm[["sample_filter"]], values = "red"),
+            fontWeight = DT::styleEqual(levels = apm[["sample_filter"]], values = "bold")
+          )
+        }
+        if (!is.null(apm[["lab_filter"]])) {
+          dt <- DT::formatStyle(
+            table = dt, columns = "Lab",
+            color = DT::styleEqual(levels = apm[["lab_filter"]], values = "red"),
+            fontWeight = DT::styleEqual(levels = apm[["lab_filter"]], values = "bold")
+          )
+        }
       }
       return(dt)
     })
