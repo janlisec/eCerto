@@ -27,6 +27,8 @@
 #')
 #'}
 #'
+#'@importFrom shinyalert shinyalert
+#'
 #'@rdname materialtabelle
 #'@keywords internal
 #'
@@ -63,6 +65,16 @@ m_materialtabelleUI <- function(id) {
           shiny::div(
             style="margin-top: 15px; margin-left: 15px; margin-right: 15px;",
             shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect", width = "100%")
+          ),
+          shiny::p(),
+          shiny::div(
+            style="width=100%; margin-bottom: 5px; margin-left: 15px;",
+            shiny::strong(shiny::actionLink(inputId = ns("tabC3postcert"), label = "Post Certification Test"))
+          ),
+          shiny::div(
+            style="margin-top: 15px; margin-left: 15px; margin-right: 15px;",
+            #shiny::actionButton(inputId = ns("post_cert_stab"), label = "Check")
+            check_stability_UI(id = ns("post_cert_stab"))
           )
         )
       )
@@ -77,6 +89,7 @@ m_materialtabelleServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
 
     silent <- get_golem_config("silent")
+    ns <- shiny::NS(id)
 
     # analyte name of the currently selected row of mat_tab
     c_analyte <- shiny::reactiveVal(NULL)
@@ -530,12 +543,18 @@ m_materialtabelleServer <- function(id, rv) {
       mater_table(mt)
     })
 
+    check_stability_Server(id = "post_cert_stab", rv = rv)
+
     shiny::observeEvent(input$tabC3head, {
       help_the_user_modal("certification_materialtabelle")
     })
 
     shiny::observeEvent(input$tabC3opt, {
       help_the_user_modal("certification_materialtabelle_opt")
+    })
+
+    shiny::observeEvent(input$tabC3postcert, {
+      help_the_user_modal("certification_materialtabelle_postcert")
     })
 
   })

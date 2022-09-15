@@ -1,0 +1,13 @@
+### Post certification
+
+To check if the certified values of a CRM, $\mu_c$ and $U_{abs}$, remain stable, a post certification measurement
+can be performed and evaluated according to ISO GUIDE 35:2017 (8.10.3.2) by calculating a stability criterium $SK$
+using formula:
+
+$$|\mu_c - \mu_m| \over \sqrt{U_{abs}^2 + U_m^2}$$
+
+where $\mu_m$ and $U_m$ are mean and standard deviation of post certification measurements performed on a CRM
+specimen.
+
+***Note!***
+If $SK \le 2$ is fulfilled, this indicates that the material is sufficiently stable.
