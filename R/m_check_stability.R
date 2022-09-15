@@ -10,7 +10,6 @@
 #' @param rv rv.
 #' @return A data.frame containing the converted string from the textAreaInput.
 #' @examples
-#' @importFrom stats sd
 #' \dontrun{
 #' rv <- eCerto:::test_rv()
 #' shinyApp(
@@ -21,6 +20,7 @@
 #'   }
 #' )
 #' }
+#' @importFrom stats sd
 #' @keywords internal
 #' @noRd
 check_stability_UI <- function(id) {
@@ -43,6 +43,10 @@ check_stability_Server <- function(id, rv = NULL) {
 
     m_c <- shiny::reactiveVal(0)
     u_c<- shiny::reactiveVal(1)
+    m_m <- reactiveVal(NA)
+    u_m <- reactiveVal(NA)
+    sk <- reactiveVal(NA)
+    ra <- reactiveVal(4)
     mt <- reactive({
       req(rv)
       gargoyle::watch("update_c_analyte")
@@ -50,6 +54,11 @@ check_stability_Server <- function(id, rv = NULL) {
       tmp <- tmp[tmp[,"analyte"]==rv$c_analyte, c("analyte","cert_val","U_abs")]
       m_c(tmp[,"cert_val"])
       u_c(tmp[,"U_abs"])
+      #browser()
+      ra(getValue(rv, c("General","apm"))[[rv$c_analyte]]$precision_export)
+      m_m(NA)
+      u_m(NA)
+      sk(NA)
       return(tmp)
     })
 
@@ -81,16 +90,13 @@ check_stability_Server <- function(id, rv = NULL) {
       )
     })
 
-    m_m <- reactiveVal(NA)
-    u_m <- reactiveVal(NA)
-    sk <- reactiveVal(NA)
     output$res_output <- shiny::renderUI({
       req(mt())
       shiny::tagList(
         p(),
         HTML("analyte ", mt()$analyte), br(),
-        HTML("m_c = ", round(m_c(), 4), ", u_c = ", round(u_c(), 4)), br(),
-        HTML("m_m = ", round(m_m(), 4), ", u_m = ", round(u_m(), 4)), br(),
+        HTML("m_c = ", round(m_c(), ra()), ", u_c = ", round(u_c(), ra())), br(),
+        HTML("m_m = ", round(m_m(), ra()), ", u_m = ", round(u_m(), ra())), br(),
         HTML("SK = ", round(sk(), 2))
       )
     })
