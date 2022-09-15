@@ -47,7 +47,10 @@ m_analyteUI = function(id) {
         width = 3,
         shiny::selectInput(
           inputId = ns("Name"),
-          label = "Analyt Name",
+          label = shiny::actionLink(
+            inputId = ns("analyte_help_link"),
+            label = "Parameters for Analyt"
+          ),
           choices = ""
         )
       ),
@@ -64,10 +67,7 @@ m_analyteUI = function(id) {
         width = 3,
         shiny::numericInput(
           inputId = ns("precision"),
-          label = shiny::actionLink(
-            inputId = ns("analyte_help_link"),
-            label = "Precision (stats)"
-          ),
+          label = "Precision (stats)",
           value = 4, min = 0, max = 10, step = 1
         )
       ),
@@ -116,6 +116,8 @@ m_analyteServer = function(id, rv, allow_selection=FALSE) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
+    ns <- shiny::NS(id)
+
     apm <- shiny::reactiveVal() # make a local copy of apm
     shiny::observeEvent(getValue(rv, c("General","apm")), {
       # $$ToDo$$ attach the unit information to apm if not yet present
@@ -126,10 +128,14 @@ m_analyteServer = function(id, rv, allow_selection=FALSE) {
     }, ignoreNULL = TRUE)
 
     if (!allow_selection) {
-      shiny::updateSelectInput(
-        inputId = "Name",
-        label = "Row selected in Tab.C3",
-      )
+      # shiny::updateSelectInput(
+      #   inputId = "Name",
+      #   #label = "Row selected in Tab.C3",
+      #   label = shiny::actionLink(
+      #     inputId = ns("analyte_help_link"),
+      #     label = "Parameters for Analyt"
+      #   )
+      # )
       shinyjs::disable(id = "Name")
     }
 

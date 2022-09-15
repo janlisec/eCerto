@@ -1,10 +1,10 @@
 ### Certification data upload (Excel)
 
-To process a new analysis, please collect all data which should be retuned in
+To process a new analysis, please collect all data which should be returned in
 pre-defined Excel-Files by your certification trial partners and stored within
 one folder. Pre-defined means that the analytical results are at the same
-position within each file (table name, row and column range) and that one file
-per laboratory exists.
+position within each file (table name, row and column range) and that exactly
+one file per laboratory exists.
 
 ***Note!*** 
 Please select the range without a header. *eCerto* assumes the first and second 
@@ -19,6 +19,7 @@ file located in Range A7:H9, containing 6 replicate measurements of 3 different
 analytes measured in units as specified in column B.
 
 ***Note!*** 
-Currently, *eCerto* needs to load all Excel-result files in one step,
-i.e. you can not add additional files later on but would have to start all over
-again.
+Currently, *eCerto* needs to load all Excel result files in one step, *i.e.* you 
+can not add additional files later on but would have to start all over again.
+However, this is reasonable as statistics will change upon addition of new values 
+which in turn might require adjustments in rounding precision or filtered labs.

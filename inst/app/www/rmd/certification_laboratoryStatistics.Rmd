@@ -14,9 +14,11 @@ Details regarding the conducted statistical test (implementation, parameters) ca
 * <a href="https://rdrr.io/cran/agricolae/man/scheffe.test.html" target="_blank" rel="noopener noreferrer">Scheffe</a> 
 ***Note!*** Similar letters indicate similar group and hence no difference. The test is performed at two $\alpha$ levels (.01 and .05).
 * <a href="https://rdrr.io/cran/outliers/man/dixon.test.html" target="_blank" rel="noopener noreferrer">Dixon</a>
+***Note!*** The Dixon-Test was developed for small sample sizes and will only work for $3 \le n \le 30$.
 * <a href="https://rdrr.io/cran/outliers/man/grubbs.test.html" target="_blank" rel="noopener noreferrer">Grubbs</a>
 ***Note!*** Test is performed as single (only the most extreme value at each end of the distribution is tested) 
-as well as double version (the two most extreme values are tested against the rest).
+as well as double version (the two most extreme values are tested against the rest). Similar to Dixon the test is only 
+applied for $3 \le n \le 30$.
 * <a href="http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html" target="_blank" rel="noopener noreferrer">Nalimov</a>
 * <a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a> 
 ***Note!*** This test is performed consecutively, *i.e.* the Lab showing the highest variance is tested first. 

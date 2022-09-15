@@ -84,6 +84,7 @@ page_CertificationUI = function(id) {
         ns = ns,
         m_DataViewUI(ns("dv"))
       ),
+      # collapsible_box(m_DataViewUI(ns("dv")), title = "Imported data"),
       # Stats (on Lab distributions)
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats') > -1",
@@ -96,6 +97,15 @@ page_CertificationUI = function(id) {
         ),
         DT::dataTableOutput(ns("overview_stats"))
       ),
+      # collapsible_box(
+      #   title = shiny::strong(
+      #     shiny::actionLink(
+      #       inputId = ns("stat_link"),
+      #       label = "Tab.C1 - Statistics regarding lab variances and outlier detection"
+      #     )
+      #   ),
+      #   DT::dataTableOutput(ns("overview_stats"))
+      # ),
       # mstats (on Lab means)
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('mstats') > -1",
@@ -193,7 +203,7 @@ page_CertificationServer = function(id, rv) {
 
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
-    m_analyteServer(id = "analyteModule", rv = rv)
+    m_analyteServer(id = "analyteModule", rv = rv, allow_selection = FALSE)
 
     # --- --- --- --- --- --- --- --- --- --- ---
     # report module

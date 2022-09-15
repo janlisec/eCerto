@@ -5,7 +5,8 @@ table.
 
 ![**User Options** Modify F and U columns in **Tab.C3** to adjust $\mu_c$ and $U_{abs}$](fig/C_Modul_Tab3_pars.png)
 
-All values in `F` and `U` columns can be edited manually by double clicking the respective cell, entering a new value
+Default values are 1 and 0 for `F` and `U` columns respectively, as these are neutral with respect to the result.
+In `F` and `U` columns all values can be edited manually by double clicking the respective cell, entering a new value
 and clicking outside the cell to confirm the modification. `U` columns can also be filled automatically with data from
 the homogeneity and stability modules of *eCerto*. 
 
