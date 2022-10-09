@@ -1,12 +1,12 @@
-#'@title A reactive class based on an R6 object.
-#'@description Builds a class, which allows only restricted access to the
+#' @title A reactive class based on an R6 object.
+#' @description Builds a class, which allows only restricted access to the
 #'    contained 'reactiveValues'. Elements should be accessed via [getValue()].
 #'    Possible advantages are that (1) structure of 'reactiveValues' is clear
 #'    from the beginning (no function like "addVariable" should exist!) and that
 #'    (2) functions to calculate the mean or plot current data can be implemented
 #'    here directly.
-#'@name eCerto_R6Class
-#'@examples
+#' @name eCerto_R6Class
+#' @examples
 #' if (interactive()) {
 #' rv <- shiny::reactiveValues(a=1)
 #' shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
@@ -34,7 +34,8 @@
 #' x[[tmp$c_analyte]][["lab_filter"]] <- "L2"
 #' shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
 #' tmp$c_fltData()
-#'@export
+#' @importFrom purrr chuck pluck
+#' @export
 eCerto <- R6::R6Class(
   classname = "eCerto",
   private = list(

@@ -28,6 +28,9 @@
 #' )
 #' }
 #'
+#' @importFrom knitr is_html_output kable
+#' @importFrom kableExtra kable_styling
+#' @importFrom magick image_read
 #' @rdname mod_report
 #' @keywords internal
 m_reportUI <- function(id) {
@@ -66,7 +69,7 @@ m_reportUI <- function(id) {
 }
 
 #' @rdname mod_report
-#' @export
+#' @keywords internal
 m_reportServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
