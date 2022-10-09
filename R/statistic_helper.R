@@ -3,9 +3,9 @@
 #' @noRd
 Scheffe <- function(data=NULL) {
   S05 <- try(agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"], silent=TRUE)
-  if (class(S05)=="try-error") S05 <- rep("Error", length(levels(data$Lab)))
+  if (inherits(S05, "try-error")) S05 <- rep("Error", length(levels(data$Lab)))
   S01 <- try(agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.01)$group[levels(data$Lab),"groups"], silent=TRUE)
-  if (class(S01)=="try-error") S01 <- rep("Error", length(levels(data$Lab)))
+  if (inherits(S01, "try-error")) S01 <- rep("Error", length(levels(data$Lab)))
   return(data.frame(
     "Scheffe_05"=S05,
     "Scheffe_01"=S01,
@@ -150,9 +150,9 @@ fnc_labmean_stats <- function(data=NULL, precision=4) {
     "Anscombe_p"=NA
   )
   test <- try(moments::agostino.test(x = x), silent=TRUE)
-  if (!class(test)=="try-error") out$Agostino_p <- formatC(test$p.value,format="E",digits=2)
+  if (!inherits(test, "try-error")) out$Agostino_p <- formatC(test$p.value, format="E", digits=2)
   test <- try(moments::anscombe.test(x = x), silent=TRUE)
-  if (!class(test)=="try-error") out$Anscombe_p <- formatC(test$p.value,format="E",digits=2)
+  if (!inherits(test, "try-error")) out$Anscombe_p <- formatC(test$p.value, format="E", digits=2)
   return(out)
 }
 

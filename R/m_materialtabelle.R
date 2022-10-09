@@ -466,13 +466,13 @@ m_materialtabelleServer <- function(id, rv) {
       dt <- mater_table_print()
       # apply analyte specific precision for mean and sd
       prec <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision"]]} ))
-      if (class(prec)!="try-error" && is.numeric(prec) && all(is.finite(prec)) && length(prec)==nrow(dt)) {
+      if (!inherits(prec, "try-error") && is.numeric(prec) && all(is.finite(prec)) && length(prec)==nrow(dt)) {
         dt[,"mean"] <- sapply(1:nrow(dt), function(i) { round(dt[i,"mean"], prec[i]) })
         dt[,"sd"] <- sapply(1:nrow(dt), function(i) { round(dt[i,"sd"], prec[i]) })
       }
       # apply analyte specific precision for U_abs and cert_val
       prec_exp <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision_export"]]} ))
-      if (class(prec_exp)!="try-error" && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(dt)) {
+      if (!inherits(prec, "try-error") && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(dt)) {
         #determine number of decimal places required according to DIN1333
         #n <- n_round_DIN1333(x = mt[,"U_abs"])
         dt[,"cert_val"] <- roundK(x = dt[,"cert_val"], n = prec_exp)
@@ -486,10 +486,17 @@ m_materialtabelleServer <- function(id, rv) {
           disable = list(columns = which(!(colnames(dt) %in% c("k", attr(dt, "col_code")[,"Name"])))-1)
         ),
         options = list(
-          dom="t",
-          pageLength = NULL,
+          dom = "t",
+          #pageLength = NULL,
+          # [JL, 20221007]
+          # pageLength = NULL stopped working as it defaulted to 10
+          # correct option now is paging = FALSE
+          paging = FALSE,
           columnDefs = list(
-            list(className = 'dt-right', targets=which(colnames(dt) %in% c("mean","sd","cert_val","U_abs"))-1)
+            list(
+              className = 'dt-right',
+              targets = which(colnames(dt) %in% c("mean","sd","cert_val","U_abs"))-1
+            )
           )
         ),
         rownames = NULL, selection = list(mode="single", target="row", selected=selected_row_idx$row)

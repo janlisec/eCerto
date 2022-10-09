@@ -113,10 +113,10 @@
                 shinyalert::shinyalert(title = "Warning", text = warn_txt, type = "warning")
               }
               if (!"Comment" %in% colnames(LTS_dat[[i]][["val"]])) LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Comment"=as.character(rep(NA, nrow(LTS_dat[[i]][["val"]]))))
-              if (class(LTS_dat[[i]][["val"]][,"Date"])!="Date") {
+              if (!inherits(LTS_dat[[i]][["val"]][,"Date"], "Date")) {
                 LTS_dat[[i]][["val"]][,"Date"] <- as.Date.character(LTS_dat[[i]][["val"]][,"Date"],tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d"))
               }
-              shiny::validate(shiny::need(class(LTS_dat[[i]][["val"]][,"Date"])=="Date", "Sorry, could not convert column 'Date' into correct format."))
+              shiny::validate(shiny::need(inherits(LTS_dat[[i]][["val"]][,"Date"], "Date"), "Sorry, could not convert column 'Date' into correct format."))
               shiny::validate(shiny::need(LTS_dat[[i]][["def"]][,"U_Def"] %in% c("1s","2s","CI","1sx","2sx"), "Sorry, unexpected value in 'U_Def'. Allowed: '1s', '2s', 'CI', '1sx' and '2sx'. Please check."))
               LTS_dat[[i]][["def"]] <- LTS_dat[[i]][["def"]][,def_cols]
               LTS_dat[[i]][["val"]] <- LTS_dat[[i]][["val"]][,c(val_cols,"Comment")]
