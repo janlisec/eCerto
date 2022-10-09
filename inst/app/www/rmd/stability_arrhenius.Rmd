@@ -19,11 +19,11 @@ the expected storage time at a given $T$.
 The calculations are performed according to the recommendations for accelerated stability 
 studies in ISO GUIDE 35:2017.
 
-```{r child = 'stability_arrhenius_fig1.Rmd'}
+```{r child = 'stability_arrhenius_figS2.Rmd'}
 ```
 
 ```{r child = 'stability_arrhenius_tab1.Rmd'}
 ```
 
-```{r child = 'stability_arrhenius_fig2.Rmd'}
+```{r child = 'stability_arrhenius_figS3.Rmd'}
 ```

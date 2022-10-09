@@ -3,7 +3,8 @@
 #' @param id Name when called as a module in a shiny app.
 #' @param rv The whole R6 object.
 #'
-#' @return a reactive indicating that the user wants to switch back from arrhenius to simple view of S modul.
+#' @return A reactive indicating that the user wants to switch back
+#'    from arrhenius to simple view of S modul.
 #'
 #' @examples
 #' if (interactive()) {
@@ -13,6 +14,8 @@
 #'  ),
 #'  server = function(input, output, session) {
 #'  rv <- eCerto:::test_rv()
+#'  x <- eCerto:::test_Stability_Arrhenius()
+#'  isolate(setValue(rv, c("Stability", "data"), x))
 #'  out <- m_arrheniusServer(id = "arrhenius", rv = rv)
 #'  shiny::observeEvent(out$switch, { print(out$switch) })
 #'  }
@@ -21,7 +24,6 @@
 #'
 #' @rdname m_arrhenius
 #' @export
-#'
 m_arrheniusUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
@@ -37,7 +39,7 @@ m_arrheniusUI <- function(id) {
             )
           )
         ),
-        shiny::plotOutput(outputId = ns("Fig1"))
+        shiny::plotOutput(outputId = ns("FigS2"))
       ),
       shiny::column(2, shiny::wellPanel(
         shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
@@ -48,7 +50,7 @@ m_arrheniusUI <- function(id) {
         shiny::p(),
         sub_header("Options Fig.S2", b=6),
         shiny::checkboxGroupInput(
-          inputId = ns("s_opt_Fig1"),
+          inputId = ns("s_opt_FigS2"),
           label = NULL,
           choices = list(
             "Show Ref Data" = "show_reference_point",
@@ -116,11 +118,9 @@ m_arrheniusServer <- function(id, rv) {
 
     prec <- 6
 
-    #ns <- shiny::NS(id)
-
     out <- shiny::reactiveValues("switch"=0)
 
-    # # use err_txt to provide error messages to the user
+    # use err_txt to provide error messages to the user
     err_txt <- shiny::reactiveVal(NULL)
     shiny::observeEvent(err_txt(), {
       shinyalert::shinyalert(text = err_txt(), type = "info")
@@ -152,71 +152,15 @@ m_arrheniusServer <- function(id, rv) {
       return(tmp)
     })
 
-    # plot relative data over time and temp
-    getFig1 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE) {
-      time <- tmp[,"time"]
-      val <- tmp[,"Value"]
-      if (plot_in_month) time <- round(time*12/365,2)
-      if (plot_nominal_scale) time <- factor(time)
-      if (plot_ln_relative) val <- log(val)
-      tf <- factor(tmp[,"Temp"])
-      pchs <- c(21:25,21:23)[as.numeric(tf)]
-      cols <- c(1:8)[as.numeric(tf)]
-      mns <- tapply(val, list(tmp[,"Temp"], time), mean, na.rm=TRUE)
-      sds <- tapply(val, list(tmp[,"Temp"], time), stats::sd, na.rm=TRUE)
-      xlim <- range(as.numeric(time), na.rm=TRUE)
-      ylim <- range(c(mns-sds, mns+sds, val), na.rm=TRUE)
-      ylim <- ifelse(plot_ln_relative, 0, 1)+c(-1,1)*max(abs(ylim-ifelse(plot_ln_relative, 0, 1)))
-      cex_plot <- 1.5
-      graphics::par(mar=c(5.5,4.5,1,1))
-      graphics::par(mfrow=c(1,length(levels(tf))-1))
-      graphics::par(cex.lab=cex_plot*1.1, cex.axis=cex_plot*1.1)
-      for (k in levels(tf)[-1]) {
-        plot(xlim, ylim, xlab=ifelse(plot_in_month, "Month", "Days"), ylab=ifelse(plot_ln_relative, "log(Relative value)", "Relative value"), type="n", main="", axes=FALSE)
-        graphics::mtext(text = paste0(k, "\u00B0C"), side = 1, line = -1.8, adj = 0.98, cex = cex_plot)
-        graphics::axis(2)
-        graphics::abline(h=ifelse(plot_ln_relative, 0, 1), col=grDevices::grey(0.9), lwd=3)
-        flt <- time==0
-        if (show_reference_point) {
-          graphics::points(y=val[flt], x=time[flt], pch=21, bg=grDevices::grey(0.9), cex=2)
-          graphics::abline(h=mean(val[flt], na.rm=TRUE)+c(-1,1)*stats::sd(val[flt], na.rm=TRUE), col=grDevices::grey(0.9), lwd=1, lty=2)
-        }
-        if (plot_nominal_scale) {
-          tmp.x <- 1:length(levels(factor(time)))
-          graphics::axis(1, at=tmp.x, labels = levels(factor(time)))
-        } else {
-          tmp.x <- as.numeric(levels(factor(time)))
-          graphics::axis(1)
-        }
-        graphics::box()
-        graphics::lines(x=tmp.x, y=mns[k,]-sds[k,], col=unique(cols[tf==k]), lwd=1, lty=2)
-        graphics::lines(x=tmp.x, y=mns[k,], col=unique(cols[tf==k]), lwd=3)
-        graphics::lines(x=tmp.x, y=mns[k,]+sds[k,], col=unique(cols[tf==k]), lwd=1, lty=2)
-        flt <- tmp[,"Temp"]==k
-        graphics::points(y=val[flt], x=time[flt], pch=pchs[flt], bg=cols[flt], cex=2)
-        if (!plot_ln_relative) {
-          graphics::mtext(text = paste0("recovery = ", round(100*mean(val[flt], na.rm=T),1), "%"), side = 3, line = -1.8, adj = 0.02, cex = cex_plot)
-          graphics::mtext(text = paste0("(RSD = ", round(100*stats::sd(val[flt], na.rm=T)/mean(val[flt], na.rm=T),1), "%)"), side = 3, line = -3.6, adj = 0.02, cex = cex_plot)
-        }
-        if (plot_ln_relative & plot_in_month) {
-          lm_res <- stats::coef(stats::lm(val[flt] ~ as.numeric(as.character(time[flt]))))
-          graphics::mtext(text = paste("slope =", round(lm_res[2],4)), side = 3, line = -1.8, adj = 0.98, col=ifelse(lm_res[2]<0,3,2), cex = cex_plot)
-        }
-      }
-      graphics::par(mfrow=c(1,1))
-    }
-
-    output$Fig1 <- shiny::renderPlot({
-      #message("[m_arrheniusServer] Fig1")
-      getFig1(
+    output$FigS2 <- shiny::renderPlot({
+      prepFigS2(
         tmp=df(),
-        show_reference_point = "show_reference_point" %in% input$s_opt_Fig1,
-        plot_nominal_scale = "plot_nominal_scale" %in% input$s_opt_Fig1,
-        plot_in_month = "plot_in_month" %in% input$s_opt_Fig1,
-        plot_ln_relative = "plot_ln_relative" %in% input$s_opt_Fig1
+        show_reference_point = "show_reference_point" %in% input$s_opt_FigS2,
+        plot_nominal_scale = "plot_nominal_scale" %in% input$s_opt_FigS2,
+        plot_in_month = "plot_in_month" %in% input$s_opt_FigS2,
+        plot_ln_relative = "plot_ln_relative" %in% input$s_opt_FigS2
       )
     })
-
 
     # generate Tab1
     getTab1 <- function(tmp) {
@@ -227,7 +171,7 @@ m_arrheniusServer <- function(id, rv) {
         flt <- tmp[,"Temp"]==k
         a <- stats::coef(stats::lm(val[flt] ~ time[flt]))[2]
         return(data.frame(
-          "T [\u00B0C]"=k,
+          "dummy"=k,
           "Rec"=paste0(round(100*mean(tmp[flt,"Value"], na.rm=T),1), "%"),
           "RSD"=paste0(round(100*stats::sd(tmp[flt,"Value"], na.rm=T)/mean(tmp[flt,"Value"], na.rm=T),1), "%"),
           "1/K"=round(1/(273.15+as.numeric(k)),5),
@@ -235,6 +179,7 @@ m_arrheniusServer <- function(id, rv) {
           "log(-k_eff)"=ifelse(a<0, log(-a), NA),
           check.names=FALSE))
       })
+      colnames(out)[1] <- "T [\u00B0C]"
       return(out)
     }
     tab1 <- shiny::reactive({ getTab1(tmp=df()) })
@@ -294,13 +239,22 @@ m_arrheniusServer <- function(id, rv) {
 
     analyte_cert_vals <- shiny::reactive({
       mt <- getValue(rv, c("General", "materialtabelle"))
-      validate(need(expr = mt, message = "An existing material table is needed to extract the certified value used in subsequent calculations."))
+      shiny::validate(shiny::need(
+        expr = mt,
+        message = "An existing material table is needed to extract the certified value used in subsequent calculations."
+      ))
       l <- which(mt[,"analyte"]==input$analyte)
-      validate(need(expr = length(l)==1, message = paste("Could not find analyte", input$analyte, "within column 'analyte' of current material table.")))
+      shiny::validate(shiny::need(
+        expr = length(l)==1,
+        message = paste("Could not find analyte", input$analyte, "within column 'analyte' of current material table.")
+      ))
       cert_val <- mt[l,"cert_val"]
       U_abs <- mt[l,"U_abs"]
       coef <- log((cert_val-U_abs)/cert_val)
-      validate(need(expr = is.finite(coef), message = "cert_val and sd do not yield a finite value"))
+      shiny::validate(shiny::need(
+        expr = is.finite(coef),
+        message = "cert_val and sd do not yield a finite value"
+      ))
       return(coef)
     })
 
@@ -321,24 +275,14 @@ m_arrheniusServer <- function(id, rv) {
       shiny::HTML("At the specified temperature of", input$user_temp, " the analyte ", input$analyte, " is expected to be stable for", m, "month (mean) or", m_CIup, "month (CI_upper) respectively.")
     })
 
-    getFig2 <- function(tab) {
-      xlim <- range(tab[,"1/K"], na.rm=TRUE)
-      ylim <- range(c(tab[,"log(-k_eff)"], tab[,"CI_upper"], tab[,"CI_lower"]), na.rm=TRUE)
-      graphics::par(mar=c(5,4,2.5,1))
-      plot(xlim, ylim, xlab="1/K", ylab="log(-k_eff)", type="n", main="")
-      graphics::axis(side = 3, at = 1/(273.15+as.numeric(tab[,1])), labels = tab[,1])
-      graphics::lines(x=tab[,"1/K"], y=tab[,"CI_upper"], col=2, lwd=1, lty=2)
-      graphics::lines(x=tab[,"1/K"], y=tab[,"log(k)_calc"], col=2, lwd=3)
-      graphics::lines(x=tab[,"1/K"], y=tab[,"CI_lower"], col=2, lwd=1, lty=2)
-      graphics::points(y=tab[,"log(-k_eff)"], x=tab[,"1/K"], pch=21, bg=4, cex=2)
-    }
     output$Fig2 <- shiny::renderPlot({
       shiny::req(tab1exp())
-      getFig2(tab=tab1exp())
+      browser()
+      prepFigS3(tab=tab1exp())
     })
 
     shiny::observeEvent(input$ArrheniusPlot1_link, {
-      help_the_user_modal("stability_arrhenius_fig1")
+      help_the_user_modal("stability_arrhenius_figS2")
     })
 
     shiny::observeEvent(input$ArrheniusTab_link, {
@@ -346,7 +290,7 @@ m_arrheniusServer <- function(id, rv) {
     })
 
     shiny::observeEvent(input$ArrheniusPlot2_link, {
-      help_the_user_modal("stability_arrhenius_fig2")
+      help_the_user_modal("stability_arrhenius_figS3")
     })
 
     return(out)

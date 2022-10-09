@@ -15,7 +15,8 @@ m_arrheniusServer(id, rv)
 \item{rv}{The whole R6 object.}
 }
 \value{
-a reactive indicating that the user wants to switch back from arrhenius to simple view of S modul.
+A reactive indicating that the user wants to switch back
+from arrhenius to simple view of S modul.
 }
 \description{
 m_stability_arrhenius.
@@ -28,6 +29,8 @@ shiny::shinyApp(
  ),
  server = function(input, output, session) {
  rv <- eCerto:::test_rv()
+ x <- eCerto:::test_Stability_Arrhenius()
+ isolate(setValue(rv, c("Stability", "data"), x))
  out <- m_arrheniusServer(id = "arrhenius", rv = rv)
  shiny::observeEvent(out$switch, { print(out$switch) })
  }
