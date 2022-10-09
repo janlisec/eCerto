@@ -1,29 +1,30 @@
-# # Test 1: Certifications Uploaded, but Homogeneity hasn't yet ---------------------
-# testthat::test_that(
-#   desc = "Init of materialtable after Certifications uploaded",
-#   code = {
-#     testthat::local_edition(3)
-#     test_datreturn <- eCerto:::test_datreturn() # load test data
-#     suppressMessages(
-#       shiny::testServer(
-#         app = eCerto::m_materialtabelleServer,
-#         args = list(rdataUpload = shiny::reactive({NULL}), datreturn = test_datreturn),
-#         expr = {
-#           session$setInputs(pooling=FALSE) # needs to be set to trigger events ???
-#           testthat::expect_equal(availableAnalytes(), c("Si","Fe","Cu","Mn","Mg","Cr","Ni","Zn","Ti","Sc","Sn"))
-#           testthat::expect_equal(nrow(mater_table()), 11)
-#           testthat::expect_equal(colnames(mater_table()), c("analyte", "mean", "cert_val", "sd", "n", "u_char", "u_com", "k", "U"))
-#           testthat::expect_equal(cert_sd(), getValue(test_datreturn,"cert_sd"))
-#           testthat::expect_equal(cert_mean(), getValue(test_datreturn,"cert_mean"))
-#           testthat::expect_equal(mater_table()$U, getValue(test_datreturn,"mater_table")[,"U"], tolerance = 1e-5)
-#           testthat::expect_equal(mater_table()$char, getValue(test_datreturn,"mater_table")[,"u_char"], tolerance = 1e-5)
-#           testthat::expect_equal(mater_table()$com, getValue(test_datreturn,"mater_table")[,"u_com"], tolerance = 1e-5)
-#         }
-#       )
-#     )
-#   }
-# )
-#
+testthat::test_that(
+  desc = "Init of materialtable after Certifications uploaded",
+  code = {
+    testthat::local_edition(3)
+    rv <- eCerto:::test_rv() # load test data
+    suppressMessages(
+      shiny::testServer(
+        app = eCerto:::m_materialtabelleServer,
+        args = list(rv = rv),
+        expr = {
+          #browser()
+          gargoyle::init("update_c_analyte")
+          #session$setInputs(pooling=FALSE) # needs to be set to trigger events ???
+          mt <- getValue(rv, c("General","materialtabelle"))
+          testthat::expect_equal(unname(rv$c_analytes()), c("Si","Fe","Cu"))
+          testthat::expect_equal(nrow(mt), 3)
+          testthat::expect_equal(colnames(mt), c("analyte", "mean", "cert_val", "sd", "n", "u_char", "u_com", "k", "U", "U_abs", "unit"))
+          # set the current analyte to start calculation
+          c_analyte(rv$c_analyte)
+          testthat::expect_equal(cert_sd(), 0.004331029)
+          testthat::expect_equal(cert_mean(), 0.0484375)
+        }
+      )
+    )
+  }
+)
+
 # # Test 2: another Analyte gets selected ------------------------------------
 # testthat::test_that(
 #   desc = "materialtable gets updated after another analyte gets selected",
