@@ -2,8 +2,8 @@ testthat::test_that(
   desc = "Init of materialtable after Certifications uploaded",
   code = {
     testthat::local_edition(3)
-    rv <- eCerto:::test_rv() # load test data
-    suppressMessages(
+    suppressMessages({
+      rv <- eCerto:::test_rv() # load test data
       shiny::testServer(
         app = eCerto:::m_materialtabelleServer,
         args = list(rv = rv),
@@ -21,7 +21,7 @@ testthat::test_that(
           testthat::expect_equal(cert_mean(), 0.0484375)
         }
       )
-    )
+    })
   }
 )
 

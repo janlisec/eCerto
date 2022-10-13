@@ -1,8 +1,8 @@
 testthat::test_that(
   desc = "Boxplot-View toggled saved in rv",
   code = {
-    rv <- eCerto:::test_rv()
-    suppressMessages(
+    suppressMessages({
+      rv <- eCerto:::test_rv()
       shiny::testServer(
         app = page_CertificationServer,
         args = list(
@@ -20,6 +20,6 @@ testthat::test_that(
           testthat::expect_equal(eCerto::getValue(rv, c("Certification_processing","CertValPlot","Fig01_width")), 450)
         }
       )
-    )
+    })
   }
 )

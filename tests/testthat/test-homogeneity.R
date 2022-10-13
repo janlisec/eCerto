@@ -50,21 +50,23 @@ testthat::test_that(
 testthat::test_that(
   desc = "All objects for report are present",
   code = {
-    rv <- eCerto:::test_rv()
-    mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
-    attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
-    isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
-    isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
-    shiny::testServer(
-      app = eCerto::page_HomogeneityServer,
-      args = list(rv = rv),
-      expr =  {
-        testthat::expect_true(all(c("data","h_vals") %in% names(getValue(rv, "Homogeneity"))))
-        # set input value to trigger calculation of 'h_vals'
-        session$setInputs(h_sel_analyt = "Fe.axial")
-        session$flushReact()
-        testthat::expect_true(all(sapply(c("data","h_vals"), function(x) {!is.null(getValue(rv, "Homogeneity")[[x]])})))
-      }
-    )
+    suppressMessages({
+      rv <- eCerto:::test_rv()
+      mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
+      attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
+      isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
+      isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
+      shiny::testServer(
+        app = eCerto::page_HomogeneityServer,
+        args = list(rv = rv),
+        expr =  {
+          testthat::expect_true(all(c("data","h_vals") %in% names(getValue(rv, "Homogeneity"))))
+          # set input value to trigger calculation of 'h_vals'
+          session$setInputs(h_sel_analyt = "Fe.axial")
+          session$flushReact()
+          testthat::expect_true(all(sapply(c("data","h_vals"), function(x) {!is.null(getValue(rv, "Homogeneity")[[x]])})))
+        }
+      )
+    })
   }
 )
