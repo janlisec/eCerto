@@ -15,7 +15,7 @@
 #'@return A data frame.
 #'@keywords internal
 styleTabH1 <- function(x, mt = NULL, apm = NULL) {
-  message("[styleTabH1] perform statistics on imported homogeneity data")
+  message("[styleTabH1] styling Tab.H1")
   style_x <- x
   for (i in 1:nrow(style_x)) {
     an <- as.character(style_x[i,"analyte"])
