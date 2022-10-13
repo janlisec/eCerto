@@ -19,26 +19,27 @@ app_ui <- function(request) {
       # ),
       id = "navbarpage",
       title = shiny::div(
+        style = "position: relative;",
         class = "verticalhorizontal",
-        shiny::img(
-          src = "www/bam_logo_20pt.gif",
-          position = "absolute",
-          margin = "auto",
-          alt="BAM Logo"
-        ),
+        shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt="BAM Logo"),
         shiny::strong("BAM"),
-        shiny::em("eCerto"),
-        position="relative"
+        shiny::em("eCerto")
       ),
       selected = "Start",
       windowTitle = "BAM eCerto",
       position = "fixed-top",
-      footer = shiny::pre(shiny::HTML(
-        get_golem_config("golem_name"), "|",
-        get_golem_config("app_version"), "|",
-        get_golem_config("app_date"), "|",
-        "jan.lisec@bam.de"
-      )),
+      footer = shiny::div(
+        style="position: fixed; bottom: 0px; left: 0px; width: 100%; padding-left: 15px; padding-top: 5px; padding-bottom: 5px; background-color: #f8f8f8; font-family: Lucida Console, monospace;",
+        #shiny::pre(
+          shiny::HTML(
+            get_golem_config("golem_name"), "|",
+            get_golem_config("app_version"), "|",
+            get_golem_config("app_date"), "|",
+            "jan.lisec@bam.de", "|",
+            '<a href="https://www.bam.de/Navigation/DE/Services/Datenschutz/datenschutz.html" target="_blank" rel="noopener noreferrer">BAM Datenschutzerkl\u00e4rung</a>'
+          )
+        #)
+      ),
       shiny::tabPanel(
         id = "start",
         title = "Start",
