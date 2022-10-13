@@ -334,7 +334,7 @@
       content = function(file) {
         # ensure that logo file and font files are in the same folder as the Rmd.
         rmdfile <- get_local_file("report_vorlage_lts.Rmd")
-        logofile <- "BAMLogo2015.svg"
+        logofile <- "BAMLogo2015.png"
         # font files: "BAMKlavika-Light.ttf", "BAMKlavika-Medium.ttf", "BAMKlavika-LightItalic.ttf", "BAMKlavika-MediumItalic.ttf"
 
         # Set up parameters to pass to Rmd document

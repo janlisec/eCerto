@@ -1,8 +1,10 @@
 ---
-title-meta: LTS-Report
-output: 
-  pdf_document:
+title-meta: "LTS-Report"
+output:
+  pdf_document: 
     latex_engine: lualatex
+  html_document:
+    df_print: paged
 header-includes:
 - \usepackage{booktabs}
 - \usepackage{longtable}
@@ -19,7 +21,8 @@ header-includes:
 - \usepackage{makecell}
 - \usepackage{xcolor}
 - \usepackage{fontspec}
-- \setmainfont{BAMKlavika-Light.ttf}[BoldFont = BAMKlavika-Medium.ttf, ItalicFont = BAMKlavika-LightItalic.ttf, BoldItalicFont = BAMKlavika-MediumItalic.ttf]
+- "\\setmainfont{BAMKlavika-Light.ttf}[BoldFont = BAMKlavika-Medium.ttf, ItalicFont
+  = BAMKlavika-LightItalic.ttf, BoldItalicFont = BAMKlavika-MediumItalic.ttf]"
 params:
   dat: NA
   logo_file: NA
@@ -93,25 +96,28 @@ CI <- sd(v[,"Value"])*qt(0.975, nrow(v)-1)/sqrt(nrow(v)-1)
 U_ilc <- round(100*d[,"U"]/d[,"CertVal"],2)
 U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI/median(v[,"Value"]), "1sx"=s_xrel, "2sx"=2*s_xrel), 2)
 n_digits <- nchar(strsplit(as.character(d[,"CertVal"]), "[.]")[[1]][2])
+tab1_property_string <- paste0(d[,"KW_Def"], " (", d[,"KW"],")")
+tab1_cert_val_string <- paste(d[,"CertVal"], "±",  d[,"U"], "/", 100*d[,"Coef_of_Var"], "rel. [%] (", d[,"U_Def"], ")", d[,"KW_Unit"])
+tab2_median_val_string <- paste(round(median(v[,"Value"]), n_digits), d[,"KW_Unit"])
 ```
 
 **RM Informations**
 
-|                              |                                                                                                                        |
-|------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| Name:                        | **`r d[,"RM"]`**                                                                                                       |
-| Property:                    | **`r paste0(d[,"KW_Def"], " (", d[,"KW"],")")`**                                                                       |
-| Certified Value:             | **`r paste(d[,"CertVal"], "±",  d[,"U"], "/", 100*d[,"Coef_of_Var"], "rel. [%] (", d[,"U_Def"], ")", d[,"KW_Unit"])`** |
-| Number of accepted datasets: | **`r d[,"acc_Datasets"]`**                                                                                             |
+|      |           |
+| ---: | :-------- |
+| Name:                        | **`r d[,"RM"]`**             |
+| Property:                    | **`r tab1_property_string`** |
+| Certified Value:             | **`r tab1_cert_val_string`** |
+| Number of accepted datasets: | **`r d[,"acc_Datasets"]`**   |
 
 **Statistical Information monitoring (LTS)**
 
-|                            |                                      |                                        |                                        |                                                                    |
-|----------------------------|--------------------------------------|----------------------------------------|----------------------------------------|--------------------------------------------------------------------|
-| Number of measurements:    | **`r nrow(v)`**                      |                                        | Median:                                | **`r paste(round(median(v[,"Value"]), n_digits), d[,"KW_Unit"])`** |
-| Standarddeviation:         | **s=`r round(sd(v[,"Value"]), 2)`**  | **s~rel~=`r round(100*U_lts_rel,2)`%** | **2s=`r round(2*sd(v[,"Value"]), 2)`** | **2s~rel~=`r round(2*100*U_lts_rel,2)`%**                          |
-| Standarddeviation of mean: | **s~x~=`r round(s_x, 4)`**           | **s~x,rel~=`r round(100*s_xrel,2)`%**  | **2s~x~=`r round(2*s_x, 4)`**          | **2s~x,rel~=`r round(2*100*s_xrel,2)`%**                           |
-| Confidence interval:       | CI~0.95~                             | **`r round(CI, 4)`**                   | CI~0.95,rel~                           | **`r round(100*CI/median(v[,"Value"]), 2)`%**                      |
+|        |     |     |     |     |
+| -----: | --- | --- | --- | --- |
+| Number of measurements:                          | **`r nrow(v)`**                      |                                        | Median:                                | **`r tab2_median_val_string`**                |
+| Standarddeviation:                               | **s=`r round(sd(v[,"Value"]), 2)`**  | **s~rel~=`r round(100*U_lts_rel,2)`%** | **2s=`r round(2*sd(v[,"Value"]), 2)`** | **2s~rel~=`r round(2*100*U_lts_rel,2)`%**     |
+| Standarddeviation of mean:                       | **s~x~=`r round(s_x, 4)`**           | **s~x,rel~=`r round(100*s_xrel,2)`%**  | **2s~x~=`r round(2*s_x, 4)`**          | **2s~x,rel~=`r round(2*100*s_xrel,2)`%**      |
+| Confidence interval:                             | (CI~0.95~)                           | **`r round(CI, 4)`**                   | (CI~0.95,rel~)                         | **`r round(100*CI/median(v[,"Value"]), 2)`%** |
 
 **Results**
 
