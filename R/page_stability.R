@@ -93,15 +93,15 @@ page_StabilityServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    shiny::observeEvent(input$tab_link,{
-      help_the_user_modal("stability_uncertainty")
-    })
-
+    # server part of the arrhenius module
     arrhenius_out <- m_arrheniusServer(id="arrhenius", rv=rv)
+
+    #
     shiny::observeEvent(arrhenius_out$switch, {
       shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "loaded")
     }, ignoreInit = TRUE)
 
+    # switch back and forth between stability 'main' and 'arrhenius' panels
     shiny::observeEvent(input$s_switch_arrhenius, {
       shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "tP_arrhenius")
     }, ignoreInit = TRUE)
@@ -118,7 +118,7 @@ page_StabilityServer <- function(id, rv) {
       }
     })
 
-    shiny::observeEvent(getValue(rv, c("Stability","uploadsource")), {
+    shiny::observeEvent(getValue(rv, c("Stability", "uploadsource")), {
       shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
     })
 
@@ -241,15 +241,6 @@ page_StabilityServer <- function(id, rv) {
       }
     }, ignoreNULL = FALSE)
 
-    shiny::observeEvent(input$s_sel_analyte, {
-      # show/hide the input field to select a deviation type (will effect the Figure)
-      shiny::req(input$s_sel_dev)
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      a <- input$s_sel_analyte
-      test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
-      shinyjs::toggle(id="s_sel_dev", condition = test)
-    })
-
     output$s_sel_dev <- shiny::renderUI({
       shiny::req(s_Data(), getValue(rv, c("General", "materialtabelle")), input$s_sel_analyte)
       mt <- getValue(rv, c("General", "materialtabelle"))
@@ -257,6 +248,15 @@ page_StabilityServer <- function(id, rv) {
       # show element only once mat_tab is available and analyte and mean value exist
       shiny::req(a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"]))
       shiny::selectInput(inputId=session$ns("s_sel_dev"), label="deviation to show", choices=c("2s","U"), selected="2s")
+    })
+
+    shiny::observeEvent(input$s_sel_analyte, {
+      # show/hide the input field to select a deviation type (will effect the Figure)
+      shiny::req(input$s_sel_dev)
+      mt <- getValue(rv, c("General", "materialtabelle"))
+      a <- input$s_sel_analyte
+      test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
+      shinyjs::toggle(id="s_sel_dev", condition = test)
     })
 
     output$s_info <- shiny::renderUI({
@@ -273,40 +273,18 @@ page_StabilityServer <- function(id, rv) {
       shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data for analyte ", an, "."))
     })
 
-    # Figure
+    # Fig.S1
     output$s_plot <- shiny::renderPlot({
       shiny::req(s_Data(), input$s_sel_analyte)
-      s <- s_Data()
-      an <- input$s_sel_analyte
-      l <- s[,"analyte"]==an
-      aps <- getValue(rv, c("General", "apm"))
-      # Convert to format used in LTS modul
-      # load SD, CertVal, unit and U from certification if available
-      CertVal <- mean(s[l,"Value"], na.rm=T)
-      U <- 2*stats::sd(s[l,"Value"], na.rm=T)
-      U_Def <- "2s"
-      KW_Unit <- NA
-      if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
-        mt <- getValue(rv, c("General", "materialtabelle"))
-        CertVal <- mt[mt[,"analyte"] %in% an, "cert_val"]
-        U <- ifelse(input$s_sel_dev=="U", 1, 2) * mt[mt[,"analyte"] %in% an, ifelse(input$s_sel_dev=="U", "U_abs", "sd")]
-        U_Def <- input$s_sel_dev
-        KW_Unit <- mt[which(mt[,"analyte"] == an), "unit"]
-      }
-      KW_Def <- ifelse("KW_Def" %in% colnames(s), unique(s[l,"KW_Def"])[1], an)
-      KW_Unit <- ifelse("KW_Unit" %in% colnames(s), unique(s[l,"KW_Unit"])[1], KW_Unit)
-      x <- list("val"=s[l,],
-                "def"=data.frame(
-                  "CertVal" = CertVal,
-                  "U"= U,
-                  "U_Def" = U_Def,
-                  "KW" = ifelse(an==KW_Def, NA, an),
-                  "KW_Def" = KW_Def,
-                  "KW_Unit" = KW_Unit,
-                  stringsAsFactors = FALSE
-                )
+      plot_lts_data(
+        x = prepFigS1(
+          s = s_Data(),
+          an = input$s_sel_analyte,
+          apm = getValue(rv, c("General", "apm")),
+          U_Def = input$s_sel_dev,
+          mt = getValue(rv, c("General", "materialtabelle"))
+        )
       )
-      plot_lts_data(x=x)
     })
 
     # The Dropdown-Menu to select the column of materialtabelle to transfer to
@@ -343,11 +321,14 @@ page_StabilityServer <- function(id, rv) {
       setValue(rv, c("General","materialtabelle"), s_transfer_U$value)
     }, ignoreInit = TRUE)
 
+    # render help files
     shiny::observeEvent(input$fig1_link,{
       help_the_user_modal("stability_plot")
     })
 
-
+    shiny::observeEvent(input$tab_link,{
+      help_the_user_modal("stability_uncertainty")
+    })
 
   })
 }

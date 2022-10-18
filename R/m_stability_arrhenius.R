@@ -277,7 +277,6 @@ m_arrheniusServer <- function(id, rv) {
 
     output$Fig2 <- shiny::renderPlot({
       shiny::req(tab1exp())
-      browser()
       prepFigS3(tab=tab1exp())
     })
 
