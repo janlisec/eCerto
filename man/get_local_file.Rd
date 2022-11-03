@@ -14,12 +14,14 @@ A file path.
 }
 \description{
 \code{get_local_file} will provide a full file path using the
-currently specified 'www' folder specified as a recourcePaths.
+currently specified 'www' folder specified as a recourcePaths. This path
+can be different depending on whether the app is run as development
+version, using the library function or serving via shinyapps.io.
 }
 \details{
 Developing a shiny app as an R package in parallel leads to difficulties
 on where to find specific files after installation (e.g. font descriptions,
 markdown documents etc.). The function \code{get_local_file} will search
-a specfied pattern in the current recourcePaths for 'www'.
+a specified pattern in the current recourcePaths for 'www'.
 }
 \keyword{internal}

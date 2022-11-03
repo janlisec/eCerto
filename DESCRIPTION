@@ -1,7 +1,7 @@
 Package: eCerto
 Title: Statistical tests for the production of reference materials
-Version: 0.1.42
-Date: 2022-10-13
+Version: 0.1.43
+Date: 2022-11-03
 Authors@R: c(
     person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
     person("Frederik", "Kreß", role = "aut"))
@@ -41,6 +41,7 @@ Imports:
     tidyxl
 Suggests: 
     config,
+    fs,
     pkgload,
     rsconnect,
     shinytest,
