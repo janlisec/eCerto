@@ -175,53 +175,11 @@ page_HomogeneityServer = function(id, rv) {
       shiny::req(h_vals())
       # watch the reactiveVal 'redraw' to avoid the user deselecting all rows
       h_tab1_current$redraw
-      x <- styleTabH1(x = h_vals(), mt = getValue(rv, c("General", "materialtabelle")), apm = getValue(rv, c("General", "apm")))
-      # identify styling columns to render them invisibly by DT
-      inv_cols <- grep("style_", colnames(x))-1
-      if (length(unique(x[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
-      # prepare DT
-      dt <- DT::datatable(
-        data = x,
-        options = list(
-          dom = "t",
-          pageLength = NULL,
-          columnDefs = list(
-            list(visible = FALSE, targets = inv_cols),
-            #list(width = '30px', targets = c(3,4)),
-            #list(width = '60px', targets = c(5:9)),
-            list(className = 'dt-right', targets='_all')
-          )
-        ),
-        rownames=NULL, selection = list(mode="single", target="row", selected=h_tab1_current$row)
-      )
-      # style different DT columns
-      dt <- DT::formatStyle(
-        table = dt,
-        columns = "analyte",
-        valueColumns = "style_analyte",
-        target = "cell",
-        color = DT::styleValue()
-      )
-      dt <- DT::formatStyle(
-        table = dt,
-        columns = "s_bb",
-        valueColumns = "style_s_bb",
-        target = "cell",
-        fontWeight = DT::styleValue()
-      )
-      dt <- DT::formatStyle(
-        table = dt,
-        columns = "s_bb_min",
-        valueColumns = "style_s_bb_min",
-        target = "cell",
-        fontWeight = DT::styleValue()
-      )
-      dt <- DT::formatStyle(
-        table = dt,
-        columns = "P",
-        target = "cell",
-        color = DT::styleInterval(cuts = 0.05, values = c("red","black")),
-        fontWeight = DT::styleInterval(cuts = 0.05, values = c("bold","normal"))
+      dt <- styleTabH1(
+        x = h_vals(),
+        mt = getValue(rv, c("General", "materialtabelle")),
+        apm = getValue(rv, c("General", "apm")),
+        output = "dt", cr = h_tab1_current$row
       )
       return(dt)
     })
@@ -271,7 +229,7 @@ page_HomogeneityServer = function(id, rv) {
     output$h_boxplot <- shiny::renderPlot({
       shiny::req(h_Data(), input$h_sel_analyt, precision())
       prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision())
-    }, height=500, width=shiny::reactive({fig_width()}))
+    }, height=504, width=shiny::reactive({fig_width()}))
 
     output$h_statement2 <- shiny::renderUI({
       shiny::req(h_vals(), input$h_sel_analyt)
@@ -308,7 +266,8 @@ page_HomogeneityServer = function(id, rv) {
 
     # download outputs
     output$h_Report <- shiny::downloadHandler(
-      filename = function() { "Homogeneity_report.pdf" },
+      #filename = function() { "Homogeneity_report.pdf" },
+      filename = function() { "Homogeneity_report.html" },
       content = function(file) {
         rmdfile <- get_local_file("report_vorlage_homogeneity.Rmd")
         # render the markdown file
@@ -318,7 +277,8 @@ page_HomogeneityServer = function(id, rv) {
             out <- rmarkdown::render(
               input = rmdfile,
               output_file = file,
-              output_format = rmarkdown::pdf_document(),
+              #output_format = rmarkdown::pdf_document(),
+              output_format = rmarkdown::html_document(),
               params = list("Homogeneity" = shiny::reactiveValuesToList(getValue(rv,"Homogeneity"))),
               envir = new.env(parent = globalenv())
             )

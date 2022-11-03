@@ -4,6 +4,8 @@
 #'@param x The Hom data from an session R6 object.
 #'@param mt The mt from an session R6 object.
 #'@param apm The apm from an session R6 object.
+#'@param output Return either the dataframe with styling information in columns or the corresponding datatable object.
+#'@param cr Current row selected (relevant if output = 'dt').
 #'@examples
 #'x <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
 #'x
@@ -12,9 +14,10 @@
 #'eCerto:::styleTabH1(x = x, mt = mt)
 #'apm <- list("Fe"=list("precision"=2))
 #'eCerto:::styleTabH1(x = x, apm = apm)
-#'@return A data frame.
+#'eCerto:::styleTabH1(x = x, output = "dt")
+#'@return A data frame or a datatable object depending on parameter 'output'.
 #'@keywords internal
-styleTabH1 <- function(x, mt = NULL, apm = NULL) {
+styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr = 1) {
   message("[styleTabH1] styling Tab.H1")
   style_x <- x
   for (i in 1:nrow(style_x)) {
@@ -35,5 +38,57 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL) {
   }
   style_x[,"style_s_bb"] <- c("bold","normal")[1+as.numeric(style_x[,"s_bb"]<style_x[,"s_bb_min"])]
   style_x[,"style_s_bb_min"] <- c("bold","normal")[1+as.numeric(style_x[,"s_bb"]>=style_x[,"s_bb_min"])]
-  return(style_x)
+
+  if (output=="df") {
+    return(style_x)
+  } else {
+    x <- style_x
+    inv_cols <- grep("style_", colnames(x))-1
+    if (length(unique(x[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
+    # prepare DT
+    dt <- DT::datatable(
+      data = x,
+      options = list(
+        dom = "t",
+        pageLength = NULL,
+        columnDefs = list(
+          list(visible = FALSE, targets = inv_cols),
+          #list(width = '30px', targets = c(3,4)),
+          #list(width = '60px', targets = c(5:9)),
+          list(className = 'dt-right', targets='_all')
+        )
+      ),
+      rownames=NULL, selection = list(mode="single", target="row", selected=cr)
+    )
+    # style different DT columns
+    dt <- DT::formatStyle(
+      table = dt,
+      columns = "analyte",
+      valueColumns = "style_analyte",
+      target = "cell",
+      color = DT::styleValue()
+    )
+    dt <- DT::formatStyle(
+      table = dt,
+      columns = "s_bb",
+      valueColumns = "style_s_bb",
+      target = "cell",
+      fontWeight = DT::styleValue()
+    )
+    dt <- DT::formatStyle(
+      table = dt,
+      columns = "s_bb_min",
+      valueColumns = "style_s_bb_min",
+      target = "cell",
+      fontWeight = DT::styleValue()
+    )
+    dt <- DT::formatStyle(
+      table = dt,
+      columns = "P",
+      target = "cell",
+      color = DT::styleInterval(cuts = 0.05, values = c("red","black")),
+      fontWeight = DT::styleInterval(cuts = 0.05, values = c("bold","normal"))
+    )
+    return(dt)
+  }
 }

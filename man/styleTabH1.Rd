@@ -4,7 +4,7 @@
 \alias{styleTabH1}
 \title{fnc_styleTabH1.}
 \usage{
-styleTabH1(x, mt = NULL, apm = NULL)
+styleTabH1(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr = 1)
 }
 \arguments{
 \item{x}{The Hom data from an session R6 object.}
@@ -12,9 +12,13 @@ styleTabH1(x, mt = NULL, apm = NULL)
 \item{mt}{The mt from an session R6 object.}
 
 \item{apm}{The apm from an session R6 object.}
+
+\item{output}{Return either the dataframe with styling information in columns or the corresponding datatable object.}
+
+\item{cr}{Current row selected (relevant if output = 'dt').}
 }
 \value{
-A data frame.
+A data frame or a datatable object depending on parameter 'output'.
 }
 \description{
 \code{styleTabH1} will style Tab.H1 for pretty output.
@@ -30,5 +34,6 @@ mt <- data.frame("analyte"="Fe")
 eCerto:::styleTabH1(x = x, mt = mt)
 apm <- list("Fe"=list("precision"=2))
 eCerto:::styleTabH1(x = x, apm = apm)
+eCerto:::styleTabH1(x = x, output = "dt")
 }
 \keyword{internal}

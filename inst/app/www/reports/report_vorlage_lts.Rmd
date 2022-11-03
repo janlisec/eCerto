@@ -39,20 +39,13 @@ i <- 1
 # is the Rmd processing in testing mode (not called by the Shiny App)
 testing <- length(params$dat)==1L && (is.na(params$dat) | params$dat=="NA")
 if (testing) {
-  report_file <- "report_vorlage_lts.Rmd"
-  fnc_get_local_file <- function(x=NULL) {
-    pkg_path <- system.file(package = "eCerto")
-    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-    return(file.path(pkg_path, file_path, fsep="/"))
-  }
-  tmp.env <- new.env()
-  load(file = fnc_get_local_file(x="LTS001.RData"), envir = tmp.env)
-  dat <- get(x = "LTS_dat", envir = tmp.env)
-  d <- dat[[i]][["def"]]
-  v <- dat[[i]][["val"]]
+  report_file <- system.file("app/www/reports/report_vorlage_lts.Rmd", package = "eCerto")
+  load(file = system.file("app/www/LTS001.RData", package = "eCerto"))
+  d <- LTS_dat[[i]][["def"]]
+  v <- LTS_dat[[i]][["val"]]
   l <- "BAMLogo2015.png"
-  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), params[["logo_file"]]))) {
-    warning(params[["logo_file"]], " is not in same folder as ", report_file)
+  if (!file.exists(file.path(dirname(report_file), l))) {
+    warning(l, " is not in same folder as ", basename(report_file))
   }
   plot_lts_data <- eCerto::plot_lts_data
 } else {
