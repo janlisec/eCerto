@@ -55,7 +55,7 @@ if (knitr::is_html_output()) {
 }
 ```
 
-`r paste(ifelse(any(df[,"P"]<=0.05), "Not all", "All"), "analytes are homogenous within bottles.")`
+`r paste(ifelse(any(df[,"P"]<=0.05), "Not all", "All"), "analytes are homogenous between bottles.")`
 
 `r ifelse(length(unique(H[["data"]][,"analyte"])>=2), "These are the individual Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
 
