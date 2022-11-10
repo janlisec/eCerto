@@ -1,31 +1,33 @@
 Package: eCerto
-Title: Statistical tests for the production of reference materials
-Version: 0.1.43
-Date: 2022-11-03
+Title: Statistical Tests for the Production of Reference Materials
+Version: 0.1.44
+Date: 2022-11-10
 Authors@R: c(
-    person("Jan", "Lisec", email = "jan.lisec@bam.de", role = c("cre","aut")),
-    person("Frederik", "Kreß", role = "aut"))
-Description: The production of certified reference materials (CRMs) is a core task of the Bundesanstalt für 
-    Materialforschung und -prüfung (BAM). Various statistical tests are required and applied depending on
-    the task and recorded data to ensure that reported values of CRMs are appropriate. Many of them are 
-    calculated according to the procedures described in ISO GUIDE 35:2017.
-    The eCerto package contains a shiny app which provides functionality to load, process and backup data 
-    for the statistical evaluation of analyses conducted during CRM production.
+    person(given = "Jan", family = "Lisec", email = "jan.lisec@bam.de", role = c("cre", "aut")),
+    person(given = "Frederik", family = "Kreß", role = "ctb")
+  )
+Description: The production of certified reference materials (CRMs) is a
+    core task of the Bundesanstalt für Materialforschung und -prüfung
+    (BAM). Various statistical tests are required and applied depending on
+    the task and recorded data to ensure that reported values of CRMs are
+    appropriate. Many of them are calculated according to the procedures
+    described in ISO GUIDE 35:2017.  The eCerto package contains a shiny
+    app which provides functionality to load, process and backup data for
+    the statistical evaluation of analyses conducted during CRM
+    production.
 License: MIT + file LICENSE
 Depends:
-    R(>= 3.5.0)
-biocViews:
-Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+    R (>= 3.5.0)
 Imports: 
     agricolae,
+    config,
     DT,
     gargoyle,
     golem,
-    knitr,
+    graphics,
+    grDevices,
     kableExtra,
+    knitr,
     magick,
     markdown,
     moments,
@@ -38,14 +40,16 @@ Imports:
     shiny,
     shinyalert,
     shinyjs,
-    tidyxl
+    stats,
+    tidyxl,
+    tools
 Suggests: 
-    config,
     fs,
-    pkgload,
-    rsconnect,
-    shinytest,
     testthat (>= 3.0.0),
-    tibble,
-    tinytex
+    tibble
+biocViews:
 Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
