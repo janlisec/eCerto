@@ -507,24 +507,30 @@ m_materialtabelleServer <- function(id, rv) {
 
     shiny::observeEvent(input$matreport_rows_selected, {
       shiny::req(mater_table())
-      if (is.null(input$matreport_rows_selected)) {
-        #message("input$matreport_rows_selected - implement automatic selection of rows")
+      i <- input$matreport_rows_selected
+      if (is.null(i)) {
+        message("input$matreport_rows_selected - [ToDo] implement automatic (re)selection of rows")
         # $$ToDo$$ user deselected row --> reselect previous
         # use proxy <- DT::dataTableProxy('tab') and than
         # DT::selectRows(proxy, selected=selected_row_idx$row
-        selected_row_idx$redraw <- selected_row_idx$redraw+1
+
+        # once the user starts cell edit the rows_selected property is changed to NULL
+        # unfortunately which can not be differentiated from an accidental deselection of the
+        # active row. The below solution to redraw tabC3 upon deselection therefore
+        # prevents editing :(
+        #selected_row_idx$redraw <- selected_row_idx$redraw+1
       } else {
-        an <- as.character(mater_table()[input$matreport_rows_selected,"analyte"])
+        an <- as.character(mater_table()[i,"analyte"])
         if (!getValue(rv, c("General", "apm"))[[an]][["confirmed"]]) {
           # mark analyte as confirmed
           tmp <- getValue(rv, c("General", "apm"))
           tmp[[an]][["confirmed"]] <- TRUE
           setValue(rv, c("General", "apm"), tmp)
         }
-        if (input$matreport_rows_selected!=selected_row_idx$row) {
+        if (i!=selected_row_idx$row) {
           # update index
           message("input$matreport_rows_selected - setting selected_row_idx")
-          selected_row_idx$row <- input$matreport_rows_selected
+          selected_row_idx$row <- i
         } else {
           if (is.null(rv$c_analyte) || rv$c_analyte!=an) {
             message("input$matreport_rows_selected - setting rv$c_analyte")
