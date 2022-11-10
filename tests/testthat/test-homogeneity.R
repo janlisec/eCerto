@@ -3,14 +3,14 @@
 #   code = {
 #       app <- shinytest::ShinyDriver$new(
 #         shiny::shinyApp(
-#           ui = shiny::fluidPage(page_HomogeneityUI(id = "test")),
+#           ui = shiny::fluidPage(eCerto:::page_HomogeneityUI(id = "test")),
 #           server = function(input, output, session) {
 #             rv <- eCerto:::test_rv()
 #             mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
 #             attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
 #             isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
 #             isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
-#             page_HomogeneityServer(id = "test", rv = rv)
+#             eCerto:::page_HomogeneityServer(id = "test", rv = rv)
 #           }
 #         ), loadTimeout = 1e+05
 #       )
@@ -57,7 +57,7 @@ testthat::test_that(
       isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
       isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
       shiny::testServer(
-        app = eCerto::page_HomogeneityServer,
+        app = eCerto:::page_HomogeneityServer,
         args = list(rv = rv),
         expr =  {
           testthat::expect_true(all(c("data","h_vals") %in% names(getValue(rv, "Homogeneity"))))

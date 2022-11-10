@@ -5,23 +5,22 @@
 #' @param rv eCerto object.
 #'
 #' @return Will return UI and Server logic for the stability page.
-#' @export
+#' @noRd
 #'
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    page_StabilityUI(id = "test")
+#'    eCerto:::page_StabilityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- eCerto::eCerto$new(eCerto::init_rv()) # initiate persistent variables
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel" )})
-#'    page_StabilityServer(id = "test", rv = rv)
+#'    eCerto:::page_StabilityServer(id = "test", rv = rv)
 #'  }
 #' )
 #' }
-#'
 
 page_StabilityUI <- function(id) {
   ns <- shiny::NS(id)
@@ -87,8 +86,7 @@ page_StabilityUI <- function(id) {
   )
 }
 
-#' @rdname page_Stability
-#' @export
+#' @noRd
 page_StabilityServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
@@ -275,7 +273,7 @@ page_StabilityServer <- function(id, rv) {
 
     # Fig.S1
     output$s_plot <- shiny::renderPlot({
-      shiny::req(s_Data(), input$s_sel_analyte)
+      shiny::req(s_Data(), input$s_sel_analyte, input$s_sel_dev, getValue(rv, c("General", "apm")), getValue(rv, c("General", "materialtabelle")))
       plot_lts_data(
         x = prepFigS1(
           s = s_Data(),

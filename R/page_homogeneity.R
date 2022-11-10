@@ -15,7 +15,7 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    page_HomogeneityUI(id = "test")
+#'    eCerto:::page_HomogeneityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- eCerto:::test_rv()
@@ -23,7 +23,7 @@
 #'    attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
 #'    isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
 #'    isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
-#'    page_HomogeneityServer(
+#'    eCerto:::page_HomogeneityServer(
 #'      id = "test",
 #'      rv = rv
 #'    )
@@ -31,8 +31,7 @@
 #' )
 #' }
 #'
-#' @rdname page_Homogeneity
-#' @export
+#' @noRd
 
 page_HomogeneityUI <- function(id) {
   shinyjs::useShinyjs()
@@ -101,8 +100,7 @@ page_HomogeneityUI <- function(id) {
   )
 }
 
-#' @rdname page_Homogeneity
-#' @export
+#' @noRd
 page_HomogeneityServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {

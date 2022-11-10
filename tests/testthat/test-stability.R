@@ -4,7 +4,7 @@ testthat::test_that(
     rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
-        app = eCerto::page_StabilityServer,
+        app = eCerto:::page_StabilityServer,
         args = list(
           rv = rv_test
         ),
@@ -36,7 +36,7 @@ testthat::test_that(
     rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
-        app = eCerto::page_StabilityServer,
+        app = eCerto:::page_StabilityServer,
         args = list(
           rv = rv_test
         ),
@@ -55,7 +55,7 @@ testthat::test_that(
     rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
-        app = eCerto::page_StabilityServer,
+        app = eCerto:::page_StabilityServer,
         args = list(
           rv = rv_test
         ),

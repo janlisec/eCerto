@@ -1,19 +1,13 @@
 #' @title Modul RData-Export
-#' @name mod_RDataExport
-#' @aliases m_RDataExport_UI
-#' @aliases m_RDataexport_Server
-#'
-#' @details
-#' not yet
+#' @details not yet
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param rv ReavtiveValues $$.
+#' @param rv eCerto class object.
 #'
-#' @return rdata A reactive, but only for notifying the navbarpanel to change
+#' @return Nothing.
 #'
 #' @examples
 #' if (interactive()) {
-#'
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(m_RDataExport_UI(id = "test"), shiny::actionButton("insert","insert rv")),
 #'  server = function(input, output, session) {
@@ -27,8 +21,7 @@
 #'  }
 #' )
 #' }
-#' @rdname mod_RDataExport
-#' @export
+#' @noRd
 m_RDataExport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
@@ -62,8 +55,7 @@ m_RDataExport_UI <- function(id) {
   )
 }
 
-#' @rdname mod_RDataExport
-#' @export
+#' @noRd
 m_RDataexport_Server = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
@@ -128,4 +120,3 @@ m_RDataexport_Server = function(id, rv) {
   })
 
 }
-

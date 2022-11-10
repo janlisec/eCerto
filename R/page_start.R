@@ -1,33 +1,27 @@
-#' @name page_Start
-#' @aliases page_startUI
-#' @aliases page_startServer
-#'
 #' @title Start-Page
-#'
 #' @description \code{page_start} is the module for eCerto startup.
 #'
 #' @details Providing the backup/restore modules as well as the Excel upload.
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param rv The gloobal R6 object.
+#' @param rv The global R6 object.
 #' @param tde test data environment.
 #'
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    page_startUI(id = "test")
+#'    eCerto:::page_startUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
-#'    page_startServer(id = "test", rv = rv)
+#'    eCerto:::page_startServer(id = "test", rv = rv)
 #'  }
 #' )
 #' }
 #'
-#' @return h_vals = The start data (not the transferred ones yet)
-#' @rdname page_Start
-#' @export
+#' @return Nothing
+#' @noRd
 
 page_startUI <- function(id) {
 
@@ -75,8 +69,7 @@ page_startUI <- function(id) {
   )
 }
 
-#' @rdname page_Start
-#' @export
+#' @noRd
 page_startServer = function(id, rv, tde) {
 
   shiny::moduleServer(id, function(input, output, session) {
