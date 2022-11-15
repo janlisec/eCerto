@@ -28,9 +28,7 @@ fontsize: 11pt
       file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
       return(file.path(pkg_path, file_path, fsep="/"))
     }
-    tmp.env <- new.env()
-    load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp.env)
-    res <- get(x = "res", envir = tmp.env)
+    res <- eCerto::CRM001
     G <- res$General
     C <- res$Certification
     CP <- res$Certification_processing

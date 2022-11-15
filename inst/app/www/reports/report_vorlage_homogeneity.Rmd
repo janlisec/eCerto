@@ -23,7 +23,7 @@ This is a general report template. Specific layouts can be generated on demand.
 # get a local representation of all data provided by Shiny
 testing <- length(params$Homogeneity)==1L && (is.na(params$Homogeneity) | params$Homogeneity=="NA")
 if (testing) {
-  load(file = system.file("app/www/CRM001.RData", package = "eCerto"))
+  res <- eCerto::CRM001
   H <- res[["Homogeneity"]]
   #'x <- eCerto:::test_homog()$data
 } else {

@@ -40,7 +40,7 @@ i <- 1
 testing <- length(params$dat)==1L && (is.na(params$dat) | params$dat=="NA")
 if (testing) {
   report_file <- system.file("app/www/reports/report_vorlage_lts.Rmd", package = "eCerto")
-  load(file = system.file("app/www/LTS001.RData", package = "eCerto"))
+  LTS_dat <- eCerto::LTS001
   d <- LTS_dat[[i]][["def"]]
   v <- LTS_dat[[i]][["val"]]
   l <- "BAMLogo2015.png"

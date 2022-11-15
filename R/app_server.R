@@ -10,11 +10,7 @@ app_server <- function( input, output, session ) {
   rv <- eCerto$new(init_rv()) # initiate persistent variables
   silent <- get_golem_config("silent")
 
-  # preload testdata
-  tde <- new.env()
-  load(file = get_local_file("CRM001.RData"), envir = tde)
-
-  page_startServer(id="Start", rv=rv, tde=tde)
+  page_startServer(id="Start", rv=rv)
 
   shiny::observeEvent(input$navbarpage, {
     # when a tab for an empty dataset is selected --> jump to upload page

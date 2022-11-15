@@ -26,9 +26,7 @@ if (testing) {
     file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
     return(file.path(pkg_path, file_path, fsep="/"))
   }
-  tmp <- new.env()
-  load(file = fnc_get_local_file(x="CRM001.RData"), envir = tmp)
-  res <- get(x = "res", envir = tmp)
+  res <- eCerto::CRM001
   M <- res$General$materialtabelle
   G <- res$General
   A <- paste(names(G[["apm"]]), collapse=", ")

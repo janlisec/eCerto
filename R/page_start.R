@@ -5,7 +5,6 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv The global R6 object.
-#' @param tde test data environment.
 #'
 #' @examples
 #' if (interactive()) {
@@ -70,7 +69,7 @@ page_startUI <- function(id) {
 }
 
 #' @noRd
-page_startServer = function(id, rv, tde) {
+page_startServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -152,7 +151,7 @@ page_startServer = function(id, rv, tde) {
     shiny::observeEvent(input$load_test_data, {
       # check if data was already uploaded or this is a new session
       if (all(sapply(getValue(rv, "modules"), function(x) { is.null(getValue(rv, c(x,"data"))) }))) {
-        res <- base::get("res", tde)
+        res <- eCerto::CRM001
         rv_test <- fnc_load_RData(x = res)
         rv_test_names <- listNames(rv_test, split = TRUE)
         rv_name <- listNames(rv, split = TRUE)
@@ -183,7 +182,7 @@ page_startServer = function(id, rv, tde) {
       shiny::removeModal()
     })
     shiny::observeEvent(continue(), {
-      res <- base::get("res", tde)
+      res <- eCerto::CRM001
       rv_tmp <- fnc_load_RData(x = res)
       shiny::updateNavbarPage(
         session = session,

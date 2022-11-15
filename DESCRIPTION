@@ -1,10 +1,10 @@
 Package: eCerto
 Title: Statistical Tests for the Production of Reference Materials
-Version: 0.1.44
-Date: 2022-11-10
+Version: 0.1.45
+Date: 2022-11-15
 Authors@R: c(
-    person(given = "Jan", family = "Lisec", email = "jan.lisec@bam.de", role = c("cre", "aut")),
-    person(given = "Frederik", family = "Kreß", role = "ctb")
+    person("Jan", "Lisec", , "jan.lisec@bam.de", role = c("cre", "aut")),
+    person("Frederik", "Kreß", role = "ctb")
   )
 Description: The production of certified reference materials (CRMs) is a
     core task of the Bundesanstalt für Materialforschung und -prüfung
@@ -24,8 +24,6 @@ Imports:
     DT,
     gargoyle,
     golem,
-    graphics,
-    grDevices,
     kableExtra,
     knitr,
     magick,
@@ -40,9 +38,7 @@ Imports:
     shiny,
     shinyalert,
     shinyjs,
-    stats,
-    tidyxl,
-    tools
+    tidyxl
 Suggests: 
     fs,
     testthat (>= 3.0.0),
@@ -50,6 +46,8 @@ Suggests:
 biocViews:
 Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-US
 LazyData: true
+LazyDataCompression: bzip2
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
