@@ -16,12 +16,12 @@
 #'if (interactive()) {
 #'shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_materialtabelleUI(id = "test")
+#'    eCerto:::m_materialtabelleUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'  rv <- eCerto:::test_rv()
 #'  gargoyle::init("update_c_analyte")
-#'  m_materialtabelleServer(id = "test", rv=rv)
+#'  eCerto:::m_materialtabelleServer(id = "test", rv=rv)
 #'  observeEvent(gargoyle::watch("update_c_analyte"), {print(rv$c_analyte)}, ignoreInit=TRUE)
 #'  }
 #')
@@ -29,8 +29,8 @@
 #'
 #'@importFrom shinyalert shinyalert
 #'
-#'@rdname materialtabelle
-#'@keywords internal
+#' @noRd
+#' @keywords internal
 #'
 m_materialtabelleUI <- function(id) {
   ns <- shiny::NS(id)
@@ -82,8 +82,8 @@ m_materialtabelleUI <- function(id) {
   )
 }
 
-#'@rdname materialtabelle
-#'@keywords internal
+#' @noRd
+#' @keywords internal
 m_materialtabelleServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {

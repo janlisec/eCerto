@@ -14,13 +14,13 @@
 #'if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_reportUI(id = "test")
+#'    eCerto:::m_reportUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
 #'    rv <- eCerto::eCerto$new() # initiate persistent variables
 #'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
 #'    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
-#'    m_reportServer(
+#'    eCerto:::m_reportServer(
 #'      id = "test",
 #'      rv = rv
 #'    )
@@ -31,7 +31,7 @@
 #' @importFrom knitr is_html_output kable
 #' @importFrom kableExtra kable_styling
 #' @importFrom magick image_read
-#' @rdname mod_report
+#' @noRd
 #' @keywords internal
 m_reportUI <- function(id) {
   ns <- shiny::NS(id)
@@ -68,7 +68,7 @@ m_reportUI <- function(id) {
   )
 }
 
-#' @rdname mod_report
+#' @noRd
 #' @keywords internal
 m_reportServer <- function(id, rv) {
 

@@ -4,7 +4,7 @@ testthat::test_that(
     suppressMessages({
       rv <- eCerto:::test_rv()
       shiny::testServer(
-        app = page_CertificationServer,
+        app = eCerto:::page_CertificationServer,
         args = list(
           rv = rv
         ),

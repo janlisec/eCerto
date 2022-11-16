@@ -4,7 +4,7 @@ testthat::test_that(
     rv_test <- eCerto::eCerto$new(eCerto::init_rv())
     suppressMessages(
       shiny::testServer(
-        app = eCerto::m_RDataexport_Server,
+        app = eCerto:::m_RDataexport_Server,
         args = list(
           rv = rv_test
         ),

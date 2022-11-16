@@ -22,17 +22,17 @@
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    shinyjs::useShinyjs(),
-#'    page_CertificationUI(id = "test")
+#'    eCerto:::page_CertificationUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'  rv <- eCerto:::test_rv()
-#'  page_CertificationServer(id = "test", rv = rv)
+#'    rv <- eCerto:::test_rv()
+#'    eCerto:::page_CertificationServer(id = "test", rv = rv)
 #'  }
 #' )
 #' }
 #'
-#' @rdname page_Certification
-#' @export
+#' @noRd
+#' @keywords internal
 page_CertificationUI = function(id) {
   ns <- shiny::NS(id)
   shiny::tabsetPanel(
@@ -190,8 +190,8 @@ page_CertificationUI = function(id) {
   )
 }
 
-#' @rdname page_Certification
-#' @export
+#' @noRd
+#' @keywords internal
 page_CertificationServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
