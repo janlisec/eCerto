@@ -1,21 +1,24 @@
-#'@title CertValPlot.
+#' @title CertValPlot.
 #'
-#'@description \code{CertValPlot} will generate a certified values plot.
+#' @description \code{CertValPlot} will generate a certified values plot.
 #'
-#'@details Individual samples have been stripped from the data frame upfront.
+#' @details Individual samples have been stripped from the data frame upfront.
 #'
-#'@param data data.frame containing columns 'value', 'Lab' and 'L_flt'.
-#'@param annotate_id T/F to overlay the plot with ID as text if column 'ID' is present.
-#'@param filename_labels T/F to use imported file names as labels on x-axes.
+#' @param data data.frame containing columns 'value', 'Lab' and 'L_flt'.
+#' @param annotate_id T/F to overlay the plot with ID as text if column 'ID' is present.
+#' @param filename_labels T/F to use imported file names as labels on x-axes.
 #'
-#'@return A specific type of boxplot.
+#' @return A specific type of boxplot.
 #'
-#'@examples
-#'data <- data.frame("ID"=1:20, "value"=rnorm(20), "analyte"="X", "Lab"=gl(2,10), "L_flt"=FALSE)
-#'CertValPlot(data=data)
-#'CertValPlot(data=data, annotate_id=TRUE)
+#' @examples
+#' if (!interactive()) {
+#'   data <- data.frame("ID" = 1:20, "value" = rnorm(20), "analyte" = "X", "Lab" = gl(2, 10), "L_flt" = FALSE)
+#'   eCerto:::CertValPlot(data = data)
+#'   eCerto:::CertValPlot(data = data, annotate_id = TRUE)
+#' }
 #'
-#'@export
+#' @keywords internal
+#' @noRd
 
 CertValPlot <- function(data=NULL, annotate_id=FALSE, filename_labels=FALSE) {
   data.stats <- plyr::ldply(split(data[,"value"], data[,"Lab"]), function(x) {data.frame("MW"=mean(x,na.rm=T), "Median"= stats::median(x,na.rm=T), "SD"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x))) }, .id="Lab")
@@ -60,4 +63,5 @@ CertValPlot <- function(data=NULL, annotate_id=FALSE, filename_labels=FALSE) {
     graphics::text(x = jitter(tmp_x, amount = 0.25), y = data[,"value"], label=data[,"ID"], col=4)
   }
   graphics::box()
+  invisible(NULL)
 }

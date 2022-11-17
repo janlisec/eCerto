@@ -13,7 +13,7 @@
 #'    eCerto:::page_startUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
+#'    rv <- eCerto::eCerto$new(eCerto::init_rv()) # initiate persistent variables
 #'    eCerto:::page_startServer(id = "test", rv = rv)
 #'  }
 #' )

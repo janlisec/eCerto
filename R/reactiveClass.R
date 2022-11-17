@@ -108,7 +108,7 @@ eCerto <- R6::R6Class(
         data <- private$..eData[["Certification"]][["data"]]
         data <- data[data[,"analyte"]==private$..cAnalyte,,drop=FALSE]
       }
-      eCerto::CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
+      eCerto:::CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
     },
     #' @description Compute the analyte means for .
     #' @param data data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.
