@@ -6,7 +6,6 @@
 #'
 #'@param id Name when called as a module in a shiny app.
 #'@param rv eCerto R6 object, which includes available parameters for all analytes.
-#'@param allow_selection Set to TRUE for testing purposes only.
 #'
 #'@return Nothing. Will update 'apm' in eCerto R6 object should the user modify
 #'    one or several input values.
@@ -25,11 +24,7 @@
 #'    # within eCerto m_analyte gets (also initially) triggered from outside
 #'    gargoyle::init("update_c_analyte")
 #'    reactive({gargoyle::trigger("update_c_analyte")})
-#'    m_analyteServer(
-#'      id = "test",
-#'      rv = rv,
-#'      allow_selection = TRUE
-#'    )
+#'    m_analyteServer(id = "test", rv = rv)
 #'    shiny::observeEvent(eCerto::getValue(rv, c("General","apm")), {
 #'      print(eCerto::getValue(rv, c("General","apm"))[[rv$c_analyte]])
 #'    })
@@ -40,79 +35,29 @@
 m_analyteUI = function(id) {
   ns <- shiny::NS(id)
 
-  # empty tabset panel, to be filled by the analytes in the server Module
+  # parameter panel for an analyte
   shiny::tagList(
-    shiny::fluidRow(
-      shiny::column(
-        width = 3,
-        shiny::selectInput(
-          inputId = ns("Name"),
-          label = shiny::actionLink(
-            inputId = ns("analyte_help_link"),
-            label = "Parameters for Analyt"
-          ),
-          choices = ""
-        )
-      ),
-      shiny::column(
-        width = 3,
-        shiny::selectizeInput(
-          inputId = ns("sample_filter"),
-          label = "Filter Sample IDs",
-          choices = "",
-          multiple = TRUE
-        )
-      ),
-      shiny::column(
-        width = 3,
-        shiny::numericInput(
-          inputId = ns("precision"),
-          label = "Precision (stats)",
-          value = 4, min = 0, max = 10, step = 1
-        )
-      ),
-      shiny::column(
-        width = 3,
-        shiny::helpText("")
-      )
+    shiny::div(style = "width: 200px; float:left; margin-right:5px; margin-left:35px;",
+      shiny::actionLink(inputId = ns("analyte_help_link"), label = "Parameters for Analyte", style = "font-weight: 700; margin-bottom: 10px;"),
+      shiny::p(id = ns("curr_analyte"), style = "background: red; text-align: center; margin-bottom: 0px", "test-text"),
+      shiny::checkboxInput(inputId = ns("pooling"), label = "pooling", value = FALSE)
     ),
-    shiny::fluidRow(
-      shiny::column(
-        width = 3,
-        shiny::checkboxInput(
-          inputId = ns("pooling"),
-          label = "pooling",
-          value = FALSE
-        ),
-      ),
-      shiny::column(
-        width = 3,
-        shiny::selectizeInput(
-          inputId = ns("lab_filter"),
-          label = "Filter Lab IDs",
-          choices = "",
-          multiple = TRUE
-        )
-      ),
-      shiny::column(
-        width = 3,
-        shiny::numericInput(
-          inputId =ns("precision_export"),
-          label = "Precision (cert)",
-          value = 4, min = -2, max = 6, step = 1
-        )
-      ),
-      shiny::column(
-        width = 3,
-        shiny::helpText("")
-      )
+    shiny::div(style="width: 200px; float:left; margin-right:5px; margin-left:15px;",
+      shiny::div("Filter IDs", style = "background: grey; text-align: center"),
+      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::selectizeInput(inputId = ns("sample_filter"), label = "Samples", choices = "", multiple = TRUE)),
+      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::selectizeInput(inputId = ns("lab_filter"), label = "Labs", choices = "", multiple = TRUE)),
+    ),
+    shiny::div(style="width: 200px; float:left; margin-right:5px; margin-left:15px;",
+      shiny::div("Precision (acc. to DIN1333)", style = "background: grey; text-align: center"),
+      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::numericInput(inputId = ns("precision"), label = "Tables", value = 4, min = 0, max = 10, step = 1)),
+      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::numericInput(inputId =ns("precision_export"), label = "Certified Values", value = 4, min = -2, max = 6, step = 1)),
     )
   )
 }
 
 #' @noRd
 #' @keywords internal
-m_analyteServer = function(id, rv, allow_selection=FALSE) {
+m_analyteServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -126,18 +71,6 @@ m_analyteServer = function(id, rv, allow_selection=FALSE) {
         gargoyle::trigger("update_c_analyte")
       }
     }, ignoreNULL = TRUE)
-
-    if (!allow_selection) {
-      # shiny::updateSelectInput(
-      #   inputId = "Name",
-      #   #label = "Row selected in Tab.C3",
-      #   label = shiny::actionLink(
-      #     inputId = ns("analyte_help_link"),
-      #     label = "Parameters for Analyt"
-      #   )
-      # )
-      shinyjs::disable(id = "Name")
-    }
 
     # set up error message system to inform user
     err_msg <- shiny::reactiveVal(NULL)
@@ -153,13 +86,8 @@ m_analyteServer = function(id, rv, allow_selection=FALSE) {
     # update inputs when different analyte is set in rv
     shiny::observeEvent(gargoyle::watch("update_c_analyte"), {
       shiny::req(apm())
-      #if (rv$c_analyte != input$Name) {
         message("[m_analyte] update parameter inputs for ", rv$c_analyte)
-        shiny::updateSelectInput(
-          inputId = "Name",
-          choices = names(apm()),
-          selected = apm()[[rv$c_analyte]]$name
-        )
+        shinyjs::html(id = "curr_analyte", html = apm()[[rv$c_analyte]]$name)
         shiny::updateCheckboxInput(
           inputId = "pooling",
           value = apm()[[rv$c_analyte]]$pooling
@@ -183,7 +111,7 @@ m_analyteServer = function(id, rv, allow_selection=FALSE) {
         shiny::updateNumericInput(
           inputId = "precision_export",
           value = apm()[[rv$c_analyte]]$precision_export,
-          label = paste("Precision (cert); n_DIN =", n)
+          label = paste0("Cert. Val. (", n, ")")
         )
       #}
     }, ignoreInit = FALSE)
@@ -191,10 +119,11 @@ m_analyteServer = function(id, rv, allow_selection=FALSE) {
     shiny::observeEvent(getValue(rv, c("General","materialtabelle")), {
       shiny::req(apm())
       mt <- getValue(rv, c("General", "materialtabelle"))
+      n <- n_round_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
       shiny::updateNumericInput(
         inputId = "precision_export",
         value = apm()[[rv$c_analyte]]$precision_export,
-        label = paste0("Precision (cert, n_DIN = ", n_round_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"]), ")")
+        label = paste0("Cert. Val. (", n, ")")
       )
     })
 
@@ -277,15 +206,6 @@ m_analyteServer = function(id, rv, allow_selection=FALSE) {
         tmp[[rv$c_analyte]]$pooling <- input$pooling
         apm(tmp)
       }
-    }, ignoreNULL = FALSE, ignoreInit=TRUE)
-
-    # update apm in case of changes in name
-    # !! only relevant in testing mode where input is not inactive
-    shiny::observeEvent(input$Name, {
-      shiny::req(apm())
-      rv$c_analyte <- input$Name
-      # the trigger is set outside the module (in m_materialtabelle) within eCerto App
-      gargoyle::trigger("update_c_analyte")
     }, ignoreNULL = FALSE, ignoreInit=TRUE)
 
     # whenever any analyte parameter is changed update the reactive value in the R6 object

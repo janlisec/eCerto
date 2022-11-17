@@ -34,7 +34,7 @@
 #'
 m_materialtabelleUI <- function(id) {
   ns <- shiny::NS(id)
-
+  wb <- "50px"
   shiny::fluidRow(
     shiny::column(
       width = 10,
@@ -49,19 +49,20 @@ m_materialtabelleUI <- function(id) {
             style="width=100%; margin-bottom: 5px; margin-left: 15px;",
             shiny::strong(shiny::actionLink(inputId = ns("tabC3opt"), label = "Modify Tab.C3"))
           ),
-          shiny::column(
-            width = 6, align = "center", "F",
-            shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = "100%"),
-            shiny::actionButton(inputId = ns("c_remF"), label = "Remove", width = "100%"),
-            shiny::actionButton(inputId = ns("c_renF"), label = "Rename", width = "100%")
+          shiny::p(
+            style = "margin-left: 15px;",
+            shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = wb),
+            shiny::actionButton(inputId = ns("c_remF"), label = "Del", width = wb),
+            shiny::actionButton(inputId = ns("c_renF"), label = "Ren", width = wb),
+            shiny::strong("F-cols")
           ),
-          shiny::column(
-            width = 6, align = "center", "U",
-            shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = "100%"),
-            shiny::actionButton(inputId = ns("c_remU"), label = "Remove", width = "100%"),
-            shiny::actionButton(inputId = ns("c_renU"), label = "Rename", width = "100%")
+          shiny::p(
+            style = "margin-left: 15px;",
+            shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = wb),
+            shiny::actionButton(inputId = ns("c_remU"), label = "Del", width = wb),
+            shiny::actionButton(inputId = ns("c_renU"), label = "Ren", width = wb),
+            shiny::strong("U cols")
           ),
-          shiny::p(),
           shiny::div(
             style="margin-top: 15px; margin-left: 15px; margin-right: 15px;",
             shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect", width = "100%")

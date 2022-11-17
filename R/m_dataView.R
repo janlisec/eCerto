@@ -78,7 +78,7 @@ m_DataViewServer <- function(id, rv) {
         dt <- DT::datatable(
           data = dataset_komp(),
           options = list(
-            paging = FALSE, searching = FALSE
+            dom = "t", paging = FALSE, searching = FALSE
           ),
           rownames = NULL,
         )
@@ -113,7 +113,7 @@ m_DataViewServer <- function(id, rv) {
         dt <- DT::datatable(
           data = dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")],
           options = list(
-            paging = FALSE, searching = FALSE,
+            dom = "t", paging = FALSE, searching = FALSE,
             autoWidth = TRUE, scrollY = "250px", pageLength = -1
           ), rownames = NULL
         )

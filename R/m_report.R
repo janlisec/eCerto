@@ -36,33 +36,17 @@
 m_reportUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::fluidRow(
-      shiny::column(
-        width = 12,
-        shiny::strong(
-          shiny::actionLink(
-            inputId = ns("help_link"),
-            label = "Download Report"
-          )
-        )
-      )
-    ),
-    shiny::p(),
-    shiny::fluidRow(
-      shiny::column(
-        width = 5,
-        shiny::radioButtons(
-          inputId = ns("output_file_format"),
-          label = NULL,
-          choices = c('PDF', 'HTML', 'Word'),
-          inline = FALSE
-        )
-      ),
-      shiny::column(
-        width = 7,
+    shiny::div(
+      style = "float: right; margin-right: 5px;",
+      shiny::div(
+        style = "float: left; margin-right: 5px; margin-left:35px;",
+        shiny::p(shiny::actionLink(inputId = ns("help_link"), label = "Download Report", style = "font-weight: 700;")),
         shiny::downloadButton(outputId = ns('AnalyteReport'), label = "Analyte"),
-        p(),
-        shiny::downloadButton(outputId = ns('MaterialReport'), label = "Material")
+        shiny::downloadButton(outputId = ns('MaterialReport'), label = "CRM")
+      ),
+      shiny::div(
+        style="float:left; margin-right:5px; margin-left:15px; width: 70px",
+        shiny::radioButtons(inputId = ns("output_file_format"), label = NULL, choices = c('PDF', 'HTML', 'Word'), inline = FALSE)
       )
     )
   )

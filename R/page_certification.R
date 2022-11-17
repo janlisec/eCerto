@@ -48,35 +48,38 @@ page_CertificationUI = function(id) {
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      shiny::fluidRow(
-        shiny::column(
-          width=2,
-          shiny::wellPanel(
-            style = "height:172px",
-            shiny::checkboxGroupInput(
-              inputId = ns("certification_view"),
-              label = "Select to show",
-              choices = c(
-                "Imported Data" = "dataview",
-                "Outlier Tests" = "stats",
-                "Lab-Means Tests" = "mstats",
-                #"QQ-Plot" = "qqplot",
-                "Certified Values Plot" = "CertValPlot"
-              ),
-              selected = c("CertValPlot")
+        shiny::wellPanel(
+          style = "height: 112px;",
+          shiny::div(
+            style = "float:left; width: 280px;",
+            shiny::p("Select to show panel", style = "font-weight: 700"),
+            shiny::div(
+              style = "float:left;",
+              shiny::checkboxGroupInput(
+                inputId = ns("certification_view"), label = NULL,
+                choices = c(
+                  "Imported Data" = "dataview",
+                  "Outlier Tests" = "stats"
+                ),
+                selected = "stats"
+              )
+            ),
+            shiny::div(
+              style="float:left; margin-left: 10px",
+              shiny::checkboxGroupInput(
+                inputId = ns("certification_view2"), label = NULL,
+                choices = c(
+                  "Lab-Means Tests" = "mstats",
+                  "Certified Values Plot" = "CertValPlot"
+                ),
+                selected = c("mstats", "CertValPlot")
+              )
             )
-          )
-        ),
-        # Analyte Modul
-        shiny::column(
-          width=8,
-          shiny::wellPanel(style = "height:172px", m_analyteUI(ns("analyteModule")))
-        ),
-        # Report-Section
-        shiny::column(
-          width = 2,
-          shiny::wellPanel(style = "height:172px", m_reportUI(ns("report")))
-        )
+          ),
+          # Analyte Modul
+          m_analyteUI(ns("analyteModule")),
+          # Report-Section
+          m_reportUI(ns("report"))
       ),
       # Data View
       shiny::conditionalPanel(
@@ -108,20 +111,28 @@ page_CertificationUI = function(id) {
       # ),
       # mstats (on Lab means)
       shiny::conditionalPanel(
-        condition = "input.certification_view.indexOf('mstats') > -1",
+        condition = "input.certification_view2.indexOf('mstats') > -1",
         ns = shiny::NS(id),
-        shiny::strong(
-          shiny::actionLink(
-            inputId = ns("stat2_link"),
-            label = "Tab.C2 - Statistics regarding lab mean distribution"
+        shiny::fluidRow(
+          shiny::column(
+            width = 10,
+            shiny::strong(
+              shiny::actionLink(
+                inputId = ns("stat2_link"),
+                label = "Tab.C2 - Statistics regarding lab mean distribution"
+              )
+            ),
+            DT::dataTableOutput(ns("overview_mstats"))
+          ),
+          shiny::column(
+            width = 2,
+            shiny::wellPanel(shiny::uiOutput(outputId = ns("tab2_statement")))
           )
-        ),
-        DT::dataTableOutput(ns("overview_mstats")),
-        shiny::uiOutput(outputId = ns("tab2_statement")),
+        )
       ),
       # CertValPlot
       shiny::conditionalPanel(
-        condition = "input.certification_view.indexOf('CertValPlot') > -1",
+        condition = "input.certification_view2.indexOf('CertValPlot') > -1",
         ns = shiny::NS(id),
         shiny::fluidRow(
           shiny::column(
@@ -153,7 +164,7 @@ page_CertificationUI = function(id) {
                   shiny::numericInput(
                     inputId = ns("Fig01_height"),
                     label = "height",
-                    value = 400
+                    value = 300
                   )
                 )
               ),
@@ -203,7 +214,7 @@ page_CertificationServer = function(id, rv) {
 
     # --- --- --- --- --- --- --- --- --- --- ---
     # selected analyte, sample filter, precision
-    m_analyteServer(id = "analyteModule", rv = rv, allow_selection = FALSE)
+    m_analyteServer(id = "analyteModule", rv = rv)
 
     # --- --- --- --- --- --- --- --- --- --- ---
     # report module
