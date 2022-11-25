@@ -21,9 +21,9 @@
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
-#'  ui = shiny::fluidPage(eCerto::m_RDataImport_UI(id = "test")),
+#'  ui = shiny::fluidPage(eCerto:::m_RDataImport_UI(id = "test")),
 #'  server = function(input, output, session) {
-#'    eCerto::m_RDataImport_Server(
+#'    eCerto:::m_RDataImport_Server(
 #'      id = "test",
 #'      modules = reactiveVal(c("Certification","Stability","Homogeneity")),
 #'      uploadsources = reactiveVal(list("Certification" = "Excel"))
@@ -32,9 +32,8 @@
 #' )
 #' }
 #'
-#' @rdname RDataImport
-#' @export
-#'
+#' @noRd
+#' @keywords internal
 m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
@@ -50,8 +49,8 @@ m_RDataImport_UI <- function(id) {
   )
 }
 
-#' @rdname RDataImport
-#' @export
+#' @noRd
+#' @keywords internal
 m_RDataImport_Server = function(id, modules, uploadsources) {
 
   shiny::moduleServer(id, function(input, output, session) {

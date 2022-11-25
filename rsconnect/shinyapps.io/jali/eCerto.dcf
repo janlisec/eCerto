@@ -5,9 +5,7 @@ account: jali
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4756915
-bundleId: 5174530
+bundleId: 6497948
 url: https://jali.shinyapps.io/eCerto/
-when: 1635167942.70938
-lastSyncTime: 1635167942.70938
-asMultiple: FALSE
-asStatic: FALSE
+when: 1668076332.58689
+lastSyncTime: 1668076332.58692

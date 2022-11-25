@@ -3,10 +3,10 @@ testthat::test_that(
   code = {
     # load external test data from collaborative trial SR3 and prepare eCerto object
     load(system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"))
-    rv <- eCerto$new(init_rv())
+    rv <- suppressMessages(eCerto$new())
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
-      setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
+      setValue(rv, key = c("General","apm"), value = eCerto:::init_apm(res$Certification$data))
       suppressMessages(
         flt_data <- eCerto:::c_filter_data(x = getValue(rv, key = c("Certification","data")), c_apm = getValue(rv, c("General","apm"))[["Si"]])
       )
@@ -29,10 +29,10 @@ testthat::test_that(
   code = {
     # load external test data from collaborative trial SR3 and prepare eCerto object
     load(system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"))
-    rv <- eCerto$new(init_rv())
+    rv <- suppressMessages(eCerto$new())
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
-      setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
+      setValue(rv, key = c("General","apm"), value = eCerto:::init_apm(res$Certification$data))
       suppressMessages(
         flt_data <- eCerto:::c_filter_data(x = getValue(rv, key = c("Certification","data")), c_apm = getValue(rv, c("General","apm"))[["Si"]])
       )
@@ -52,10 +52,10 @@ testthat::test_that(
     # load external test data from collaborative trial SR3 and prepare eCerto object
     load(system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"))
     #lab_means <- res$Certification$lab_means
-    rv <- eCerto$new(init_rv())
+    rv <- eCerto$new(eCerto:::init_rv())
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
-      setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
+      setValue(rv, key = c("General","apm"), value = eCerto:::init_apm(res$Certification$data))
       suppressMessages({
         rv$c_analyte <- "Si"
         lab_means <- rv$c_lab_means()
@@ -77,10 +77,10 @@ testthat::test_that(
   code = {
     # load external test data from collaborative trial SR3 and prepare eCerto object
     load(system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"))
-    rv <- eCerto$new(init_rv())
+    rv <- eCerto$new(eCerto:::init_rv())
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
-      setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
+      setValue(rv, key = c("General","apm"), value = eCerto:::init_apm(res$Certification$data))
       suppressMessages({
         rv$c_analyte <- "Si"
         lab_means <- rv$c_lab_means()
@@ -107,10 +107,10 @@ testthat::test_that(
     # load external test data from collaborative trial SR3 and prepare eCerto object
     load(system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"))
     #lab_means <- res$Certification$lab_means
-    rv <- eCerto$new(init_rv())
+    rv <- eCerto$new(eCerto:::init_rv())
     shiny::isolate({
       setValue(rv, key = c("Certification","data"), value = res$Certification$data)
-      setValue(rv, key = c("General","apm"), value = init_apm(res$Certification$data))
+      setValue(rv, key = c("General","apm"), value = eCerto:::init_apm(res$Certification$data))
       suppressMessages({
         rv$c_analyte <- "Si"
         lab_means <- rv$c_lab_means()

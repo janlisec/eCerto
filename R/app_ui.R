@@ -9,9 +9,10 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
 
-    message("UI, 'www': ", shiny::resourcePaths()["www"]),
-    message("UI, app_sys: ", app_sys('app/www')),
-    message("UI, tempdir: ", tempdir()),
+    # the following lines can be used to check for problems with the 'www' folder on different App places
+    #message("UI, 'www': ", shiny::resourcePaths()["www"]),
+    #message("UI, app_sys: ", app_sys('app/www')),
+    #message("UI, tempdir: ", tempdir()),
 
     shiny::navbarPage(
       # use an alternative theme
@@ -75,7 +76,7 @@ app_ui <- function(request) {
         title = "LTS",
         icon = shiny::icon("angle-right"),
         value = "tP_LTS",
-        shiny::div(style="padding-top: 60px;", .longtermstabilityUI("lts"))
+        shiny::div(style="padding-top: 60px;", m_longtermstabilityUI("lts"))
       ),
       shiny::tabPanel(
         title = "Help",
@@ -96,17 +97,13 @@ app_ui <- function(request) {
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @noRd
 golem_add_external_resources <- function() {
-  #browser()
 
-  # copy www files to tempdir() and map app/www folder to this temp/www
+  # copy www files from app_sys() to tempdir() and map app/www folder to this temp/www
+  # this is required for Report rendering to work on a ShinyServer
   file.copy(from = app_sys('app/www'), to = tempdir(), recursive = TRUE)
   golem::add_resource_path(
     'www', paste(normalizePath(tempdir(), "/"), "www", sep="/")
   )
-
-  # golem::add_resource_path(
-  #   'www', app_sys('app/www')
-  # )
 
   shiny::tags$head(
     golem::bundle_resources(

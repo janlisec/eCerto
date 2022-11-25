@@ -14,4 +14,3 @@ The dashed blue line indicates the linear model. It's parameters are transfered 
 used to calculate `u_stab`.
 
 ![**Fig.S1** Linear model plot visualizing stability data](fig/S_Modul_Fig1.png)
-

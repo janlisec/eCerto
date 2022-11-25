@@ -1,22 +1,19 @@
-#'@title combine_cert_data.
+#' @title fnc_combine_cert_data.
 #'
-#'@description
-#'\code{combine_cert_data} will post process data uploaded from Excel files of a certification trial.
+#' @description \code{combine_cert_data} will post process data uploaded from Excel files
+#'     of a certification trial.
 #'
-#'@details
-#'not yet
+#' @details not yet
 #'
-#'@param df_list list of already imported Excel tables.
-#'@param silent Option to print or omit status messages.
+#' @param df_list list of already imported Excel tables.
 #'
-#'@return
-#'A dataframe.
+#' @return A single data frame combining all data frames from input files.
 #'
-#'@export
-#'
-combine_cert_data <- function(df_list = NULL, silent = FALSE) {
+#' @noRd
+#' @keywords internal
+combine_cert_data <- function(df_list = NULL) {
 
-    if (!silent) message("combine_cert_data: Prepare dataset after upload")
+    if (!get_golem_config("silent")) message("combine_cert_data: Prepare dataset after upload")
     # process tables from multiple files individually
     df_list_tmp <- lapply(df_list, function(x) {
       laboratory_dataframe(x)

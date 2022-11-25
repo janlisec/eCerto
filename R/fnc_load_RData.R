@@ -1,18 +1,16 @@
-#'@title fnc_load_RData.
+#' @title fnc_load_RData.
 #'
-#'@description
-#'\code{fnc_load_RData} will check and convert values in an RData file and prepare the internal reactive values list 'rv'.
+#' @description \code{fnc_load_RData} will check and convert values in an RData file and prepare
+#'     the internal reactive values list 'rv'.
 #'
-#'@details
-#'tbd.
+#' @details tbd.
 #'
-#'@param x A list of values.
+#' @param x A list of values.
 #'
-#'@return
-#'A reactive values list 'rv'.
+#' @return  A reactive values list 'rv'.
 #'
-#'@keywords internal
-#'
+#' @keywords internal
+#' @noRd
 fnc_load_RData <- function(x = NULL) {
 
   silent <- get_golem_config("silent")

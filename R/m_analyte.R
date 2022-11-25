@@ -217,7 +217,7 @@ m_analyteServer = function(id, rv) {
     }, ignoreNULL = TRUE)
 
     shiny::observeEvent(input$analyte_help_link,{
-      help_the_user_modal("certification_analyte_options")
+      show_help("certification_analyte_options")
     })
 
   })

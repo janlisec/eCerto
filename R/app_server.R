@@ -8,7 +8,7 @@ app_server <- function( input, output, session ) {
   # Your application server logic
   #rv <- eCerto$new(init_rv()) # initiate persistent variables
   rv <- eCerto$new(init_rv()) # initiate persistent variables
-  silent <- get_golem_config("silent")
+  #silent <- get_golem_config("silent")
 
   page_startServer(id="Start", rv=rv)
 
@@ -36,7 +36,7 @@ app_server <- function( input, output, session ) {
   page_StabilityServer(id = "Stability", rv = rv)
 
   # LTS Modul (will be removed to an independent app at some point)
-  .longtermstabilityServer("lts")
+  m_longtermstabilityServer("lts")
 
   # some observers, mainly to use 'updateNavbarPage' depending on user action
   # when the user initiates a transfer of U values from H or S Modules --> show material_table

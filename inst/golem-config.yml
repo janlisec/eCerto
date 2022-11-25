@@ -10,3 +10,5 @@ production:
 dev:
   golem_wd: !expr here::here()
   silent: no
+  app_version: "development"
+  app_date: !expr as.character(Sys.Date())

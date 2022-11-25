@@ -5,7 +5,7 @@ the log-transformation of it's negative value `log(-k_eff)` are provided in **Ta
 
 ![**Tab.S2** Calculation of possible storage time](fig/S_Modul_Tab2a.png)
 
-In the case that at least 3 finite values for $log(-k_{eff})$ exist, a linear model over 
+In the case that at least 3 finite values for $log(-k_{\mathit{eff}})$ exist, a linear model over 
 `1/K` is calculated (depicted in **Fig.S3**). Based on slope $m$ and intercept $n$ of this model values 
 $K_i$ (provided in `log(k)_calc`) are established using $K_i = m \times x_i + n$.
 
@@ -33,7 +33,7 @@ When a certified value $\mu_c$ and corresponding uncertainty $U_{abs}$ (`cert_va
 for an analyte in **Tab.C3** of the certification module of *eCerto*, these can be used together with $CI_{upper}$ 
 to calculate the storage time $S_{Month}$ for each evaluated temperature level using:
 
-$$S_{Month}(T) = \frac{ log( \frac{\mu_c - U_{abs}}{\mu_c})}{e^{CI_{upper}(T)} }$$
+$$S_{\mathit{Month}}(T) = \frac{ \log( \frac{\mu_c - U_{abs}}{\mu_c})}{e^{CI_{upper}(T)} }$$
 
 ***Note!***
 Extrapolation beyond the range of storage conditions tested (for example, predicting degradation rates 

@@ -25,8 +25,8 @@ testthat::test_that(
 testthat::test_that(
   desc = "listNames accepts R6 objects",
   code = {
-    rv <- eCerto$new(init_rv()) # initiate persistent variables
-    nms = shiny::isolate(listNames(l = rv))
+    rv <- eCerto$new(eCerto:::init_rv()) # initiate persistent variables
+    nms = shiny::isolate(eCerto:::listNames(l = rv))
     testthat::expect_gte(length(nms), 2)
     testthat::expect_equal(class(nms), "character")
   }
@@ -35,7 +35,7 @@ testthat::test_that(
 testthat::test_that(
   desc = "show_view returns CertValPlot as visible panel",
   code = {
-    rv <- eCerto$new(init_rv()) # initiate persistent variables
+    rv <- eCerto$new(eCerto:::init_rv()) # initiate persistent variables
     shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
     testthat::expect_equal(eCerto:::show_view(rv), "CertValPlot")
   }

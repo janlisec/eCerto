@@ -4,26 +4,26 @@
 #'
 #' @title ExcelUpload.
 #'
-#'@description \code{ExcelUpload} will provide a module to upload excel data files.
+#' @description \code{ExcelUpload} will provide a module to upload excel data files.
 #'
-#'@details not yet
+#' @details not yet
 #'
-#'@param id Name when called as a module in a shiny app.
-#'@param exl_fmt Selector for dataset type (reactive).
+#' @param id Name when called as a module in a shiny app.
+#' @param exl_fmt Selector for dataset type (reactive).
 #'
-#'@return A reactiveValues containing desired data and the name of the input_files
+#' @return A reactiveValues containing desired data and the name of the input_files
 #'
-#'@examples
+#' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    shiny::selectInput(inputId = "excelformat", label = "excelformat",
 #'      choices = c("Certification","Homogeneity","Stability")),
 #'    shiny::hr(),
-#'    m_ExcelUpload_UI(id = "test")
+#'    eCerto:::m_ExcelUpload_UI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    out <- m_ExcelUpload_Server(
+#'    out <- eCerto:::m_ExcelUpload_Server(
 #'      id = "test",
 #'      exl_fmt = reactive({input$excelformat})
 #'    )
@@ -32,9 +32,8 @@
 #' )
 #' }
 #'
-#' @rdname ExcelUpload
-#' @export
-#'
+#' @noRd
+#' @keywords internal
 m_ExcelUpload_UI <- function(id) {
 
   ns <- shiny::NS(id)
@@ -53,9 +52,8 @@ m_ExcelUpload_UI <- function(id) {
   )
 }
 
-#' @rdname ExcelUpload
-#' @export
-
+#' @noRd
+#' @keywords internal
 m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
 
   stopifnot(shiny::is.reactive(exl_fmt))

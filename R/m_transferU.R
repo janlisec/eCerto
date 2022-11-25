@@ -2,16 +2,14 @@
 #' @aliases m_TransferUUI
 #' @aliases m_TransferUServer
 #'
-#'@title m_TransferU
+#' @title m_TransferU
 #'
-#'@description
-#'\code{m_TransferU} will provide a module to transfer the Uncertainty
-#'data in the correct format to the 'materialtable'. After Certification data
-#'(initiating the material table) and Homogeneity or Stability data has been uploaded, it shows
-#'the possible columns of materialtable to transfer to.
+#' @description \code{m_TransferU} will provide a module to transfer the Uncertainty
+#'    data in the correct format to the 'materialtabelle'. After Certification data
+#'    (initiating the material table) and Homogeneity or Stability data has been uploaded,
+#'    it shows the possible columns of materialtabelle to transfer to.
 #'
-#'@details
-#'not yet
+#' @details not yet
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param dat Homogeneity or Stability data (reactive).
@@ -20,8 +18,6 @@
 #' @return
 #' A modified materialtabelle where values in specified U column are merged with U source.
 #'
-#' @rdname m_TransferU
-#' @export
 #' @examples
 #' if (interactive()) {
 #' mt <- data.frame("analyte"=LETTERS[1:6], "U1"=NA)
@@ -31,10 +27,10 @@
 #' test <- eCerto::eCerto$new(list("ud"=ud, "mt"=mt))
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_TransferUUI(id = "test")
+#'    eCerto:::m_TransferUUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    m_TransferUServer(id = "test",
+#'    eCerto:::m_TransferUServer(id = "test",
 #'      dat = shiny::reactive({eCerto::getValue(test, "ud")}),
 #'      mat_tab = shiny::reactive({eCerto::getValue(test, "mt")})
 #'    )
@@ -42,12 +38,14 @@
 #' )
 #' }
 #'
+#' @noRd
+#' @keywords internal
 m_TransferUUI = function(id) {
   shiny::uiOutput(shiny::NS(id, "transfer"))
 }
 
-#' @rdname m_TransferU
-#' @export
+#' @noRd
+#' @keywords internal
 m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny::reactive({NULL})) {
 
   stopifnot(shiny::is.reactive(dat))

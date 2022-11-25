@@ -8,7 +8,7 @@ testthat::test_that(
     )
     suppressMessages(
       shiny::testServer(
-        app = eCerto::m_RDataImport_Server,
+        app = eCerto:::m_RDataImport_Server,
         args = list(
           modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
           uploadsources = shiny::reactiveVal(NULL)
@@ -22,9 +22,9 @@ testthat::test_that(
           general <- eCerto::getValue(rvreturn(),"General")
           testthat::expect_equal(is.null(general$apm), FALSE)
           testthat::expect_equal(is.null(general$dataformat_version), FALSE)
-          testthat::expect_equal(is.null(getValue(rvreturn(),c("Certification","data"))), FALSE)
-          testthat::expect_equal(is.null(getValue(rvreturn(),c("Homogeneity","data"))), FALSE)
-          testthat::expect_equal(is.null(getValue(rvreturn(),c("Stability","data"))), FALSE)
+          testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Certification","data"))), FALSE)
+          testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Homogeneity","data"))), FALSE)
+          testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Stability","data"))), FALSE)
         }
       )
     )
@@ -40,7 +40,7 @@ testthat::test_that(
     )
     suppressMessages(
       shiny::testServer(
-        app = eCerto::m_RDataImport_Server,
+        app = eCerto:::m_RDataImport_Server,
         args = list(
           modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
           uploadsources = shiny::reactiveVal(NULL)
@@ -64,7 +64,7 @@ testthat::test_that(
     )
     suppressMessages(
       shiny::testServer(
-        app = eCerto::m_RDataImport_Server,
+        app = eCerto:::m_RDataImport_Server,
         args = list(
           modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
           uploadsources = shiny::reactiveVal(list("Certification" = "Excel","Homogeneity"=NULL,"stability"=NULL))

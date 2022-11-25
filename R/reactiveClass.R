@@ -60,7 +60,7 @@ eCerto <- R6::R6Class(
         rv[["General"]][["apm"]] <- init_apm(testdata)
         rv[["General"]][["materialtabelle"]] <- init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]}))
         private$..cAnalyte <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
-        private$..cFltData <- shiny::isolate( eCerto::c_filter_data(x = rv[["Certification"]][["data"]], c_apm = rv[["General"]][["apm"]][[1]]) )
+        private$..cFltData <- shiny::isolate( eCerto:::c_filter_data(x = rv[["Certification"]][["data"]], c_apm = rv[["General"]][["apm"]][[1]]) )
         private$..eData <- rv
       } else {
         # [ToDo] implement testing (copy from RData upload module)
@@ -118,7 +118,7 @@ eCerto <- R6::R6Class(
       if (missing(analyte_name)) {
         analyte_name <- private$..cAnalyte
       }
-      flt_data <- private$..cFltData #c_filter_data(x = data, c_apm = c_apm)
+      flt_data <- private$..cFltData
       out <- plyr::ldply(split(flt_data$value, flt_data$Lab), function(x) {
         data.frame(
           "mean" = mean(x, na.rm = T),
@@ -140,7 +140,7 @@ eCerto <- R6::R6Class(
     #' @return A data.frame with filtered data of a single analyte.
     c_fltData = function(recalc = FALSE) {
       if (recalc) {
-        private$..cFltData <- shiny::isolate(eCerto::c_filter_data(
+        private$..cFltData <- shiny::isolate(eCerto:::c_filter_data(
           x = private$..eData[["Certification"]][["data"]],
           c_apm = private$..eData[["General"]][["apm"]][[private$..cAnalyte]]
         ))
@@ -164,7 +164,7 @@ eCerto <- R6::R6Class(
       } else {
         if (!identical(an, private$..cAnalyte)) {
           # set current analyte on focus in C Module and recalculate dependent reactive variables
-          private$..cFltData <- eCerto::c_filter_data(
+          private$..cFltData <- eCerto:::c_filter_data(
             x = private$..eData[["Certification"]][["data"]],
             c_apm = private$..eData[["General"]][["apm"]][[an]]
           )

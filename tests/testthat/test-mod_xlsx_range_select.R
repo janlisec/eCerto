@@ -8,7 +8,7 @@ testthat::test_that(
     cells_selected <- matrix(c(7,1,16,6), ncol = 2, byrow = TRUE)
     suppressMessages(
       shiny::testServer(
-        app = eCerto::m_xlsx_range_select_Server,
+        app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn1, sheet = sheetNo),
         {
           suppressMessages(session$flushReact())
@@ -47,7 +47,7 @@ testthat::test_that(
     sheetNo <- shiny::reactiveVal(1)
     suppressMessages(
       shiny::testServer(
-        app = eCerto::m_xlsx_range_select_Server,
+        app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn2,sheet = sheetNo), {
           #browser()
           testthat::expect_warning(
@@ -80,7 +80,7 @@ testthat::test_that(
     sheetNo <- shiny::reactiveVal(1)
     suppressMessages(
       shiny::testServer(
-        app = m_xlsx_range_select_Server,
+        app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn3, sheet = sheetNo), {
           testthat::expect_error(tab(), "uploaded Excel files contain an empty one")
         }
@@ -98,7 +98,7 @@ testthat::test_that(
     sheetNo <- shiny::reactiveVal(1)
     suppressMessages(
       shiny::testServer(
-        m_xlsx_range_select_Server,
+        eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn1_2,sheet=sheetNo), {
           testthat::expect_error(tab(),"less than 2 laboratory files uploaded. Upload more!")
         }
@@ -117,7 +117,7 @@ testthat::test_that(
     cells_selected <- matrix(c(7,1), ncol = 2, byrow = TRUE)
     suppressMessages(
       shiny::testServer(
-        app = m_xlsx_range_select_Server,
+        app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn1, sheet = sheetNo), {
           suppressMessages(session$flushReact())
           # @Frederick: dieser Test musste modifiziert werden. Ich habe den Modul-Code so geändert, dass der User eine MessageBox bekommt, wenn er versucht eine dritte Zelle innerhalb der Range zu wählen. Die Bedingung das der Klick keine Aktion hervorruft ist aber nicht mehr gegeben.

@@ -1,21 +1,21 @@
-#'@title get_local_file.
+#' @title get_local_file.
 #'
-#'@description \code{get_local_file} will provide a full file path using the
+#' @description \code{get_local_file} will provide a full file path using the
 #'    currently specified 'www' folder specified as a recourcePaths. This path
 #'    can be different depending on whether the app is run as development
 #'    version, using the library function or serving via shinyapps.io.
 #'
-#'@param x File pattern to search for.
+#' @param x File pattern to search for.
 #'
-#'@details Developing a shiny app as an R package in parallel leads to difficulties
+#' @details Developing a shiny app as an R package in parallel leads to difficulties
 #'    on where to find specific files after installation (e.g. font descriptions,
 #'    markdown documents etc.). The function \code{get_local_file} will search
 #'    a specified pattern in the current recourcePaths for 'www'.
 #'
-#'@return A file path.
+#' @return A file path.
 #'
-#'@keywords internal
-#'
+#' @keywords internal
+#' @noRd
 get_local_file <- function(x = NULL) {
   x <- as.character(x)
   stopifnot(length(x)==1)

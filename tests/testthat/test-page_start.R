@@ -2,13 +2,16 @@ testthat::test_that("page_start works", {
   # Don't run these tests on the CRAN build servers
   testthat::skip_on_cran()
 
+  # remove resource path 'www' to get consistent snapshots
+  if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
+
   # put a small test app together calling the module
   test_app <- shiny::shinyApp(
    ui = shiny::fluidPage(
      eCerto:::page_startUI(id = "test")
    ),
    server = function(input, output, session) {
-     rv <- eCerto::eCerto$new(eCerto::init_rv()) # initiate persistent variables
+     rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
      eCerto:::page_startServer(id = "test", rv = rv)
    }
   )

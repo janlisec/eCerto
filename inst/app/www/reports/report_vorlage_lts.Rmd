@@ -47,7 +47,7 @@ if (testing) {
   if (!file.exists(file.path(dirname(report_file), l))) {
     warning(l, " is not in same folder as ", basename(report_file))
   }
-  plot_lts_data <- eCerto::plot_lts_data
+  plot_lts_data <- eCerto:::plot_lts_data
 } else {
   d <- params[["dat"]][[i]][["def"]]
   v <- params[["dat"]][[i]][["val"]]

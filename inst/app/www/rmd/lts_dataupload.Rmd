@@ -1,5 +1,25 @@
 ### Data upload
 
-Please prepare data in a single Excel file on seperate tables for each measured value (KW, Kennwert) as shown in the below example. Table/File names are not evaluated. Instead, each table is expected to contain the metadata in rows 1-2 and the measurement data from row 4 onwards. Column names need to be exactly as in the example and should match the desired format (e.g. 'Value' and 'Date' columns should be of numeric and date format respectively).
+Please prepare data in a single Excel file on separate tables for each measured value (KW, 
+Kennwert) as shown in the below example. Table and File names are not evaluated. Instead, 
+each table is expected to contain the metadata in rows 1-2 and the measurement data from 
+row 4 on wards. Column names need to be exactly as in the example and should match the 
+desired format (e.g. `Value` and `Date` columns should be of numeric and date format 
+respectively).
 
-![Excel format for LongTermStability data](fig/L_Modul_Import.png)
+![**Info** Excel format for LTS data. Cell background indicates cell format as text (blue), numeric (green) or data (red). The `Comment` column is optional.](fig/L_Modul_Import.png)
+
+The `File` column can be used to reference the data source for traceability of measurement
+values. The `Comment` column can be used to provide additional information.
+
+The meta data information can not be further edited in *eCerto*. Hence, the user should carefully
+consider the provided data. `U_Def` for example should specify which uncertainty value was
+originally certified and is provided in `U`. This can be one out of five potential options:
+
+- `1s` or `2s` indicating the simple or double variance
+- `CI` confidence interval
+- `1sx` or `2sx` indicating the relative simple or double variance
+
+Other values will not be recognized correctly. Most meta data values will be used for plot
+annotations and in the LTS report only and can be omitted. However, to comply with the rules
+for good scientific practice it is recommended to provide them.

@@ -1,7 +1,7 @@
 Package: eCerto
 Title: Statistical Tests for the Production of Reference Materials
-Version: 0.1.46
-Date: 2022-11-16
+Version: 0.1.47
+Date: 2022-11-25
 Authors@R: c(
     person("Jan", "Lisec", , "jan.lisec@bam.de", role = c("cre", "aut")),
     person("Frederik", "Kreß", role = "ctb")

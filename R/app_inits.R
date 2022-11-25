@@ -1,12 +1,10 @@
-#'Initializes material table for m_materialtabelle
-#'
-#'@param analytes Character vector of analyte names.
-#'
-#'@return a data frame
-#'@export
-#'
-#'@examples
-#'matTab <- init_materialtabelle(analytes = c("Si","Ar"))
+#' @title init_materialtabelle.
+#' @description Initializes material table for `m_materialtabelle`.
+#' @param analytes Character vector of analyte names.
+#' @return a data frame
+#' @keywords internal
+#' @noRd
+#' @examples matTab <- eCerto:::init_materialtabelle(analytes = c("Si","Ar"))
 init_materialtabelle <- function(analytes) {
   mt <- data.frame(
     "analyte" =  analytes,
@@ -29,18 +27,16 @@ init_materialtabelle <- function(analytes) {
   return(mt)
 }
 
-#' Initialize permanent reactive values
-#'
+#' @title init_rv
 #' @description \code{init_rv} initializes the main reactive value (rv) to store
 #'   the results from all modules. It therefore gets handed over multiple times.
-#'   In further programming, it should be considered to be replaced by a class
-#'   in OOP style. Note: If other modules besides Certification, Homogeneity and
-#'   Stability added, adapt the modules list
-#'
+#'   In further programming. It is now part of the eCerto class R6 object.
+#'   Note: If other modules besides Certification, Homogeneity and Stability added,
+#'   adapt the modules list.
 #' @return A list of different reactiveValues sublists to be stored in the eCerto R6 class.
-#' @export
-#'
-#' @examples rv <- init_rv()
+#' @keywords internal
+#' @noRd
+#' @example rv <- eCerto:::init_rv()
 init_rv <- function() {
   list(
     "modules" = c("Certification","Homogeneity","Stability"), # names of the modules
@@ -98,19 +94,17 @@ init_rv <- function() {
   )
 }
 
-#' Analyte Parameter List (apm)
-#'
+#' @title init_apm
 #' @description \code{init_apm} creates for each analyte the
 #'   parameter list. Each sublist contains information about the selected analyte
 #'   tab, and for each analyte the specified precision, the filtered sample id,
 #'   which sample ids are available to be filtered at all and, for completion,
-#'   the analyte name in case the list name fails
-#'
+#'   the analyte name in case the list name fails.
 #' @param x Analyte data frame containing at least columns `ID`, `analyte` and `Lab`.
-#'
 #' @return The analyte parameter list (apm) including all individually settable options.
-#'
-#' @export
+#' @keywords internal
+#' @noRd
+#' @example apm <- eCerto:::init_apm()
 init_apm <- function(x) {
   if (missing(x)) {
     # default example data

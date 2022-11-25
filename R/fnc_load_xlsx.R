@@ -1,32 +1,29 @@
-#'@title fnc_load_xlsx.
+#' @title fnc_load_xlsx.
 #'
-#'@description
-#'\code{fnc_load_xlsx} will handle upload of a single Excel file.
+#' @description \code{fnc_load_xlsx} will handle upload of a single Excel file.
 #'
-#'@details
-#'Function can handle reactive and non reactive parameters to be used in shiny apps.
+#' @details Function can handle reactive and non reactive parameters to be used in shiny apps.
 #'
-#'@param filepath A list of imported Excel tables.
-#'@param sheet Option to print or omit status messages.
-#'@param method Either 'tidyxl' or 'openxlsx'.
-#'@param ... Further parameters to the read functions specified by method.
+#' @param filepath A list of imported Excel tables.
+#' @param sheet The name or number of the sheet to read from files in `filepath`.
+#' @param method Either 'tidyxl' or 'openxlsx'.
+#' @param ... Further parameters to the read functions specified by method.
 #'
-#'@examples
+#' @examples
 #' # test function with
 #' x <- tempfile(fileext = ".xlsx")
-#' openxlsx::write.xlsx(x=matrix(rnorm(9),ncol=3,dimnames=list(1:3,paste0("Header",1:3))), file=x)
-#' fnc_load_xlsx(filepath=x, sheet=1)
-#' fnc_load_xlsx(filepath=x, sheet=1, method="openxlsx")
-#' fnc_load_xlsx(filepath="C:/not_existent.file", sheet=1)
-#' fnc_load_xlsx(filepath=x, sheet=2)
-#' x <- system.file(package="ecerto", "extdata", "EmptyExcel.xlsx")
-#' fnc_load_xlsx(filepath=x, sheet=1, method="openxlsx")
+#' openxlsx::write.xlsx(x = matrix(rnorm(9), ncol = 3, dimnames = list(1:3, paste0("Header", 1:3))), file = x)
+#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1)
+#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1, method = "openxlsx")
+#' eCerto:::fnc_load_xlsx(filepath = "C:/not_existent.file", sheet = 1)
+#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 2)
+#' x <- system.file(package = "ecerto", "extdata", "EmptyExcel.xlsx")
+#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1, method = "openxlsx")
 #'
-#'@return
-#'A dataframe.
+#' @return A dataframe.
 #'
-#'@export
-#'
+#' @noRd
+#' @keywords internal
 fnc_load_xlsx <- function(filepath, sheet, method=c("tidyxl", "openxlsx")[1], ...) {
   # isolate reactive variables if provided
   if (shiny::is.reactive(filepath)) filepath <- shiny::isolate(filepath)

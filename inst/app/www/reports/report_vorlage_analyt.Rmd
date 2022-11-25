@@ -136,7 +136,7 @@ cat(paste(D$lab_filter, collapse=", "))
   data <- C$data[C$data[,"analyte"]==A,,drop=FALSE]
   data[,"L_flt"] <- data[,"Lab"] %in% D$lab_filter
   data <- data[!(data[,"ID"] %in% D$sample_filter),]
-  # refactor Lab to ensure that only Labs with data are depicted
+  # re-factor Lab to ensure that only Labs with data are depicted
   data[,"Lab"] <- factor(data[,"Lab"])
   eval(CP$CertValPlot$call)
 ```

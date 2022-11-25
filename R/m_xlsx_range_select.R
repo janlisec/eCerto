@@ -4,7 +4,8 @@
 #'
 #' @title A module to preview and select a range from a XLSX File.
 #'
-#' @description \code{xlsx_range_select} will provide a preview for an excel data file and allow the user to specify a range by mouse click(s).
+#' @description \code{xlsx_range_select} will provide a preview for an excel data file
+#'     and allow the user to specify a range by mouse click(s).
 #'
 #' @details not yet
 #'
@@ -44,23 +45,22 @@
 #'      )
 #'    ),
 #'    shiny::hr(),
-#'    m_xlsx_range_select_UI(id = "test")
+#'    eCerto:::m_xlsx_range_select_UI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'   out <- m_xlsx_range_select_Server(
+#'   out <- eCerto:::m_xlsx_range_select_Server(
 #'     id = "test",
 #'     current_file_input = reactive({input$x}),
 #'     sheet = reactive({input$sheet}),
 #'     excelformat = reactive({input$excelformat})
 #'    )
-#'   observeEvent(out$rng, { print(out$rng) })
+#'   shiny::observeEvent(out$rng, { print(out$rng) })
 #'  }
 #' )
 #' }
 #'
-#' @rdname xlsx_range_select
-#' @export
-
+#' @noRd
+#' @keywords internal
 m_xlsx_range_select_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
@@ -69,8 +69,8 @@ m_xlsx_range_select_UI <- function(id) {
   )
 }
 
-#' @rdname xlsx_range_select
-#' @export
+#' @noRd
+#' @keywords internal
 m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"})) {
 
   stopifnot(shiny::is.reactive(current_file_input))
@@ -119,7 +119,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
             filepath = current_file_input()$datapath[1],
             sheet = x,
             method="openxlsx"
-            )
+          )
         })
         # TODO Tabelle nicht editierbar machen!
       } else {

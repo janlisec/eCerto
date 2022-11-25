@@ -1,18 +1,53 @@
+#' @title An example set of data collected for a CRM.
+#' @docType data
+#' @format A list of length = 6 containing CRM test data.
+#' @usage data(CRM001)
+#' @source jan.lisec@@bam.de
+"CRM001"
+
+#' @title An example set of data collected for a LTS monitoring.
+#' @docType data
+#' @format A list of lists of length = 2 containing LTS test data.
+#' @usage data(LTS001)
+#' @source jan.lisec@@bam.de
+"LTS001"
+
+#' @title test_Stability_Arrhenius.
 #' @keywords internal
+#' @importFrom stats rnorm
+#' @noRd
+test_Stability_Arrhenius = function(seed=4) {
+  set.seed(seed)
+  x <- data.frame(
+    "analyte" = rep("a1", 39),
+    "time" = c(0, 0, 0, rep(c(14, 30.42, 90, 365), each=9)),
+    "Value" = stats::rnorm(39, mean=2),
+    "Temp" = c(-20, -20, -20, rep(rep(c(4,23,60), each=3), times=4))
+  )
+  return(x)
+}
+
+#' @title test_rv.
+#' @keywords internal
+#' @noRd
 test_rv <- function() {
   rv <- eCerto$new(init_rv()) # initiate persistent variables
+  testdata <- test_Certification_Excel()
+  apm <- init_apm(testdata)
+  an <- sapply(apm, function(x) { x[["name"]] })
+  mt <- init_materialtabelle(analytes = an)
   shiny::isolate({
-    testdata <- test_Certification_Excel()
     setValue(rv, c("Certification","data"), testdata)
-    setValue(rv, c("General","apm"), init_apm(testdata))
-    setValue(rv, c("General","materialtabelle"), init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]})))
+    setValue(rv, c("General","apm"), apm)
+    setValue(rv, c("General","materialtabelle"), mt)
     rv$c_analyte <- "Si"
   })
   return(rv)
 }
 
-
+#' @title test_mod_xlsx_range.
 #' @keywords internal
+#' @noRd
 test_mod_xlsx_range <- function() {
   fn <- paste0("Ergebnisblatt_BAM-M321_", c("Aleris_Koblenz","Aleris_Duffel","AMAG_Nasschemie"), "_m.xlsx")
   shiny::reactiveVal(
@@ -25,12 +60,13 @@ test_mod_xlsx_range <- function() {
   )
 }
 
-#'@title test_homog.
-#'@details The homogeneity test data are hard coded here using `structure` to
+#' @title test_homog.
+#' @details The homogeneity test data are hard coded here using `structure` to
 #'  potentially identify changes in the excel importer function. When tested,
 #'  the excel importer will read the file "Homog_test.xlsx" from the folder
-#'  `ìnst/extdata` and compare the result with the return value of this function.
-#'@keywords internal
+#'  `inst/extdata` and compare the result with the return value of this function.
+#' @keywords internal
+#' @noRd
 test_homog <- function() {
   list(
     data = structure(list(
@@ -67,29 +103,33 @@ test_homog <- function() {
     uploadsource = "Excel", h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_Fig_width = NULL)
 }
 
+#' @title test_Certification_Excel.
 #' @keywords internal
+#' @noRd
 test_Certification_Excel = function() {
   # After Upload of two Excel Files, what is saved in c(Certification,data) and Input to Certifications
   structure(
-  list(
-    ID = 1:24,
-    Lab = rep(c("L1", "L2"), each = 12),
-    analyte = structure(
-      .Data = rep(c(1L, 2L, 3L), times = 8),
-      .Label = c("Si", "Fe", "Cu"),
-      class = "factor"
+    list(
+      ID = 1:24,
+      Lab = rep(c("L1", "L2"), each = 12),
+      analyte = structure(
+        .Data = rep(c(1L, 2L, 3L), times = 8),
+        .Label = c("Si", "Fe", "Cu"),
+        class = "factor"
+      ),
+      replicate = structure(rep(rep(c(1L, 2L, 3L, 4L), each = 3), times = 2), .Label = c("1", "2", "3", "4"), class = "factor"),
+      value = c(0.0504, 0.049, 4.37, 0.0512, 0.0563, 4.385, 0.0524, 0.0515, 4.34, 0.052, 0.0505, 4.388, 0.0452, 0.0529, 4.4048, 0.0435, 0.0527, 4.3802, 0.0472, 0.0482, 4.3907, 0.0456, 0.0478, 4.391),
+      unit = rep(c("U", "kg/m2", "g/mL"), 8),
+      S_flt = rep(FALSE, 24),
+      L_flt = rep(FALSE, 24)
     ),
-    replicate = structure(rep(rep(c(1L, 2L, 3L, 4L), each = 3), times = 2), .Label = c("1", "2", "3", "4"), class = "factor"),
-    value = c(0.0504, 0.049, 4.37, 0.0512, 0.0563, 4.385, 0.0524, 0.0515, 4.34, 0.052, 0.0505, 4.388, 0.0452, 0.0529, 4.4048, 0.0435, 0.0527, 4.3802, 0.0472, 0.0482, 4.3907, 0.0456, 0.0478, 4.391),
-    unit = rep(c("U", "kg/m2", "g/mL"), 8),
-    S_flt = rep(FALSE, 24),
-    L_flt = rep(FALSE, 24)
-  ),
-  class = "data.frame", row.names = c(NA, 24L)
-)
+    class = "data.frame", row.names = c(NA, 24L)
+  )
 }
 
+#' @title test_Stability_Excel.
 #' @keywords internal
+#' @noRd
 test_Stability_Excel = function() {
   #s_dat, after Upload and Output of the Uploading process
   structure(
@@ -112,7 +152,8 @@ test_Stability_Excel = function() {
         98.43, 96.6, 97.3, 95.9, 97.3, 96.13, 96.04, 97.53
       ),
       Date = structure(
-        .Data = c(15069, 15070, 15091, 15257, 15259, 15260, 15261, 15303, 15317, 15352, 15442, 15513, 15575, 15642, 15688, 15741, 15867, 15869, 15905,
+        .Data = c(15069, 15070, 15091, 15257, 15259, 15260, 15261, 15303, 15317,
+                  15352, 15442, 15513, 15575, 15642, 15688, 15741, 15867, 15869, 15905,
                   15974, 15993, 16010, 16077, 16101, 16189, 16202, 16274, 16316,
                   16385, 16395, 16511, 16568, 16590, 16610, 16699, 16805, 16870,
                   16895, 16986, 17065, 17112, 17120, 17169, 17211, 17381, 17403,
@@ -128,17 +169,4 @@ test_Stability_Excel = function() {
     ),
     row.names = c(NA, -104L), class = "data.frame"
   )
-}
-
-#' @keywords internal
-#' @importFrom stats rnorm
-test_Stability_Arrhenius = function(seed=4) {
-  set.seed(seed)
-  x <- data.frame(
-    "analyte" = rep("a1", 39),
-    "time" = c(0, 0, 0, rep(c(14, 30.42, 90, 365), each=9)),
-    "Value" = stats::rnorm(39, mean=2),
-    "Temp" = c(-20, -20, -20, rep(rep(c(4,23,60), each=3), times=4))
-  )
-  return(x)
 }

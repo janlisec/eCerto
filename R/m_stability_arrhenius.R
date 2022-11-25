@@ -10,20 +10,20 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
-#'    m_arrheniusUI(id = "arrhenius")
+#'    eCerto:::m_arrheniusUI(id = "arrhenius")
 #'  ),
 #'  server = function(input, output, session) {
 #'  rv <- eCerto:::test_rv()
 #'  x <- eCerto:::test_Stability_Arrhenius()
 #'  isolate(setValue(rv, c("Stability", "data"), x))
-#'  out <- m_arrheniusServer(id = "arrhenius", rv = rv)
+#'  out <- eCerto:::m_arrheniusServer(id = "arrhenius", rv = rv)
 #'  shiny::observeEvent(out$switch, { print(out$switch) })
 #'  }
 #' )
 #' }
 #'
-#' @rdname m_arrhenius
-#' @export
+#' @noRd
+#' @keywords internal
 m_arrheniusUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
@@ -108,8 +108,8 @@ m_arrheniusUI <- function(id) {
   )
 }
 
-#' @rdname m_arrhenius
-#' @export
+#' @noRd
+#' @keywords internal
 m_arrheniusServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
@@ -281,15 +281,15 @@ m_arrheniusServer <- function(id, rv) {
     })
 
     shiny::observeEvent(input$ArrheniusPlot1_link, {
-      help_the_user_modal("stability_arrhenius_figS2")
+      show_help("stability_arrhenius_figS2")
     })
 
     shiny::observeEvent(input$ArrheniusTab_link, {
-      help_the_user_modal("stability_arrhenius_tab1")
+      show_help("stability_arrhenius_tab1")
     })
 
     shiny::observeEvent(input$ArrheniusPlot2_link, {
-      help_the_user_modal("stability_arrhenius_figS3")
+      show_help("stability_arrhenius_figS3")
     })
 
     return(out)

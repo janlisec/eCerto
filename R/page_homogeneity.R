@@ -289,19 +289,19 @@ page_HomogeneityServer = function(id, rv) {
 
     # help modals
     shiny::observeEvent(input$hom_help_modal, {
-      help_the_user_modal("homogeneity_uncertainty")
+      show_help("homogeneity_uncertainty")
     })
 
     shiny::observeEvent(input$tab1_link,{
-      help_the_user_modal("homogeneity_uncertainty")
+      show_help("homogeneity_uncertainty")
     })
 
     shiny::observeEvent(input$tab2_link,{
-      help_the_user_modal("homogeneity_specimen_stats")
+      show_help("homogeneity_specimen_stats")
     })
 
     shiny::observeEvent(input$fig1_link,{
-      help_the_user_modal("homogeneity_boxplot")
+      show_help("homogeneity_boxplot")
     })
 
   })

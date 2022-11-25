@@ -7,5 +7,6 @@
 ^\.gitlab$
 ^app\.R$
 ^rsconnect$
+^tests/testthat/_snaps$
 dev
 R/_disable_autoload.R

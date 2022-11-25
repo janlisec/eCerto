@@ -1,22 +1,14 @@
-#' @name longtermstability
-#' @aliases longtermstabilityUI
-#' @aliases longtermstabilityServer
-#'
-#' @title longtermstabilityServer.
-#'
+#' @title page_LTS.
 #' @description Modul for LongTermStability Monitoring as currently (2021) used by Carsten Prinz.
-#'
 #' @param id Name when called as a module in a shiny app.
 #' @return nothing
-#'
-#' @rdname longtermstability
-#' @export
-.longtermstabilityUI = function(id) {
+#' @noRd
+#' @keywords internal
+m_longtermstabilityUI = function(id) {
 
-  # set up shinyAlert and ns function
   ns <- shiny::NS(id)
 
-  shiny::wellPanel(
+  shiny::tagList(
     shiny::conditionalPanel(
       condition="output.LTS_fileUploaded == false",
       ns = ns, # namespace of current module
@@ -33,36 +25,53 @@
       condition="output.LTS_fileUploaded == true",
       ns = ns, # namespace of current module
       shiny::fluidRow(
-        shiny::column(width = 4, DT::dataTableOutput(ns("LTS_vals"))),
+        shiny::column(
+          width = 4,
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("TabL1_link"),
+              label = "Tab.L1 - Long Term Stability measurement data"
+            )
+          ),
+          DT::dataTableOutput(ns("LTS_vals"))
+        ),
         shiny::column(
           width = 8,
           shiny::fluidRow(
             shiny::column(12, DT::dataTableOutput(ns("LTS_def"))),
             style = "margin-bottom:15px;"
           ),
-          shiny::fluidRow(
-            shiny::column(2, shiny::uiOutput(ns("LTS_sel_KW"))),
-            shiny::tags$style(type="text/css", "#lts-Report {margin-top:-1%;}"),
-            shiny::column(8, DT::dataTableOutput(ns("LTS_NewVal"))),
-            shiny::tags$style(type="text/css", "#lts-LTS_NewVal {margin-top:-2%;}"),
-            shiny::column(2, shiny::strong("New Entry"), shiny::p(), shiny::actionButton(inputId = ns("LTS_ApplyNewValue"), label = "Add data")),
-            shiny::tags$style(type="text/css", "#lts-LTS_ApplyNewValue {margin-top:-1%;}")
-          ),
-          shiny::fluidRow(
-            shiny::column(2, shiny::strong("Download Report"), shiny::p(), shiny::downloadButton(ns("Report"))),
-            shiny::column(2, shiny::strong("Save LTS Data"), shiny::p(), shiny::downloadButton(ns("LTS_Save"), label="Backup")),
-            shiny::column(
-              width = 6,
-              shinyjs::disabled(
-                shiny::textInput(
-                  inputId = ns("datacomment"),
-                  label = "data comment",
-                  value = "",
-                  placeholder = "select point or row to comment"
-                )
-              )
+          shiny::wellPanel(
+            shiny::fluidRow(
+              shiny::column(2, shiny::uiOutput(ns("LTS_sel_KW"))),
+              shiny::tags$style(type="text/css", "#lts-Report {margin-top:-1%;}"),
+              shiny::column(8, DT::dataTableOutput(ns("LTS_NewVal"))),
+              shiny::tags$style(type="text/css", "#lts-LTS_NewVal {margin-top:-2%;}"),
+              shiny::column(2, shiny::strong("New Entry"), shiny::p(), shiny::actionButton(inputId = ns("LTS_ApplyNewValue"), label = "Add data")),
+              shiny::tags$style(type="text/css", "#lts-LTS_ApplyNewValue {margin-top:-1%;}")
             ),
-            shiny::column(2, shiny::strong("New Comment"), shiny::p(), shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment"))
+            shiny::fluidRow(
+              shiny::column(2, shiny::strong("Download Report"), shiny::p(), shiny::downloadButton(ns("Report"))),
+              shiny::column(2, shiny::strong("Save LTS Data"), shiny::p(), shiny::downloadButton(ns("LTS_Save"), label="Backup")),
+              shiny::column(
+                width = 6,
+                shinyjs::disabled(
+                  shiny::textInput(
+                    inputId = ns("datacomment"),
+                    label = "data comment",
+                    value = "",
+                    placeholder = "select point or row to comment"
+                  )
+                )
+              ),
+              shiny::column(2, shiny::strong("New Comment"), shiny::p(), shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment"))
+            )
+          ),
+          shiny::strong(
+            shiny::actionLink(
+              inputId = ns("FigL1_link"),
+              label = "Fig.L1 - Long Term Stability calculation"
+            )
           ),
           shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click")))),
           shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_2"), height = "450px"))),
@@ -70,12 +79,12 @@
         )
       )
     ) # conditionalPanel
-  ) # wellPanel
+  )
 }
 
-#' @rdname longtermstability
-#' @export
-.longtermstabilityServer = function(id) {
+#' @noRd
+#' @keywords internal
+m_longtermstabilityServer = function(id) {
   shiny::moduleServer(id, function(input, output, session) {
 
     datalist <- shiny::reactiveValues("lts_data" = NULL, "comment"= NULL)
@@ -175,16 +184,6 @@
       tab_LTSvals()
     }, options = list(paging = TRUE, pageLength = 25, searching = FALSE, stateSave = TRUE), rownames=NULL, server = FALSE, selection = 'single')
 
-
-    # output$LTS_vals <- DT::renderDataTable({
-    #   req(datalist$lts_data, i())
-    #   # trigger redraw on new value and update reactive Value to this end
-    #   #input$LTS_ApplyNewValue
-    #   datalist$lts_data[[i()]][["val"]][,1:3]
-    # }, options = list(paging = TRUE, pageLength = 25, searching = FALSE, stateSave = TRUE), rownames=NULL, server = FALSE, selection = 'single')
-
-
-
     # current LTS definition
     output$LTS_def <- DT::renderDataTable({
       shiny::req(datalist$lts_data)
@@ -206,7 +205,7 @@
       x = datalist$lts_data[[i()]]
       vals <- x[["val"]][,"Value"]
       rt <- x[["val"]][,"Date"]
-      mon <- mondf(rt)
+      mon <- calc_time_diff(rt)
       data.frame(mon, vals)
     })
 
@@ -246,7 +245,7 @@
       sr <- input$LTS_vals_rows_selected
       tmp <- datalist$lts_data[[i()]][["val"]]
       if (length(sr)) {
-       graphics::points(x = rep(mondf(tmp[,"Date"])[sr],2), y = rep(tmp[sr,"Value"],2), pch = c(21,4), cex = 2, col = 5)
+       graphics::points(x = rep(calc_time_diff(tmp[,"Date"])[sr],2), y = rep(tmp[sr,"Value"],2), pch = c(21,4), cex = 2, col = 5)
       }
     })
 
@@ -266,7 +265,7 @@
           x[["val"]] <- x[["val"]][1:i,]
           plot_lts_data(x = x, type=0)
         })
-        x <- mondf(tmp[["val"]][,"Date"])
+        x <- calc_time_diff(tmp[["val"]][,"Date"], type = "mon")
         plot(x=x[-c(1:5)], y=est, xlab="Measurement Point", ylab="LTS month estimate (excluding initital 5 values)", xlim=range(x), pch=24)
       }
     })
@@ -376,10 +375,16 @@
       contentType = "RData"
     )
 
+    # Help Files
+    shiny::observeEvent(input$TabL1_link,{
+      show_help("lts_tab_L1")
+    })
+    shiny::observeEvent(input$FigL1_link,{
+      show_help("lts_fig_L1")
+    })
     shiny::observeEvent(input$InputHelp, {
-      help_the_user_modal("lts_dataupload")
+      show_help("lts_dataupload")
     })
 
   })
 }
-

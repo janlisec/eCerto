@@ -13,7 +13,7 @@
 #'    eCerto:::page_startUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- eCerto::eCerto$new(eCerto::init_rv()) # initiate persistent variables
+#'    rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
 #'    eCerto:::page_startServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -201,13 +201,13 @@ page_startServer = function(id, rv) {
     shiny::observeEvent(input$moduleUploadHelp, {
       switch(
         input$moduleSelect,
-        "Certification" = help_the_user_modal("certification_dataupload"),
-        "Homogeneity" = help_the_user_modal("homogeneity_dataupload"),
-        "Stability" = help_the_user_modal("stability_dataupload")
+        "Certification" = show_help("certification_dataupload"),
+        "Homogeneity" = show_help("homogeneity_dataupload"),
+        "Stability" = show_help("stability_dataupload")
       )
     })
 
-    shiny::observeEvent(input$getHelp, { help_the_user_modal("start_gethelp") })
+    shiny::observeEvent(input$getHelp, { show_help("start_gethelp") })
 
   })
 

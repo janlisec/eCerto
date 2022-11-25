@@ -249,8 +249,6 @@ page_CertificationServer = function(id, rv) {
     dat <- shiny::reactive({
       shiny::req(selected_tab())
       return(c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[selected_tab()]]))
-      #browser()
-      #rv$c_fltData()
     })
 
     # -- -- -- -- -- -- --
@@ -410,13 +408,13 @@ page_CertificationServer = function(id, rv) {
 
     # Help Files
     shiny::observeEvent(input$stat_link,{
-      help_the_user_modal("certification_laboratoryStatistics")
+      show_help("certification_laboratoryStatistics")
     })
     shiny::observeEvent(input$stat2_link,{
-      help_the_user_modal("certification_meanDistribution")
+      show_help("certification_meanDistribution")
     })
     shiny::observeEvent(input$certifiedValuePlot_link, {
-      help_the_user_modal("certification_boxplot")
+      show_help("certification_boxplot")
     })
 
   })

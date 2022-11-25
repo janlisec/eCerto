@@ -18,7 +18,7 @@ testthat::test_that(
     )
     suppressMessages(
       shiny::testServer(
-        app = m_ExcelUpload_Server,
+        app = eCerto:::m_ExcelUpload_Server,
         args = list(exl_fmt=excelformat_test),
         expr =  {
           session$setInputs(excel_file = xlsx_test, sheet_number = 1)
@@ -44,7 +44,7 @@ testthat::test_that(
     excelformat_test = shiny::reactiveVal("Homogeneity")
     suppressMessages(
       shiny::testServer(
-        app = m_ExcelUpload_Server,
+        app = eCerto:::m_ExcelUpload_Server,
         args = list(exl_fmt=excelformat_test),
         expr =  {
           session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
@@ -66,12 +66,12 @@ testthat::test_that(
     excelformat_test <- shiny::reactiveVal("Stability")
     suppressMessages(
       shiny::testServer(
-        app = m_ExcelUpload_Server,
+        app = eCerto:::m_ExcelUpload_Server,
         args = list(exl_fmt=excelformat_test),
         expr =  {
           session$setInputs(excel_file = xlsx_test2, sheet_number = 1) # without row and column selection
           session$setInputs(go = "click")
-          testthat::expect_equal(out$data,eCerto:::test_Stability_Excel())
+          testthat::expect_equal(out$data, eCerto:::test_Stability_Excel())
         }
       )
     )

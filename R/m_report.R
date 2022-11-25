@@ -19,7 +19,7 @@
 #'  server = function(input, output, session) {
 #'    rv <- eCerto::eCerto$new() # initiate persistent variables
 #'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-#'    shiny::isolate({set_uploadsource(rv, "Certification", uploadsource = "Excel") })
+#'    shiny::addResourcePath("www", system.file("app", "www", package = "eCerto"))
 #'    eCerto:::m_reportServer(
 #'      id = "test",
 #'      rv = rv
@@ -139,7 +139,7 @@ m_reportServer <- function(id, rv) {
     )
 
     shiny::observeEvent(input$help_link,{
-      help_the_user_modal("certification_report")
+      show_help("certification_report")
     })
 
   })

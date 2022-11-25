@@ -57,14 +57,11 @@ getValue = function(df, key=NULL) {
 
 
 #' @title laboratory_dataframe.
-#'
 #' @description Creates long pivot table in laboratory style after load.
-#'
 #' @param x Data frame with uploaded excel table.
-#'
-#' @return another data frame with extracted laboratory parameters
-#' @rdname datahandling_utils
-#' @export
+#' @return Another data frame with extracted laboratory parameters.
+#' @noRd
+#' @keywords internal
 laboratory_dataframe = function(x) {
   stopifnot(!shiny::is.reactive(x))
 
@@ -100,9 +97,11 @@ laboratory_dataframe = function(x) {
 #' @param filepath the path to a single or multiple excel file(s)
 #'
 #' @return the names of sheets
-#' @rdname datahandling_utils
-#' @export
-load_sheetnames = function(filepath){
+#' @importFrom openxlsx getSheetNames
+#' @importFrom shinyalert shinyalert
+#' @noRd
+#' @keywords internal
+load_sheetnames <- function(filepath){
   a = lapply(shiny::isolate(filepath), function(x) {
     ext <- tools::file_ext(x)
     if(tolower(ext)=="xlsx"){
@@ -116,7 +115,7 @@ load_sheetnames = function(filepath){
   if(length(unique(a))!=1) {
     shinyalert::shinyalert(
       title = "Different sheetnames",
-      text = "Sheet names are different",
+      text = "Sheet names are different within files",
       type = "warning"
     )
   }
@@ -124,57 +123,48 @@ load_sheetnames = function(filepath){
 }
 
 #' @title set_uploadsource.
-#'
-#' @description Set source of upload for an element.
-#'
-#' @param rv the list
-#' @param m one of "Certification","Homogeneity", "Stability"
-#' @param uploadsource the source of upload
-#'
-#' @return nothing directly, but via rv
-#' @export
-#' @rdname datahandling_utils
+#' @description Set source of upload for an element. This is kept to trigger a re-focus of the App
+#'     to a specific subpage should new data be uploaded for this module.#'
+#' @param rv The eCerto object.
+#' @param m Name of a module (one of "Certification", "Homogeneity", "Stability").
+#' @param uploadsource The source of upload (either "RData" or "Excel").#'
+#' @return Nothing. Will update the eCerto object field 'uploadsource'.
+#' @keywords internal
+#' @noRd
 #' @examples
 #' if (interactive()) {
-#'   rv = init_rv()
-#'   set_uploadsource(rv,"Certification","Excel")
+#'   rv <- eCerto:::init_rv()
+#'   set_uploadsource(rv, "Certification", "Excel")
 #' }
-
-set_uploadsource = function(rv, m, uploadsource) {
+set_uploadsource <- function(rv, m, uploadsource) {
   stopifnot(is.character(uploadsource)) # only character
-  stopifnot(uploadsource %in% c("RData","Excel"))
+  stopifnot(uploadsource %in% c("RData", "Excel"))
   # Has RData been uploaded before?
-  if(uploadsource=="RData"){
-    u = getValue(rv,c(m,"uploadsource"))
-    if(!is.null(u) && startsWith(u, "RData")) {
-      no = as.numeric(gsub("RData-", "", u)) # what number was last upload
+  if (uploadsource == "RData") {
+    u <- getValue(rv, c(m, "uploadsource"))
+    if (!is.null(u) && startsWith(u, "RData")) {
+      # what number was last upload
+      idx <- as.numeric(gsub("RData-", "", u))
     } else {
-      # if previous was Excel, restart
-      no = 0
+      # if previous was 'Excel', restart counter
+      idx <- 0
     }
-    uploadsource = paste0("RData-", no + 1)
-
+    uploadsource <- paste0("RData-", idx + 1)
   }
-  setValue(rv,c(m,"uploadsource"), uploadsource)
-  # rv$set(c(m,"uploadsource"),uploadsource)
-  # rv[[m]][["uploadsource"]] = uploadsource
-
+  setValue(rv, c(m, "uploadsource"), uploadsource)
 }
 
-
 #' @title pn.
-#'
 #' @description Format a number by rounding to a precision in same width as
 #'   character using scientific notation for numbers < precision and rounding
 #'   to precision otherwise.
-#'
 #' @param n numeric vector
 #' @param p requested precision after the decimal sign
-#'
 #' @return numbers formatted
-#' @rdname datahandling_utils
-#' @examples pn(n=c(1.23456, NA, 0, 0.00001, -0.00001))
-#' @export
+#' @examples
+#' pn(n=c(1.23456, NA, 0, 0.00001, -0.00001), p=8)
+#' @noRd
+#' @keywords internal
 pn <- function(n=NULL, p=4L) {
   # n : numeric vector
   # p : precision after the decimal sign
@@ -192,18 +182,14 @@ pn <- function(n=NULL, p=4L) {
 }
 
 #' @title update_reactivecell.
-#'
-#' @description Update single or multiple cells of the final materialtabelle
-#'   (formerly cert_vals) with new values.
-#'
-#' @param r the reactive containing the data frame to be updated
-#' @param colname name of the column
-#' @param analyterow  name of the analyte-row. If NULL, whole column is updated
-#' @param value value to be updated
-#'
-#' @return nothing directly
-#' @rdname datahandling_utils
-#' @export
+#' @description Update single or multiple cells of the final `materialtabelle` with new values.
+#' @param r Reactive containing the data frame to be updated.
+#' @param colname Name of the column.
+#' @param analyterow Name of the analyte-row. If NULL, whole column is updated.
+#' @param value New value to be updated.
+#' @return Nothing. Will update the data frame in the reactive `r`.
+#' @noRd
+#' @keywords internal
 update_reactivecell = function(r,colname,analyterow = NULL,value) {
 
   if(!is.data.frame(r()))
@@ -242,10 +228,11 @@ update_reactivecell = function(r,colname,analyterow = NULL,value) {
 }
 
 #' @title to_startPage.
+#' @description If called, function will redirect the user to page `Start`.
 #' @param session session.
 #' @param  value value.
 #' @keywords internal
-#' to switch to Start Page
+#' @noRd
 to_startPage = function(session, value="Certification") {
   # this function will break if shiny input IDs get changed
   # ToDo: implement in testthat that 'Start' and 'Start-moduleSelect' are present
@@ -262,26 +249,26 @@ to_startPage = function(session, value="Certification") {
 }
 
 #' @title listNames
-#'
-#' @description Provides names of nested list elements, but ignores data.frame column.
-#'
-#' @param l nested list or R6 containing reactiveValues or reactiveValues
+#' @description Provides names of nested list elements, but ignores data frame column names.
+#'     Refer to  <https://stackoverflow.com/q/68453593/6946122> for details.
+#' @param l Nested list or R6 containing reactiveValues or reactiveValues
 #' @param maxDepth the maximum depth, the names of list should be returned
-#' @param split should the returning list be returned as nested  (TRUE) or
-#'   as point-separated list?
-#'
-#' @return list if split == TRUE, otherwise character vector
-#'   names. Refer to https://stackoverflow.com/q/68453593/6946122
-#'
-#' @export
-#'
+#' @param split should the returning list be returned as nested  (TRUE) or as point-separated list (FALSE)?#'
+#' @return A list if split == TRUE, otherwise a character vector of names.
+#' @keywords internal
+#' @noRd
 #' @examples
-#' a = list(
-#'   b = list(df1 = data.frame(col = c(1, 2)), e = list(z = NULL)),
-#'   c = NULL,
-#'   df2 = data.frame(c12 = c(1, 2), c34 = c(3, 4))
+#' test <- list(
+#'   "b" = list(
+#'     "df1" = data.frame(col = c(1, 2)),
+#'     "e" = list(z = NULL)
+#'    ),
+#'   "c" = NULL,
+#'   "df2" = data.frame(c12 = c(1, 2), c34 = c(3, 4))
 #' )
-#' listNames(a,2)
+#' listNames(test)
+#' listNames(test, 3)
+#' listNames(test, 3, TRUE)
 listNames <- function(l, maxDepth = 2, split = FALSE) {
   if(R6::is.R6(l) | shiny::is.reactivevalues(l)){
     # decompose first if it is a R6 object
@@ -304,20 +291,21 @@ listNames <- function(l, maxDepth = 2, split = FALSE) {
   return(nms)
 }
 
-#'@title show_view
-#'@description Show View Returns a list of panels, which are marked to be shown in the
+#' @title show_view
+#' @description Show View Returns a list of panels, which are marked to be shown in the
 #'   accordingly used RData from previous analysis. This is currently not evaluated
 #'   but could be useful in the future. Keep for now and don't delete,
-#'@param rv The eCerto R6 object.
-#'@return A character vector of panels to be shown or more precisely the parent list names
+#' @param rv The eCerto R6 object.
+#' @return A character vector of panels to be shown or more precisely the parent list names
 #'   which contain a sub item 'show' that is set to TRUE.
-#'@keywords internal
-#'@examples
-#'rv <- eCerto::eCerto$new(init_rv()) # initiate persistent variables
-#'shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
-#'print(eCerto:::show_view(rv))
-#'shiny::isolate({setValue(rv, c("Certification_processing","mstats","show"),TRUE) })
-#'print(eCerto:::show_view(rv))
+#' @keywords internal
+#' @noRd
+#' @examples
+#' rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
+#' shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
+#' print(eCerto:::show_view(rv))
+#' shiny::isolate({setValue(rv, c("Certification_processing","mstats","show"),TRUE) })
+#' print(eCerto:::show_view(rv))
 show_view <- function(rv){
   nms <- shiny::isolate(listNames(rv, maxDepth = 3, split = TRUE))
   visible = c()
@@ -331,21 +319,16 @@ show_view <- function(rv){
 }
 
 #' @title sub_header.
-#'
 #' @description Format a text as bold paragraph and with specific left/bottom margin.
-#'
 #' @param txt The sub_header text to format.
 #' @param l Left margin in percent.
 #' @param b Bottom margin left in percent.
-#'
-#' @rdname datahandling_utils
-#'
 #' @return HTML to include in UI.
-#'
 #' @keywords internal
-#'
+#' @noRd
 #' @examples
 #' eCerto:::sub_header("test")
+#' eCerto:::sub_header("test", l=5, b=0)
 sub_header <- function(txt="test", l=0, b=2) {
   shiny::HTML(paste0("<p style=margin-left:", l, "%;margin-bottom:", b,"%><strong>", txt, "</strong></p>")  )
 }

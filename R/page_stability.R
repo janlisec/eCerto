@@ -14,7 +14,7 @@
 #'    eCerto:::page_StabilityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- eCerto::eCerto$new(eCerto::init_rv()) # initiate persistent variables
+#'    rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel" )})
 #'    eCerto:::page_StabilityServer(id = "test", rv = rv)
@@ -120,31 +120,15 @@ page_StabilityServer <- function(id, rv) {
       shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
     })
 
-    # # TODO This is for saving; Has to be transformed to setValue()
-    # s_res <- reactive({
-    #   # combine data for backup in a list
-    #   if (is.null(getValue(rv,c("Stability","data")))) {
-    #     return(list("Stability"=NULL))
-    #   } else {
-    #     return(list("Stability"=list(
-    #       "s_file"=input$s_input_file[[1]],
-    #       "s_sel_analyte"=input$s_sel_analyte,
-    #       "s_dat"=getData("s_dat"),
-    #       "s_vals"=getData("s_vals")
-    #     )))
-    #   }
-    # }, label="debug_s_res")
-
-
     # the complete data table of stability data
     s_Data <- shiny::reactive({
       #shiny::req(input$s_sel_temp)
       s_dat <- getValue(rv,c("Stability","data"))
       if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
       if ("Temp" %in% colnames(s_dat)) {
-        validate(need(expr = input$s_sel_temp != "", message = "Please select a Temp level."))
+        shiny::validate(shiny::need(expr = input$s_sel_temp != "", message = "Please select a Temp level."))
         s_dat <- s_dat[as.character(s_dat[,"Temp"]) %in% input$s_sel_temp,]
-        validate(need(expr = diff(range(s_dat[,"time"]))>0, message = "Please select Temp levels such that independent time points exist."))
+        shiny::validate(shiny::need(expr = diff(range(s_dat[,"time"]))>0, message = "Please select Temp levels such that independent time points exist."))
       }
       return(s_dat)
     })
@@ -154,7 +138,7 @@ page_StabilityServer <- function(id, rv) {
       shiny::req(s_Data())
       out <- plyr::ldply(split(s_Data(), s_Data()[,"analyte"]), function(x) {
         x_lm <- stats::lm(Value ~ Date, data=x)
-        mon_diff <- max(mondf(x[,"Date"]))
+        mon_diff <- max(calc_time_diff(x[,"Date"], type = "mon"))
         x_slope <- summary(x_lm)$coefficients[2,1:2]
         # according to B.3.4 from ISO Guide 35
         p_val <- 2 * stats::pt(abs(x_slope[1]/x_slope[2]), df = stats::df.residual(x_lm), lower.tail = FALSE)
@@ -321,11 +305,11 @@ page_StabilityServer <- function(id, rv) {
 
     # render help files
     shiny::observeEvent(input$fig1_link,{
-      help_the_user_modal("stability_plot")
+      show_help("stability_plot")
     })
 
     shiny::observeEvent(input$tab_link,{
-      help_the_user_modal("stability_uncertainty")
+      show_help("stability_uncertainty")
     })
 
   })
