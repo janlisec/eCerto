@@ -4,11 +4,11 @@ default:
   app_date: !expr as.character(utils::packageDate("eCerto"))
   app_prod: no
   silent: no
+  bam_server: yes
 production:
   app_prod: yes
   silent: yes
 dev:
-  golem_wd: !expr here::here()
   silent: no
-  app_version: "development"
-  app_date: !expr as.character(Sys.Date())
+  app_version: development
+  app_date: '2022-11-28'

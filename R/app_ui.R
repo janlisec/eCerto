@@ -28,10 +28,10 @@ app_ui <- function(request) {
         class = "verticalhorizontal",
         shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt="BAM Logo"),
         shiny::strong("BAM"),
-        shiny::em("eCerto")
+        shiny::em(get_golem_config("golem_name"))
       ),
       selected = "Start",
-      windowTitle = "BAM eCerto",
+      windowTitle = paste("BAM", get_golem_config("golem_name")),
       position = "fixed-top",
       footer = shiny::div(
         style="position: fixed; bottom: 0px; left: 0px; width: 100%; padding-left: 15px; padding-top: 5px; padding-bottom: 5px; background-color: #f8f8f8; font-family: Lucida Console, monospace;",
@@ -40,8 +40,8 @@ app_ui <- function(request) {
             get_golem_config("golem_name"), "|",
             get_golem_config("app_version"), "|",
             get_golem_config("app_date"), "|",
-            "jan.lisec@bam.de", "|",
-            '<a href="https://www.bam.de/Navigation/DE/Services/Datenschutz/datenschutz.html" target="_blank" rel="noopener noreferrer">BAM Datenschutzerkl\u00e4rung</a>'
+            '<a href="mailto:jan.lisec@bam.de">jan.lisec@bam.de</a>',
+            ifelse(get_golem_config("bam_server"), '| <a href="https://www.bam.de/Navigation/DE/Services/Datenschutz/datenschutz.html" target="_blank" rel="noopener noreferrer">BAM Datenschutzerkl\u00e4rung</a>', '')
           )
         #)
       ),
@@ -105,14 +105,24 @@ golem_add_external_resources <- function() {
     'www', paste(normalizePath(tempdir(), "/"), "www", sep="/")
   )
 
+  # add further resources to the <head> of the HTML page
   shiny::tags$head(
     golem::bundle_resources(
       path = app_sys('app/www'),
-      app_title = 'eCerto'
+      app_title = get_golem_config("golem_name")
     ),
     golem::favicon(ico = "BAMLogo"),
     # Add here other external resources
     shinyjs::useShinyjs()
   )
+
+  # include JS for setting up tracking via Matomo
+  if (get_golem_config("bam_server")) {
+    shiny::tags$head(
+      shiny::HTML('<noscript><p><img src="https://agw1.bam.de/piwik/matomo.php?idsite=24&amp;rec=1" style="border:0;" alt="" /></p></noscript>'),
+      shiny::HTML('<script type="text/javascript" src="https://agw1.bam.de/piwik/piwik.js" async defer></script>'),
+      shiny::includeScript(app_sys("app/www/js/tracking-live.js"))
+    )
+  }
 
 }

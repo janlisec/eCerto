@@ -9,6 +9,12 @@ output:
   #  toc: true
 ---
 
+<style>
+p.caption {
+  font-size: 0.75em;
+}
+</style>
+
 ```{r child = 'start.Rmd'}
 ```
 

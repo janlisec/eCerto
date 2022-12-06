@@ -7,16 +7,17 @@ position within each file (table name, row and column range) and that exactly
 one file per laboratory exists.
 
 ***Note!*** 
-Please select the range without a header. *eCerto* assumes the first and second 
-column to contain analyte names and units respectively and replicate measurements 
-of this analyte in all remaining columns.
+Please select the range without a header as shown in the figure below. *eCerto*
+assumes the first and second column of the specified range to contain analyte 
+names and units respectively and replicate measurements of this analyte in all 
+remaining columns.
 
 ![**User Options** Data upload from Excel with preview](fig/M_Modul_Dataupload.png)
 
-Filenames will be stored for reference but imported labs will be consecutively 
-numbered. In the example above you should import data from sheet 1 of each Excel 
+File names will be stored for reference but imported labs will be consecutively 
+numbered. In the example above you would import data from sheet 1 of each Excel 
 file located in Range A7:H9, containing 6 replicate measurements of 3 different 
-analytes measured in units as specified in column B.
+analytes (column A) measured in units as specified in column B.
 
 ***Note!*** 
 Currently, *eCerto* needs to load all Excel result files in one step, *i.e.* you 

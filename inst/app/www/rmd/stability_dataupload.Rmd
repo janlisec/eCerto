@@ -15,6 +15,17 @@ Excel table including the columns `analyte`, `Temp`, `Date`, `Value` and `unit`.
 
 ![**Info** Excel import format for stability data including temperature](fig/S_Modul_Import_Arrhenius.png)
 
+The `Temp` column obviously should contain temperature levels in\ °C at which samples were
+stored before measurement. The lowest temperature level will be used as a reference point
+$T_\mathit{ctrl}$. This is also reflected in the specified `Date` values, where 
+$T_\mathit{ctrl}$ will be treated as a reference time point. All other temperature levels
+should have later dates specified. For every measurement, the difference between its date
+and the reference time point will be computed to represent the storage time at this
+temperature.
+
+Using dates instead of specifying storage time directly allows to compute stability and
+potential shelf life in month and as an absolute date.
+
 ***Note!***
 Upload can be also achieved from a previousy created backup file. If a backup file does not 
 contain any stability data, the Excel upload option will remain active (and will become 

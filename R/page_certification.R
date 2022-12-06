@@ -49,10 +49,10 @@ page_CertificationUI = function(id) {
       title = "active-Panel",
       value = "loaded",
         shiny::wellPanel(
-          style = "height: 112px;",
+          style = "height: 88px; padding-top: 6px; padding-bottom: 6px; ",
           shiny::div(
             style = "float:left; width: 280px;",
-            shiny::p("Select to show panel", style = "font-weight: 700"),
+            sub_header("Select to show panel"),
             shiny::div(
               style = "float:left;",
               shiny::checkboxGroupInput(

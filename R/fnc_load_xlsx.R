@@ -17,7 +17,7 @@
 #' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1, method = "openxlsx")
 #' eCerto:::fnc_load_xlsx(filepath = "C:/not_existent.file", sheet = 1)
 #' eCerto:::fnc_load_xlsx(filepath = x, sheet = 2)
-#' x <- system.file(package = "ecerto", "extdata", "EmptyExcel.xlsx")
+#' x <- system.file("extdata", "EmptyExcel.xlsx", package = "ecerto")
 #' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1, method = "openxlsx")
 #'
 #' @return A dataframe.

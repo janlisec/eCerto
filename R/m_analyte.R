@@ -44,13 +44,28 @@ m_analyteUI = function(id) {
     ),
     shiny::div(style="width: 200px; float:left; margin-right:5px; margin-left:15px;",
       shiny::div("Filter IDs", style = "background: grey; text-align: center"),
-      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::selectizeInput(inputId = ns("sample_filter"), label = "Samples", choices = "", multiple = TRUE)),
-      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::selectizeInput(inputId = ns("lab_filter"), label = "Labs", choices = "", multiple = TRUE)),
+      shiny::div(
+        style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        sub_header("Samples", b=1),
+        shiny::selectizeInput(inputId = ns("sample_filter"), label = NULL, choices = "", multiple = TRUE)
+      ),
+      shiny::div(
+        style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        sub_header("Labs", b=1),
+        shiny::selectizeInput(inputId = ns("lab_filter"), label = NULL, choices = "", multiple = TRUE)
+      ),
     ),
     shiny::div(style="width: 200px; float:left; margin-right:5px; margin-left:15px;",
       shiny::div("Precision (acc. to DIN1333)", style = "background: grey; text-align: center"),
-      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::numericInput(inputId = ns("precision"), label = "Tables", value = 4, min = 0, max = 10, step = 1)),
-      shiny::div(style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;", shiny::numericInput(inputId =ns("precision_export"), label = "Certified Values", value = 4, min = -2, max = 6, step = 1)),
+      shiny::div(
+        style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        sub_header("Tables", b=1),
+        shiny::numericInput(inputId = ns("precision"), label = NULL, value = 4, min = 0, max = 10, step = 1)),
+      shiny::div(
+        style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        shiny::div(id = ns("DIN1333_info"), sub_header("Certified Values", b=1)),
+        shiny::numericInput(inputId = ns("precision_export"), label = NULL, value = 4, min = -2, max = 6, step = 1)
+      ),
     )
   )
 }
@@ -86,34 +101,33 @@ m_analyteServer = function(id, rv) {
     # update inputs when different analyte is set in rv
     shiny::observeEvent(gargoyle::watch("update_c_analyte"), {
       shiny::req(apm())
-        message("[m_analyte] update parameter inputs for ", rv$c_analyte)
-        shinyjs::html(id = "curr_analyte", html = apm()[[rv$c_analyte]]$name)
-        shiny::updateCheckboxInput(
-          inputId = "pooling",
-          value = apm()[[rv$c_analyte]]$pooling
-        )
-        shiny::updateSelectizeInput(
-          inputId = "sample_filter",
-          choices = apm()[[rv$c_analyte]]$sample_ids,
-          selected = apm()[[rv$c_analyte]]$sample_filter
-        )
-        shiny::updateSelectizeInput(
-          inputId = "lab_filter",
-          choices = apm()[[rv$c_analyte]]$lab_ids,
-          selected = apm()[[rv$c_analyte]]$lab_filter
-        )
-        shiny::updateNumericInput(
-          inputId = "precision",
-          value = apm()[[rv$c_analyte]]$precision
-        )
-        mt <- getValue(rv, c("General", "materialtabelle"))
-        n <- n_round_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
-        shiny::updateNumericInput(
-          inputId = "precision_export",
-          value = apm()[[rv$c_analyte]]$precision_export,
-          label = paste0("Cert. Val. (", n, ")")
-        )
-      #}
+      message("[m_analyte] update parameter inputs for ", rv$c_analyte)
+      shinyjs::html(id = "curr_analyte", html = apm()[[rv$c_analyte]]$name)
+      shiny::updateCheckboxInput(
+        inputId = "pooling",
+        value = apm()[[rv$c_analyte]]$pooling
+      )
+      shiny::updateSelectizeInput(
+        inputId = "sample_filter",
+        choices = apm()[[rv$c_analyte]]$sample_ids,
+        selected = apm()[[rv$c_analyte]]$sample_filter
+      )
+      shiny::updateSelectizeInput(
+        inputId = "lab_filter",
+        choices = apm()[[rv$c_analyte]]$lab_ids,
+        selected = apm()[[rv$c_analyte]]$lab_filter
+      )
+      shiny::updateNumericInput(
+        inputId = "precision",
+        value = apm()[[rv$c_analyte]]$precision
+      )
+      mt <- getValue(rv, c("General", "materialtabelle"))
+      n <- n_round_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
+      shiny::updateNumericInput(
+        inputId = "precision_export",
+        value = apm()[[rv$c_analyte]]$precision_export
+      )
+      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=1))
     }, ignoreInit = FALSE)
 
     shiny::observeEvent(getValue(rv, c("General","materialtabelle")), {
@@ -122,9 +136,9 @@ m_analyteServer = function(id, rv) {
       n <- n_round_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
       shiny::updateNumericInput(
         inputId = "precision_export",
-        value = apm()[[rv$c_analyte]]$precision_export,
-        label = paste0("Cert. Val. (", n, ")")
+        value = apm()[[rv$c_analyte]]$precision_export
       )
+      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=1))
     })
 
     # update apm in case of changes in precision inputs

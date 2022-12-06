@@ -25,16 +25,16 @@ $$u(s) = \sqrt{\frac{err^2 \times n}{(b \times n-a^2)}}$$
 
 $$cov = -1 \times \frac{err^2 \times a}{(b \times n-a^2)}$$
 
-which, finally, can be used to estimate the confidence interval $CI$ as:
+which, finally, can be used to estimate the confidence interval $\mathit{CI}$ as:
 
-$$CI_{(upper,~lower)} = K_i \pm \sqrt{ u(i)^2 + u(s)^2 \times x_i^2 + 2x_i \times cov }$$
+$$\mathit{CI}_{(upper,~lower)} = K_i \pm \sqrt{ u(i)^2 + u(s)^2 \times x_i^2 + 2x_i \times cov }$$
 
 When a certified value $\mu_c$ and corresponding uncertainty $U_{abs}$ (`cert_val` and `U_abs`) are available 
-for an analyte in **Tab.C3** of the certification module of *eCerto*, these can be used together with $CI_{upper}$ 
+for an analyte in **Tab.C3** of the certification module of *eCerto*, these can be used together with $\mathit{CI}_{upper}$ 
 to calculate the storage time $S_{Month}$ for each evaluated temperature level using:
 
-$$S_{\mathit{Month}}(T) = \frac{ \log( \frac{\mu_c - U_{abs}}{\mu_c})}{e^{CI_{upper}(T)} }$$
+$$S_{\mathit{Month}}(T) = \frac{ \log( \frac{\mu_c - U_{abs}}{\mu_c})}{e^{\mathit{CI}_{upper}(T)} }$$
 
 ***Note!***
 Extrapolation beyond the range of storage conditions tested (for example, predicting degradation rates 
-at −20 °C from an experiment involving only temperatures above 0 °C) can be unreliable and is not recommended.
+at −20\ °C from an experiment involving only temperatures above 0\ °C) can be unreliable and is not recommended.
