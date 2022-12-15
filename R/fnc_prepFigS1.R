@@ -19,9 +19,10 @@
 #' x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm=apm, U_Def="U", mt=mt)
 #' eCerto:::plot_lts_data(x=x_prep)
 #' @return A list of length=2 containing measurement data ('val') and analyte definition ('def').
+#' @noRd
 #' @keywords internal
-prepFigS1 <- function(s, an, apm = NULL, U_Def = "2s", mt = NULL) {
-  if (length(U_Def)==1 && !as.character(U_Def) %in% c("2s", "U")) U_Def <- "2s"
+prepFigS1 <- function(s, an, apm = NULL, U_Def = c("2s", "U"), mt = NULL) {
+  U_Def <- match.arg(U_Def)
   l <- s[,"analyte"]==an
   # Convert to format used in LTS modul
   # load SD, CertVal, unit and U from certification if available

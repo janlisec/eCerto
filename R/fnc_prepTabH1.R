@@ -1,13 +1,14 @@
-#'@title fnc_prepTabH1.
-#'@description \code{prepTabH1} will perform statistics on imported homogeneity
+#' @title fnc_prepTabH1.
+#' @description \code{prepTabH1} will perform statistics on imported homogeneity
 #'    data.
-#'@details tbd.
-#'@param x The Hom data from an session R6 object.
-#'@examples
-#'x <- eCerto:::test_homog()$data
-#'eCerto:::prepTabH1(x = x)
-#'@return A data frame.
-#'@keywords internal
+#' @details tbd.
+#' @param x The Hom data from an session R6 object.
+#' @examples
+#' x <- eCerto:::test_homog()$data
+#' eCerto:::prepTabH1(x = x)
+#' @return A data frame.
+#' @keywords internal
+#' @noRd
 prepTabH1 <- function(x) {
   message("[prepTabH1] perform statistics on imported homogeneity data")
   stopifnot(all(c("analyte", "H_type", "Flasche", "value") %in% colnames(x)))

@@ -94,10 +94,10 @@ page_startServer = function(id, rv) {
 
     rv_rdata <- m_RDataImport_Server(
       id = "Rdatain",
-      modules = shiny::reactive({getValue(rv,"modules")}),
+      modules = shiny::reactive({getValue(rv, "modules")}),
       uploadsources = shiny::reactive({
         sapply(getValue(rv, "modules"), function(x) {
-          getValue(rv, c(x,"uploadsource"))
+          getValue(rv, c(x, "uploadsource"))
         })
       })
     )
@@ -150,9 +150,8 @@ page_startServer = function(id, rv) {
     # Load Test Data -----------------------------------------------------------
     shiny::observeEvent(input$load_test_data, {
       # check if data was already uploaded or this is a new session
-      if (all(sapply(getValue(rv, "modules"), function(x) { is.null(getValue(rv, c(x,"data"))) }))) {
-        res <- eCerto::CRM001
-        rv_test <- fnc_load_RData(x = res)
+      if (all(sapply(getValue(rv, "modules"), function(x) { is.null(getValue(rv, c(x, "data"))) }))) {
+        rv_test <- fnc_load_RData(x = eCerto::CRM001)
         rv_test_names <- listNames(rv_test, split = TRUE)
         rv_name <- listNames(rv, split = TRUE)
         if (identical(rv_test_names, rv_name)) {
@@ -160,7 +159,7 @@ page_startServer = function(id, rv) {
             setValue(rv, n, getValue(rv_test, n))
           }
         } else {
-          message("Probably the format of 'rv' has changed. Please update 'testdata.RData'")
+          message("Probably the format of 'rv' has changed. Please update 'data/CRM001.rda'")
         }
       } else {
         shiny::showModal(shiny::modalDialog(

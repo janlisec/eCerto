@@ -1,4 +1,4 @@
-#' @title fnc_prepFigS2.
+#' @title prepFigS2.
 #' @description \code{prepFigS2} will generate a temp dependend set of plots.
 #' @details tbd.
 #' @param tmp The S data from an session R6 object.
@@ -16,6 +16,7 @@
 #' eCerto:::prepFigS2(tmp = x, plot_ln_relative = FALSE)
 #' @return A data frame.
 #' @importFrom graphics par
+#' @noRd
 #' @keywords internal
 prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE) {
   stopifnot(is.data.frame(tmp))
