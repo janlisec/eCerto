@@ -1,23 +1,25 @@
 #' @title fnc_load_RData.
-#'
 #' @description \code{fnc_load_RData} will check and convert values in an RData file and prepare
 #'     the internal reactive values list 'rv'.
-#'
-#' @details tbd.
-#'
-#' @param x A list of values.
-#'
+#' @details `eCerto` allows to store imported data and user specified parameter
+#'     values in RData files for backup. The files can be re-imported to `eCerto`
+#'     at later time points. At this point values need to be put into the correct
+#'     slots of an `eCerto`object. To achieve this and test for potential
+#'     inconsistencies is the purpose of this function.
+#' @param x A list of values as stored e.g. in an RData file for backup.
 #' @return  A reactive values list 'rv'.
-#'
 #' @keywords internal
 #' @noRd
 fnc_load_RData <- function(x = NULL) {
 
   silent <- get_golem_config("silent")
 
+  # extract list elements of x by name
+  xnames <- listNames(l = x, maxDepth = 2, split = FALSE)
+
   shiny::isolate({
+    # set up new R6 object (current version of the App) and extract the names of object elements
     rv <- eCerto$new(init_rv())
-    xnames <- listNames(l = x, maxDepth = 2, split = FALSE)
     rvnames <- listNames(rv)
     if ("General.dataformat_version" %in% xnames) {
       # import functions for defined data_format schemes
@@ -29,23 +31,30 @@ fnc_load_RData <- function(x = NULL) {
         # the other of class list -> Error
         #browser()
         if (!all(xnames %in% rvnames)) {
-          allgivenexpected <- c(paste0("file: ", xnames), paste0("\nexpected: ", rvnames))
+          allgivenexpected <- c(paste0("\nfile: ", xnames), paste0("\nexpected: ", rvnames))
           found_table <- names(which(table(c(xnames, rvnames))==1))
           err <- allgivenexpected[c(xnames, rvnames) %in% found_table]
-          if (!interactive()) {
+          err_msg <- paste0(
+            "The following components were inconsistent between loaded RData [file]\n",
+            "and current internal data structure [expected]:",
+            paste(err, collapse=", ")
+          )
+          if (!is.null(shiny::getDefaultReactiveDomain())) {
             shinyalert::shinyalert(
               title = "m_RDataImport_Server",
-              text = paste("The following components were inconsistent between loaded RData file and internal data structure:\n", paste(err, collapse=", ")),
+              text = err_msg,
               type = "warning"
             )
+          } else {
+            warning(err_msg)
           }
           # remove items which are not present in stored RData file
           # these are most likely replaced by an internal function of the R6 object
-          # as it was implemented fot 'lab_means' on 28.06.2022
+          # as it was e.g. implemented for 'lab_means' on 28.06.2022
           xnames <- xnames[xnames %in% rvnames]
         }
         for (i in strsplit(xnames, split = ".", fixed = TRUE)) {
-          # set uploadsource to "RData" if something was uploaded from saved RData
+          # set 'uploadsource' to "RData" if something was uploaded from saved RData
           if (i[length(i)] == "uploadsource" && !is.null(x[[i]])) {
             set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")
           } else {
@@ -107,14 +116,16 @@ fnc_load_RData <- function(x = NULL) {
         setValue(rv, c("Stability","s_vals"), x[["Stability"]][["s_vals"]])
       }
       setValue(rv, c("General","time_stamp"), Sys.time())
-      shinyalert::shinyalert(
-        text = paste("This is an import from a previous data format.",
-        "Please note that some additional parameters are available",
-        "in the current version of eCerto which could not be restored",
-        "from this RData file but are set to standard values",
-        "(e.g. 'precision export' and 'pooling')."),
-        type = "info"
-      )
+      if (!is.null(shiny::getDefaultReactiveDomain())) {
+        shinyalert::shinyalert(
+          text = paste("This is an import from a previous data format.",
+          "Please note that some additional parameters are available",
+          "in the current version of eCerto which could not be restored",
+          "from this RData file but are set to standard values",
+          "(e.g. 'precision export' and 'pooling')."),
+          type = "info"
+        )
+      }
     }
   })
 
