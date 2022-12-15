@@ -39,7 +39,7 @@ tmp$c_fltData()
 x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
 x[[tmp$c_analyte]][["lab_filter"]] <- "L2"
 shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
-tmp$c_fltData()
+tmp$c_fltData(recalc = TRUE)
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -186,7 +186,7 @@ A named character vector.
 \if{html}{\out{<a id="method-eCerto-c_fltData"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_fltData}{}}}
 \subsection{Method \code{c_fltData()}}{
-Filter the full dataset for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
+Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{eCerto$c_fltData(recalc = FALSE)}\if{html}{\out{</div>}}
 }

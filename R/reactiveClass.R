@@ -33,7 +33,7 @@
 #' x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
 #' x[[tmp$c_analyte]][["lab_filter"]] <- "L2"
 #' shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
-#' tmp$c_fltData()
+#' tmp$c_fltData(recalc = TRUE)
 #' @importFrom purrr chuck pluck
 #' @export
 eCerto <- R6::R6Class(
@@ -135,7 +135,7 @@ eCerto <- R6::R6Class(
     c_analytes = function() {
       shiny::isolate(sapply(private$..eData[["General"]][["apm"]], function(x) {x[["name"]]}))
     },
-    #' @description Filter the full dataset for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
+    #' @description Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
     #' @param recalc If TRUE triggers a recalculation and returns current object if FALSE..
     #' @return A data.frame with filtered data of a single analyte.
     c_fltData = function(recalc = FALSE) {
@@ -157,7 +157,7 @@ eCerto <- R6::R6Class(
       if (missing(an)) {
         # simply return current analyte on focus in C Module
         if (is.null(private$..cAnalyte)) {
-          # set value to first available in apm
+          # set value to first available in apm if not set previously
           private$..cAnalyte <- names(private$..eData[["General"]][["apm"]])[1]
         }
         return(private$..cAnalyte)
