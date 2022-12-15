@@ -475,8 +475,8 @@ m_materialtabelleServer <- function(id, rv) {
       prec_exp <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision_export"]]} ))
       if (!inherits(prec, "try-error") && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(dt)) {
         #determine number of decimal places required according to DIN1333
-        #n <- n_round_DIN1333(x = mt[,"U_abs"])
-        dt[,"cert_val"] <- roundK(x = dt[,"cert_val"], n = prec_exp)
+        #n <- digits_DIN1333(x = mt[,"U_abs"])
+        dt[,"cert_val"] <- round_DIN1333(x = dt[,"cert_val"], n = prec_exp)
         # ***Note!*** U_abs is always rounded up
         dt[,"U_abs"] <- round_up(x = dt[,"U_abs"], n = prec_exp)
       }

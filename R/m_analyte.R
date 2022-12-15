@@ -122,7 +122,7 @@ m_analyteServer = function(id, rv) {
         value = apm()[[rv$c_analyte]]$precision
       )
       mt <- getValue(rv, c("General", "materialtabelle"))
-      n <- n_round_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
+      n <- digits_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
       shiny::updateNumericInput(
         inputId = "precision_export",
         value = apm()[[rv$c_analyte]]$precision_export
@@ -133,7 +133,7 @@ m_analyteServer = function(id, rv) {
     shiny::observeEvent(getValue(rv, c("General","materialtabelle")), {
       shiny::req(apm())
       mt <- getValue(rv, c("General", "materialtabelle"))
-      n <- n_round_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
+      n <- digits_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
       shiny::updateNumericInput(
         inputId = "precision_export",
         value = apm()[[rv$c_analyte]]$precision_export

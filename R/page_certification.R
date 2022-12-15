@@ -122,7 +122,7 @@ page_CertificationUI = function(id) {
                 label = "Tab.C2 - Statistics regarding lab mean distribution"
               )
             ),
-            DT::dataTableOutput(ns("overview_mstats"))
+            DT::dataTableOutput(ns("TabC2"))
           ),
           shiny::column(
             width = 2,
@@ -356,16 +356,16 @@ page_CertificationServer = function(id, rv) {
     })
 
     # Tab.2 Labmean statistics
-    labmean_stats_pre <- shiny::reactive({
+    TabC2_pre <- shiny::reactive({
       shiny::req(dat())
-      fnc_labmean_stats(data = dat(), precision = precision())
+      prepTabC2(data = dat(), precision = precision())
     })
-    shiny::observeEvent(labmean_stats_pre(), {
-      setValue(rv, c("Certification_processing","mstats"), labmean_stats_pre())
+    shiny::observeEvent(TabC2_pre(), {
+      setValue(rv, c("Certification_processing","mstats"), TabC2_pre())
     })
-    output$overview_mstats <- DT::renderDataTable({
+    output$TabC2 <- DT::renderDataTable({
       dt <- DT::datatable(
-        data = labmean_stats_pre(),
+        data = TabC2_pre(),
         options = list(dom = "t", pageLength=1, scrollX = TRUE),
         selection=list(mode = 'single', target = 'row'),
         rownames = NULL
@@ -378,7 +378,7 @@ page_CertificationServer = function(id, rv) {
 
     # Normality statement and QQ plot
     output$tab2_statement <- shiny::renderUI({
-      KS_p <- labmean_stats_pre()[,"KS_p"]
+      KS_p <- TabC2_pre()[,"KS_p"]
       return(
         shiny::fluidRow(
           shiny::column(

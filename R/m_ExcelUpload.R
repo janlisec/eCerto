@@ -134,7 +134,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
     # when LOAD Button is clicked
     shiny::observeEvent(input$go, {
       # Append File column
-      message("ExcelUpload: Load-button clicked")
+      message("[m_ExcelUpload] Load-button clicked")
       tab_flt <- rv_xlsx_range_select$tab
       out$input_files = current_file_input()$name
       # perform minimal validation checks
@@ -156,7 +156,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
           if (!length(tab_flt)>=2) message("m_ExcelUpload_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
           # Try-Catch any errors during upload and open a modal window if so
           results = tryCatch({
-            expr = combine_cert_data(df_list = tab_flt)
+            expr = prepTabC0(df_list = tab_flt)
           },
           error = function(errormessage) {
             message("Excel-Upload: Error occured: ", errormessage)
@@ -178,7 +178,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
         if(ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab[[1]]) &
            nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab[[1]])
         ) {
-          if(!silent) message("m_ExcelUpload_Server: Forgot select row and column?")
+          if(!silent) message("[m_ExcelUpload] Forgot select row and column?")
           shinyalert::shinyalert(
             title = "Forgot select row and column?",
             text = "You're trying to upload Certification data without selection of row and column. Are you sure to proceed?",

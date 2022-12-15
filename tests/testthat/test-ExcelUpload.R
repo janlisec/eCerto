@@ -33,7 +33,6 @@ testthat::test_that(
 )
 
 # Homogeneity Upload -------------------------------------------------------------
-
 testthat::test_that(
   desc = "Successful Homogeneity Upload test",
   code = {

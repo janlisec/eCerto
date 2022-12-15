@@ -5,27 +5,19 @@
 #' @import shiny
 #' @noRd
 app_server <- function( input, output, session ) {
-  # Your application server logic
-  #rv <- eCerto$new(init_rv()) # initiate persistent variables
-  rv <- eCerto$new(init_rv()) # initiate persistent variables
-  #silent <- get_golem_config("silent")
 
+  # set up new R6 object upon app start
+  rv <- eCerto$new(init_rv()) # initiate persistent variables
+
+  # register the R6 object for app testing
+  shiny::exportTestValues(
+    rv = rv
+  )
+
+  # Panels --------------------------------------------------------------------
+  # start page
   page_startServer(id="Start", rv=rv)
 
-  shiny::observeEvent(input$navbarpage, {
-    # when a tab for an empty dataset is selected --> jump to upload page
-    if (input$navbarpage == "tP_homogeneity" && is.null(getValue(rv, c("Homogeneity","uploadsource"))) ) {
-      to_startPage(session, value="Homogeneity")
-    }
-    if (input$navbarpage == "tP_certification" && is.null(getValue(rv, c("Certification","uploadsource"))) ) {
-      to_startPage(session, value="Certification")
-    }
-    if (input$navbarpage == "tP_stability" && is.null(getValue(rv, c("Stability","uploadsource"))) ) {
-      to_startPage(session, value="Stability")
-    }
-  })
-
-  # Panels ------------------------------------------------------------------
   # Certification Modul
   page_CertificationServer(id = "certification", rv = rv)
 
@@ -38,7 +30,9 @@ app_server <- function( input, output, session ) {
   # LTS Modul (will be removed to an independent app at some point)
   m_longtermstabilityServer("lts")
 
-  # some observers, mainly to use 'updateNavbarPage' depending on user action
+  # some observers ------------------------------------------------------------
+  # mainly to use 'updateNavbarPage' depending on user action -----------------
+
   # when the user initiates a transfer of U values from H or S Modules --> show material_table
   shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
     shiny::updateNavbarPage(
@@ -47,27 +41,28 @@ app_server <- function( input, output, session ) {
       selected = "tP_certification")
   })
 
-  # when the user uploaded excel data on S Modul --> change Tab to modified dataset
+  # when a tab for an empty dataset is selected --> jump to upload page
+  shiny::observeEvent(input$navbarpage, {
+    if (input$navbarpage == "tP_homogeneity" && is.null(getValue(rv, c("Homogeneity","uploadsource")))) {
+      to_startPage(session, value="Homogeneity")
+    }
+    if (input$navbarpage == "tP_certification" && is.null(getValue(rv, c("Certification","uploadsource")))) {
+      to_startPage(session, value="Certification")
+    }
+    if (input$navbarpage == "tP_stability" && is.null(getValue(rv, c("Stability","uploadsource")))) {
+      to_startPage(session, value="Stability")
+    }
+  })
+
+  # when the user uploaded excel data for a module --> set focus on this page
   shiny::observeEvent(getValue(rv, c("Certification", "input_files")), {
-    shiny::updateNavbarPage(
-      session = session,
-      inputId = "navbarpage",
-      selected = "tP_certification"
-    )
+    shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_certification")
   })
   shiny::observeEvent(getValue(rv, c("Homogeneity", "input_files")), {
-    shiny::updateNavbarPage(
-      session = session,
-      inputId = "navbarpage",
-      selected = "tP_homogeneity"
-    )
+    shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_homogeneity")
   })
   shiny::observeEvent(getValue(rv, c("Stability", "input_files")), {
-    shiny::updateNavbarPage(
-      session = session,
-      inputId = "navbarpage",
-      selected = "tP_stability"
-    )
+    shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_stability")
   })
 
 }

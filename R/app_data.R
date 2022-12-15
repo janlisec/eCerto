@@ -28,11 +28,21 @@ test_Stability_Arrhenius = function(seed=4) {
 }
 
 #' @title test_rv.
+#' @param type Select a specific data set.
 #' @keywords internal
 #' @noRd
-test_rv <- function() {
+test_rv <- function(type = c("generic", "SR3")) {
+  type <- match.arg(type)
   rv <- eCerto$new(init_rv()) # initiate persistent variables
-  testdata <- test_Certification_Excel()
+  testdata <- switch(
+    type,
+    "generic" = test_Certification_Excel(),
+    "SR3" = {
+      sr3 <- new.env()
+      load(file = system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"), envir = sr3)
+      get0(x = "res", envir = sr3)$Certification$data
+    }
+  )
   apm <- init_apm(testdata)
   an <- sapply(apm, function(x) { x[["name"]] })
   mt <- init_materialtabelle(analytes = an)
