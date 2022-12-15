@@ -55,41 +55,6 @@ getValue = function(df, key=NULL) {
   }
 }
 
-
-#' @title laboratory_dataframe.
-#' @description Creates long pivot table in laboratory style after load.
-#' @param x Data frame with uploaded excel table.
-#' @return Another data frame with extracted laboratory parameters.
-#' @noRd
-#' @keywords internal
-laboratory_dataframe = function(x) {
-  stopifnot(!shiny::is.reactive(x))
-
-  x2 = as.data.frame(x)
-  x2_sub =  x2[,!names(x2) %in% c(names(x2[,c(1,2)]),"Species","File")]
-  flt <- apply(x2_sub, 1, function(y) {any(is.finite(as.numeric(y)))})
-  if (any(flt)) x2 <- x2[which(flt),,drop=F]
-  #combine into data frame and return
-  analyte <- x2[,1]
-  unit <- x2[,2]
-  dat = x2[,!names(x2) %in% c(names(x2[,c(1,2)]),"Species","File")]
-  # drop first (analyte name), second (unit)
-  # and File name column before continue;
-  # create new data frame
-  x3 <- data.frame(
-    "analyte"=factor(rep(analyte,times=ncol(dat)),levels=analyte),
-    "replicate"=factor(rep((1:ncol(dat)),each=nrow(dat))),
-    "value"=as.numeric(unlist(dat)),
-    "unit"=as.character(rep(unit,times=ncol(dat)))
-  )
-  # add File column again (is this redundant with being removed above?)
-  if(any(names(x2) %in% "File")){
-    filecol = x2[["File"]]
-    x3["File"] = as.character(rep(filecol,times=ncol(dat)))
-  }
-  return(x3)
-}
-
 #' @title load_sheetnames.
 #'
 #' @description Loads names of Excel sheets.
@@ -190,7 +155,7 @@ pn <- function(n=NULL, p=4L) {
 #' @return Nothing. Will update the data frame in the reactive `r`.
 #' @noRd
 #' @keywords internal
-update_reactivecell = function(r,colname,analyterow = NULL,value) {
+update_reactivecell = function(r, colname, analyterow = NULL, value) {
 
   if(!is.data.frame(r()))
     stop("r is not a data frame")

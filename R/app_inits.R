@@ -39,7 +39,7 @@ init_materialtabelle <- function(analytes) {
 #' @example rv <- eCerto:::init_rv()
 init_rv <- function() {
   list(
-    "modules" = c("Certification","Homogeneity","Stability"), # names of the modules
+    "modules" = c("Certification", "Homogeneity", "Stability"), # names of the modules
     "General" = shiny::reactiveValues(
       # save
       "user" = NULL,

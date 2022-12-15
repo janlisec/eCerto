@@ -130,108 +130,16 @@ Cochran <- function(data=NULL, fmt=c("alpha", "pval")[1]) {
   return(out)
 }
 
-#' @description BAMTool, Modul: Certification, Lab-mean stats
-#' @param data Table with columns 'Lab' and 'value'.
-#' @param precision Rounding precision.
+#' @title round_up.
+#' @description Round always up.
+#' @param x A number.
+#' @param n precision after decimal.
+#' @examples
+#' x <- c(0.011, -0.021, 0.0299999, 0.03, 0.031, 0.000299, 29.01, 3.01, 200, -300)
+#' eCerto:::round_up(x, n = 2)
+#' eCerto:::round_up(x = x, n = eCerto:::digits_DIN1333(x))
 #' @noRd
-fnc_labmean_stats <- function(data=NULL, precision=4) {
-  x <- sapply(split(data$value, data$Lab), mean)
-  out <- data.frame(
-    "Mean"=round(mean(x), precision),
-    "Median"=round(stats::median(x), precision),
-    "SD"=round(stats::sd(x), precision),
-    "MAD"=round(stats::mad(x), precision),
-    "Bartlett_p"=formatC(stats::bartlett.test(value~Lab, data=data)$p.value,format="E",digits=2),
-    "ANOVA_p"=formatC(stats::anova(stats::lm(value~Lab, data=data))$Pr[1],format="E",digits=2),
-    "KS_p"=formatC(suppressWarnings(stats::ks.test(x=x, y="pnorm", mean = mean(x), sd = stats::sd(x))$p.value), format="E", digits=2),
-    "Skewness"=round(moments::skewness(x = x),precision),
-    "Agostino_p"=NA,
-    "Kurtosis"=round(moments::kurtosis(x = x),precision),
-    "Anscombe_p"=NA
-  )
-  test <- try(moments::agostino.test(x = x), silent=TRUE)
-  if (!inherits(test, "try-error")) out$Agostino_p <- formatC(test$p.value, format="E", digits=2)
-  test <- try(moments::anscombe.test(x = x), silent=TRUE)
-  if (!inherits(test, "try-error")) out$Anscombe_p <- formatC(test$p.value, format="E", digits=2)
-  return(out)
-}
-
-#' @title steyx.
-#' @description Translation of STEYX function Excel > R
-#'   Returns the standard error of the predicted y-value for each x in the regression.
-#'   http://office.microsoft.com/en-au/excel-help/steyx-function-HP010062545.aspx
-#' @param x x values.
-#' @param y y values.
 #' @keywords internal
-#' @noRd
-steyx <- function(x, y) {
-  # checks
-  if (missing(x))
-    stop("Parameter x missing.")
-  if (missing(y))
-    stop("Parameter y missing.")
-  if (length(x)!=length(y))
-    stop("x and y not of the same length...")
-  if (sum(is.finite(x) & is.finite(y))<=2)
-    stop("Number of finite value pairs from x and y are < 3.")
-  # calculations
-  flt <- which(is.finite(x) & is.finite(y))
-  x <- x[flt]
-  y <- y[flt]
-  n <- length(x)
-  out <- sqrt((1/(n-2))*(sum((y-mean(y))^2)-((sum((x-mean(x))*(y-mean(y))))^2)/(sum((x-mean(x))^2))))
-  # result
-  return(out)
-}
-
-#'@title n_round_DIN1333.
-#'@description Determine the number of digits to round a uncertainty to depending on the position of the first
-#'    non-zero digit after the decimal.
-#'@param x A number.
-#'@examples
-#'x <- c(0.011, 0.021, 0.0299999, 0.03, 0.031, 0.000299, 29.01, 3.01, 200, 300)
-#'eCerto:::n_round_DIN1333(x)
-#'@keywords internal
-n_round_DIN1333 <- function(x) {
-  if(!(is.numeric(x) && length(x)==1)) return(NA)
-  xc <- as.character(x + sqrt(.Machine$double.eps))
-  non_zero_pos <- sapply(gregexpr("[123456789]", as.character(x)), function(y) {y[1]})
-  dec_pos <- sapply(gregexpr("[.]", xc), function(y) {y[1]})
-  digit_at_pos <- substr(xc, non_zero_pos, non_zero_pos)
-  rounding_pos <- non_zero_pos - dec_pos + as.numeric(digit_at_pos %in% c(1:2))
-  rounding_pos[(non_zero_pos - dec_pos)<0] <- rounding_pos[(non_zero_pos - dec_pos)<0]+1
-  #n <- log10(x)
-  #p <- -1*sign(n)*ceiling(abs(n))
-  return(rounding_pos)
-}
-
-#'@title roundK.
-#'@description Round .5 always up (non ISO standard).
-#'@param x A number.
-#'@param n precision after decimal.
-#'@examples
-#'x <- c(-2.5,2.5,3.5)
-#'round(x)
-#'eCerto:::roundK(x)
-#'@keywords internal
-roundK <- function(x, n=0) {
-  posneg<- sign(x)
-  z <- abs(x)*10^n
-  z <- z + 0.5 + sqrt(.Machine$double.eps)
-  z <- trunc(z)
-  z <- z/10^n
-  return(z*posneg)
-}
-
-#'@title round_up.
-#'@description Round always up.
-#'@param x A number.
-#'@param n precision after decimal.
-#'@examples
-#'x <- c(0.011, -0.021, 0.0299999, 0.03, 0.031, 0.000299, 29.01, 3.01, 200, -300)
-#'eCerto:::round_up(x, n=2)
-#'eCerto:::round_up(x=x, n=eCerto:::n_round_DIN1333(x))
-#'@keywords internal
 round_up <- function(x, n=0) {
   sign(x)*ceiling(abs(x)*10^n + sqrt(.Machine$double.eps))/(10^n)
 }
