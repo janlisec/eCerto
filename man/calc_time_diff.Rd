@@ -21,7 +21,8 @@ calc_time_diff(
 \item{origin}{The origin used.}
 }
 \value{
-A numeric vector of length \code{x} containing calculated time differences.
+A numeric vector of length \code{x} containing calculated time differences
+in the unit specified by \code{type}. Not a difftime object.
 }
 \description{
 Calculation of a time difference between time points in a vector \code{x} and
@@ -33,5 +34,6 @@ calc_time_diff(x=x)
 calc_time_diff(x=x, type="day")
 calc_time_diff(x=x, type="year")
 calc_time_diff(x=x, type="year", d_start="2021-12-31")
+calc_time_diff(x=1:3, type="day", origin=Sys.Date())
 
 }

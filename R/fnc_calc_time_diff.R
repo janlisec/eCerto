@@ -14,8 +14,10 @@
 #' calc_time_diff(x=x, type="day")
 #' calc_time_diff(x=x, type="year")
 #' calc_time_diff(x=x, type="year", d_start="2021-12-31")
+#' calc_time_diff(x=1:3, type="day", origin=Sys.Date())
 #'
-#' @return A numeric vector of length `x` containing calculated time differences.
+#' @return A numeric vector of length `x` containing calculated time differences
+#'     in the unit specified by `type`. Not a difftime object.
 #' @export
 calc_time_diff <- function(x=NULL, d_start=NULL, type=c("year","mon","day")[2], origin="1900-01-01") {
   lt <- as.POSIXlt(as.Date(x, origin=origin))
@@ -23,7 +25,7 @@ calc_time_diff <- function(x=NULL, d_start=NULL, type=c("year","mon","day")[2], 
   out <- switch(type,
                 "mon" = (lt$year*12 + lt$mon) - (d_start$year*12 + d_start$mon),
                 "year" = lt$year - d_start$year,
-                "day" = (lt - d_start)/(24*60*60)
+                "day" = as.numeric((lt - d_start)/(24*60*60))
   )
   return(out)
 }
