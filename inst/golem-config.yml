@@ -3,12 +3,11 @@ default:
   app_version: !expr as.character(utils::packageVersion("eCerto"))
   app_date: !expr as.character(utils::packageDate("eCerto"))
   app_prod: no
-  silent: no
+  silent: yes
   bam_server: yes
 production:
   app_prod: yes
-  silent: yes
 dev:
   silent: no
   app_version: development
-  app_date: '2022-11-28'
+  app_date: !expr as.character(Sys.Date())

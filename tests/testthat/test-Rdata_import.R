@@ -6,27 +6,29 @@ testthat::test_that(
       name = "SR3_Fe_v26chs.RData",
       datapath = system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData")
     )
-    suppressMessages(
-      shiny::testServer(
-        app = eCerto:::m_RDataImport_Server,
-        args = list(
-          modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
-          uploadsources = shiny::reactiveVal(NULL)
-        ),
-        expr = {
-          session$setInputs(in_file_ecerto_backup = rdat)
-          # 'rvreturn()' is a reactiveValue object within the tested model that contains the uploaded data
-          testthat::expect_equal(sort(eCerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability" ))
-          testthat::expect_equal(eCerto::getValue(rvreturn(), c("General","user")),"JL")
-          # because time_stamp changes every runtime, exclude it for testing as follows
-          general <- eCerto::getValue(rvreturn(),"General")
-          testthat::expect_equal(is.null(general$apm), FALSE)
-          testthat::expect_equal(is.null(general$dataformat_version), FALSE)
-          testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Certification","data"))), FALSE)
-          testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Homogeneity","data"))), FALSE)
-          testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Stability","data"))), FALSE)
-        }
-      )
+    # setting the config file to 'default' ensures that messages are suppressed because
+    # eCerto is set to silent
+    Sys.setenv("R_CONFIG_ACTIVE" = "default")
+
+    shiny::testServer(
+      app = eCerto:::m_RDataImport_Server,
+      args = list(
+        modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
+        uploadsources = shiny::reactiveVal(NULL)
+      ),
+      expr = {
+        session$setInputs(in_file_ecerto_backup = rdat)
+        # 'rvreturn()' is a reactiveValue object within the tested model that contains the uploaded data
+        testthat::expect_equal(sort(eCerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability" ))
+        testthat::expect_equal(eCerto::getValue(rvreturn(), c("General","user")),"JL")
+        # because time_stamp changes every runtime, exclude it for testing as follows
+        general <- eCerto::getValue(rvreturn(),"General")
+        testthat::expect_equal(is.null(general$apm), FALSE)
+        testthat::expect_equal(is.null(general$dataformat_version), FALSE)
+        testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Certification","data"))), FALSE)
+        testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Homogeneity","data"))), FALSE)
+        testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Stability","data"))), FALSE)
+      }
     )
   }
 )
@@ -60,22 +62,27 @@ testthat::test_that(
     testthat::local_edition(3)
     rdat <- list(
       name = "SR3_Fe_v26chs.RData",
-      datapath = system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData")
+      datapath = system.file(package = "eCerto", "extdata", "SR3_Fe_v26chs.RData")
     )
-    suppressMessages(
-      shiny::testServer(
-        app = eCerto:::m_RDataImport_Server,
-        args = list(
-          modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
-          uploadsources = shiny::reactiveVal(list("Certification" = "Excel","Homogeneity"=NULL,"stability"=NULL))
-        ),
-        expr = {
-          testthat::expect_message(
-            session$setInputs(in_file_ecerto_backup = rdat)
-            ,"RDataImport: Found existing data. Overwrite?")
-          testthat::expect_equal(rvreturn(), NULL)
-        }
-      )
+    # setting the config file to 'dev' ensures that messages are shown because
+    # eCerto is set to silent = FALSE
+    Sys.setenv("R_CONFIG_ACTIVE" = "dev")
+    shiny::testServer(
+      app = eCerto:::m_RDataImport_Server,
+      args = list(
+        modules = shiny::reactiveVal(c("Certification", "Stability", "Homogeneity")),
+        uploadsources = shiny::reactiveVal(list("Certification" = "Excel", "Homogeneity" = NULL, "Stability" = NULL))
+      ),
+      expr = {
+        #browser()
+        testthat::expect_message(
+          session$setInputs(in_file_ecerto_backup = rdat),
+          "Found existing data"
+        )
+        testthat::expect_equal(rvreturn(), NULL)
+      }
     )
+    # reset to 'default' or silent afterwards
+    Sys.setenv("R_CONFIG_ACTIVE" = "default")
   }
 )

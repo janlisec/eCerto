@@ -1,22 +1,16 @@
-#' @name RDataImport
-#' @aliases m_RDataImport_UI
-#' @aliases m_RDataImport_Server
-#'
 #' @title RDataImport.
 #'
 #' @description \code{RDataImport} will provide a module to upload/backup Rdata
 #'   files for certification trial data.
 #'
-#' @details not yet
-#'
 #' @param id Name when called as a module in a shiny app.
-#' @param modules c("Certification","Homogeneity","Stability").
-#' @param uploadsources contains which of the \code{modules} has which
-#'   uploadsource or \code{NULL}. For example if Certification has been
-#'   uploaded, the argument would look like list("Certification" =
-#'   "Excel","Homogeneity"=NULL,"stability"=NULL).
+#' @param modules c("Certification", "Homogeneity", "Stability").
+#' @param uploadsources Indicates the uploadsource of each \code{module}. For example
+#'     if Certification has been uploaded, the argument would look like
+#'     reactiveVal(list("Certification"="Excel", "Homogeneity"=NULL, "Stability"=NULL)).
 #'
-#' @return rdata A reactive, but only for notifying the navbarpanel to change
+#' @return A reactive object `rdata`, but returned only for notifying the side effect
+#'     to notiy the navbarpanel to update.
 #'
 #' @examples
 #' if (interactive()) {
@@ -63,7 +57,6 @@ m_RDataImport_Server = function(id, modules, uploadsources) {
 
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
-      if (!silent) message("RData uploaded")
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
       shiny::validate(
         shiny::need(tolower(file.type) == "rdata","Only RData allowed."),
@@ -86,18 +79,21 @@ m_RDataImport_Server = function(id, modules, uploadsources) {
     shiny::observeEvent(rdata(), {
       test <- sapply(modules(), function(x) {!is.null(uploadsources()[[x]])}, simplify = "array")
       if (any(test)){
-        if (!silent) message("RDataImport: Found existing data. Overwrite?")
-        shiny::showModal(
-          shiny::modalDialog(
-            title = "Existent data",
-            shiny::HTML("Modul(s) <u>", paste(names(which(test)), collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
-            footer = shiny::tagList(
-              shiny::actionButton(inputId = ns("cancel"), label = "Cancel"),
-              shiny::actionButton(inputId = ns("overwrite"), label = "Overwrite", class = "btn btn-danger")
+        if (!silent) message("[RDataImport] Found existing data. Overwrite?")
+        if (!is.null(shiny::getDefaultReactiveDomain())) {
+          shiny::showModal(
+            shiny::modalDialog(
+              title = "Existent data",
+              shiny::HTML("Modul(s) <u>", paste(names(which(test)), collapse=", "), "</u> are already existent. Are you sure you want to continue?"),
+              footer = shiny::tagList(
+                shiny::actionButton(inputId = ns("cancel"), label = "Cancel"),
+                shiny::actionButton(inputId = ns("overwrite"), label = "Overwrite", class = "btn btn-danger")
+              )
             )
           )
-        )
+        }
       } else {
+        if (!silent) message("[RDataImport] RData uploaded")
         continue(TRUE)
       }
     })
