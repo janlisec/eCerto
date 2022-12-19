@@ -12,6 +12,7 @@
 #' @param id Module ID when called in a shiny app.
 #' @param current_file_input Shiny fileInput referencing excel file(s).
 #' @param sheet Number of the sheet to preview.
+#' @param file Number of the file to preview.
 #' @param excelformat Selected sub format as reactive string.
 #'
 #' @return A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt}
@@ -71,10 +72,17 @@ m_xlsx_range_select_UI <- function(id) {
 
 #' @noRd
 #' @keywords internal
-m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, excelformat=shiny::reactive({"Certification"})) {
+m_xlsx_range_select_Server <- function(
+  id,
+  current_file_input = NULL,
+  sheet = shiny::reactive({1}),
+  file = shiny::reactive({1}),
+  excelformat = shiny::reactive({"Certification"})
+) {
 
   stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))
+  stopifnot(shiny::is.reactive(file))
 
   ns <- shiny::NS(id)
   shiny::moduleServer(id, function(input, output, session) {
@@ -86,8 +94,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
     } #getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
 
     tab <- shiny::reactive({
-      shiny::req(current_file_input(), sheet())
-
+      shiny::req(current_file_input(), sheet(), file())
       # use different modes of fnc_load_xlsx to import data depending on file type
       if (!silent) message("m_xlsx_range_select_Server: reactive(tab): load ", nrow(current_file_input()), " files")
       if (shiny::isolate(excelformat())=="Certification") {
@@ -112,7 +119,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
             type = "warning"
           )
         }
-      } else if(shiny::isolate(excelformat())=="Stability") {
+      } else if (shiny::isolate(excelformat())=="Stability") {
         # for Stability, all sheets are loaded in Background
         l <- lapply(sheet(),function(x) {
           fnc_load_xlsx(
@@ -122,13 +129,14 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
           )
         })
         # TODO Tabelle nicht editierbar machen!
-      } else {
+      } else if (shiny::isolate(excelformat())=="Homogeneity") {
         l <- list(fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method="openxlsx"))
       }
       return(l)
     })
 
     tab_param <- shiny::reactiveValues("tab"=NULL, "start_row"=1, "end_row"=1, "start_col"=1, "end_col"=1, "tab_flt"=matrix(1), "rng"="A1:A1")
+
     # event: upload of excel file(s)
     shiny::observeEvent(tab(), {
       if (!silent) message("m_xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
@@ -136,8 +144,8 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
       tab_param$tab_upload <- shiny::isolate(tab()) # unchanged table from upload (for checking if row and column was selected)
       tab_param$start_row <- 1
       tab_param$start_col <- 1
-      tab_param$end_row <- nrow(tab()[[1]])
-      tab_param$end_col <- ncol(tab()[[1]])
+      tab_param$end_row <- nrow(tab()[[file()]])
+      tab_param$end_col <- ncol(tab()[[file()]])
       # as user response in UI
       tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
     })
@@ -199,27 +207,25 @@ m_xlsx_range_select_Server <- function(id, current_file_input=NULL, sheet=NULL, 
 
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({
-      shiny::req(tab())
-      out <- tab()[[1]]
-      if (prod(dim(out))>1) {
-        # limit preview to 10 characters per cell
-        out <- apply(out, 2, substr, start=1, stop=10)
+        shiny::req(tab())
+        out <- tab()[[file()]]
+        if (prod(dim(out)) > 1) {
+          # limit preview to 10 characters per cell
+          out <- apply(out, 2, substr, start = 1, stop = 10)
+        }
+        return(out)
+      },
+      options = list("dom" = "t", "pageLength" = nrow(tab()[[file()]]), ordering = FALSE),
+      selection = if (excelformat() == "Stability") {
+        "none"
+      } else {
+        list(target = "cell", selectable = matrix(-1 * c(1:nrow(tab()[[file()]]), rep(0, nrow(tab()[[file()]]))), ncol = 2))
       }
-      return(out)
-    },
-    #options=list("dom"="start_row", pageLength=nrow(tab()[[1]]),ordering=FALSE),
-    options = list("dom"="t", pageLength=nrow(tab()[[1]]),ordering=FALSE),
-    # editable = ifelse(excelformat()=="Stability",FALSE,TRUE),
-    selection = if(excelformat()=="Stability"){
-      "none"
-    } else {
-      list(target="cell", selectable=matrix(-1*c(1:nrow(tab()[[1]]), rep(0,nrow(tab()[[1]]))), ncol=2))
-    }
     )
 
     output$uitxt <- shiny::renderUI({
       shiny::req(tab())
-      str1 <- ifelse(is.null(current_file_input()), "", paste("You see a preview of File:", current_file_input()$name[1]))
+      str1 <- ifelse(is.null(current_file_input()), "", paste("You see a preview of File:", current_file_input()$name[file()]))
       if(excelformat()=="Stability") {
         str2 = ""
       } else {

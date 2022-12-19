@@ -17,6 +17,7 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
+#'    shinyjs::useShinyjs(),
 #'    shiny::selectInput(inputId = "excelformat", label = "excelformat",
 #'      choices = c("Certification","Homogeneity","Stability")),
 #'    shiny::hr(),
@@ -35,19 +36,29 @@
 #' @noRd
 #' @keywords internal
 m_ExcelUpload_UI <- function(id) {
-
   ns <- shiny::NS(id)
-
   shiny::tagList(
-    # initialize shinyjs
+    # [JL] calling useShinyjs() here is required because
     shinyjs::useShinyjs(),
-    # control elements
     shiny::fluidRow(
-      shiny::column(3, shiny::uiOutput(outputId = ns("inp_file"))),
-      shiny::column(3, shiny::numericInput(inputId = ns("sheet_number"), label = "sheet_number", value = 1)),
-      shiny::column(6, align="right", shiny::uiOutput(outputId = ns("btn_load")))
+      shiny::div(
+        style = "width: 280px; float: left; margin-left: 15px;",
+        shiny::uiOutput(outputId = ns("inp_file"))
+      ),
+      shiny::div(
+        style = "width: 280px; float: left; margin-left: 15px;",
+        shinyjs::hidden(shiny::selectInput(inputId = ns("file_name"), label = "File", choices = ""))
+      ),
+      shiny::div(
+        style = "width: 70px; float: left; margin-left: 15px;",
+        shinyjs::hidden(shiny::selectInput(inputId = ns("sheet_number"), label = "Sheet #", choices = "1"))
+      ),
+      shiny::div(
+        style = "float: right; margin-right: 15px; margin-top: 15px;",
+        shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range"))
+      )
     ),
-    # preview table
+    # preview Excel table
     m_xlsx_range_select_UI(ns("rng_select")),
   )
 }
@@ -65,23 +76,15 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
     # remeber locally what has been uploaded already from Excel
     uploaded_datasets <- shiny::reactiveVal("")
 
-    # wrap load button in UI element to allow easier show/hide
-    output$btn_load <- shiny::renderUI({
-      shiny::fluidRow(
-        shiny::strong("Load Data"),
-        shiny::br(),
-        shiny::actionButton(inputId = session$ns("go"), label = "Load selected cell range")
-      )
-    })
-
     # monitor the status of the file selector
     current_file_input <- shiny::reactiveVal(NULL)
 
-    # Excel-File-Input
+    # Excel-File-Input wrapped in renderUI to allow triggering some JS
     output$inp_file <- shiny::renderUI({
-      shiny::updateNumericInput(session = session, inputId = "sheet_number", value=1)
+      shiny::updateSelectInput(session = session, inputId = "sheet_number", choices = "1")
       current_file_input(NULL)
       shinyjs::hideElement(id = "sheet_number")
+      shinyjs::hideElement(id = "file_name")
       shinyjs::hideElement(id = "btn_load")
       shiny::tagList(
         shiny::fileInput(
@@ -91,10 +94,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
           accept = "xlsx"
         ),
         shiny::helpText(
-          ifelse(
-            exl_fmt() %in% uploaded_datasets(),
-            "Note! You have uploaded this data set already. If you upload a different file, all your selected parameters may be lost.",
-            "")
+          ifelse(exl_fmt() %in% uploaded_datasets(), "Note! You have uploaded this data set already. If you upload a different file, all your selected parameters may be lost.", "")
         )
       )
     })
@@ -103,10 +103,13 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
     shiny::observeEvent(input$excel_file, {
       sheetnames <- load_sheetnames(input$excel_file$datapath)
       if (length(sheetnames)>1) {
-        shiny::updateNumericInput(session = session, inputId = "sheet_number", value = 1, min = 1, max = length(sheetnames), step = 1)
+        shiny::updateSelectInput(session = session, inputId = "sheet_number", choices = 1:length(sheetnames))
         shinyjs::showElement(id = "sheet_number")
+        shiny::updateSelectInput(session = session, inputId = "file_name", choices = input$excel_file$name)
+        shinyjs::showElement(id = "file_name")
       }
       shinyjs::showElement(id = "btn_load")
+      shiny::updateActionButton(session = session, inputId = "btn_load", label = "Load selected<br>cell range")
       current_file_input(input$excel_file)
     })
 
@@ -114,10 +117,15 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
       shiny::req(input$sheet_number)
       switch (
         exl_fmt(),
-        "Certification" = input$sheet_number,
-        "Homogeneity" = input$sheet_number,
+        "Certification" = as.numeric(input$sheet_number),
+        "Homogeneity" = as.numeric(input$sheet_number),
         "Stability" = 1:length(load_sheetnames(input$excel_file$datapath))
       )
+    })
+
+    file_number <- shiny::reactive({
+      shiny::req(input$file_name)
+      which(input$excel_file$name %in% input$file_name)
     })
 
     # Show file preview to select rows and columns
@@ -125,6 +133,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
       id = "rng_select",
       current_file_input = current_file_input,
       sheet = sheetnumber,
+      file = file_number,
       excelformat = exl_fmt
     )
 
@@ -132,7 +141,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
     out <- shiny::reactiveValues(data = NULL, input_files = NULL)
 
     # when LOAD Button is clicked
-    shiny::observeEvent(input$go, {
+    shiny::observeEvent(input$btn_load, {
       # Append File column
       message("[m_ExcelUpload] Load-button clicked")
       tab_flt <- rv_xlsx_range_select$tab
@@ -141,9 +150,9 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
       if (exl_fmt()=="Homogeneity") {
         tab_flt <- tab_flt[[1]]
         tab_flt[["File"]] = rep(current_file_input()$name[1], nrow(tab_flt))
-        if (!"analyte" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'analyte' found in input file.")
-        if (!"value" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$go): No column 'value' found in input file.")
-        if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUpload_Server: observeEvent(input$go): Column 'value' in input file contains non-numeric values.")
+        if (!"analyte" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$btn_load): No column 'analyte' found in input file.")
+        if (!"value" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$btn_load): No column 'value' found in input file.")
+        if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUpload_Server: observeEvent(input$btn_load): Column 'value' in input file contains non-numeric values.")
         out$data <- tab_flt
 
       } else if (exl_fmt() == "Certification") {
@@ -153,7 +162,7 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
         }
         error_modal <- function() {
           # perform minimal validation tests
-          if (!length(tab_flt)>=2) message("m_ExcelUpload_Server: observeEvent(input$go): Less than 2 laboratory files uploaded. Please select more files!")
+          if (!length(tab_flt)>=2) message("m_ExcelUpload_Server: observeEvent(input$btn_load): Less than 2 laboratory files uploaded. Please select more files!")
           # Try-Catch any errors during upload and open a modal window if so
           results = tryCatch({
             expr = prepTabC0(df_list = tab_flt)
@@ -191,10 +200,10 @@ m_ExcelUpload_Server <- function(id, exl_fmt = shiny::reactive({""})) {
         }
 
       } else if (exl_fmt() == "Stability") {
-        # STABILITY data maycome in 3 versions
+        # STABILITY data may come in 3 versions
         # (1) as simple two column format (Date, Value) with separate tables for each analyte
-        # (2) as LTS format with a meta data header containing machine infos, certification data etc.
-        # (3) as a dataframe giving Temp info additionally to compute Arrhenius estimate of uncertainty
+        # (2) as LTS format with a meta data header containing machine info, certification data etc.
+        # (3) as a data frame giving 'Temp' info additionally to compute Arrhenius estimate of uncertainty
         test_format <- tab_flt[[1]] # openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
         if (ncol(test_format)>=4) {
           if ("KW" %in% colnames(test_format)) {
