@@ -95,11 +95,13 @@ app_ui <- function(request) {
 #'
 #' @import shiny
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
+#' @importFrom shinyjs useShinyjs
 #' @noRd
 golem_add_external_resources <- function() {
 
   # copy www files from app_sys() to tempdir() and map app/www folder to this temp/www
-  # this is required for Report rendering to work on a ShinyServer
+  # this is required for Report rendering to work on a ShinyServer where writing
+  # permission is only granted in a temp dir
   file.copy(from = app_sys('app/www'), to = tempdir(), recursive = TRUE)
   golem::add_resource_path(
     'www', paste(normalizePath(tempdir(), "/"), "www", sep="/")
@@ -117,6 +119,7 @@ golem_add_external_resources <- function() {
   )
 
   # include JS for setting up tracking via Matomo
+  # for CRAN, including this tracking script can be omitted by changing config.yml
   if (get_golem_config("bam_server")) {
     shiny::tags$head(
       shiny::HTML('<noscript><p><img src="https://agw1.bam.de/piwik/matomo.php?idsite=24&amp;rec=1" style="border:0;" alt="" /></p></noscript>'),

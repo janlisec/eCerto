@@ -15,6 +15,7 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
+#'    shinyjs::useShinyjs()
 #'    eCerto:::page_HomogeneityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
@@ -34,7 +35,6 @@
 #' @noRd
 
 page_HomogeneityUI <- function(id) {
-  shinyjs::useShinyjs()
   ns <- shiny::NS(id)
   shiny::tabsetPanel(
     id = ns( "HomogeneityPanel"),

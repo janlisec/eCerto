@@ -13,7 +13,10 @@
 #' \dontrun{
 #' rv <- eCerto:::test_rv()
 #' shinyApp(
-#'   ui = shiny::fluidPage(check_stability_UI(id = "test")),
+#'   ui = shiny::fluidPage(
+#'     shinyjs::useShinyjs(),
+#'     check_stability_UI(id = "test")
+#'   ),
 #'   server = function(input, output, session) {
 #'     gargoyle::init("update_c_analyte")
 #'     check_stability_Server(id = "test", rv = rv)
@@ -26,7 +29,6 @@
 check_stability_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shinyjs::useShinyjs(),
     shiny::actionButton(inputId = ns("btn_main"), label = "Check"),
     shiny::uiOutput(outputId = ns("area_input")),
     shiny::uiOutput(outputId = ns("res_output"))
