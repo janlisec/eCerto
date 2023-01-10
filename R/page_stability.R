@@ -71,9 +71,7 @@ page_StabilityUI <- function(id) {
             shiny::uiOutput(outputId = ns("s_sel_analyte")),
             shiny::uiOutput(outputId = ns("s_sel_dev")),
             shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
-            #sub_header("Change View"),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
-            #p(),
           )
         ),
       )
@@ -257,7 +255,7 @@ page_StabilityServer <- function(id, rv) {
 
     # Fig.S1
     output$s_plot <- shiny::renderPlot({
-      shiny::req(s_Data(), input$s_sel_analyte, input$s_sel_dev, getValue(rv, c("General", "apm")), getValue(rv, c("General", "materialtabelle")))
+      shiny::req(s_Data(), input$s_sel_analyte)
       plot_lts_data(
         x = prepFigS1(
           s = s_Data(),

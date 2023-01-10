@@ -28,41 +28,31 @@ page_startUI <- function(id) {
 
   shiny::fluidRow(
     shiny::column(
-      width = 3,
+      width = 10,
+      m_ExcelUpload_UI(ns("excelfile"))
+    ),
+    shiny::column(
+      width = 2,
       shiny::wellPanel(
-        shiny::wellPanel(
-          shiny::fluidRow(
-            shiny::tagList("Click on", shiny::actionLink(inputId = ns("getHelp"), label = "this Link"), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!"))
-          )
+        shiny::div(
+          style = "margin-bottom: 15px;",
+          shiny::tagList("Click on", shiny::actionLink(inputId = ns("getHelp"), label = shiny::HTML("<strong>this Link</strong>")), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!"))
         ),
-        shiny::wellPanel(
-          shiny::fluidRow(
-            shiny::column(
-              width = 6,
-              sub_header("Restart Session", b=3),
-              shiny::actionButton(inputId = ns("session_restart"), label = "Restart", width="80%")
-            ),
-            shiny::column(
-              width = 6,
-              sub_header("Load Test Data", b=3),
-              shiny::actionButton(inputId = ns("load_test_data"), label = "Load", width="80%")
-            )
+        shiny::fluidRow(
+          style = "margin-bottom: 15px;",
+          shiny::column(
+            width = 6,
+            sub_header("Restart Session"),
+            shiny::actionButton(inputId = ns("session_restart"), label = "Restart", width="80%")
+          ),
+          shiny::column(
+            width = 6,
+            sub_header("Load Test Data"),
+            shiny::actionButton(inputId = ns("load_test_data"), label = "Load", width="80%")
           )
         ),
         m_RDataImport_UI(ns("Rdatain")),
         m_RDataExport_UI(ns("Rdataex"))
-      )
-    ),
-    shiny::column(
-      width = 9,
-      shiny::wellPanel(
-        shiny::selectInput(
-          inputId = ns("moduleSelect"),
-          choices = NULL,
-          label = shiny::tagList("Module (click", shiny::actionLink(inputId = ns("moduleUploadHelp"), label = "here"),  "to see example format)"),
-          width = "50%"
-        ),
-        m_ExcelUpload_UI(ns("excelfile"))
       )
     )
   )
@@ -77,24 +67,14 @@ page_startServer = function(id, rv) {
 
     silent <- get_golem_config("silent")
 
-    # Certification, Homogeneity, Stability -----------------------------------
-    shiny::updateSelectInput(
-      inputId = "moduleSelect",
-      session = session,
-      choices = getValue(rv, "modules")
-    )
-
     # Upload Controller -------------------------------------------------------
-    ExcelUp <- m_ExcelUpload_Server(
-      id = "excelfile",
-      exl_fmt = shiny::reactive({input$moduleSelect})
-    )
+    m_ExcelUpload_Server(id = "excelfile", rv = rv)
 
     m_RDataexport_Server(id = "Rdataex", rv = rv)
 
     rv_rdata <- m_RDataImport_Server(
       id = "Rdatain",
-      modules = shiny::reactive({getValue(rv, "modules")}),
+      modules = shiny::reactive({ getValue(rv, "modules") }),
       uploadsources = shiny::reactive({
         sapply(getValue(rv, "modules"), function(x) {
           getValue(rv, c(x, "uploadsource"))
@@ -114,20 +94,6 @@ page_startServer = function(id, rv) {
         setValue(rv, n, getValue(rv_rdata(), n))
       }
     }, ignoreNULL = TRUE)
-
-    # when Excel was uploaded with LOAD-Button...
-    shiny::observeEvent(ExcelUp$data, {
-      if (!silent) message("[page_start] (Excel Upload) set rv.Data; set rv.Uploadsource")
-      ex_frm <- input$moduleSelect
-      setValue(rv, c(ex_frm, "data"), ExcelUp$data)
-      setValue(rv, c(ex_frm, "input_files"), ExcelUp$input_files)
-      setValue(rv, c(ex_frm, "uploadsource"), value = "Excel")
-      if (ex_frm=="Certification") {
-        # (re)initiate apm and materialtabelle
-        setValue(rv, c("General","apm"), init_apm(getValue(rv, c("Certification", "data"))))
-        setValue(rv, c("General","materialtabelle"), init_materialtabelle(levels(getValue(rv, c("Certification", "data"))[,"analyte"])))
-      }
-    })
 
     # Restart App --------------------------------------------------------------
     # Open confirmation dialog
@@ -196,16 +162,6 @@ page_startServer = function(id, rv) {
     }, ignoreNULL = TRUE)
 
     # Help section -------------------------------------------------------------
-    # Action link for help
-    shiny::observeEvent(input$moduleUploadHelp, {
-      switch(
-        input$moduleSelect,
-        "Certification" = show_help("certification_dataupload"),
-        "Homogeneity" = show_help("homogeneity_dataupload"),
-        "Stability" = show_help("stability_dataupload")
-      )
-    })
-
     shiny::observeEvent(input$getHelp, { show_help("start_gethelp") })
 
   })

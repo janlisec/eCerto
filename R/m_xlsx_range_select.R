@@ -22,28 +22,9 @@
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
 #'    shiny::fluidRow(
-#'      shiny::column(
-#'       3,
-#'       shiny::fileInput(
-#'        inputId = "x",
-#'        label = "Modul parameter: x",
-#'        accept = "xlsx",
-#'        multiple =TRUE
-#'      )),
-#'      shiny::column(
-#'        3,
-#'        shiny::numericInput(
-#'         inputId = "sheet", label = "Modul parameter: sheet", value = 1
-#'        )
-#'      ),
-#'      shiny::column(
-#'         3,
-#'         shiny::selectInput(
-#'          inputId = "excelformat",
-#'          label = "Modul parameter: excelformat",
-#'          choices = c("Certification","Homogeneity","Stability")
-#'         )
-#'      )
+#'      shiny::column(3, shiny::fileInput(inputId = "x", label = "Modul parameter: x", accept = "xlsx", multiple =TRUE)),
+#'      shiny::column(3, shiny::numericInput(inputId = "sheet", label = "Modul parameter: sheet", value = 1)),
+#'      shiny::column(3, shiny::selectInput(inputId = "excelformat", label = "Modul parameter: excelformat", choices = c("Certification","Homogeneity","Stability")))
 #'    ),
 #'    shiny::hr(),
 #'    eCerto:::m_xlsx_range_select_UI(id = "test")
@@ -74,7 +55,7 @@ m_xlsx_range_select_UI <- function(id) {
 #' @keywords internal
 m_xlsx_range_select_Server <- function(
   id,
-  current_file_input = NULL,
+  current_file_input = shiny::reactive({NULL}),
   sheet = shiny::reactive({1}),
   file = shiny::reactive({1}),
   excelformat = shiny::reactive({"Certification"})
@@ -94,10 +75,12 @@ m_xlsx_range_select_Server <- function(
     } #getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
 
     tab <- shiny::reactive({
-      shiny::req(current_file_input(), sheet(), file())
+      shiny::req(current_file_input(), sheet(), file(), excelformat())
+      #xl_fmt <- shiny::isolate(excelformat())
+      xl_fmt <- excelformat()
       # use different modes of fnc_load_xlsx to import data depending on file type
-      if (!silent) message("m_xlsx_range_select_Server: reactive(tab): load ", nrow(current_file_input()), " files")
-      if (shiny::isolate(excelformat())=="Certification") {
+      if (!silent) message("[m_xlsx_range_select_Server] reactive(tab): load ", nrow(current_file_input()), " files")
+      if (xl_fmt == "Certification") {
         l <- lapply(current_file_input()$datapath, function(x) { fnc_load_xlsx(filepath = x, sheet = sheet(), method="tidyxl") })
         shiny::validate(
           shiny::need(all(!sapply(l, is.null)),"uploaded Excel files contain an empty one"),
@@ -119,7 +102,7 @@ m_xlsx_range_select_Server <- function(
             type = "warning"
           )
         }
-      } else if (shiny::isolate(excelformat())=="Stability") {
+      } else if (xl_fmt == "Stability") {
         # for Stability, all sheets are loaded in Background
         l <- lapply(sheet(),function(x) {
           fnc_load_xlsx(
@@ -128,8 +111,7 @@ m_xlsx_range_select_Server <- function(
             method="openxlsx"
           )
         })
-        # TODO Tabelle nicht editierbar machen!
-      } else if (shiny::isolate(excelformat())=="Homogeneity") {
+      } else if (xl_fmt == "Homogeneity") {
         l <- list(fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method="openxlsx"))
       }
       return(l)
@@ -225,14 +207,10 @@ m_xlsx_range_select_Server <- function(
 
     output$uitxt <- shiny::renderUI({
       shiny::req(tab())
-      str1 <- ifelse(is.null(current_file_input()), "", paste("You see a preview of File:", current_file_input()$name[file()]))
-      if(excelformat()=="Stability") {
-        str2 = ""
-      } else {
-        str2 <- "You may select 2 cells (top left and bottom right) by mouse click to specify a range."
-      }
-      str3 <- paste("Currently selected range:", tab_param$rng)
-      shiny::HTML(paste(str1, str2, str3, sep = '<br/>'))
+      str1 <- ifelse(is.null(current_file_input()), "", paste0("Preview of file <strong>'", current_file_input()$name[file()], "'</strong>"))
+      str2 <- ifelse(excelformat()=="Stability", "No modification possible of", "You may select 2 cells (top left and bottom right) by mouse click to alter the")
+      str3 <- paste0("currently selected range: <strong>", tab_param$rng, "</strong>")
+      shiny::HTML(str1, str2, str3)
     })
 
     return(tab_param)
