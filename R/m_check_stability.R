@@ -29,6 +29,7 @@
 check_stability_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
+    sub_header(shiny::actionLink(inputId = ns("tabC3postcert"), label = "Post Certification Test")),
     shiny::actionButton(inputId = ns("btn_main"), label = "Check"),
     shiny::uiOutput(outputId = ns("area_input")),
     shiny::uiOutput(outputId = ns("res_output"))
@@ -138,6 +139,10 @@ check_stability_Server <- function(id, rv = NULL) {
       u_m(stats::sd(out$d, na.rm=TRUE))
       sk(abs(m_c()-m_m())/sqrt(u_c()^2+u_m()^2))
     }, ignoreInit = TRUE)
+
+    shiny::observeEvent(input$tabC3postcert, {
+      show_help("certification_materialtabelle_postcert")
+    })
 
   })
 }

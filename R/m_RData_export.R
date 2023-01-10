@@ -25,9 +25,9 @@
 m_RDataExport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::wellPanel(
+    shiny::div(
       id = ns("savepanel"),
-      shiny::strong("Save"),
+      sub_header("Save", b=0),
       shiny::fluidRow(
         shiny::column(
           width = 6,
@@ -44,13 +44,10 @@ m_RDataExport_UI <- function(id) {
             label = "Study ID",
             value = "CRM001"
           )
-        ),
-        shiny::column(12, sub_header("Save Current Analysis")),
-        shiny::column(
-          width = 3,
-          shiny::downloadButton(outputId = ns('ecerto_backup'), label = "Backup")
         )
-      )
+      ),
+      sub_header("Save Current Analysis"),
+      shiny::downloadButton(outputId = ns('ecerto_backup'), label = "Backup")
     )
   )
 }

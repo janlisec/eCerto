@@ -46,12 +46,12 @@ m_analyteUI = function(id) {
       shiny::div("Filter IDs", style = "background: grey; text-align: center"),
       shiny::div(
         style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
-        sub_header("Samples", b=1),
+        sub_header("Samples", b=0),
         shiny::selectizeInput(inputId = ns("sample_filter"), label = NULL, choices = "", multiple = TRUE)
       ),
       shiny::div(
         style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
-        sub_header("Labs", b=1),
+        sub_header("Labs", b=0),
         shiny::selectizeInput(inputId = ns("lab_filter"), label = NULL, choices = "", multiple = TRUE)
       ),
     ),
@@ -59,11 +59,11 @@ m_analyteUI = function(id) {
       shiny::div("Precision (acc. to DIN1333)", style = "background: grey; text-align: center"),
       shiny::div(
         style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
-        sub_header("Tables", b=1),
+        sub_header("Tables", b=0),
         shiny::numericInput(inputId = ns("precision"), label = NULL, value = 4, min = 0, max = 10, step = 1)),
       shiny::div(
         style="float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
-        shiny::div(id = ns("DIN1333_info"), sub_header("Certified Values", b=1)),
+        shiny::div(id = ns("DIN1333_info"), sub_header("Certified Values", b=0)),
         shiny::numericInput(inputId = ns("precision_export"), label = NULL, value = 4, min = -2, max = 6, step = 1)
       ),
     )
@@ -127,7 +127,7 @@ m_analyteServer = function(id, rv) {
         inputId = "precision_export",
         value = apm()[[rv$c_analyte]]$precision_export
       )
-      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=1))
+      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=0))
     }, ignoreInit = FALSE)
 
     shiny::observeEvent(getValue(rv, c("General","materialtabelle")), {
@@ -138,7 +138,7 @@ m_analyteServer = function(id, rv) {
         inputId = "precision_export",
         value = apm()[[rv$c_analyte]]$precision_export
       )
-      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=1))
+      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=0))
     })
 
     # update apm in case of changes in precision inputs

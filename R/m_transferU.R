@@ -80,14 +80,14 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
       u_choices <- cc[substr(cc[,"ID"],1,1)=="U","Name"]
       if (length(h_choices)>=2) {
         shiny::tagList(
-          sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'")), b=3),
+          sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'"))),
           shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = '100%', selectize = TRUE, choices = h_choices),
           shiny::selectInput(inputId = session$ns("U_cols"), label = "to material table column", width = '100%', selectize = TRUE, selected = u_choices[length(u_choices)], choices = u_choices),
           shiny::actionButton(inputId = session$ns("transfer_button"), label = "Transfer Now!")
         )
       } else {
         shiny::tagList(
-          sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'")), b=3),
+          sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'"))),
           shinyjs::hidden(shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = '100%', selectize = TRUE, choices = h_choices)),
           shiny::selectInput(inputId = session$ns("U_cols"), label = "to Tab.C3 column", width = '100%', selectize = TRUE, selected = u_choices[length(u_choices)], choices = u_choices),
           shiny::actionButton(inputId = session$ns("transfer_button"), label = "Transfer Now!")

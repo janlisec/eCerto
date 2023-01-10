@@ -43,12 +43,7 @@ m_arrheniusUI <- function(id) {
       ),
       shiny::column(2, shiny::wellPanel(
         shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
-        # shiny::fluidRow(
-        #   shiny::column(width = 6, sub_header("Change View", b=4), shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")),
-        #   shiny::column(width = 6, shiny::numericInput(inputId = ns("user_temp"), label = "Storage Temp", value = -20, min = -80, max = 23, step = 1, width = "100%"))
-        # ),
-        shiny::p(),
-        sub_header("Options Fig.S2", b=6),
+        sub_header("Options Fig.S2", b=12),
         shiny::checkboxGroupInput(
           inputId = ns("s_opt_FigS2"),
           label = NULL,

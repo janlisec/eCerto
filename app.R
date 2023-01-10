@@ -13,8 +13,8 @@
 # to check the test code coverage use:
 # x <- covr::package_coverage(function_exclusions = "page_*")
 # covr::zero_coverage(x = x)
- # covr::function_coverage(fun = eCerto:::app_server)
- # covr::function_coverage(fun = eCerto:::fnc_load_RData, code = source("tests/testthat/test-fnc_load_RData.R"))
+# covr::function_coverage(fun = eCerto:::app_server)
+# covr::function_coverage(fun = eCerto:::fnc_load_RData, code = source("tests/testthat/test-fnc_load_RData.R"))
 
 pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 options("golem.app.prod" = TRUE)

@@ -15,7 +15,7 @@ testthat::test_that(
   code = {
 
     # check if modules/components are named such that function 'to_startPage' still works
-    testthat::expect_true("Start-moduleSelect" %in% names(init_vals$input))
+    testthat::expect_true("Start-excelfile-moduleSelect" %in% names(init_vals$input))
 
   }
 )

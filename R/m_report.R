@@ -40,7 +40,7 @@ m_reportUI <- function(id) {
       style = "float: right; margin-right: 5px;",
       shiny::div(
         style = "float: left; margin-right: 5px; margin-left:35px;",
-        shiny::p(shiny::actionLink(inputId = ns("help_link"), label = "Download Report", style = "font-weight: 700;")),
+        sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download Report")),
         shiny::downloadButton(outputId = ns('AnalyteReport'), label = "Analyte"),
         shiny::downloadButton(outputId = ns('MaterialReport'), label = "CRM")
       ),

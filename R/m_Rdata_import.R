@@ -31,14 +31,12 @@
 m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::wellPanel(
-      sub_header("Load", b=0),
-      shiny::fileInput(
-        inputId = ns("in_file_ecerto_backup"),
-        label = "Select Previous Analysis",
-        multiple = FALSE,
-        accept = c("RData")
-      )
+    sub_header("Load", b=0),
+    shiny::fileInput(
+      inputId = ns("in_file_ecerto_backup"),
+      label = "Select Previous Analysis",
+      multiple = FALSE,
+      accept = c("RData")
     )
   )
 }

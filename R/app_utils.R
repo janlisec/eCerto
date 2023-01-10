@@ -1,20 +1,16 @@
-#' @name datahandling_utils
+#' @name app_utils
 #' @aliases setValue
 #' @aliases getValue
 #'
 #' @title setValue.
-#'
-#' @description General access to data object (so data object can maybe get changed without that much code edit)
-#'
+#' @description General access to data object (so data object can maybe get
+#'     changed without that much code edit)
 #' @param df The data frame (an R6 object).
 #' @param key A character vector specifying the key-chain to put the value in (see examples).
 #' @param value Value to set.
-#'
 #' @return Nothing. The R6 object is updated automatically.
-#'
 #' @export
-#'
-#' @rdname datahandling_utils
+#' @rdname app_utils
 #' @examples
 #' # Only run examples in interactive R sessions
 #' if (interactive()) {
@@ -33,56 +29,56 @@ setValue <- function(df, key, value){
 }
 
 #' @title getValue.
-#'
 #' @description Returns element. If 'key' is used, reactivity not working correctly.
 #' Preferable way for calling `getValue(df, key)`, see example
-#'
 #' @param df An object of class R6.
 #' @param key Key value within R6 object 'df'.
-#'
 #' @return Value of 'key' from 'df'.
-#'
 #' @export
-#'
-#' @rdname datahandling_utils
-getValue = function(df, key=NULL) {
-  if(R6::is.R6(df)){
+#' @rdname app_utils
+getValue <- function(df, key = NULL) {
+  if (R6::is.R6(df)) {
     return(df$get(key))
-  } else if(is.list(df)){
+  } else if (is.list(df)) {
     return(df[[key]])
   } else {
     stop("Object of class ", class(df), " can't get value currently.")
   }
 }
 
-#' @title load_sheetnames.
-#'
+#' @title xlsxSheetNames.
 #' @description Loads names of Excel sheets.
-#'
 #' @param filepath the path to a single or multiple excel file(s)
-#'
 #' @return the names of sheets
 #' @importFrom openxlsx getSheetNames
 #' @importFrom shinyalert shinyalert
+#' @importFrom tools file_ext
 #' @noRd
 #' @keywords internal
-load_sheetnames <- function(filepath){
-  a = lapply(shiny::isolate(filepath), function(x) {
+xlsxSheetNames <- function(filepath) {
+  a <- lapply(shiny::isolate(filepath), function(x) {
     ext <- tools::file_ext(x)
-    if(tolower(ext)=="xlsx"){
+    if (tolower(ext) == "xlsx") {
       openxlsx::getSheetNames(x)
     } else {
-      shinyalert::shinyalert(title = "Wrong Filetype?", text = "Please select an Excel file.", type = "warning")
+      if (is.null(shiny::getDefaultReactiveDomain())) {
+        stop("Please select only Excel (.xlsx) files.")
+      } else {
+        shiny::showModal(
+          shiny::modalDialog("Please select only Excel (.xlsx) files.", title = "Wrong Filetype?")
+        )
+      }
       return(NULL)
     }
   })
-
-  if(length(unique(a))!=1) {
-    shinyalert::shinyalert(
-      title = "Different sheetnames",
-      text = "Sheet names are different within files",
-      type = "warning"
-    )
+  if (length(unique(a)) != 1) {
+    if (is.null(shiny::getDefaultReactiveDomain())) {
+      stop("Sheet names are different within files.")
+    } else {
+      shiny::showModal(
+        shiny::modalDialog("Sheet names are different within files.", title = "Different sheetnames?")
+      )
+    }
   }
   return(a[[1]])
 }
@@ -208,7 +204,7 @@ to_startPage = function(session, value="Certification") {
   )
   shiny::updateSelectInput(
     session = session,
-    inputId = "Start-moduleSelect",
+    inputId = "Start-excelfile-moduleSelect",
     selected = value
   )
 }
@@ -294,6 +290,10 @@ show_view <- function(rv){
 #' @examples
 #' eCerto:::sub_header("test")
 #' eCerto:::sub_header("test", l=5, b=0)
-sub_header <- function(txt="test", l=0, b=2) {
-  shiny::HTML(paste0("<p style=margin-left:", l, "%;margin-bottom:", b,"%><strong>", txt, "</strong></p>")  )
+sub_header <- function(txt="test", l=0, b=5, unit=c("px", "%")) {
+  u <- match.arg(unit)
+  shiny::div(
+    style = paste0("margin-left: ", l, u, "; margin-bottom: ", b, u, "; font-weight: 700"),
+    txt
+  )
 }
