@@ -1,19 +1,26 @@
 ### How to get help
 
-The statistics for reference material certification with  *eCerto* is implemented according to ISO GUIDE 35:2017.
+The statistics for reference material certification with  *eCerto* is implemented 
+according to ISO GUIDE 35:2017.
 
-To make the calculations transparent for the user and facilitate using this tool, the relevant section of the documentation (from page `Help`) can be obtained in a modal/pop-up window by clicking on the respective links. 
+To make the calculations transparent for the user and facilitate using this tool, 
+the relevant section of the documentation (from page `Help`) can be obtained in a 
+modal/pop-up window by clicking on the respective links. 
 
-Links should be rendered in <span style="color: blue;">blue</span> color on your screen. Often, table or figure captions are used for this purpose, so watch out for help-links close to the area you are working on.
+Links should be rendered in <span style="color: blue;">blue</span> color on your 
+screen. Often, table or figure captions are used for this purpose, so watch out 
+for help-links close to the area you are working on.
 
-You'll find a working example on page `Start` in the Excel upload section.
-To upload data, tables have to be prepared in Excel using specific cell formats, column names and column orders.
-To learn about these formats you can click on the word <span style="color: blue;">here</span> right over the select box.
-Magic: the help section opened by this link is dependent on the value selected in the box.
+You'll find a working example on page `Start` in the Excel upload section. To 
+upload data, tables have to be prepared in Excel using specific cell formats, 
+column names and column orders. To learn about these formats you can click on 
+the word <span style="color: blue;">example</span> right over the select box.
+Magic: the help section opened by this link is dependent on the value selected 
+in the box.
 
 ***Note!***
 To close a help window you need to click anywhere *outside* of it with your mouse.
 
-To provide a consistent layout, input sections (buttons, select boxes and others) are usually indicated by a grey backgound.
-Output sections (tables and figures) should render on a white backgound.
-
+To provide a consistent layout, input sections (buttons, select boxes and others) 
+are usually indicated by a grey backgound. Output sections (tables and figures) 
+should render on a white backgound.

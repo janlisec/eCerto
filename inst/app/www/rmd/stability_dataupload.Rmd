@@ -3,7 +3,7 @@
 Please prepare data in a single Excel file on seperate tables for each analyte as shown 
 in the below example.
 
-![**Info** Excel import format for stability data](fig/S_Modul_Import.png)
+![**Info** Simple Excel import format for stability data](fig/S_Modul_Import.png)
 
 Table names have to match analyte names from the Certification module to be properly assigned. 
 Column names need to be exactly `Value` and `Date` with Excel column formats set to 
@@ -13,7 +13,7 @@ Stability data can also be uploaded using a more complex data format to allow sh
 calculations based on the Arrhenius model. To this end, the user needs to prepare a single 
 Excel table including the columns `analyte`, `Temp`, `Date`, `Value` and `unit`.
 
-![**Info** Excel import format for stability data including temperature](fig/S_Modul_Import_Arrhenius.png)
+![**Info** Excel import format including temperature information for arrhenius calculations](fig/S_Modul_Import_Arrhenius.png)
 
 The `Temp` column obviously should contain temperature levels in\ °C at which samples were
 stored before measurement. The lowest temperature level will be used as a reference point

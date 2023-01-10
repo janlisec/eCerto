@@ -6,7 +6,7 @@ module next to **Tab.C3**. There, calculation of $\mathit{SK}$ allows to access 
 within a material can still be considered stable at measurement time of control samples.
 
 However, to estimate long term stability prospectively, measurement data can be continuously 
-obtained and stored using the LTS module of *eCerto** as described below.
+obtained and stored using the LTS module of *eCerto* as described below.
 
 ```{r child = 'lts_dataupload.Rmd'}
 ```
@@ -20,3 +20,6 @@ obtained and stored using the LTS module of *eCerto** as described below.
 ### LTS report
 
 The user can export a PDF report containing all imported, edited and calculated data and figures.
+
+<br/>
+<br/>

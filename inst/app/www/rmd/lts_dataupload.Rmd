@@ -7,7 +7,7 @@ row 4 on wards. Column names need to be exactly as in the example and should mat
 desired format (e.g. `Value` and `Date` columns should be of numeric and date format 
 respectively).
 
-![**Info** Excel format for LTS data. Cell background indicates cell format as text (blue), numeric (green) or data (red). The `Comment` column is optional.](fig/L_Modul_Import.png)
+![**Info** Excel format for LTS data. Cell background indicates cell format as text (blue), numeric (green) or date (red). The `Comment` column is optional.](fig/L_Modul_Import.png)
 
 The `File` column can be used to reference the data source for traceability of measurement
 values. The `Comment` column can be used to provide additional information.
