@@ -121,24 +121,22 @@ m_analyteServer = function(id, rv) {
         inputId = "precision",
         value = apm()[[rv$c_analyte]]$precision
       )
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      n <- digits_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
       shiny::updateNumericInput(
         inputId = "precision_export",
         value = apm()[[rv$c_analyte]]$precision_export
       )
-      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=0))
+      mt <- getValue(rv, c("General", "materialtabelle"))
+      n <- digits_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
+      if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong>(", n, ")")) }
     }, ignoreInit = FALSE)
 
-    shiny::observeEvent(getValue(rv, c("General","materialtabelle")), {
+    shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
+      # this additional observer is required in case that the user interactively manipulates the material table
       shiny::req(apm())
       mt <- getValue(rv, c("General", "materialtabelle"))
       n <- digits_DIN1333(x = mt[mt[,"analyte"]==rv$c_analyte,"U_abs"])
-      shiny::updateNumericInput(
-        inputId = "precision_export",
-        value = apm()[[rv$c_analyte]]$precision_export
-      )
-      shinyjs::html(id = "DIN1333_info", html = sub_header(paste0("Cert. Val. (", n, ")"), b=0))
+      #shiny::updateNumericInput(inputId = "precision_export", value = apm()[[rv$c_analyte]]$precision_export)
+      if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong>(", n, ")")) }
     })
 
     # update apm in case of changes in precision inputs
