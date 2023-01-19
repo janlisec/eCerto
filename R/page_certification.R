@@ -173,7 +173,7 @@ page_CertificationUI = function(id) {
                     selected = "auto_width"
                   ),
                   shiny::fluidRow(
-                    shiny::column(width = 6, shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400)),
+                    shiny::column(width = 6, shinyjs::disabled(shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400))),
                     shiny::column(width = 6, shiny::numericInput(inputId = ns("Fig01_height"), label = "height", value = 300))
                   )
                 )
