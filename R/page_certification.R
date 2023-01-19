@@ -169,7 +169,8 @@ page_CertificationUI = function(id) {
                       "Show sample IDs" = "annotate_id",
                       "Filenames as axis labels" = "filename_labels",
                       "Automatic width" = "auto_width"
-                    )
+                    ),
+                    selected = "auto_width"
                   ),
                   shiny::fluidRow(
                     shiny::column(width = 6, shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400)),
@@ -352,16 +353,7 @@ page_CertificationServer = function(id, rv) {
       setValue(rv, c("Certification_processing","stats"), overview_stats_pre())
     })
     output$overview_stats <- DT::renderDataTable({
-      dt <- DT::datatable(
-        data = overview_stats_pre(),
-        options = list(dom = "t", pageLength=100, scrollX = TRUE),
-        selection=list(mode = 'single', target = 'row'),
-        rownames = NULL
-      )
-      dt <- DT::formatCurrency(
-        table = dt, columns = c(2,3), currency = "", digits = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]]
-      )
-      return(dt)
+      styleTabC1(x = overview_stats_pre(), n = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]])
     })
 
     # Tab.2 Labmean statistics
@@ -373,16 +365,7 @@ page_CertificationServer = function(id, rv) {
       setValue(rv, c("Certification_processing","mstats"), TabC2_pre())
     })
     output$TabC2 <- DT::renderDataTable({
-      dt <- DT::datatable(
-        data = TabC2_pre(),
-        options = list(dom = "t", pageLength=1, scrollX = TRUE),
-        selection=list(mode = 'single', target = 'row'),
-        rownames = NULL
-      )
-      dt <- DT::formatCurrency(
-        table = dt, columns = c(1,2,3), currency = "", digits = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]]
-      )
-      return(dt)
+      styleTabC2(x = TabC2_pre(), n = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]])
     })
 
     # Normality statement and QQ plot
