@@ -40,14 +40,14 @@ m_reportUI <- function(id) {
       style = "float: right; margin-right: 5px;",
       shiny::div(
         style = "float: left; margin-right: 5px; margin-left:35px;",
-        sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download Report")),
+        sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download HTML Report")),
         shiny::downloadButton(outputId = ns('AnalyteReport'), label = "Analyte"),
         shiny::downloadButton(outputId = ns('MaterialReport'), label = "CRM")
-      ),
-      shiny::div(
-        style="float:left; margin-right:5px; margin-left:15px; width: 70px",
-        shiny::radioButtons(inputId = ns("output_file_format"), label = NULL, choices = c('PDF', 'HTML', 'Word'), inline = FALSE)
-      )
+      )#,
+      # shiny::div(
+      #   style="float:left; margin-right:5px; margin-left:15px; width: 70px",
+      #   shiny::radioButtons(inputId = ns("output_file_format"), label = NULL, choices = c('PDF', 'HTML', 'Word'), inline = FALSE)
+      # )
     )
   )
 }
@@ -60,12 +60,14 @@ m_reportServer <- function(id, rv) {
 
     output$AnalyteReport <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", rv$c_analyte, '.', switch(
-          input$output_file_format,
-          PDF = 'pdf',
-          HTML = 'html',
-          Word = 'docx'
-        ))
+        paste0(getValue(rv, c("General","study_id")), "_", rv$c_analyte, '.', 'html'
+          # switch(
+          #   input$output_file_format,
+          #   PDF = 'pdf',
+          #   HTML = 'html',
+          #   Word = 'docx'
+          # )
+        )
       },
       content = function(file) {
         rmdfile <- get_local_file("report_vorlage_analyt.[Rr][Mm][Dd]$")
@@ -77,12 +79,13 @@ m_reportServer <- function(id, rv) {
             out <- rmarkdown::render(
               input = rmdfile,
               output_file = file,
-              output_format = switch(
-                input$output_file_format,
-                PDF = rmarkdown::pdf_document(),
-                HTML = rmarkdown::html_document(),
-                Word = rmarkdown::word_document()
-              ),
+              output_format = rmarkdown::html_document(),
+              #   switch(
+              #   input$output_file_format,
+              #   PDF = rmarkdown::pdf_document(),
+              #   HTML = rmarkdown::html_document(),
+              #   Word = rmarkdown::word_document()
+              # ),
               params = list(
                 "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
                 "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
@@ -101,12 +104,14 @@ m_reportServer <- function(id, rv) {
 
     output$MaterialReport <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", "Material", '.', switch(
-          input$output_file_format,
-          PDF = 'pdf',
-          HTML = 'html',
-          Word = 'docx'
-        ))
+        paste0(getValue(rv, c("General","study_id")), "_", "Material", '.', 'html'
+          # switch(
+          #   input$output_file_format,
+          #   PDF = 'pdf',
+          #   HTML = 'html',
+          #   Word = 'docx'
+          # )
+        )
       },
       content = function(file) {
         # Copy the report file to a temporary directory before processing it
@@ -120,7 +125,8 @@ m_reportServer <- function(id, rv) {
               input = rmdfile,
               output_file = file,
               output_format = switch(
-                input$output_file_format,
+                #input$output_file_format,
+                "HTML",
                 PDF = rmarkdown::pdf_document(),
                 HTML = rmarkdown::html_document(),
                 Word = rmarkdown::word_document()
