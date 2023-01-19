@@ -37,7 +37,7 @@ m_ExcelUpload_UI <- function(id) {
     shinyjs::useShinyjs(),
     shiny::tagList(
       shiny::fluidRow(
-        style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px;",
+        style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
         shiny::div(
           style = "width: 130px; float: left; margin-left: 15px;",
           shiny::selectInput(

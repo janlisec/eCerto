@@ -91,7 +91,11 @@ eCerto <- R6::R6Class(
         # assigning NULL to the reactiveValue-List itself would delete it
         # this case needs to be taken care of here
         if (length(keys)>=2 && is.reactivevalues(purrr::pluck(private$..eData, !!!keys[-length(keys)]))) {
-          purrr::pluck(private$..eData, !!!keys) <- NULL
+          #browser()
+          # [JL20230118_the outcommented version stopped working after purr update and...]
+          #purrr::pluck(private$..eData, !!!keys) <- NULL
+          # [...was replaced by this version]
+          purrr::pluck(private$..eData, !!!keys[-length(keys)])[[keys[length(keys)]]] <- NULL
         } else {
           warning(paste("Can't assign NULL to a standard list element: ", paste(keys, collapse=", ")))
         }

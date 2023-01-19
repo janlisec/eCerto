@@ -69,7 +69,7 @@ init_rv <- function() {
         "Fig01_height" = NULL
       ),
       "stats" = NULL,
-      "opt" = NULL,
+      #"opt" = NULL,
       "mstats" = list(
         "show" = NULL,
         "data" = NULL

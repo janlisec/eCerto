@@ -16,6 +16,7 @@ testthat::test_that("CertValPlot produces an expected figure", {
     title = "CertValPlot Standard",
     fig = function() eCerto:::CertValPlot(data=data)
   )
+  data$File <- rep(c("Name_File_1","F2"), each=10)
   vdiffr::expect_doppelganger(
     title = "CertValPlot Annotated",
     fig = function() eCerto:::CertValPlot(data=data, annotate_id=TRUE, filename_labels = TRUE)

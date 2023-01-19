@@ -15,6 +15,16 @@
 #'   data <- data.frame("ID" = 1:20, "value" = rnorm(20), "analyte" = "X", "Lab" = gl(2, 10), "L_flt" = FALSE)
 #'   eCerto:::CertValPlot(data = data)
 #'   eCerto:::CertValPlot(data = data, annotate_id = TRUE)
+#'   data$File <- rep(c("Name_File_1","F2"), each=10)
+#'   eCerto:::CertValPlot(data = data, filename_labels = TRUE)
+#'   data2 <- data.frame("ID" = 1:200, "value" = rnorm(200), "analyte" = "X", "Lab" = gl(20, 10), "L_flt" = FALSE)
+#'   data2$L_flt[1:10] <- TRUE
+#'   eCerto:::CertValPlot(data = data2)
+#'   par(mfrow=c(1,3))
+#'     eCerto:::CertValPlot(data = data)
+#'     eCerto:::CertValPlot(data = data, annotate_id = TRUE, filename_labels = TRUE)
+#'     eCerto:::CertValPlot(data = data2)
+#'   par(mfrow=c(1,1))
 #' }
 #'
 #' @keywords internal
@@ -28,6 +38,7 @@ CertValPlot <- function(data=NULL, annotate_id=FALSE, filename_labels=FALSE) {
   xlab <- "Lab"
   mar <- c(5,6,0,0)+0.2
   if (filename_labels & "File" %in% colnames(data)) {
+    data[,"File"] <- as.character(data[,"File"])
     xlabs <- sapply(xlabs, function(x) { unique(sub(pattern = "(.*?)\\..*$", replacement = "\\1", basename(data[data[,"Lab"]==x,"File"]))) })
     mar <- c(3+floor(max(nchar(xlabs))*0.6),6,0,0)+0.2
     xlab <- NULL
@@ -54,9 +65,12 @@ CertValPlot <- function(data=NULL, annotate_id=FALSE, filename_labels=FALSE) {
   graphics::abline(h=mean(data.stats$MW[!data.stats[,"Filter"]])+c(-1,1)*stats::sd(data.stats$MW[!data.stats[,"Filter"]]), lty=2, col=grDevices::grey(0.8))
   graphics::segments(x0=1:nrow(data.stats), y0=data.stats$MW-data.stats$SD, y1=data.stats$MW+data.stats$SD)
   lw <- 0.15
+  #lw <- 0.1
+  #browser()
   graphics::segments(x0=1:nrow(data.stats)-lw, x1=1:nrow(data.stats)+lw, y0=data.stats$MW-data.stats$SD)
   graphics::segments(x0=1:nrow(data.stats)-lw, x1=1:nrow(data.stats)+lw, y0=data.stats$MW+data.stats$SD)
-  graphics::symbols(x=1:nrow(data.stats), y=data.stats$MW, circles=rep(lw,nrow(data.stats)), bg=c(3, grDevices::grey(0.8))[1+data.stats[,"Filter"]], add=T, inches=FALSE)
+  graphics::symbols(x=1:nrow(data.stats), y=data.stats$MW, circles=rep(lw, nrow(data.stats)), bg=c(3, grDevices::grey(0.8))[1+data.stats[,"Filter"]], add=T, inches=FALSE)
+  #graphics::points(x=1:nrow(data.stats), y=data.stats$MW, pch=21, bg=c(3, grDevices::grey(0.8))[1+data.stats[,"Filter"]], cex=2)
   graphics::legend(x="topleft", bty="n", lty=c(1,2), col = c(3, grDevices::grey(0.8)), legend = c("mean", "sd"))
   if (annotate_id & "ID" %in% colnames(data)) {
     tmp_x <- sapply(data[,"Lab"], function(x) { which(data.stats[,"Lab"]==x) })

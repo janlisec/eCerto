@@ -84,7 +84,7 @@ fnc_load_RData <- function(x = NULL) {
         setValue(rv, c("Certification_processing","cert_sd"), x[["Certification"]][["cert_sd"]])
         setValue(rv, c("Certification_processing","CertValPlot"), x[["Certification"]][["CertValPlot"]])
         setValue(rv, c("Certification_processing","stats"), x[["Certification"]][["stats"]])
-        setValue(rv, c("Certification_processing","opt"), x[["Certification"]][["opt"]])
+        #setValue(rv, c("Certification_processing","opt"), x[["Certification"]][["opt"]])
         setValue(rv, c("Certification_processing","mstats"), x[["Certification"]][["mstats"]])
         # materialtabelle
         mt <- x[["Certification"]][["cert_vals"]]
