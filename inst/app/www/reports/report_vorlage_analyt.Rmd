@@ -84,6 +84,7 @@ This is the imported data which was basis for all further calculations:
   df <- C$data[C$data[,"analyte"]==A,1:7,drop=FALSE]
   if (knitr::is_html_output()) {
     #kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
+    kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
     eCerto:::styleTabC0(x = df[, c("ID", "Lab", "value", "unit", "replicate", "File")], ap = D, type = "standard")
   } else if (knitr::is_latex_output()) {
     knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
