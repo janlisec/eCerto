@@ -271,6 +271,7 @@ page_CertificationServer = function(id, rv) {
     }, ignoreNULL = FALSE)
 
     shiny::observeEvent(getValue(rv, c("Certification_processing","CertValPlot")), {
+      shiny::req(input$C1_opt)
       w <- ifelse(
         "auto_width" %in% input$C1_opt,
         calc_C1_width(n = length(unique(dat()$Lab))),

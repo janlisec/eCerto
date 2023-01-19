@@ -26,10 +26,23 @@ fnc_load_RData <- function(x = NULL) {
       if (x$General$dataformat_version=="2021-05-27") {
         # Non-legacy upload #####
         if (!silent) message("RDataImport: Non-legacy upload started")
-        # rv should contain all variables from uploaded x
+        # rv should contain all variables from uploaded x except for deprecated once
         # split must be false here, otherwise one name list is of class character
         # the other of class list -> Error
         #browser()
+        # remove deprecated elements from 'x'
+        deprecated_elements <- c(
+          "Certification_processing.opt",
+          "Certification_processing.data_kompakt",
+          "Certification_processing.lab_means",
+          "Certification_processing.normality_statement",
+          "Certification_processing.precision",
+          "Certification_processing.boxplot",
+          "Homogeneity.h_precision"
+        )
+        if (any(xnames %in% deprecated_elements)) {
+          xnames <- xnames[!xnames %in% deprecated_elements]
+        }
         if (!all(xnames %in% rvnames)) {
           allgivenexpected <- c(paste0("\nfile: ", xnames), paste0("\nexpected: ", rvnames))
           found_table <- names(which(table(c(xnames, rvnames))==1))

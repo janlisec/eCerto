@@ -39,7 +39,7 @@ m_analyteUI = function(id) {
   shiny::tagList(
     shiny::div(style = "width: 200px; float:left; margin-right:5px; margin-left:35px;",
       shiny::actionLink(inputId = ns("analyte_help_link"), label = "Parameters for Analyte", style = "font-weight: 700; margin-bottom: 10px;"),
-      shiny::p(id = ns("curr_analyte"), style = "background: red; text-align: center; margin-bottom: 0px", "test-text"),
+      shiny::p(id = ns("curr_analyte"), style = "background: red; text-align: center; margin-bottom: 0px; padding: 2px", "test-text"),
       shiny::checkboxInput(inputId = ns("pooling"), label = "pooling", value = FALSE)
     ),
     shiny::div(style="width: 200px; float:left; margin-right:5px; margin-left:15px;",
