@@ -117,8 +117,6 @@ m_materialtabelleServer <- function(id, rv) {
       #browser()
       if (nrow(cc)>=1) {
         flt <- sapply(1:nrow(cc), function(i) {
-          # only proceed of Name and ID of the attribute are equal && set to default values
-          #cc[i, "ID"] == cc[i, "Name"] && (all(mt[, cc[i, "Name"]] == 1) | all(mt[, cc[i, "Name"]] == 0))
           all(mt[, cc[i, "ID"]] == 1) | all(mt[, cc[i, "ID"]] == 0)
         })
         if (any(flt)) {
@@ -168,6 +166,13 @@ m_materialtabelleServer <- function(id, rv) {
         }
         attr(mt, "col_code") <- cc
       }
+      # check if the option to remove F/U columns without effect should be displayed
+      if (!identical(mt, remove_unused_cols(mt=mt))) {
+        shinyjs::showElement(id = "clear_FU_cols")
+      } else {
+        shinyjs::hideElement(id = "clear_FU_cols")
+      }
+      # store result back if modifications were performed
       if (!identical(mater_table(), mt)) {
         if (!silent) message("[materialtabelle] set local 'mt' from 'rv'")
         mater_table(mt)

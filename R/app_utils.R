@@ -297,3 +297,20 @@ sub_header <- function(txt="test", l=0, b=5, unit=c("px", "%")) {
     txt
   )
 }
+
+#' @title calc_C1_width.
+#' @description Calculate the optimal width for Fig.C1 depending on the number of labs.
+#' @param n Number of labs with finite values.
+#' @param w_axes Number of pixels reserved for axes.
+#' @param w_point Number of pixels reserved per data point.
+#' @return Optimal figure width in pixels.
+#' @keywords internal
+#' @noRd
+#' @examples
+#' eCerto:::calc_C1_width(n = 2)
+#' eCerto:::calc_C1_width(n = 20)
+calc_C1_width <- function(n, w_axes = 100, w_point = 40) {
+  round(w_axes + (w_point * n) * 1.08)
+}
+
+

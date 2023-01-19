@@ -206,14 +206,10 @@ page_CertificationServer = function(id, rv) {
     # report module
     m_reportServer(id = "report", rv = rv)
 
-    selected_tab <- reactiveVal(NULL)
+    selected_tab <- shiny::reactiveVal(NULL)
     shiny::observeEvent(gargoyle::watch("update_c_analyte"), {
       selected_tab(rv$c_analyte)
     }, ignoreInit = TRUE)
-
-    calc_C1_width <- function(n, w_axes = 100, w_point = 40) {
-      round(w_axes + (w_point * n) * 1.08)
-    }
 
     shiny::observeEvent(getValue(rv, c("Certification", "data")), {
       if (is.null(getValue(rv, c("Certification", "data")))) {
