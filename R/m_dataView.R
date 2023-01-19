@@ -55,91 +55,23 @@ m_DataViewServer <- function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    precision <- shiny::reactiveVal(4)
-    # observeEvent(getValue(rv, c("General","apm")) {
-    #
-    # })
+    # prepare a analyte specific (filtered) version of the input data table
     dataset_flt <- shiny::reactive({
-      #browser()
       gargoyle::watch("update_c_analyte")
       df <- getValue(rv, c("Certification","data"))
       apm <- getValue(rv, c("General","apm"))
       an <- rv$c_analyte
-      precision(apm[[an]][["precision"]])
       df <- df[df[,"analyte"]==an,]
       if (!"File" %in% colnames(df)) df <- cbind(df, "File"="")
       #df[df[,"S_flt"] %in% apm[[an]][["sample_filter"]],"S_flt"]
       return(df)
-    })
-    # Generate an HTML table view of filtered single analyt data
-    output$tab1 <- DT::renderDataTable({
-      apm <- getValue(rv, c("General","apm"))[[rv$c_analyte]]
-      if (input$data_view_select == "kompakt") {
-        dt <- DT::datatable(
-          data = dataset_komp(),
-          options = list(
-            dom = "t", paging = FALSE, searching = FALSE
-          ),
-          rownames = NULL,
-        )
-        idx <- attr(dataset_komp(), "id_idx")
-        if (!is.null(apm[["sample_filter"]])) {
-          for (s_idx in apm[["sample_filter"]]) {
-            coln <- colnames(idx)[ceiling(which(idx==s_idx)/nrow(idx))]
-            cval <- unlist(dataset_komp())[which(idx==s_idx)]
-            dt <- DT::formatStyle(
-              table = dt, columns = coln,
-              color = DT::styleEqual(levels = cval, values = "red"),
-              fontWeight = DT::styleEqual(levels = cval, values = "bold")
-            )
-          }
-        }
-        if (!is.null(apm[["lab_filter"]])) {
-          for (l_idx in apm[["lab_filter"]]) {
-            rown <- which(idx[,"Lab"]==apm[["lab_filter"]])
-            dt <- DT::formatStyle(
-              table = dt, target = 'row', columns = 2:ncol(idx), rows = rown,
-              color = DT::styleRow(rows = rown, values = "red"),
-              fontWeight = DT::styleRow(rows = rown, values = "bold")
-            )
-          }
-        }
-        # round with input precision
-        dt <- DT::formatCurrency(table = dt, columns = 2:(ncol(dataset_komp())-2), currency = "", digits = precision())
-        # round with output precision (JL: currently the same; adjust and remove comment if requested by users)
-        dt <- DT::formatCurrency(table = dt, columns = (ncol(dataset_komp())-1):ncol(dataset_komp()), currency = "", digits = precision())
-      }
-      if (input$data_view_select == "standard") {
-        dt <- DT::datatable(
-          data = dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")],
-          options = list(
-            dom = "t", paging = FALSE, searching = FALSE,
-            autoWidth = TRUE, scrollY = "250px", pageLength = -1
-          ), rownames = NULL
-        )
-        dt <- DT::formatCurrency(table = dt, columns = 3, currency = "", digits = precision())
-        if (!is.null(apm[["sample_filter"]])) {
-          dt <- DT::formatStyle(
-            table = dt, columns = "ID",
-            color = DT::styleEqual(levels = apm[["sample_filter"]], values = "red"),
-            fontWeight = DT::styleEqual(levels = apm[["sample_filter"]], values = "bold")
-          )
-        }
-        if (!is.null(apm[["lab_filter"]])) {
-          dt <- DT::formatStyle(
-            table = dt, columns = "Lab",
-            color = DT::styleEqual(levels = apm[["lab_filter"]], values = "red"),
-            fontWeight = DT::styleEqual(levels = apm[["lab_filter"]], values = "bold")
-          )
-        }
-      }
-      return(dt)
     })
 
     # prepare a compact version of the data table
     dataset_komp <- shiny::reactive({
       shiny::req(dataset_flt())
       df <- dataset_flt()
+      p <- getValue(rv, c("General","apm"))[[rv$c_analyte]][["precision"]]
       n_reps <- sort(unique(df$replicate))
       data <- plyr::ldply(split(df, df$Lab), function(x) {
         out <- rep(NA, length(n_reps))
@@ -153,12 +85,19 @@ m_DataViewServer <- function(id, rv) {
       }, .id = "Lab")
       df <- data.frame(
         data[, 1, drop = F],
-        round(data[, -1, drop = F], digits = precision()),
-        "mean" = round(apply(data[, -1, drop = F], 1, mean, na.rm = T), digits = precision()),
-        "sd" = round(apply(data[, -1, drop = F], 1, stats::sd, na.rm = T), digits = precision())
+        round(data[, -1, drop = F], digits = p),
+        "mean" = round(apply(data[, -1, drop = F], 1, mean, na.rm = T), digits = p),
+        "sd" = round(apply(data[, -1, drop = F], 1, stats::sd, na.rm = T), digits = p)
       )
       attr(df, "id_idx") <- id_idx
       return(df)
+    })
+
+    # Generate an HTML table view of filtered single analyt data
+    output$tab1 <- DT::renderDataTable({
+      type <- input$data_view_select
+      if (type == "kompakt") x <- dataset_komp() else x <- dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")]
+      styleTabC0(x = x, ap=getValue(rv, c("General","apm"))[[rv$c_analyte]], type=type)
     })
 
   })
