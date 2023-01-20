@@ -179,19 +179,6 @@ m_materialtabelleServer <- function(id, rv) {
       }
     })
 
-    # this is a fixed value to round the relative uncertainty columns; 4 should be appropriate here
-    precision_U <- 4
-
-    # helper function to get column indexes for U and F columns
-    get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
-      switch(
-        type,
-        "U" = unlist(sapply(c("u_char", paste0("U", 1:9)), function(x) { which(colnames(mt)==x) })),
-        "U_round" = unlist(sapply(c("u_char", "u_com", "U", paste0("U", 1:9)), function(x) { which(colnames(mt)==x) })),
-        "F" = unlist(sapply(c("mean", paste0("F", 1:9)), function(x) { which(colnames(mt)==x) }))
-      )
-    }
-
     # helper function to update calculations
     recalc_mat_table <- function(mt=NULL) {
       if (any(is.finite(mt[,"mean"])) & any(is.finite(mt[,"sd"]))) {
@@ -369,7 +356,7 @@ m_materialtabelleServer <- function(id, rv) {
       rv$c_fltData(recalc=TRUE)
     })
 
-    # number of items (either labes or measurements)
+    # number of items (either labs or measurements)
     n <- shiny::reactive({
       shiny::req(c_fltData())
       x <- c_fltData()
@@ -480,35 +467,11 @@ m_materialtabelleServer <- function(id, rv) {
       prec_exp <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision_export"]]} ))
       if (!inherits(prec, "try-error") && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(dt)) {
         #determine number of decimal places required according to DIN1333
-        #n <- digits_DIN1333(x = mt[,"U_abs"])
         dt[,"cert_val"] <- round_DIN1333(x = dt[,"cert_val"], n = prec_exp)
         # ***Note!*** U_abs is always rounded up
         dt[,"U_abs"] <- round_up(x = dt[,"U_abs"], n = prec_exp)
       }
-      dt <- DT::datatable(
-        data = dt,
-        editable = list(
-          target = "cell",
-          disable = list(columns = which(!(colnames(dt) %in% c("k", attr(dt, "col_code")[,"Name"])))-1)
-        ),
-        options = list(
-          dom = "t",
-          #pageLength = NULL,
-          # [JL, 20221007]
-          # pageLength = NULL stopped working as it defaulted to 10
-          # correct option now is paging = FALSE
-          paging = FALSE,
-          columnDefs = list(
-            list(
-              className = 'dt-right',
-              targets = which(colnames(dt) %in% c("mean","sd","cert_val","U_abs"))-1
-            )
-          )
-        ),
-        rownames = NULL, selection = list(mode="single", target="row", selected=selected_row_idx$row)
-      )
-      dt <- DT::formatCurrency(table = dt, columns = get_UF_cols(isolate(mater_table()), "U_round"), currency = "", digits = precision_U)
-      return(dt)
+      styleTabC3(x = dt, selected_row = selected_row_idx$row)
     }, server = TRUE)
 
     shiny::observeEvent(input$matreport_rows_selected, {

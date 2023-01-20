@@ -313,4 +313,45 @@ calc_C1_width <- function(n, w_axes = 100, w_point = 40) {
   round(w_axes + (w_point * n) * 1.08)
 }
 
-
+#' @title get_UF_cols.
+#' @description Helper function to get column indexes for U and F columns in Tab.C3.
+#' @param mt materialtabelle.
+#' @param type Code for the specific column set to retrieve.
+#' @return Named vector of column inices.
+#' @keywords internal
+#' @noRd
+#' @examples
+#' mt <- eCerto:::init_materialtabelle(LETTERS[1:3])
+#' eCerto:::get_UF_cols(mt = mt, type = "F")
+#' eCerto:::get_UF_cols(mt = mt, type = "U_round")
+get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
+  u_calc_cols <- "u_char"
+  f_calc_cols <- "mean"
+  u_round_cols <- c("u_char", "u_com", "U")
+  if (!is.null(attr(mt, "col_code"))) {
+    cc <- attr(mt, "col_code")
+    # if user defined U cols are present
+    if (any(grep("U", cc[,"ID"]))) {
+      idx <- grep("U", cc[,"ID"])
+      add_cols <- NULL
+      if (any(cc[idx,"ID"] %in% colnames(mt))) add_cols <- cc[idx,"ID"]
+      if (any(cc[idx,"Name"] %in% colnames(mt))) add_cols <- cc[idx,"Name"]
+      u_calc_cols <- c(u_calc_cols, add_cols)
+      u_round_cols <- c(u_round_cols, add_cols)
+    }
+    # if user defined F cols are present
+    if (any(grep("F", cc[,"ID"]))) {
+      idx <- grep("F", cc[,"ID"])
+      add_cols <- NULL
+      if (any(cc[idx,"ID"] %in% colnames(mt))) add_cols <- cc[idx,"ID"]
+      if (any(cc[idx,"Name"] %in% colnames(mt))) add_cols <- cc[idx,"Name"]
+      f_calc_cols <- c(f_calc_cols, add_cols)
+    }
+  }
+  switch(
+    type,
+    "U" = unlist(sapply(u_calc_cols, function(x) { which(colnames(mt)==x) })),
+    "U_round" = unlist(sapply(u_round_cols, function(x) { which(colnames(mt)==x) })),
+    "F" = unlist(sapply(f_calc_cols, function(x) { which(colnames(mt)==x) }))
+  )
+}
