@@ -139,6 +139,14 @@ eCerto <- R6::R6Class(
     c_analytes = function() {
       shiny::isolate(sapply(private$..eData[["General"]][["apm"]], function(x) {x[["name"]]}))
     },
+    #' @description Return analyte names currently in apm.
+    #' @return A named character vector.
+    c_lab_codes = function() {
+      fn <- shiny::isolate(private$..eData[["Certification"]][["data"]])
+      fn <- fn[!duplicated(fn[,"Lab"]),c("Lab","File")]
+      out <- as.character(fn[,"File"]); names(out) <- fn[,"Lab"]
+      return(out)
+    },
     #' @description Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
     #' @param recalc If TRUE triggers a recalculation and returns current object if FALSE..
     #' @return A data.frame with filtered data of a single analyte.

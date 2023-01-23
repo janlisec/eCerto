@@ -71,6 +71,9 @@ m_DataViewServer <- function(id, rv) {
     dataset_komp <- shiny::reactive({
       shiny::req(dataset_flt())
       df <- dataset_flt()
+      # ensure that "Lab" is a factor
+      if (!is.factor(df[,"Lab"])) df[,"Lab"] <- factor(df[,"Lab"])
+      fn <- rv$c_lab_codes()
       p <- getValue(rv, c("General","apm"))[[rv$c_analyte]][["precision"]]
       n_reps <- sort(unique(df$replicate))
       data <- plyr::ldply(split(df, df$Lab), function(x) {
@@ -84,11 +87,11 @@ m_DataViewServer <- function(id, rv) {
         matrix(out, ncol = length(n_reps), dimnames = list(NULL, paste0("R", n_reps)))
       }, .id = "Lab")
       out <- data.frame(
-        data[, 1, drop = F],
+        data[, "Lab", drop = F],
         round(data[, -1, drop = F], digits = p),
         "mean" = round(apply(data[, -1, drop = F], 1, mean, na.rm = T), digits = p),
         "sd" = round(apply(data[, -1, drop = F], 1, stats::sd, na.rm = T), digits = p),
-        "File" = sapply(split(df$File, df$Lab), unique)
+        "File" = unname(fn[levels(df$Lab)])
       )
       attr(out, "id_idx") <- id_idx
       return(out)

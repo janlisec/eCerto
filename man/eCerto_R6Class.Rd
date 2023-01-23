@@ -57,6 +57,7 @@ tmp$c_fltData(recalc = TRUE)
 \item \href{#method-eCerto-c_plot}{\code{eCerto$c_plot()}}
 \item \href{#method-eCerto-c_lab_means}{\code{eCerto$c_lab_means()}}
 \item \href{#method-eCerto-c_analytes}{\code{eCerto$c_analytes()}}
+\item \href{#method-eCerto-c_lab_codes}{\code{eCerto$c_lab_codes()}}
 \item \href{#method-eCerto-c_fltData}{\code{eCerto$c_fltData()}}
 \item \href{#method-eCerto-clone}{\code{eCerto$clone()}}
 }
@@ -176,6 +177,19 @@ A data.frame of lab means.
 Return analyte names currently in apm.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{eCerto$c_analytes()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A named character vector.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-eCerto-c_lab_codes"></a>}}
+\if{latex}{\out{\hypertarget{method-eCerto-c_lab_codes}{}}}
+\subsection{Method \code{c_lab_codes()}}{
+Return analyte names currently in apm.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_codes()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
