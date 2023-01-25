@@ -5,9 +5,11 @@
 #' @param mt The mt from an session R6 object.
 #' @param sr Currently selected row of table.
 #' @examples
+#' x <- eCerto:::prepTabS1(x = eCerto:::test_Stability_Excel())
+#' eCerto:::styleTabS1(x = x, mt = NULL, sr = 1)
 #' @return A datatable object.
 #' @keywords internal
-
+#' @noRd
 styleTabS1 <- function(x, mt = NULL, sr = 1) {
   message("[styleTabS1] styling Tab.S1")
   for (i in c("slope", "SE_slope", "u_stab", "P")) {

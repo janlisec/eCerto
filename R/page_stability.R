@@ -134,19 +134,7 @@ page_StabilityServer <- function(id, rv) {
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data())
-      out <- plyr::ldply(split(s_Data(), s_Data()[,"analyte"]), function(x) {
-        x_lm <- stats::lm(Value ~ Date, data=x)
-        mon_diff <- max(calc_time_diff(x[,"Date"], type = "mon"))
-        x_slope <- summary(x_lm)$coefficients[2,1:2]
-        # according to B.3.4 from ISO Guide 35
-        p_val <- 2 * stats::pt(abs(x_slope[1]/x_slope[2]), df = stats::df.residual(x_lm), lower.tail = FALSE)
-        data.frame(
-          "mon_diff"=mon_diff,
-          "slope"=x_slope[1],
-          "SE_slope"=x_slope[2],
-          "u_stab"=abs(x_slope[1]*x_slope[2]),
-          "P"=p_val)
-      }, .id="analyte")
+      out <- prepTabS1(x = s_Data())
       setValue(rv, c("Stability","s_vals"), out)
       return(out)
     })
@@ -163,7 +151,7 @@ page_StabilityServer <- function(id, rv) {
       shiny::req(s_Data(), input$s_sel_analyte)
       dt <- DT::datatable(
         data = s_Data()[s_Data()[,"analyte"]==input$s_sel_analyte,c("Date","Value")],
-        options = list(paging = TRUE, searching = FALSE), rownames=NULL, selection = "none"
+        options = list(paging = TRUE, searching = FALSE), rownames = NULL, selection = "none"
       )
       prec <- try(getValue(rv, c("General","apm"))[[input$s_sel_analyte]][["precision"]])
       prec <- ifelse(!is.null(prec) && is.finite(prec), prec, 4)
