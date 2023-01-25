@@ -84,7 +84,7 @@ page_HomogeneityUI <- function(id) {
               )
             ), shiny::p(),
             shiny::plotOutput(ns("h_boxplot"), inline=TRUE),
-            shiny::uiOutput(ns("h_statement2"))
+            shiny::uiOutput(ns("h_txt"))
           )
         ),
         shiny::column(
@@ -204,7 +204,7 @@ page_HomogeneityServer = function(id, rv) {
         data = tab,
         options = list(
           dom = "t",
-          pageLength = NULL,
+          pageLength = -1,
           columnDefs = list(
             list(className = 'dt-right', targets='_all')
           )
@@ -219,37 +219,17 @@ page_HomogeneityServer = function(id, rv) {
     # Plots & Print
     fig_width <- shiny::reactive({
       shiny::req(h_Data(), input$h_sel_analyt)
-      x <- h_Data()
-      a <- input$h_sel_analyt
-      n <- length(levels(factor(x[interaction(x[,"analyte"], x[,"H_type"])==a,"Flasche"])))
-      return(150 + 40 * n)
+      x <- h_Data()[,c("analyte", "H_type", "Flasche")]
+      calc_bxp_width(n = length(levels(factor(x[interaction(x[,1], x[,2])==input$h_sel_analyt, 3]))))
     })
     output$h_boxplot <- shiny::renderPlot({
       shiny::req(h_Data(), input$h_sel_analyt, precision())
       prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision())
     }, height=504, width=shiny::reactive({fig_width()}))
 
-    output$h_statement2 <- shiny::renderUI({
+    output$h_txt <- shiny::renderUI({
       shiny::req(h_vals(), input$h_sel_analyt)
-      h_dat <- h_vals()
-      an <- ifelse(length(unique(h_dat[,"H_type"]))==1, as.character(h_dat[interaction(h_dat[,"analyte"], h_dat[,"H_type"])==input$h_sel_analyt,"analyte"]), input$h_sel_analyt)
-      ansd <- max(h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,c("s_bb","s_bb_min")])
-      anp <- h_dat[interaction(h_dat[,"analyte"],h_dat[,"H_type"])==input$h_sel_analyt,"P"]
-      if (anp<0.05) {
-        h2 <- "<font color=\"#FF0000\"><b>significantly different</b></font>"
-        h4 <- "<b>Please check your method and data!</b>"
-      } else {
-        h2 <- "<font color=\"#00FF00\">not significantly different</font>"
-        h4 <- ""
-      }
-      return(
-        shiny::fluidRow(shiny::column(12,
-          shiny::HTML("The tested items (Flasche) are ", h2, "(ANOVA P-value = ", pn(anp,2), ").<p>",
-                      "The uncertainty value for analyte ", an),
-          shiny::actionLink(inputId = ns("hom_help_modal"), label = "was determined as"),
-          shiny::HTML("<b>", pn(ansd), "</b>.<p>", h4)
-        ))
-      )
+      h_statement(x = h_vals(), a = input$h_sel_analyt)
     })
 
     h_transfer_U <- m_TransferUServer(
@@ -281,7 +261,7 @@ page_HomogeneityServer = function(id, rv) {
               envir = new.env(parent = globalenv())
             )
           },
-          message = "Rendering Homogeneity Report.."
+          message = "Rendering Homogeneity Report..."
         )
         return(out)
       }

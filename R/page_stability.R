@@ -175,39 +175,7 @@ page_StabilityServer <- function(id, rv) {
     output$s_tab1 <- DT::renderDataTable({
       shiny::req(s_vals())
       s_tab1_current$redraw
-      s_vals_print <- s_vals()
-      for (i in c("slope","SE_slope","u_stab","P")) {
-        s_vals_print[,i] <- pn(s_vals_print[,i], 4)
-      }
-      if (!is.null(getValue(rv, c("General", "materialtabelle")))) {
-        c_vals <- getValue(rv, c("General", "materialtabelle"))
-        s_vals_print[,"style_analyte"] <- sapply(s_vals_print[,"analyte"], function(x) {
-          ifelse(x %in% c_vals[,"analyte"], "black", "red")
-        })
-      } else {
-        s_vals_print[,"style_analyte"] <- "red"
-      }
-      dt <- DT::datatable(
-        data = s_vals_print,
-        options = list(
-          dom = "t",
-          pageLength=NULL,
-          columnDefs = list(
-            list(visible = FALSE, targets = 6),
-            list(className = 'dt-right', targets='_all')
-          )
-        ),
-        selection = list(mode="single", target="row", selected=s_tab1_current$row),
-        rownames=NULL
-      )
-      dt <- DT::formatStyle(
-        table = dt,
-        columns = "analyte",
-        valueColumns = "style_analyte",
-        target = "cell",
-        color = DT::styleValue()
-      )
-      return(dt)
+      styleTabS1(x = s_vals(), mt = getValue(rv, c("General", "materialtabelle")), sr = s_tab1_current$row)
     })
 
     shiny::observeEvent(input$s_tab1_rows_selected, {

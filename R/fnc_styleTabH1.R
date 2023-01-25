@@ -50,11 +50,9 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
       data = x,
       options = list(
         dom = "t",
-        pageLength = NULL,
+        pageLength = -1,
         columnDefs = list(
           list(visible = FALSE, targets = inv_cols),
-          #list(width = '30px', targets = c(3,4)),
-          #list(width = '60px', targets = c(5:9)),
           list(className = 'dt-right', targets='_all')
         )
       ),

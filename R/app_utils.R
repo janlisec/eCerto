@@ -298,7 +298,7 @@ sub_header <- function(txt="test", l=0, b=5, unit=c("px", "%")) {
   )
 }
 
-#' @title calc_C1_width.
+#' @title calc_bxp_width.
 #' @description Calculate the optimal width for Fig.C1 depending on the number of labs.
 #' @param n Number of labs with finite values.
 #' @param w_axes Number of pixels reserved for axes.
@@ -307,10 +307,47 @@ sub_header <- function(txt="test", l=0, b=5, unit=c("px", "%")) {
 #' @keywords internal
 #' @noRd
 #' @examples
-#' eCerto:::calc_C1_width(n = 2)
-#' eCerto:::calc_C1_width(n = 20)
-calc_C1_width <- function(n, w_axes = 100, w_point = 40) {
+#' eCerto:::calc_bxp_width(n = 2)
+#' eCerto:::calc_bxp_width(n = 20)
+calc_bxp_width <- function(n, w_axes = 100, w_point = 40) {
   round(w_axes + (w_point * n) * 1.08)
+}
+
+#' @title h_statement.
+#' @description Prepare a analyte specific statement regarding the homogeneity.
+#' @param n Number of labs with finite values.
+#' @param w_axes Number of pixels reserved for axes.
+#' @param w_point Number of pixels reserved per data point.
+#' @return Optimal figure width in pixels.
+#' @keywords internal
+#' @noRd
+#' @examples
+#' h <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
+#' eCerto:::h_statement(x = h, a = "Fe.axial")
+h_statement <- function(x, a) {
+  stopifnot(c("analyte", "H_type", "P", "s_bb", "s_bb_min") %in% colnames(x))
+  idx <- interaction(x[, "analyte"], x[, "H_type"]) == a
+  a_name <- ifelse(length(unique(x[, "H_type"])) == 1, as.character(x[idx, "analyte"]), a)
+  a_sd <- max(x[idx, c("s_bb", "s_bb_min")])
+  a_P <- x[idx, "P"]
+  if (a_P < 0.05) {
+    s1 <- "<font color=\"#FF0000\"><b>significantly different</b></font>"
+    s2 <- "<b>Please check your method and data!</b>"
+  } else {
+    s1 <- "<font color=\"#00FF00\">not significantly different</font>"
+    s2 <- ""
+  }
+  return(
+    shiny::fluidRow(
+      shiny::column(
+        width = 12,
+        shiny::HTML(
+          "The tested items (Flasche) are ", s1, "(ANOVA P-value = ", pn(a_P, 2), ").",
+          "<p>The uncertainty value for analyte ", a_name, "was determined as<b>", pn(a_sd), "</b>.</p>", s2
+        )
+      )
+    )
+  )
 }
 
 #' @title get_UF_cols.

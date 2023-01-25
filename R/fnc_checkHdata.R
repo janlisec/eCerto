@@ -18,7 +18,7 @@ checkHdata <- function(x) {
     x <- cbind(x[,"analyte",drop=FALSE], data.frame("H_type"=gl(n = 1, k = nrow(x), labels = "hom")), x[,2:ncol(x)])
   } else {
     x[,"H_type"] <- factor(x[,"H_type"])
-    # ensure that H_type has one level (because downstream functions fail otherwise)
+    # ensure that H_type has at least one level (because downstream functions fail otherwise)
     if (length(levels(x[,"H_type"]))==0) {
       x[,"H_type"] <- gl(n = 1, k = nrow(x), labels = "hom")
     }

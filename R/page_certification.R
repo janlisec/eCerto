@@ -217,8 +217,6 @@ page_CertificationServer = function(id, rv) {
         shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standby")
       } else {
         shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "loaded")
-        # n_Labs <- length(levels(factor(getValue(rv, c("Certification","data"))[, "Lab"])))
-        # shiny::updateNumericInput(session=session, inputId = "Fig01_width", value = calc_C1_width(n = n_Labs))
       }
     }, ignoreNULL = FALSE)
 
@@ -237,11 +235,8 @@ page_CertificationServer = function(id, rv) {
 
     shiny::observeEvent(dat(), {
       if ("auto_width" %in% input$C1_opt) {
-        #n_Labs <- length(levels(factor(getValue(rv, c("Certification","data"))[, "Lab"])))
         n_Labs <- length(unique(dat()$Lab))
-        shiny::updateNumericInput(session=session, inputId = "Fig01_width", value = calc_C1_width(n = n_Labs))
-      } else {
-
+        shiny::updateNumericInput(session=session, inputId = "Fig01_width", value = calc_bxp_width(n = n_Labs))
       }
     })
 
@@ -260,7 +255,7 @@ page_CertificationServer = function(id, rv) {
     shiny::observeEvent(input$C1_opt, {
       shiny::req(dat())
       if ("auto_width" %in% input$C1_opt) {
-        shiny::updateNumericInput(session = session, inputId = "Fig01_width", value = calc_C1_width(n = length(unique(dat()$Lab))))
+        shiny::updateNumericInput(session = session, inputId = "Fig01_width", value = calc_bxp_width(n = length(unique(dat()$Lab))))
         shinyjs::disable(id = "Fig01_width")
       } else {
         shinyjs::enable(id = "Fig01_width")
@@ -271,7 +266,7 @@ page_CertificationServer = function(id, rv) {
       shiny::req(input$C1_opt)
       w <- ifelse(
         "auto_width" %in% input$C1_opt,
-        calc_C1_width(n = length(unique(dat()$Lab))),
+        calc_bxp_width(n = length(unique(dat()$Lab))),
         getValue(rv, c("Certification_processing","CertValPlot","Fig01_width"))
       )
       shiny::updateNumericInput(
