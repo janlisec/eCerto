@@ -150,34 +150,24 @@ page_CertificationUI = function(id) {
           shiny::column(
             width = 2,
             shiny::wellPanel(
-              shiny::fluidRow(
-                shiny::column(
-                  width = 4,
-                  sub_header("Download"),
-                  shiny::downloadButton(outputId = ns('Fig01'), label = "Figure"),
-                  shiny::p(),
-                  sub_header("C1 mean"),
-                  shiny::textOutput(ns("cert_mean")),
-                  sub_header("C1 sd"),
-                  shiny::textOutput(ns("cert_sd"))
+              shiny::checkboxGroupInput(
+                inputId = ns("C1_opt"), label = "Fig.C1 options",
+                choices = list(
+                  "Show sample IDs" = "annotate_id",
+                  "Filenames as axis labels" = "filename_labels",
+                  "Automatic width" = "auto_width",
+                  "Show legend" = "show_legend"
                 ),
-                shiny::column(
-                  width = 8,
-                  shiny::checkboxGroupInput(
-                    inputId = ns("C1_opt"), label = "Fig.C1 options",
-                    choices = list(
-                      "Show sample IDs" = "annotate_id",
-                      "Filenames as axis labels" = "filename_labels",
-                      "Automatic width" = "auto_width"
-                    ),
-                    selected = "auto_width"
-                  ),
-                  shiny::fluidRow(
-                    shiny::column(width = 6, shinyjs::disabled(shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400))),
-                    shiny::column(width = 6, shiny::numericInput(inputId = ns("Fig01_height"), label = "height", value = 300))
-                  )
-                )
+                selected = c("auto_width", "show_legend")
               ),
+              shiny::fluidRow(
+                shiny::div(style = "float: left; width: 30%; padding-left: 15px;", shinyjs::disabled(shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400))),
+                shiny::div(style = "float: left; width: 30%;", shiny::numericInput(inputId = ns("Fig01_height"), label = "height", value = 300)),
+                shiny::div(style = "float: left; width: 40%; padding-right: 15px;",
+                  sub_header("Download"),
+                  shiny::downloadButton(outputId = ns('Fig01'), label = "Figure")
+                )
+              )
             )
           )
         )
@@ -281,18 +271,25 @@ page_CertificationServer = function(id, rv) {
       )
     }, ignoreNULL = TRUE)
 
-    output$cert_mean <- shiny::renderText({
-      getValue(rv, c("Certification_processing","cert_mean"))
-    })
-
-    output$cert_sd <- shiny::renderText({
-      getValue(rv, c("Certification_processing","cert_sd"))
-    })
+    # output$cert_mean <- shiny::renderText({
+    #   getValue(rv, c("Certification_processing","cert_mean"))
+    # })
+    #
+    # output$cert_sd <- shiny::renderText({
+    #   getValue(rv, c("Certification_processing","cert_sd"))
+    # })
 
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       shiny::req(dat())
-      CertValPlot(data = dat(), annotate_id="annotate_id" %in% input$C1_opt, filename_labels="filename_labels" %in% input$C1_opt)
+      #browser()
+      CertValPlot(
+        data = dat(),
+        annotate_id = "annotate_id" %in% input$C1_opt,
+        filename_labels = "filename_labels" %in% input$C1_opt,
+        show_legend = "show_legend" %in% input$C1_opt,
+        dp = rv$a_p()[as.character(dat()[1,"analyte"])]
+      )
     }, height = shiny::reactive({input$Fig01_height}), width = shiny::reactive({input$Fig01_width}))
 
     CertValPlot_list <- shiny::reactive({
@@ -301,7 +298,12 @@ page_CertificationServer = function(id, rv) {
       list(
         "show" = TRUE,
         "fnc" = deparse(CertValPlot),
-        "call" = str2lang(paste0('CertValPlot(data=data, annotate_id=', "annotate_id" %in% input$C1_opt, ', filename_labels=', "filename_labels" %in% input$C1_opt, ')')),
+        "call" = str2lang(paste0(
+          'CertValPlot(data=data, annotate_id=', "annotate_id" %in% input$C1_opt,
+          ', filename_labels=', "filename_labels" %in% input$C1_opt,
+          ', show_legend=', "show_legend" %in% input$C1_opt,
+          ', dp=', rv$a_p()[as.character(dat()[1,"analyte"])], ')'
+        )),
         "Fig01_width" = input$Fig01_width,
         "Fig01_height" = input$Fig01_height
       )
@@ -319,7 +321,13 @@ page_CertificationServer = function(id, rv) {
       },
       content = function(file) {
         grDevices::pdf(file = file, width = input$Fig01_width/72, height = input$Fig01_height/72)
-          CertValPlot(data = dat(), annotate_id="annotate_id" %in% input$C1_opt, filename_labels="filename_labels" %in% input$C1_opt)
+          CertValPlot(
+            data = dat(),
+            annotate_id="annotate_id" %in% input$C1_opt,
+            filename_labels="filename_labels" %in% input$C1_opt,
+            show_legend = "show_legend" %in% input$C1_opt,
+            dp = rv$a_p()[as.character(dat()[1,"analyte"])]
+          )
         grDevices::dev.off()
       },
       contentType = "image/pdf"
@@ -370,10 +378,7 @@ page_CertificationServer = function(id, rv) {
         shiny::column(
           width = 12,
           shiny::HTML(paste0("The data is", ifelse(as.numeric(KS_p) < 0.05, " not ", " "), "normally distributed (KS_p=", KS_p, ").")),
-          shiny::HTML("Show "),
-          shiny::actionLink(inputId = session$ns("qqplot_link"), label = "QQ-Plot"),
-          shiny::HTML(" of Lab means."),
-          shiny::p()
+          shiny::HTML("Show "), shiny::actionLink(inputId = session$ns("qqplot_link"), label = "QQ-Plot"), shiny::HTML(" of Lab means.")
         )
       )
     })

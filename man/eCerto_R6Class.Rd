@@ -33,6 +33,8 @@ shiny::isolate(tmp$c_plot())
 tmp$c_lab_means()
 tmp$c_analyte
 tmp$c_analytes()
+tmp$c_lab_codes()
+tmp$a_p()
 shiny::isolate(tmp$c_analyte <- "Cu")
 tmp$c_lab_means()
 tmp$c_fltData()
@@ -58,6 +60,7 @@ tmp$c_fltData(recalc = TRUE)
 \item \href{#method-eCerto-c_lab_means}{\code{eCerto$c_lab_means()}}
 \item \href{#method-eCerto-c_analytes}{\code{eCerto$c_analytes()}}
 \item \href{#method-eCerto-c_lab_codes}{\code{eCerto$c_lab_codes()}}
+\item \href{#method-eCerto-a_p}{\code{eCerto$a_p()}}
 \item \href{#method-eCerto-c_fltData}{\code{eCerto$c_fltData()}}
 \item \href{#method-eCerto-clone}{\code{eCerto$clone()}}
 }
@@ -152,7 +155,7 @@ A plot.
 \if{html}{\out{<a id="method-eCerto-c_lab_means"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_lab_means}{}}}
 \subsection{Method \code{c_lab_means()}}{
-Compute the analyte means for .
+Compute the analyte means for a specific analyte.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_means(data, analyte_name)}\if{html}{\out{</div>}}
 }
@@ -187,13 +190,26 @@ A named character vector.
 \if{html}{\out{<a id="method-eCerto-c_lab_codes"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_lab_codes}{}}}
 \subsection{Method \code{c_lab_codes()}}{
-Return analyte names currently in apm.
+Return lab codes currently in C data.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_codes()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
 A named character vector.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-eCerto-a_p"></a>}}
+\if{latex}{\out{\hypertarget{method-eCerto-a_p}{}}}
+\subsection{Method \code{a_p()}}{
+Return current precision values for analytes.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$a_p()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A named numeric vector.
 }
 }
 \if{html}{\out{<hr>}}

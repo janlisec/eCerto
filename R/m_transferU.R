@@ -1,23 +1,15 @@
-#' @name m_transferU
-#' @aliases m_TransferUUI
-#' @aliases m_TransferUServer
-#'
-#' @title m_TransferU
-#'
-#' @description \code{m_TransferU} will provide a module to transfer the Uncertainty
-#'    data in the correct format to the 'materialtabelle'. After Certification data
-#'    (initiating the material table) and Homogeneity or Stability data has been uploaded,
-#'    it shows the possible columns of materialtabelle to transfer to.
-#'
+#' @title m_TransferU.
+#' @description \code{m_TransferU} will provide a module to transfer the
+#'     uncertainty data in the correct format to the 'materialtabelle'.
+#'     After Certification data (initiating the material table) and
+#'     Homogeneity or Stability data has been uploaded, it shows the
+#'     possible columns of materialtabelle to transfer to.
 #' @details not yet
-#'
 #' @param id Name when called as a module in a shiny app.
 #' @param dat Homogeneity or Stability data (reactive).
 #' @param mat_tab materialtabelle to be transferred to (reactive).
-#'
-#' @return
-#' A modified materialtabelle where values in specified U column are merged with U source.
-#'
+#' @return A modified materialtabelle where values in specified
+#'     U column are merged with U source.
 #' @examples
 #' if (interactive()) {
 #' mt <- data.frame("analyte"=LETTERS[1:6], "U1"=NA)
@@ -37,7 +29,6 @@
 #'  }
 #' )
 #' }
-#'
 #' @noRd
 #' @keywords internal
 m_TransferUUI = function(id) {
@@ -70,11 +61,11 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
     output$transfer <- shiny::renderUI({
 
       shiny::validate(shiny::need(dat(), message = paste("Please upload", switch(st(), "S"="stability", "homogeneity"), "data")))
-      shiny::validate(shiny::need(mat_tab(), message = "Please upload certification data to enable transfer of uncertainty values"))
+      shiny::validate(shiny::need(mat_tab(), message = "Please upload certification data to initiate Tab.C3"))
 
       cc <- attr(mat_tab(), "col_code")
       test <- nrow(cc)>0 && any(substr(cc[, "ID"], 1, 1) == "U")
-      shiny::validate(shiny::need(test, message = "Please specify a new U column in material table to transfer uncertainty values"))
+      shiny::validate(shiny::need(test, message = "Please specify a new U column in Tab.C3 to transfer uncertainty values"))
 
       h_choices <- switch(st(), "H"=levels(dat()[,"H_type"]), "H_simple"="hom", "S"="u_stab")
       u_choices <- cc[substr(cc[,"ID"],1,1)=="U","Name"]
@@ -82,7 +73,7 @@ m_TransferUServer = function(id, dat = shiny::reactive({NULL}), mat_tab = shiny:
         shiny::tagList(
           sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'"))),
           shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = '100%', selectize = TRUE, choices = h_choices),
-          shiny::selectInput(inputId = session$ns("U_cols"), label = "to material table column", width = '100%', selectize = TRUE, selected = u_choices[length(u_choices)], choices = u_choices),
+          shiny::selectInput(inputId = session$ns("U_cols"), label = "to Tab.C3 column", width = '100%', selectize = TRUE, selected = u_choices[length(u_choices)], choices = u_choices),
           shiny::actionButton(inputId = session$ns("transfer_button"), label = "Transfer Now!")
         )
       } else {

@@ -27,6 +27,8 @@
 #' tmp$c_lab_means()
 #' tmp$c_analyte
 #' tmp$c_analytes()
+#' tmp$c_lab_codes()
+#' tmp$a_p()
 #' shiny::isolate(tmp$c_analyte <- "Cu")
 #' tmp$c_lab_means()
 #' tmp$c_fltData()
@@ -92,7 +94,7 @@ eCerto <- R6::R6Class(
         # this case needs to be taken care of here
         if (length(keys)>=2 && is.reactivevalues(purrr::pluck(private$..eData, !!!keys[-length(keys)]))) {
           #browser()
-          # [JL20230118_the outcommented version stopped working after purr update and...]
+          # [JL20230118_the out commented version stopped working after purr update and...]
           #purrr::pluck(private$..eData, !!!keys) <- NULL
           # [...was replaced by this version]
           purrr::pluck(private$..eData, !!!keys[-length(keys)])[[keys[length(keys)]]] <- NULL
@@ -114,7 +116,7 @@ eCerto <- R6::R6Class(
       }
       eCerto:::CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
     },
-    #' @description Compute the analyte means for .
+    #' @description Compute the analyte means for a specific analyte.
     #' @param data data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.
     #' @param analyte_name Specify the analyte you want the lab mean statistics for.
     #' @return A data.frame of lab means.
@@ -139,12 +141,19 @@ eCerto <- R6::R6Class(
     c_analytes = function() {
       shiny::isolate(sapply(private$..eData[["General"]][["apm"]], function(x) {x[["name"]]}))
     },
-    #' @description Return analyte names currently in apm.
+    #' @description Return lab codes currently in C data.
     #' @return A named character vector.
     c_lab_codes = function() {
       fn <- shiny::isolate(private$..eData[["Certification"]][["data"]])
       fn <- fn[!duplicated(fn[,"Lab"]),c("Lab","File")]
       out <- as.character(fn[,"File"]); names(out) <- fn[,"Lab"]
+      return(out)
+    },
+    #' @description Return current precision values for analytes.
+    #' @return A named numeric vector.
+    a_p = function() {
+      as <- shiny::isolate(private$..eData[["General"]][["apm"]])
+      out <- sapply(names(as), function(x) { as[[x]][["precision"]] })
       return(out)
     },
     #' @description Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
