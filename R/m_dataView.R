@@ -72,7 +72,7 @@ m_DataViewServer <- function(id, rv) {
       shiny::req(dataset_flt())
       df <- dataset_flt()
       # ensure that "Lab" is a factor
-      if (!is.factor(df[,"Lab"])) df[,"Lab"] <- factor(df[,"Lab"])
+      if (!is.factor(df[,"Lab"])) df[,"Lab"] <- factor(df[,"Lab"], levels = unique(df[,"Lab"]))
       fn <- rv$c_lab_codes()
       p <- getValue(rv, c("General","apm"))[[rv$c_analyte]][["precision"]]
       n_reps <- sort(unique(df$replicate))

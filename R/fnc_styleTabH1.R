@@ -31,7 +31,7 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
   # check if analyte is present in C modul
   if (!is.null(mt)) {
     style_x[,"style_analyte"] <- sapply(style_x[,"analyte"], function(x) {
-      ifelse(x %in% mt[,"analyte"], "black", "red")
+      ifelse(x %in% mt[,"analyte"], "", "red")
     })
   } else {
     style_x[,"style_analyte"] <- "red"
@@ -84,7 +84,7 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
       table = dt,
       columns = "P",
       target = "cell",
-      color = DT::styleInterval(cuts = 0.05, values = c("red","black")),
+      color = DT::styleInterval(cuts = 0.05, values = c("red","")),
       fontWeight = DT::styleInterval(cuts = 0.05, values = c("bold","normal"))
     )
     return(dt)

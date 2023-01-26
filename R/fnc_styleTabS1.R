@@ -17,7 +17,7 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
   }
   if (!is.null(mt)) {
     x[, "style_analyte"] <- sapply(x[, "analyte"], function(x) {
-      ifelse(x %in% mt[, "analyte"], "black", "red")
+      ifelse(x %in% mt[, "analyte"], "", "red")
     })
   } else {
     x[, "style_analyte"] <- "red"
