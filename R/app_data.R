@@ -131,7 +131,8 @@ test_Certification_Excel = function() {
       value = c(0.0504, 0.049, 4.37, 0.0512, 0.0563, 4.385, 0.0524, 0.0515, 4.34, 0.052, 0.0505, 4.388, 0.0452, 0.0529, 4.4048, 0.0435, 0.0527, 4.3802, 0.0472, 0.0482, 4.3907, 0.0456, 0.0478, 4.391),
       unit = rep(c("U", "kg/m2", "g/mL"), 8),
       S_flt = rep(FALSE, 24),
-      L_flt = rep(FALSE, 24)
+      L_flt = rep(FALSE, 24),
+      File = rep(c("File1", "File2"), each = 12)
     ),
     class = "data.frame", row.names = c(NA, 24L)
   )

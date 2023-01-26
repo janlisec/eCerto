@@ -29,6 +29,8 @@
 #' tmp$c_analytes()
 #' tmp$c_lab_codes()
 #' tmp$a_p()
+#' tmp$a_p("pooling")
+#' tmp$a_p("pooling")[tmp$c_analyte]
 #' shiny::isolate(tmp$c_analyte <- "Cu")
 #' tmp$c_lab_means()
 #' tmp$c_fltData()
@@ -149,11 +151,12 @@ eCerto <- R6::R6Class(
       out <- as.character(fn[,"File"]); names(out) <- fn[,"Lab"]
       return(out)
     },
-    #' @description Return current precision values for analytes.
-    #' @return A named numeric vector.
-    a_p = function() {
+    #' @description Return currently specified values of a type for all analytes.
+    #' @return A named vector.
+    a_p = function(val = c("precision", "precision_export", "pooling", "confirmed", "unit")) {
+      val <- match.arg(val)
       as <- shiny::isolate(private$..eData[["General"]][["apm"]])
-      out <- sapply(names(as), function(x) { as[[x]][["precision"]] })
+      out <- sapply(names(as), function(x) { as[[x]][[val]] })
       return(out)
     },
     #' @description Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
