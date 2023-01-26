@@ -108,21 +108,20 @@ page_HomogeneityServer = function(id, rv) {
     ns <- shiny::NS(id)
 
     # this is the local version of the homology data and parameters
-    homog <- shiny::reactive({getValue(rv, "Homogeneity")})
-    shiny::observeEvent(homog(), {
-      if(!is.null(homog())){
+    shiny::observeEvent(rv$e_present(), {
+      if (rv$e_present()["Homogeneity"]) {
         shiny::updateTabsetPanel(session = session, "HomogeneityPanel", selected = "loaded")
       } else {
-        # else if nothing is loaded, keep Panel empty
-        shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standBy")
+        message("[Homogeneity] Show empty panel")
+        shiny::updateTabsetPanel(session = session, "HomogeneityPanel", selected = "standby")
       }
     })
 
     # local version of input data table
     h_Data <- shiny::reactive({
-      shiny::req(homog()[["data"]])
+      shiny::req(getValue(rv, c("Homogeneity", "data")))
       # whatever range is loaded from excel can be checked and transformed in here
-      h_dat <- checkHdata(x = homog()[["data"]])
+      h_dat <- checkHdata(x = getValue(rv, c("Homogeneity", "data")))
       # update analyte select input (can be removed from App as selection is done in Tab.H1 by row)
       lev <- levels(interaction(h_dat[,"analyte"],h_dat[,"H_type"]))
       shiny::updateSelectInput(inputId="h_sel_analyt", label="Row selected in Tab.1", choices = lev, selected=lev[1])

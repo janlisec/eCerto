@@ -41,7 +41,7 @@ app_server <- function( input, output, session ) {
   # when a tab for an empty data set is selected --> jump to upload page
   shiny::observeEvent(input$navbarpage, {
     tP <- switch(input$navbarpage, "tP_certification"="Certification", "tP_homogeneity"="Homogeneity", "tP_stability"="Stability", NA)
-    if (tP %in% getValue(rv, c("modules")) && is.null(getValue(rv, c(tP, "uploadsource")))) to_startPage(session, value=tP)
+    if (tP %in% getValue(rv, c("modules")) && !rv$e_present()[tP]) to_startPage(session, value=tP)
   }, ignoreInit = TRUE)
 
   # when the user uploaded excel data for a module --> set focus on this page

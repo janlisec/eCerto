@@ -72,28 +72,7 @@ page_startServer = function(id, rv) {
 
     m_RDataexport_Server(id = "Rdataex", rv = rv)
 
-    rv_rdata <- m_RDataImport_Server(
-      id = "Rdatain",
-      modules = shiny::reactive({ getValue(rv, "modules") }),
-      uploadsources = shiny::reactive({
-        sapply(getValue(rv, "modules"), function(x) {
-          getValue(rv, c(x, "uploadsource"))
-        })
-      })
-    )
-
-    shiny::observeEvent(rv_rdata(),{
-      shiny::updateNavbarPage(
-        session = session,
-        inputId = "navbarpage",
-        selected = "tP_certification"
-      )
-      rv_rdatanames <- listNames(rv_rdata(), split = TRUE)
-      # overwrite
-      for (n in rv_rdatanames) {
-        setValue(rv, n, getValue(rv_rdata(), n))
-      }
-    }, ignoreNULL = TRUE)
+    m_RDataImport_Server(id = "Rdatain", rv = rv)
 
     # Restart App --------------------------------------------------------------
     # Open confirmation dialog

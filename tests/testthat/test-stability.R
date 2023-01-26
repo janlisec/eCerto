@@ -10,9 +10,7 @@ testthat::test_that(
         ),
         expr =  {
           eCerto::setValue(rv_test, c("Stability","data"), eCerto:::test_Stability_Excel() )
-          eCerto::setValue(rv_test, c("Stability","uploadsource"), "Excel")
           session$flushReact()
-          # testthat::expect_equal(input$certification_view,NULL)
           s_vals_cmp <- structure(
             list(
               analyte = structure(1:2, .Label = c("Mn", "Si"), class = "factor"),

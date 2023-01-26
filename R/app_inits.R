@@ -54,7 +54,6 @@ init_rv <- function() {
     # data input
     "Certification" = shiny::reactiveValues(
       "input_files" = NULL,
-      "uploadsource" = NULL,
       "data" = NULL
     ),
     # processing
@@ -69,7 +68,6 @@ init_rv <- function() {
         "Fig01_height" = NULL
       ),
       "stats" = NULL,
-      #"opt" = NULL,
       "mstats" = list(
         "show" = NULL,
         "data" = NULL
@@ -78,7 +76,6 @@ init_rv <- function() {
     "Homogeneity" = shiny::reactiveValues(
       # upload
       "input_files" = NULL,
-      "uploadsource" = NULL,
       "data" = NULL,
       # Processing
       "h_vals" = NULL,
@@ -87,7 +84,6 @@ init_rv <- function() {
     ),
     "Stability" = shiny::reactiveValues(
       "input_files" = NULL,
-      "uploadsource" = NULL,
       "data" = NULL,
       "s_vals" = NULL
     )

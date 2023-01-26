@@ -9,17 +9,16 @@ testthat::test_that(
     # setting the config file to 'default' ensures that messages are suppressed because
     # eCerto is set to silent
     Sys.setenv("R_CONFIG_ACTIVE" = "default")
-
+    rv <- eCerto$new()
     shiny::testServer(
       app = eCerto:::m_RDataImport_Server,
-      args = list(
-        modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
-        uploadsources = shiny::reactiveVal(NULL)
-      ),
+      args = list(rv = rv),
       expr = {
         session$setInputs(in_file_ecerto_backup = rdat)
+        session$flushReact()
+        rvreturn(eCerto:::fnc_load_RData(x = rdata()))
         # 'rvreturn()' is a reactiveValue object within the tested model that contains the uploaded data
-        testthat::expect_equal(sort(eCerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability" ))
+        testthat::expect_equal(sort(eCerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability"))
         testthat::expect_equal(eCerto::getValue(rvreturn(), c("General","user")),"JL")
         # because time_stamp changes every runtime, exclude it for testing as follows
         general <- eCerto::getValue(rvreturn(),"General")
@@ -40,13 +39,11 @@ testthat::test_that(
       name = "Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx",
       datapath = system.file(package = "eCerto","extdata","Ergebnisblatt_BAM-M321_AMAG_Nasschemie_m.xlsx")
     )
+    rv <- eCerto$new()
     suppressMessages(
       shiny::testServer(
         app = eCerto:::m_RDataImport_Server,
-        args = list(
-          modules = shiny::reactiveVal(c("Certification","Stability","Homogeneity")),
-          uploadsources = shiny::reactiveVal(NULL)
-        ),
+        args = list(rv = rv),
         expr = {
           session$setInputs(in_file_ecerto_backup = excel)
           testthat::expect_error(rdata(),"Only RData allowed.")
@@ -67,14 +64,11 @@ testthat::test_that(
     # setting the config file to 'dev' ensures that messages are shown because
     # eCerto is set to silent = FALSE
     Sys.setenv("R_CONFIG_ACTIVE" = "dev")
+    rv <- eCerto$new()
     shiny::testServer(
       app = eCerto:::m_RDataImport_Server,
-      args = list(
-        modules = shiny::reactiveVal(c("Certification", "Stability", "Homogeneity")),
-        uploadsources = shiny::reactiveVal(list("Certification" = "Excel", "Homogeneity" = NULL, "Stability" = NULL))
-      ),
+      args = list(rv = rv),
       expr = {
-        #browser()
         testthat::expect_message(
           session$setInputs(in_file_ecerto_backup = rdat),
           "Found existing data"

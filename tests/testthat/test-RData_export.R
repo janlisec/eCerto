@@ -35,7 +35,6 @@ testthat::test_that(
 #     rv_test <- eCerto::eCerto$new(eCerto:::init_rv())
 #     shiny::isolate({setValue(rv_test, c("Certification","data"), test_Certification_Excel()) })
 #     shiny::isolate({setValue(rv_test, c("General", "user"), "FK4") })
-#     shiny::isolate({set_uploadsource(rv_test, "Certification", uploadsource = "Excel") })
 #
 #     # suppressMessages(
 #     shiny::testServer(

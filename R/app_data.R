@@ -110,7 +110,7 @@ test_homog <- function() {
       unit = rep(c("mM/L", "mg/mL"), each = 45),
       File = rep("Homog_test.xlsx", times = 90)
     ), row.names = c(NA, 90L), class = "data.frame"),
-    uploadsource = "Excel", h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_Fig_width = NULL)
+    h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_Fig_width = NULL)
 }
 
 #' @title test_Certification_Excel.

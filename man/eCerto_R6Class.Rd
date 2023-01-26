@@ -35,6 +35,9 @@ tmp$c_analyte
 tmp$c_analytes()
 tmp$c_lab_codes()
 tmp$a_p()
+tmp$a_p("pooling")
+tmp$a_p("pooling")[tmp$c_analyte]
+shiny::isolate(tmp$e_present())
 shiny::isolate(tmp$c_analyte <- "Cu")
 tmp$c_lab_means()
 tmp$c_fltData()
@@ -61,6 +64,7 @@ tmp$c_fltData(recalc = TRUE)
 \item \href{#method-eCerto-c_analytes}{\code{eCerto$c_analytes()}}
 \item \href{#method-eCerto-c_lab_codes}{\code{eCerto$c_lab_codes()}}
 \item \href{#method-eCerto-a_p}{\code{eCerto$a_p()}}
+\item \href{#method-eCerto-e_present}{\code{eCerto$e_present()}}
 \item \href{#method-eCerto-c_fltData}{\code{eCerto$c_fltData()}}
 \item \href{#method-eCerto-clone}{\code{eCerto$clone()}}
 }
@@ -203,13 +207,35 @@ A named character vector.
 \if{html}{\out{<a id="method-eCerto-a_p"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-a_p}{}}}
 \subsection{Method \code{a_p()}}{
-Return current precision values for analytes.
+Return currently specified values of a type for all analytes.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$a_p()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$a_p(
+  val = c("precision", "precision_export", "pooling", "confirmed", "unit")
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{val}}{A character value indicating the item of the apm list to be extracted}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A named vector.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-eCerto-e_present"></a>}}
+\if{latex}{\out{\hypertarget{method-eCerto-e_present}{}}}
+\subsection{Method \code{e_present()}}{
+Return modules with existing data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$e_present()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-A named numeric vector.
+A named logical vector.
 }
 }
 \if{html}{\out{<hr>}}

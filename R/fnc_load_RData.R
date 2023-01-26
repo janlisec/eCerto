@@ -38,7 +38,10 @@ fnc_load_RData <- function(x = NULL) {
           "Certification_processing.normality_statement",
           "Certification_processing.precision",
           "Certification_processing.boxplot",
-          "Homogeneity.h_precision"
+          "Homogeneity.h_precision",
+          "Certification.uploadsource",
+          "Homogeneity.uploadsource",
+          "Stability.uploadsource"
         )
         if (any(xnames %in% deprecated_elements)) {
           xnames <- xnames[!xnames %in% deprecated_elements]
@@ -67,13 +70,7 @@ fnc_load_RData <- function(x = NULL) {
           xnames <- xnames[xnames %in% rvnames]
         }
         for (i in strsplit(xnames, split = ".", fixed = TRUE)) {
-          # set 'uploadsource' to "RData" if something was uploaded from saved RData
-          if (i[length(i)] == "uploadsource" && !is.null(x[[i]])) {
-            set_uploadsource(rv = rv, m = i[1], uploadsource = "RData")
-          } else {
-            # if current element to-be-inserted is not "uploadsource" --> proceed
-            setValue(rv, i, x[[i]])
-          }
+          setValue(rv, i, x[[i]])
         }
         # reset time_stamp with current
         # $$ToDo think if this is really desirable
@@ -87,8 +84,6 @@ fnc_load_RData <- function(x = NULL) {
         if (!silent) message("RDataImport_Server: Cert data transfered")
         setValue(rv,c("Certification","data"),x[["Certification"]][["data_input"]])
         setValue(rv,c("Certification","input_files"),x[["Certification"]][["input_files"]])
-        # setValue(rv,c("Certification","uploadsource"),value = "RData")
-        set_uploadsource(rv = rv, m = "Certification", uploadsource = "RData")
         # save
         setValue(rv,c("General","user"), x[["Certification"]][["user"]])
         setValue(rv,c("General","study_id"), x[["Certification"]][["study_id"]])
@@ -97,7 +92,6 @@ fnc_load_RData <- function(x = NULL) {
         setValue(rv, c("Certification_processing","cert_sd"), x[["Certification"]][["cert_sd"]])
         setValue(rv, c("Certification_processing","CertValPlot"), x[["Certification"]][["CertValPlot"]])
         setValue(rv, c("Certification_processing","stats"), x[["Certification"]][["stats"]])
-        #setValue(rv, c("Certification_processing","opt"), x[["Certification"]][["opt"]])
         setValue(rv, c("Certification_processing","mstats"), x[["Certification"]][["mstats"]])
         # materialtabelle
         mt <- x[["Certification"]][["cert_vals"]]
@@ -114,7 +108,6 @@ fnc_load_RData <- function(x = NULL) {
       if ("Homogeneity" %in% names(x) && !is.null(x$Homogeneity)) {
         if (!silent) message("RDataImport_Server: Homog data transfered")
         setValue(rv, c("Homogeneity","data"), x[["Homogeneity"]][["h_dat"]])
-        set_uploadsource(rv = rv, m = "Homogeneity", uploadsource = "RData")
         setValue(rv, c("Homogeneity","input_files"), x[["Homogeneity"]][["h_file"]])
         # Processing
         setValue(rv, c("Homogeneity","h_vals"), x[["Homogeneity"]][["h_vals"]])
@@ -125,7 +118,6 @@ fnc_load_RData <- function(x = NULL) {
         if (!silent) message("RDataImport_Server: Stab data transfered")
         setValue(rv, c("Stability","input_files"), x[["Stability"]][["s_file"]])
         setValue(rv, c("Stability","data"), x[["Stability"]][["s_dat"]])
-        set_uploadsource(rv = rv, m = "Stability", uploadsource = "RData")
         setValue(rv, c("Stability","s_vals"), x[["Stability"]][["s_vals"]])
       }
       setValue(rv, c("General","time_stamp"), Sys.time())

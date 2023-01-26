@@ -16,7 +16,6 @@
 #'  server = function(input, output, session) {
 #'    rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
 #'    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
-#'    shiny::isolate({eCerto::setValue(rv, c("Stability","uploadsource"), "Excel" )})
 #'    eCerto:::page_StabilityServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -114,8 +113,13 @@ page_StabilityServer <- function(id, rv) {
       }
     })
 
-    shiny::observeEvent(getValue(rv, c("Stability", "uploadsource")), {
-      shiny::updateTabsetPanel(session = session,"StabilityPanel", selected = "loaded")
+    shiny::observeEvent(rv$e_present(), {
+      if (rv$e_present()["Stability"]) {
+        shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "loaded")
+      } else {
+        message("[Stability] Show empty panel")
+        shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "standby")
+      }
     })
 
     # the complete data table of stability data

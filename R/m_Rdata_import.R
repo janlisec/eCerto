@@ -4,24 +4,19 @@
 #'   files for certification trial data.
 #'
 #' @param id Name when called as a module in a shiny app.
-#' @param modules c("Certification", "Homogeneity", "Stability").
-#' @param uploadsources Indicates the uploadsource of each \code{module}. For example
-#'     if Certification has been uploaded, the argument would look like
-#'     reactiveVal(list("Certification"="Excel", "Homogeneity"=NULL, "Stability"=NULL)).
+#' @param rv The eCerto object.
 #'
 #' @return A reactive object `rdata`, but returned only for notifying the side effect
 #'     to notiy the navbarpanel to update.
 #'
 #' @examples
 #' if (interactive()) {
+#' rv <- eCerto$new()
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(eCerto:::m_RDataImport_UI(id = "test")),
 #'  server = function(input, output, session) {
-#'    eCerto:::m_RDataImport_Server(
-#'      id = "test",
-#'      modules = reactiveVal(c("Certification","Stability","Homogeneity")),
-#'      uploadsources = reactiveVal(list("Certification" = "Excel"))
-#'    )
+#'    eCerto:::m_RDataImport_Server(id = "test", rv = rv)
+#'    shiny::observeEvent(rv$e_present(), { print(rv$e_present()) })
 #'  }
 #' )
 #' }
@@ -43,7 +38,7 @@ m_RDataImport_UI <- function(id) {
 
 #' @noRd
 #' @keywords internal
-m_RDataImport_Server = function(id, modules, uploadsources) {
+m_RDataImport_Server = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
@@ -58,7 +53,7 @@ m_RDataImport_Server = function(id, modules, uploadsources) {
       file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
       shiny::validate(
         shiny::need(tolower(file.type) == "rdata","Only RData allowed."),
-        shiny::need(length(file.type) == 1,"Please select only one RData file.")
+        shiny::need(length(file.type) == 1, "Please select only one RData file.")
       )
       file.type <- "RData"
       load_envir <- new.env()
@@ -75,7 +70,7 @@ m_RDataImport_Server = function(id, modules, uploadsources) {
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
     shiny::observeEvent(rdata(), {
-      test <- sapply(modules(), function(x) {!is.null(uploadsources()[[x]])}, simplify = "array")
+      test <- rv$e_present()
       if (any(test)){
         if (!silent) message("[RDataImport] Found existing data. Overwrite?")
         if (!is.null(shiny::getDefaultReactiveDomain())) {
@@ -109,13 +104,18 @@ m_RDataImport_Server = function(id, modules, uploadsources) {
     })
 
     shiny::observeEvent(continue(), {
-      rv <- fnc_load_RData(x = rdata())
+      tmp <- fnc_load_RData(x = rdata())
       continue(NULL)
-      #browser()
-      rvreturn(rv)
+      rvreturn(tmp)
     }, ignoreNULL = TRUE)
 
-    return(rvreturn)
+    shiny::observeEvent(rvreturn(),{
+      rv_rdatanames <- listNames(rvreturn(), split = TRUE)
+      # overwrite
+      for (n in rv_rdatanames) {
+        setValue(rv, n, getValue(rvreturn(), n))
+      }
+    }, ignoreNULL = TRUE)
 
   })
 

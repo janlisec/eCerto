@@ -23,7 +23,7 @@
 #'  server = function(input, output, session) {
 #'    rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
 #'    eCerto:::m_ExcelUpload_Server(id = "test", rv = rv)
-#'    shiny::observeEvent(getValue(rv, c("Certification", "uploadsource")), { print(getValue(rv, c("Certification", "uploadsource"))) })
+#'    shiny::observeEvent(rv$e_present(), { print(rv$e_present()) })
 #'  }
 #' )
 #' }
@@ -81,28 +81,24 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    # remeber locally what has been uploaded already from Excel
-    uploaded_datasets <- shiny::reactiveVal("")
-
     # Certification, Homogeneity, Stability -----------------------------------
-    shiny::updateSelectInput(
-      inputId = "moduleSelect",
-      session = session,
-      choices = getValue(rv, "modules")
-    )
+    shiny::updateSelectInput(inputId = "moduleSelect", session = session, choices = getValue(rv, "modules"))
 
-    exl_fmt <- shiny::reactive({input$moduleSelect})
+    # rename input into a reactive
+    exl_fmt <- shiny::reactive({ input$moduleSelect })
 
     # monitor the status of the file selector
     current_file_input <- shiny::reactiveVal(NULL)
 
     # Excel-File-Input wrapped in renderUI to allow triggering some JS and empty the fileInput widget
     output$inp_file <- shiny::renderUI({
+      shiny::req(exl_fmt())
+      message("[ExcelUpload] render upload UI")
       current_file_input(NULL)
       shinyjs::hideElement(id = "sheet_number")
       shinyjs::hideElement(id = "file_name")
       shinyjs::hideElement(id = "btn_load")
-      if (exl_fmt() %in% uploaded_datasets()) {
+      if (rv$e_present()[exl_fmt()]) {
         shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
       } else {
         shinyjs::html(id = "info_msg", html = "")
@@ -111,7 +107,6 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
         shiny::fileInput(
           inputId = session$ns("excel_file"),
           multiple = exl_fmt()=="Certification",
-          #label = "Select Excel (xlsx)",
           label = shiny::tagList("Select Excel, ", shiny::actionLink(inputId = session$ns("moduleUploadHelp"), label = "example")),
           accept = "xlsx"
         )
@@ -280,19 +275,12 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
         s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
         out$data <- s_dat
       }
-
     }, ignoreInit = TRUE)
-
-    shiny::observeEvent(out$data, {
-      tmp <- uploaded_datasets()
-      tmp <- c(tmp, exl_fmt())
-      uploaded_datasets(tmp)
-    })
 
     # Action link for help on Excel format for upload
     shiny::observeEvent(input$moduleUploadHelp, {
       switch(
-        input$moduleSelect,
+        exl_fmt(),
         "Certification" = show_help("certification_dataupload"),
         "Homogeneity" = show_help("homogeneity_dataupload"),
         "Stability" = show_help("stability_dataupload")
@@ -301,20 +289,15 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
 
     # when Excel was uploaded with LOAD-Button...
     shiny::observeEvent(out$data, {
-      if (!silent) message("[page_start] (Excel Upload) set rv.Data; set rv.Uploadsource")
-      ex_frm <- input$moduleSelect
-      setValue(rv, c(ex_frm, "data"), out$data)
-      setValue(rv, c(ex_frm, "input_files"), out$input_files)
-      setValue(rv, c(ex_frm, "uploadsource"), value = "Excel")
-      if (ex_frm=="Certification") {
+      if (!silent) message("[page_start-ExcelUpload] set rv.Data")
+      setValue(rv, c(exl_fmt(), "data"), out$data)
+      setValue(rv, c(exl_fmt(), "input_files"), out$input_files)
+      if (exl_fmt()=="Certification") {
         # (re)initiate apm and materialtabelle
         setValue(rv, c("General","apm"), init_apm(getValue(rv, c("Certification", "data"))))
         setValue(rv, c("General","materialtabelle"), init_materialtabelle(levels(getValue(rv, c("Certification", "data"))[,"analyte"])))
       }
     }, ignoreInit = TRUE)
-
-    # return data as uploaded from Excel
-    #return(out)
 
   })
 }

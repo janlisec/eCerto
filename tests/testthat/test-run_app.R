@@ -13,24 +13,27 @@ init_vals <- app$get_values()
 testthat::test_that(
   desc = "modules/components are named consistently such that function 'to_startPage' still works",
   code = {
-
     # check if modules/components are named such that function 'to_startPage' still works
     testthat::expect_true("Start-excelfile-moduleSelect" %in% names(init_vals$input))
+  }
+)
 
+testthat::test_that(
+  desc = "Check that test data load button is still present and with consistent name",
+  code = {
+    # check if modules/components are named such that function 'to_startPage' still works
+    testthat::expect_true("Start-load_test_data" %in% names(init_vals$input))
   }
 )
 
 testthat::test_that(
   desc = "R6 object is initialized empty and filled with test data upon user click",
   code = {
-
     # check if empty R6 object was initialized
     testthat::expect_true(identical(init_vals$export$`rv`$c_analytes(), list()))
-
     # check if loading test data works
     app$click(input = "Start-load_test_data")
     test <- app$get_values(export = "rv")$export$rv
     testthat::expect_equal(unname(test$c_analytes()), c("X", "Y", "Z"))
-
   }
 )

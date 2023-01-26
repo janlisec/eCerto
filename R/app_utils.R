@@ -83,38 +83,6 @@ xlsxSheetNames <- function(filepath) {
   return(a[[1]])
 }
 
-#' @title set_uploadsource.
-#' @description Set source of upload for an element. This is kept to trigger a re-focus of the App
-#'     to a specific subpage should new data be uploaded for this module.#'
-#' @param rv The eCerto object.
-#' @param m Name of a module (one of "Certification", "Homogeneity", "Stability").
-#' @param uploadsource The source of upload (either "RData" or "Excel").#'
-#' @return Nothing. Will update the eCerto object field 'uploadsource'.
-#' @keywords internal
-#' @noRd
-#' @examples
-#' if (interactive()) {
-#'   rv <- eCerto:::init_rv()
-#'   set_uploadsource(rv, "Certification", "Excel")
-#' }
-set_uploadsource <- function(rv, m, uploadsource) {
-  stopifnot(is.character(uploadsource)) # only character
-  stopifnot(uploadsource %in% c("RData", "Excel"))
-  # Has RData been uploaded before?
-  if (uploadsource == "RData") {
-    u <- getValue(rv, c(m, "uploadsource"))
-    if (!is.null(u) && startsWith(u, "RData")) {
-      # what number was last upload
-      idx <- as.numeric(gsub("RData-", "", u))
-    } else {
-      # if previous was 'Excel', restart counter
-      idx <- 0
-    }
-    uploadsource <- paste0("RData-", idx + 1)
-  }
-  setValue(rv, c(m, "uploadsource"), uploadsource)
-}
-
 #' @title pn.
 #' @description Format a number by rounding to a precision in same width as
 #'   character using scientific notation for numbers < precision and rounding
