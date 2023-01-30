@@ -60,7 +60,7 @@ m_reportServer <- function(id, rv) {
 
     output$AnalyteReport <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", rv$c_analyte, '.', 'html'
+        paste0(getValue(rv, c("General","study_id")), "_", rv$cur_an, '.', 'html'
           # switch(
           #   input$output_file_format,
           #   PDF = 'pdf',
@@ -90,7 +90,7 @@ m_reportServer <- function(id, rv) {
                 "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
                 "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
                 "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
-                "selected_tab" = rv$c_analyte,
+                "selected_tab" = rv$cur_an,
                 "logo_file" = logofile
               ),
               envir = new.env(parent = globalenv())

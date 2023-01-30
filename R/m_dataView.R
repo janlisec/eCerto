@@ -16,10 +16,9 @@
 #'       rv <- eCerto:::test_rv()
 #'       # set S_flt and L_flt for testing
 #'       shiny::isolate(apm <- getValue(rv, c("General", "apm")))
-#'       apm[[rv$c_analyte]][["sample_filter"]] <- 4
-#'       apm[[rv$c_analyte]][["lab_filter"]] <- "L1"
+#'       apm[["Si"]][["sample_filter"]] <- 4
+#'       apm[["Si"]][["lab_filter"]] <- "L1"
 #'       shiny::isolate(setValue(rv, c("General", "apm"), apm))
-#'       gargoyle::init("update_c_analyte")
 #'       m_DataViewServer(id = "test", rv = rv)
 #'     }
 #'   )
@@ -58,10 +57,9 @@ m_DataViewServer <- function(id, rv) {
 
     # prepare a analyte specific (filtered) version of the input data table
     dataset_flt <- shiny::reactive({
-      gargoyle::watch("update_c_analyte")
       df <- getValue(rv, c("Certification","data"))
       apm <- getValue(rv, c("General","apm"))
-      an <- rv$c_analyte
+      an <- rv$cur_an
       df <- df[df[,"analyte"]==an,]
       if (!"File" %in% colnames(df)) df <- cbind(df, "File"="")
       return(df)
@@ -74,7 +72,7 @@ m_DataViewServer <- function(id, rv) {
       # ensure that "Lab" is a factor
       if (!is.factor(df[,"Lab"])) df[,"Lab"] <- factor(df[,"Lab"], levels = unique(df[,"Lab"]))
       fn <- rv$c_lab_codes()
-      p <- getValue(rv, c("General","apm"))[[rv$c_analyte]][["precision"]]
+      p <- getValue(rv, c("General","apm"))[[rv$cur_an]][["precision"]]
       n_reps <- sort(unique(df$replicate))
       data <- plyr::ldply(split(df, df$Lab), function(x) {
         out <- rep(NA, length(n_reps))
@@ -111,7 +109,7 @@ m_DataViewServer <- function(id, rv) {
         x <- dataset_flt()[, c("ID", "Lab", "value", "unit", "replicate", "File")]
         if (!input$data_view_file) x <- x[,-which(colnames(x)=="File")]
       }
-      styleTabC0(x = x, ap=getValue(rv, c("General","apm"))[[rv$c_analyte]], type=type)
+      styleTabC0(x = x, ap=getValue(rv, c("General","apm"))[[rv$cur_an]], type=type)
     })
 
   })

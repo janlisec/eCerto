@@ -92,20 +92,26 @@ page_startServer = function(id, rv) {
       shiny::removeModal()
     })
 
+    # helper function
+    load_test_data <- function() {
+      rv_test <- fnc_load_RData(x = eCerto::CRM001)
+      rv_test_names <- listNames(rv_test, split = TRUE)
+      rv_name <- listNames(rv, split = TRUE)
+      if (identical(rv_test_names, rv_name)) {
+        for (n in rv_test_names) {
+          setValue(rv, n, getValue(rv_test, n))
+        }
+        # set current analyte to trigger C Modul elements
+        rv$cur_an <- unname(rv$a_p("name")[1])
+      } else {
+        message("Probably the format of 'rv' has changed. Please update 'data/CRM001.rda'")
+      }
+    }
     # Load Test Data -----------------------------------------------------------
     shiny::observeEvent(input$load_test_data, {
       # check if data was already uploaded or this is a new session
       if (all(sapply(getValue(rv, "modules"), function(x) { is.null(getValue(rv, c(x, "data"))) }))) {
-        rv_test <- fnc_load_RData(x = eCerto::CRM001)
-        rv_test_names <- listNames(rv_test, split = TRUE)
-        rv_name <- listNames(rv, split = TRUE)
-        if (identical(rv_test_names, rv_name)) {
-          for (n in rv_test_names) {
-            setValue(rv, n, getValue(rv_test, n))
-          }
-        } else {
-          message("Probably the format of 'rv' has changed. Please update 'data/CRM001.rda'")
-        }
+        load_test_data()
       } else {
         shiny::showModal(shiny::modalDialog(
           easyClose = FALSE,
@@ -126,18 +132,8 @@ page_startServer = function(id, rv) {
       shiny::removeModal()
     })
     shiny::observeEvent(continue(), {
-      res <- eCerto::CRM001
-      rv_tmp <- fnc_load_RData(x = res)
-      shiny::updateNavbarPage(
-        session = session,
-        inputId = "navbarpage",
-        selected = "tP_certification"
-      )
+      load_test_data()
       continue(NULL)
-      rv_tmp_names <- listNames(rv_tmp, split = TRUE)
-      for (n in rv_tmp_names) {
-        setValue(rv, n, getValue(rv_tmp, n))
-      }
     }, ignoreNULL = TRUE)
 
     # Help section -------------------------------------------------------------

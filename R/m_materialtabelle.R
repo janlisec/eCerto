@@ -10,19 +10,18 @@
 #'@param rv eCerto R6 object, which includes a 'materialtabelle'.
 #'
 #'@return Nothing. Will update 'materialtabelle' in eCerto R6 object and trigger
-#'    an observer 'update_c_analyte' to be listened to externally.
+#'    other modules via setting rv$cur_an.
 #'
 #'@examples
 #'if (interactive()) {
 #'shiny::shinyApp(
 #'  ui = shiny::fluidPage(
+#'    shinyjs::useShinyjs(),
 #'    eCerto:::m_materialtabelleUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'  rv <- eCerto:::test_rv()
-#'  gargoyle::init("update_c_analyte")
-#'  eCerto:::m_materialtabelleServer(id = "test", rv=rv)
-#'  observeEvent(gargoyle::watch("update_c_analyte"), {print(rv$c_analyte)}, ignoreInit=TRUE)
+#'  rv <- eCerto:::test_rv("SR3")
+#'  eCerto:::m_materialtabelleServer(id = "test", rv = rv)
 #'  }
 #')
 #'}
@@ -92,12 +91,6 @@ m_materialtabelleServer <- function(id, rv) {
     silent <- get_golem_config("silent")
     ns <- shiny::NS(id)
 
-    # analyte name of the currently selected row of mat_tab
-    c_analyte <- shiny::reactiveVal(NULL)
-    shiny::observeEvent(gargoyle::watch("update_c_analyte"), {
-      c_analyte(rv$c_analyte)
-    })
-
     # use err_txt to provide error messages to the user
     err_txt <- shiny::reactiveVal(NULL)
     shiny::observeEvent(err_txt(), {
@@ -106,8 +99,8 @@ m_materialtabelleServer <- function(id, rv) {
     }, ignoreNULL = TRUE)
 
     pooling <- shiny::reactive({
-      shiny::req(c_analyte())
-      getValue(rv, c("General","apm"))[[c_analyte()]][["pooling"]]
+      shiny::req(rv$cur_an)
+      getValue(rv, c("General","apm"))[[rv$cur_an]][["pooling"]]
     })
 
     # helper function to remove unused user columns
@@ -352,7 +345,7 @@ m_materialtabelleServer <- function(id, rv) {
 
     # data frame of selected analyte
     c_fltData <- shiny::reactive({
-      shiny::req(getValue(rv,c("Certification","data")), getValue(rv,c("General","apm")), c_analyte())
+      shiny::req(getValue(rv,c("Certification","data")), getValue(rv,c("General","apm")), rv$cur_an)
       rv$c_fltData(recalc=TRUE)
     })
 
@@ -501,11 +494,10 @@ m_materialtabelleServer <- function(id, rv) {
           message("input$matreport_rows_selected - setting selected_row_idx")
           selected_row_idx$row <- i
         } else {
-          if (is.null(rv$c_analyte) || rv$c_analyte!=an) {
-            message("input$matreport_rows_selected - setting rv$c_analyte")
+          if (is.null(rv$cur_an) || rv$cur_an != an) {
+            message("[materialtabelle] setting rv$cur_an")
             # set current analyte in rv to trigger calculation of lab_means, c_mean, c_sd etc.
-            rv$c_analyte <- an
-            gargoyle::trigger("update_c_analyte")
+            rv$cur_an <- an
           }
         }
       }

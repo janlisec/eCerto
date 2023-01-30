@@ -8,15 +8,10 @@ testthat::test_that(
         app = eCerto:::m_materialtabelleServer,
         args = list(rv = rv),
         expr = {
-          #browser()
-          gargoyle::init("update_c_analyte")
-          #session$setInputs(pooling=FALSE) # needs to be set to trigger events ???
           mt <- getValue(rv, c("General","materialtabelle"))
           testthat::expect_equal(unname(rv$c_analytes()), c("Si","Fe","Cu"))
           testthat::expect_equal(nrow(mt), 3)
           testthat::expect_equal(colnames(mt), c("analyte", "mean", "cert_val", "sd", "n", "u_char", "u_com", "k", "U", "U_abs", "unit"))
-          # set the current analyte to start calculation
-          c_analyte(rv$c_analyte)
           testthat::expect_equal(cert_sd(), 0.004331029)
           testthat::expect_equal(cert_mean(), 0.0484375)
         }

@@ -15,8 +15,6 @@
 #'
 #' @return nothing
 #'
-#' @importFrom gargoyle init watch
-#'
 #' @examples
 #' if (interactive()) {
 #' shiny::shinyApp(
@@ -25,7 +23,7 @@
 #'    eCerto:::page_CertificationUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- eCerto:::test_rv()
+#'    rv <- eCerto:::test_rv("SR3")
 #'    eCerto:::page_CertificationServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -184,8 +182,6 @@ page_CertificationServer = function(id, rv) {
 
   shiny::moduleServer(id, function(input, output, session) {
 
-    gargoyle::init("update_c_analyte")
-
     # Materialtabelle is embedded in Certification-UI, that's why it is here
     m_materialtabelleServer(id = "mat_cert", rv = rv)
 
@@ -198,8 +194,8 @@ page_CertificationServer = function(id, rv) {
     m_reportServer(id = "report", rv = rv)
 
     selected_tab <- shiny::reactiveVal(NULL)
-    shiny::observeEvent(gargoyle::watch("update_c_analyte"), {
-      selected_tab(rv$c_analyte)
+    shiny::observeEvent(rv$cur_an, {
+      selected_tab(rv$cur_an)
     }, ignoreInit = TRUE)
 
     shiny::observeEvent(getValue(rv, c("Certification", "data")), {
@@ -220,6 +216,8 @@ page_CertificationServer = function(id, rv) {
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactive({
       shiny::req(selected_tab())
+      #shiny::req(rv$cur_an)
+      #browser()
       return(c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[selected_tab()]]))
     })
 
@@ -336,10 +334,6 @@ page_CertificationServer = function(id, rv) {
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
       shiny::req(dat())
-      #getValue(rv, c("General","apm"))
-      #gargoyle::watch("update_lab_means")
-      #shiny::validate(shiny::need(expr = rv$c_analyte==selected_tab(), message = "analyte selection is inconsistent"))
-      #lab_means <- rv$c_lab_means(data = rv$c_fltData(recalc = TRUE), analyte_name = rv$c_analyte)
       lab_means <- rv$c_lab_means(data=dat(), analyte_name=selected_tab())
       out <- data.frame(
         lab_means,
@@ -392,7 +386,7 @@ page_CertificationServer = function(id, rv) {
     })
     output$qqplot <- shiny::renderPlot({
       y <- overview_stats_pre()[, "mean"]
-      stats::qqnorm(y = y, main = paste("QQ plot for analyte", rv$c_analyte))
+      stats::qqnorm(y = y, main = paste("QQ plot for analyte", rv$cur_an))
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
 

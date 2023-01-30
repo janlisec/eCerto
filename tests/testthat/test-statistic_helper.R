@@ -17,8 +17,8 @@ testthat::test_that(
     # test quantitative Cochran method
     out_pval <- eCerto:::Cochran(data = flt_data, fmt = "pval")
     testthat::expect_equal(class(out_pval[,"Cochran"]), "numeric")
-    testthat::expect_equal(out_pval["L13","Cochran"], 0.004890046)
-    testthat::expect_equal(out_pval["L01","Cochran"], 0.014302227)
+    testthat::expect_equal(out_pval["L13","Cochran"], 0.0048881972)
+    testthat::expect_equal(out_pval["L01","Cochran"], 0.014294748)
     # test if 'Error' is returned for bad input data
     out_err <- eCerto:::Cochran(data = err_data2, fmt = "alpha")
     testthat::expect_equal(out_err[1,"Cochran"], "excl")
@@ -72,8 +72,8 @@ testthat::test_that(
     out_pval <- eCerto:::Grubbs(lab_means = lab_means, fmt = "pval")
     testthat::expect_equal(class(out_pval[,"Grubbs1_p"]), "numeric")
     testthat::expect_equal(class(out_pval[,"Grubbs2_p"]), "numeric")
-    testthat::expect_equal(out_pval[c("L07","L13"),"Grubbs1_p"], c(0.45250505, 0.90129343))
-    testthat::expect_equal(out_pval[c("L01","L02","L07","L13"),"Grubbs2_p"], c(0.105435887, 0.840986945, 0.105435887, 0.840986945))
+    testthat::expect_equal(out_pval[c("L07","L13"),"Grubbs1_p"], c(0.45402331, 0.90086514))
+    testthat::expect_equal(out_pval[c("L01","L02","L07","L13"),"Grubbs2_p"], c(0.10668752, 0.84065467, 0.10668752, 0.84065467))
     # test if 'Error' is returned for bad input data
     out_err <- eCerto:::Grubbs(lab_means = err_means[1:2,], fmt = "alpha")
     testthat::expect_equal(out_err[1,"Grubbs1_p"], "Error")

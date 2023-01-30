@@ -115,6 +115,8 @@ m_RDataImport_Server = function(id, rv) {
       for (n in rv_rdatanames) {
         setValue(rv, n, getValue(rvreturn(), n))
       }
+      # set current analyte to trigger C Modul elements
+      rv$cur_an <- unname(rv$a_p("name")[1])
     }, ignoreNULL = TRUE)
 
   })

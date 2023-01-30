@@ -8,11 +8,6 @@
 #' @name eCerto_R6Class
 #' @examples
 #' if (interactive()) {
-#' rv <- shiny::reactiveValues(a=1)
-#' shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
-#' shiny:::flushReact()
-#' rv$a <- 2
-#' shiny:::flushReact()
 #' test <- eCerto$new(eCerto:::init_rv())
 #' shiny::isolate(eCerto::getValue(test, c("Certification","data")))
 #' shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
@@ -25,18 +20,19 @@
 #' tmp <- eCerto$new()
 #' shiny::isolate(tmp$c_plot())
 #' tmp$c_lab_means()
-#' tmp$c_analyte
 #' tmp$c_analytes()
 #' tmp$c_lab_codes()
 #' tmp$a_p()
 #' tmp$a_p("pooling")
-#' tmp$a_p("pooling")[tmp$c_analyte]
+#' ca <- shiny::isolate(tmp$cur_an)
+#' tmp$a_p("pooling")[ca]
 #' shiny::isolate(tmp$e_present())
-#' shiny::isolate(tmp$c_analyte <- "Cu")
-#' tmp$c_lab_means()
+#' tmp$c_fltData()
+#' shiny::isolate(tmp$cur_an <- "Fe")
+#' shiny::isolate(tmp$cur_an)
 #' tmp$c_fltData()
 #' x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
-#' x[[tmp$c_analyte]][["lab_filter"]] <- "L2"
+#' x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L2"
 #' shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
 #' tmp$c_fltData(recalc = TRUE)
 #' @importFrom purrr chuck pluck
@@ -46,6 +42,7 @@ eCerto <- R6::R6Class(
   private = list(
     ..eData = NULL,
     ..cAnalyte = NULL,
+    ..current_analyte = NULL,
     ..cFltData = NULL
   ),
   public = list(
@@ -64,17 +61,27 @@ eCerto <- R6::R6Class(
         rv[["Certification"]][["data"]] <- testdata
         rv[["General"]][["apm"]] <- init_apm(testdata)
         rv[["General"]][["materialtabelle"]] <- init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]}))
-        private$..cAnalyte <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
-        private$..cFltData <- shiny::isolate( eCerto:::c_filter_data(x = rv[["Certification"]][["data"]], c_apm = rv[["General"]][["apm"]][[1]]) )
+        an <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
+        private$..cAnalyte <- an
+        private$..current_analyte <- shiny::reactiveVal(an)
+        private$..cFltData <- shiny::isolate( eCerto:::c_filter_data(x = rv[["Certification"]][["data"]], c_apm = rv[["General"]][["apm"]][[an]]) )
         private$..eData <- rv
       } else {
         # [ToDo] implement testing (copy from RData upload module)
         private$..eData <- rv
-        if (!is.null(shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] ))) {
-          private$..cAnalyte <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
+        an <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
+        if (!is.null(an)) {
+          private$..cAnalyte <- an
+          private$..current_analyte <- shiny::reactiveVal(shiny::isolate(rv[["General"]][["apm"]][[1]][["name"]]))
+        } else {
+          private$..current_analyte <- shiny::reactiveVal(NULL)
         }
       }
     },
+    # Standard print output for R6 object
+    # print = function() {
+    #   print("I am an eCerto object")
+    # },
     # R6 object functions
     #' @description Read the value of field element of R6 object.
     #' @param keys Name of list element.
@@ -155,7 +162,7 @@ eCerto <- R6::R6Class(
     #' @description Return currently specified values of a type for all analytes.
     #' @param val A character value indicating the item of the apm list to be extracted
     #' @return A named vector.
-    a_p = function(val = c("precision", "precision_export", "pooling", "confirmed", "unit")) {
+    a_p = function(val = c("precision", "precision_export", "pooling", "confirmed", "unit", "name")) {
       val <- match.arg(val)
       as <- shiny::isolate(private$..eData[["General"]][["apm"]])
       out <- sapply(names(as), function(x) { as[[x]][[val]] })
@@ -173,7 +180,7 @@ eCerto <- R6::R6Class(
       if (recalc) {
         private$..cFltData <- shiny::isolate(eCerto:::c_filter_data(
           x = private$..eData[["Certification"]][["data"]],
-          c_apm = private$..eData[["General"]][["apm"]][[private$..cAnalyte]]
+          c_apm = private$..eData[["General"]][["apm"]][[private$..current_analyte()]]
         ))
         return(private$..cFltData)
       } else {
@@ -183,24 +190,21 @@ eCerto <- R6::R6Class(
   ),
   # R6 active bindings
   active = list(
-    #' @field c_analyte Set or return the current analyte via an active binding.
-    c_analyte = function(an) {
-      if (missing(an)) {
-        # simply return current analyte on focus in C Module
-        if (is.null(private$..cAnalyte)) {
-          # set value to first available in apm if not set previously
-          private$..cAnalyte <- names(private$..eData[["General"]][["apm"]])[1]
+    #' @field cur_an Set or return the current analyte (reactiveVal) via an active binding.
+    cur_an = function(a) {
+      if (missing(a)) {
+        if (is.null(private$..current_analyte())) {
+          private$..current_analyte(names(private$..eData[["General"]][["apm"]])[1])
         }
-        return(private$..cAnalyte)
+        return(private$..current_analyte())
       } else {
-        if (!identical(an, private$..cAnalyte)) {
+        if (!identical(a, private$..current_analyte())) {
           # set current analyte on focus in C Module and recalculate dependent reactive variables
           private$..cFltData <- eCerto:::c_filter_data(
             x = private$..eData[["Certification"]][["data"]],
-            c_apm = private$..eData[["General"]][["apm"]][[an]]
+            c_apm = private$..eData[["General"]][["apm"]][[a]]
           )
-          #private$..eData[["Certification_processing"]][["cert_mean"]] <- 3
-          private$..cAnalyte <- an
+          private$..current_analyte(a)
         }
       }
     }

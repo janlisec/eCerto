@@ -14,11 +14,6 @@ here directly.
 }
 \examples{
 if (interactive()) {
-rv <- shiny::reactiveValues(a=1)
-shiny::observeEvent(rv$a, { message("rv$a changed:", rv$a) })
-shiny:::flushReact()
-rv$a <- 2
-shiny:::flushReact()
 test <- eCerto$new(eCerto:::init_rv())
 shiny::isolate(eCerto::getValue(test, c("Certification","data")))
 shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
@@ -31,25 +26,26 @@ shiny:::flushReact()
 tmp <- eCerto$new()
 shiny::isolate(tmp$c_plot())
 tmp$c_lab_means()
-tmp$c_analyte
 tmp$c_analytes()
 tmp$c_lab_codes()
 tmp$a_p()
 tmp$a_p("pooling")
-tmp$a_p("pooling")[tmp$c_analyte]
+ca <- shiny::isolate(tmp$cur_an)
+tmp$a_p("pooling")[ca]
 shiny::isolate(tmp$e_present())
-shiny::isolate(tmp$c_analyte <- "Cu")
-tmp$c_lab_means()
+tmp$c_fltData()
+shiny::isolate(tmp$cur_an <- "Fe")
+shiny::isolate(tmp$cur_an)
 tmp$c_fltData()
 x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
-x[[tmp$c_analyte]][["lab_filter"]] <- "L2"
+x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L2"
 shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
 tmp$c_fltData(recalc = TRUE)
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{c_analyte}}{Set or return the current analyte via an active binding.}
+\item{\code{cur_an}}{Set or return the current analyte (reactiveVal) via an active binding.}
 }
 \if{html}{\out{</div>}}
 }
@@ -210,7 +206,7 @@ A named character vector.
 Return currently specified values of a type for all analytes.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{eCerto$a_p(
-  val = c("precision", "precision_export", "pooling", "confirmed", "unit")
+  val = c("precision", "precision_export", "pooling", "confirmed", "unit", "name")
 )}\if{html}{\out{</div>}}
 }
 
