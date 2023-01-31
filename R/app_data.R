@@ -40,7 +40,7 @@ test_rv <- function(type = c("generic", "SR3")) {
     "SR3" = {
       sr3 <- new.env()
       load(file = system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"), envir = sr3)
-      get0(x = "res", envir = sr3)$Certification$data
+      get0(x = "res", envir = sr3)$Certification$data_input
     }
   )
   apm <- init_apm(testdata)
@@ -50,7 +50,7 @@ test_rv <- function(type = c("generic", "SR3")) {
     setValue(rv, c("Certification","data"), testdata)
     setValue(rv, c("General","apm"), apm)
     setValue(rv, c("General","materialtabelle"), mt)
-    rv$c_analyte <- "Si"
+    rv$cur_an <- "Si"
   })
   return(rv)
 }

@@ -25,7 +25,7 @@ shiny:::flushReact()
 }
 tmp <- eCerto$new()
 shiny::isolate(tmp$c_plot())
-tmp$c_lab_means()
+shiny::isolate(tmp$c_lab_means())
 tmp$c_analytes()
 tmp$c_lab_codes()
 tmp$a_p()
@@ -40,6 +40,7 @@ tmp$c_fltData()
 x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
 x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L2"
 shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
+tmp$c_fltData()
 tmp$c_fltData(recalc = TRUE)
 }
 \section{Active bindings}{

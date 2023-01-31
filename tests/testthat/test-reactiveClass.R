@@ -15,8 +15,10 @@ testthat::test_that(
     testthat::expect_equal(shiny::isolate(tmp$cur_an), "Si")
     # check if analytes are returned
     testthat::expect_equal(unname(tmp$c_analytes()), c("Si", "Fe", "Cu"))
-    # check if lab_means are returned
-    testthat::expect_true(is.data.frame(tmp$c_lab_means()))
+    # check if lab_means of specified analyte are returned
+    testthat::expect_true(is.data.frame(tmp$c_lab_means(analyte_name = "Cu")))
+    # check if lab_means of current analyte are returned
+    testthat::expect_true(is.data.frame(shiny::isolate(tmp$c_lab_means())))
     # check if plot can be generated
     shiny::isolate(tmp$c_plot())
     # check if analyte can be set

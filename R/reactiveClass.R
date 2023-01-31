@@ -19,7 +19,7 @@
 #' }
 #' tmp <- eCerto$new()
 #' shiny::isolate(tmp$c_plot())
-#' tmp$c_lab_means()
+#' shiny::isolate(tmp$c_lab_means())
 #' tmp$c_analytes()
 #' tmp$c_lab_codes()
 #' tmp$a_p()
@@ -34,6 +34,7 @@
 #' x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
 #' x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L2"
 #' shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
+#' tmp$c_fltData()
 #' tmp$c_fltData(recalc = TRUE)
 #' @importFrom purrr chuck pluck
 #' @export
@@ -42,7 +43,6 @@ eCerto <- R6::R6Class(
   private = list(
     ..eData = NULL,
     ..cAnalyte = NULL,
-    ..current_analyte = NULL,
     ..cFltData = NULL
   ),
   public = list(
@@ -62,8 +62,7 @@ eCerto <- R6::R6Class(
         rv[["General"]][["apm"]] <- init_apm(testdata)
         rv[["General"]][["materialtabelle"]] <- init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]}))
         an <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
-        private$..cAnalyte <- an
-        private$..current_analyte <- shiny::reactiveVal(an)
+        private$..cAnalyte <- shiny::reactiveVal(an)
         private$..cFltData <- shiny::isolate( eCerto:::c_filter_data(x = rv[["Certification"]][["data"]], c_apm = rv[["General"]][["apm"]][[an]]) )
         private$..eData <- rv
       } else {
@@ -71,10 +70,9 @@ eCerto <- R6::R6Class(
         private$..eData <- rv
         an <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
         if (!is.null(an)) {
-          private$..cAnalyte <- an
-          private$..current_analyte <- shiny::reactiveVal(shiny::isolate(rv[["General"]][["apm"]][[1]][["name"]]))
+          private$..cAnalyte <- shiny::reactiveVal(shiny::isolate(rv[["General"]][["apm"]][[1]][["name"]]))
         } else {
-          private$..current_analyte <- shiny::reactiveVal(NULL)
+          private$..cAnalyte <- shiny::reactiveVal(NULL)
         }
       }
     },
@@ -122,7 +120,7 @@ eCerto <- R6::R6Class(
     c_plot = function(data, annotate_id = FALSE, filename_labels = FALSE) {
       if (missing(data)) {
         data <- private$..eData[["Certification"]][["data"]]
-        data <- data[data[,"analyte"]==private$..cAnalyte,,drop=FALSE]
+        data <- data[data[,"analyte"]==private$..cAnalyte(),,drop=FALSE]
       }
       eCerto:::CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
     },
@@ -132,7 +130,7 @@ eCerto <- R6::R6Class(
     #' @return A data.frame of lab means.
     c_lab_means = function(data, analyte_name) {
       if (missing(analyte_name)) {
-        analyte_name <- private$..cAnalyte
+        analyte_name <- private$..cAnalyte()
       }
       flt_data <- private$..cFltData
       out <- plyr::ldply(split(flt_data$value, flt_data$Lab), function(x) {
@@ -180,7 +178,7 @@ eCerto <- R6::R6Class(
       if (recalc) {
         private$..cFltData <- shiny::isolate(eCerto:::c_filter_data(
           x = private$..eData[["Certification"]][["data"]],
-          c_apm = private$..eData[["General"]][["apm"]][[private$..current_analyte()]]
+          c_apm = private$..eData[["General"]][["apm"]][[private$..cAnalyte()]]
         ))
         return(private$..cFltData)
       } else {
@@ -193,18 +191,18 @@ eCerto <- R6::R6Class(
     #' @field cur_an Set or return the current analyte (reactiveVal) via an active binding.
     cur_an = function(a) {
       if (missing(a)) {
-        if (is.null(private$..current_analyte())) {
-          private$..current_analyte(names(private$..eData[["General"]][["apm"]])[1])
+        if (is.null(private$..cAnalyte())) {
+          private$..cAnalyte(names(private$..eData[["General"]][["apm"]])[1])
         }
-        return(private$..current_analyte())
+        return(private$..cAnalyte())
       } else {
-        if (!identical(a, private$..current_analyte())) {
+        if (!identical(a, private$..cAnalyte())) {
           # set current analyte on focus in C Module and recalculate dependent reactive variables
           private$..cFltData <- eCerto:::c_filter_data(
             x = private$..eData[["Certification"]][["data"]],
             c_apm = private$..eData[["General"]][["apm"]][[a]]
           )
-          private$..current_analyte(a)
+          private$..cAnalyte(a)
         }
       }
     }

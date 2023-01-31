@@ -3,7 +3,7 @@ rv <- eCerto:::test_rv(type = "SR3")
 flt_data <- rv$c_fltData()
 err_data <- data.frame("Lab"=gl(1,10), value=1:10)
 err_data2 <- data.frame("Lab"=gl(1,10), value=rep(1,10))
-lab_means <- rv$c_lab_means()
+lab_means <- shiny::isolate(rv$c_lab_means())
 err_means <- data.frame("Lab"=gl(3,1), "mean"=1:3, "sd"=rep(0,3), "n"=rep(3,3))
 
 testthat::test_that(
