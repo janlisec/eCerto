@@ -129,11 +129,13 @@ eCerto <- R6::R6Class(
     #' @param analyte_name Specify the analyte you want the lab mean statistics for.
     #' @return A data.frame of lab means.
     c_lab_means = function(data, analyte_name) {
+      if (missing(data)) {
+        data <- private$..cFltData
+      }
       if (missing(analyte_name)) {
         analyte_name <- private$..cAnalyte()
       }
-      flt_data <- private$..cFltData
-      out <- plyr::ldply(split(flt_data$value, flt_data$Lab), function(x) {
+      out <- plyr::ldply(split(data$value, data$Lab), function(x) {
         data.frame(
           "mean" = mean(x, na.rm = T),
           "sd" = stats::sd(x, na.rm = T),

@@ -2,8 +2,18 @@
 
 For an analyte selected in **Tab.C3** various statistical tests regarding lab means and 
 variance will be performed according to ISO 17025 and outlying values will be indicated 
-if observed at the **.05** and **.01** level respectively. `n.s.` and `.` indicate either 
-that the test probability was >0.05 or that this lab was not tested.
+if observed at the `.05` and `.01` level respectively. The displayed values `n.s.` and 
+`.` indicate either that the test probability was >0.05 or that this lab was not tested
+because it did not contain an extreme value.
+
+Instead of the qualitative significance levels reached in the test, the options panel
+to the right of **Tab.C1** offers the possibility to display the calculated p-values
+directly for some of the tests. As a third option, the calculated test statistic can
+be displayed to check with manual calculations.
+
+If any lab is excluded after inspection of **Tab.C1** and using the filter section of 
+the analyte panel on top of the page, all tests can be conducted also without filtered 
+labs to confirm that no further outliers are present after removal.
 
 ![**Tab.C1** Laboratory statistics](fig/C_Modul_Tab1.png)
 
@@ -27,6 +37,7 @@ Test is performed as single (only the most extreme value at each end of the dist
 is tested) as well as double version (the two most extreme values are tested against the 
 rest). Similar to Dixon the test is only applied for $3 \le n \le 30$.
 * <a href="http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html" target="_blank" rel="noopener noreferrer">Nalimov</a>
+This test is implemented based on a website including the critical values table.
 * <a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a> 
 ***Note!*** 
 This test is performed consecutively, *i.e.* the Lab showing the highest variance is tested 
@@ -35,4 +46,4 @@ the `sd` of a lab was too low and the lab was removed from the testing procedure
 
 ***Note!***
 Most tests require at least 3 data points (Labs) and finite differences in Lab means and Lab variance.
-If these conditions are not be fulfilled `Error` might be reported instead of a P-value.
+If these conditions are not fulfilled `Error` might be reported instead of a P-value.

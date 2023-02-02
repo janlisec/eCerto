@@ -55,7 +55,7 @@ testthat::test_that(
     testthat::expect_equal(out_pval[c("L07","L13"),"Dixon_p"], c(0.98506944, 0.60879367))
     # test if 'Error' is returned for bad input data
     out_err <- eCerto:::Dixon(lab_means = err_means[1:2,], fmt = "alpha")
-    testthat::expect_equal(out_err[1,"Dixon_p"], "Error")
+    testthat::expect_equal(out_err[1,"Dixon_p"], "n<3")
   }
 )
 

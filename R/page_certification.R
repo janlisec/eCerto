@@ -90,18 +90,31 @@ page_CertificationUI = function(id) {
       shiny::conditionalPanel(
         condition = "input.certification_view.indexOf('stats') > -1",
         ns = ns, # namespace of current module
-        shiny::strong(
-          shiny::actionLink(
-            inputId = ns("stat_link"),
-            label = "Tab.C1 - Statistics regarding lab variances and outlier detection"
+        shiny::fluidRow(
+          shiny::column(
+            width = 10,
+            shiny::strong(
+              shiny::actionLink(
+                inputId = ns("tabC1_link"),
+                label = "Tab.C1 - Statistics regarding lab variances and outlier detection"
+              )
+            ),
+            DT::dataTableOutput(ns("overview_stats"))
+          ),
+          shiny::column(
+            width = 2,
+            shiny::wellPanel(
+              sub_header("Tab.C1 options"),
+              shiny::checkboxInput(inputId = ns("tabC1_opt"), label = "Exclude filtered Labs", value = FALSE),
+              shiny::selectInput(inputId = ns("tabC1_opt2"), label = "Select values to show", choices = c("Significance level", "P-value", "Test statistic"), selected = "Significance level")
+            )
           )
-        ),
-        DT::dataTableOutput(ns("overview_stats"))
+        )
       ),
       # collapsible_box(
       #   title = shiny::strong(
       #     shiny::actionLink(
-      #       inputId = ns("stat_link"),
+      #       inputId = ns("tabC1_link"),
       #       label = "Tab.C1 - Statistics regarding lab variances and outlier detection"
       #     )
       #   ),
@@ -159,8 +172,8 @@ page_CertificationUI = function(id) {
                 selected = c("auto_width", "show_legend")
               ),
               shiny::fluidRow(
-                shiny::div(style = "float: left; width: 30%; padding-left: 15px;", shinyjs::disabled(shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400))),
-                shiny::div(style = "float: left; width: 30%;", shiny::numericInput(inputId = ns("Fig01_height"), label = "height", value = 300)),
+                shiny::div(style = "float: left; width: 30%; max-width: 95px; padding-left: 15px;", shinyjs::disabled(shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400))),
+                shiny::div(style = "float: left; width: 30%; max-width: 80px;", shiny::numericInput(inputId = ns("Fig01_height"), label = "height", value = 300)),
                 shiny::div(style = "float: left; width: 40%; padding-right: 15px;",
                   sub_header("Download"),
                   shiny::downloadButton(outputId = ns('Fig01'), label = "Figure")
@@ -333,15 +346,28 @@ page_CertificationServer = function(id, rv) {
 
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
-      shiny::req(dat())
-      lab_means <- rv$c_lab_means(data=dat(), analyte_name=selected_tab())
+      shiny::req(dat(), selected_tab(), input$tabC1_opt2)
+      if (input$tabC1_opt) {
+        # remove filtered labs and re-factor column 'Lab'
+        tmp <- dat()[!dat()[,"L_flt"],]
+        tmp[,"Lab"] <- factor(tmp[,"Lab"])
+      } else {
+        tmp <- dat()
+      }
+      lab_means <- rv$c_lab_means(data=tmp, analyte_name=selected_tab())
+      fmt <- switch(
+        input$tabC1_opt2,
+        "Significance level" = "alpha",
+        "P-value" = "pval",
+        "Test statistic" = "cval"
+      )
       out <- data.frame(
         lab_means,
-        Scheffe(data = dat()),
-        Dixon(lab_means = lab_means),
-        Grubbs(lab_means = lab_means),
-        Nalimov(lab_means = lab_means),
-        Cochran(data = dat()),
+        Scheffe(data = tmp),
+        Dixon(lab_means = lab_means, fmt = fmt),
+        Grubbs(lab_means = lab_means, fmt = fmt),
+        Nalimov(lab_means = lab_means, fmt = fmt),
+        Cochran(data = tmp, fmt = fmt),
         stringsAsFactors = FALSE
       )
       return(out[order(out[, "mean"]), ])
@@ -391,7 +417,7 @@ page_CertificationServer = function(id, rv) {
     }, height = 400, width = 400)
 
     # Help Files
-    shiny::observeEvent(input$stat_link,{
+    shiny::observeEvent(input$tabC1_link,{
       show_help("certification_laboratoryStatistics")
     })
     shiny::observeEvent(input$stat2_link,{
