@@ -11,6 +11,9 @@ to the right of **Tab.C1** offers the possibility to display the calculated p-va
 directly for some of the tests. As a third option, the calculated test statistic can
 be displayed to check with manual calculations.
 
+***Note!*** *eCerto* performs outlier tests at the lower and upper end of the value
+distribution independently (two one sided tests).
+
 If any lab is excluded after inspection of **Tab.C1** and using the filter section of 
 the analyte panel on top of the page, all tests can be conducted also without filtered 
 labs to confirm that no further outliers are present after removal.
@@ -45,5 +48,5 @@ first. If significant, it is removed and the procedure is repeated. `excl` indic
 the `sd` of a lab was too low and the lab was removed from the testing procedure.
 
 ***Note!***
-Most tests require at least 3 data points (Labs) and finite differences in Lab means and Lab variance.
+Most tests require at least 3 data points (Labs) and finite differences in Lab means and Lab variances.
 If these conditions are not fulfilled `Error` might be reported instead of a P-value.

@@ -1,5 +1,6 @@
 #' @description BAMTool, Modul: Certification, Scheffe's multiple t-test
 #' @param data Table with columns 'Lab' and 'value'.
+#' @importFrom agricolae scheffe.test
 #' @noRd
 Scheffe <- function(data=NULL) {
   S05 <- try(agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"], silent=TRUE)
@@ -16,6 +17,7 @@ Scheffe <- function(data=NULL) {
 #' @description BAMTool, Modul: Certification, Dixon Test
 #' @param lab_means data.frame, output of Stats function.
 #' @param fmt Output format. Either the p-values directly or expressed qualitatively.
+#' @importFrom outliers dixon.test
 #' @noRd
 Dixon <- function(lab_means=NULL, fmt=c("alpha", "pval", "cval")) {
   fmt <- match.arg(fmt)
@@ -46,6 +48,7 @@ Dixon <- function(lab_means=NULL, fmt=c("alpha", "pval", "cval")) {
 #' @param lab_means data.frame, output of Stats function.
 #' @param fmt Output format. Either the p-values directly or expressed qualitatively.
 #' @noRd
+#' @importFrom outliers grubbs.test
 #' @examples
 #' test <- shiny::isolate(eCerto:::test_rv("SR3")$c_lab_means())
 #' Grubbs(lab_means=test, fmt=c("alpha", "pval", "cval")[3])
@@ -83,42 +86,65 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval")) {
 #' @description BAMTool, Modul: Certification, Nalimov Test
 #' @param lab_means data.frame, output of Stats function with at least numeric column 'mean' and potentially row names.
 #' @noRd
+#' @importFrom outliers qtable
 #' @examples
 #' test <- data.frame("mean"=rnorm(5))
 #' Nalimov(lab_means = test)
 #' Nalimov(lab_means = rbind(test,3))
 #' Nalimov(lab_means = rbind(test,3), fmt = "cval")
+#' Nalimov(lab_means = rbind(test,3), fmt = "pval")
 Nalimov <- function(lab_means = NULL, fmt = c("alpha", "pval", "cval")) {
   fmt <- match.arg(fmt)
-  # a critical value table for Nalimov from http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html#
-  nalimov_crit <- structure(list(
-    f = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 100L, 200L, 300L, 400L, 500L, 600L, 700L, 800L, 1000L),
-    a_05 = c(1.409, 1.645, 1.757, 1.814, 1.848, 1.87, 1.885, 1.895, 1.903, 1.91, 1.916, 1.92, 1.923, 1.926, 1.928, 1.931, 1.933, 1.935, 1.936, 1.937, 1.942, 1.945, 1.948, 1.949, 1.95, 1.951, 1.956, 1.958, 1.958, 1.959, 1.959, 1.959, 1.959, 1.959, 1.96),
-    a_01 = c(1.414, 1.715, 1.918, 2.051, 2.142, 2.208, 2.256, 2.294, 2.324, 2.348, 2.368, 2.385, 2.399, 2.412, 2.423, 2.432, 2.44, 2.447, 2.454, 2.46, 2.483, 2.498, 2.509, 2.518, 2.524, 2.529, 2.553, 2.564, 2.566, 2.568, 2.57, 2.571, 2.572, 2.573, 2.576),
-    a_001 = c(1.414, 1.73, 1.982, 2.178, 2.329, 2.447, 2.54, 2.616, 2.678, 2.73, 2.774, 2.812, 2.845, 2.874, 2.899, 2.921, 2.941, 2.959, 2.975, 2.99, 3.047, 3.085, 3.113, 3.134, 3.152, 3.166, 3.227, 3.265, 3.271, 3.275, 3.279, 3.281, 3.283, 3.285, 3.291)
-  ), class = "data.frame", row.names = c(NA, -35L))
+  # a critical value table for Nalimov from http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html
+  # [JL, 20230216] This is probably the wrong table and contains Nalimov r (for homogeneity testing) and not r_max (for outlier testing)
+  # nalimov_crit <- structure(list(
+  #   f = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L, 25L, 30L, 35L, 40L, 45L, 50L, 100L, 200L, 300L, 400L, 500L, 600L, 700L, 800L, 1000L),
+  #   a_05 = c(1.409, 1.645, 1.757, 1.814, 1.848, 1.87, 1.885, 1.895, 1.903, 1.91, 1.916, 1.92, 1.923, 1.926, 1.928, 1.931, 1.933, 1.935, 1.936, 1.937, 1.942, 1.945, 1.948, 1.949, 1.95, 1.951, 1.956, 1.958, 1.958, 1.959, 1.959, 1.959, 1.959, 1.959, 1.96),
+  #   a_01 = c(1.414, 1.715, 1.918, 2.051, 2.142, 2.208, 2.256, 2.294, 2.324, 2.348, 2.368, 2.385, 2.399, 2.412, 2.423, 2.432, 2.44, 2.447, 2.454, 2.46, 2.483, 2.498, 2.509, 2.518, 2.524, 2.529, 2.553, 2.564, 2.566, 2.568, 2.57, 2.571, 2.572, 2.573, 2.576),
+  #   a_001 = c(1.414, 1.73, 1.982, 2.178, 2.329, 2.447, 2.54, 2.616, 2.678, 2.73, 2.774, 2.812, 2.845, 2.874, 2.899, 2.921, 2.941, 2.959, 2.975, 2.99, 3.047, 3.085, 3.113, 3.134, 3.152, 3.166, 3.227, 3.265, 3.271, 3.275, 3.279, 3.281, 3.283, 3.285, 3.291)
+  # ), class = "data.frame", row.names = c(NA, -35L))
   # calculating the critical values for the Nalimov test (basically Grubbs G with a weighting factor depending on n)
   m <- mean(lab_means[, "mean"])
   s <- stats::sd(lab_means[, "mean"])
   n <- nrow(lab_means)
-  cval <- sapply(lab_means[, "mean"], function(x) {
-    abs((x - m) / s) * sqrt(n / (n - 1))
-  })
+  # [JL, 20230216] we performed Nalimov for all but should only be applied for extreme deviation from population mean
+  # cval <- sapply(lab_means[, "mean"], function(x) {
+  #   abs((x - m) / s) * sqrt(n / (n - 1))
+  # })
+  out <- data.frame("Nalimov" = rep(NA, n), row.names = rownames(lab_means))
+  l <- which.max(abs(m-lab_means[, "mean"]))
+  cval <- abs((lab_means[l, "mean"] - m) / s) * sqrt(n / (n - 1))
+  pval <- pnalimov(q = cval, n = n)
+  out[l, "Nalimov"] <- pval
   # formatting the output
-  out <- data.frame("Nalimov" = cval, row.names = rownames(lab_means))
-  if (fmt=="pval") {
-    out[,"Nalimov"] <- "NA"
+  if (fmt=="cval") {
+    out[l, "Nalimov"] <- cval
   }
+  # if (fmt=="pval") {
+  #   # pp <- c(0.0001, 0.001, 0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95, 0.975, 0.99, 1)
+  #   # qtab <- sapply(pp, function(x) { qnalimov(p=x, n=n) })
+  #   # pval <- outliers::qtable(p=out[l, "Nalimov"], qtab, pp)
+  #   # if (pval>1) pval <- 1
+  #   # if (pval<0) pval <- 0
+  #   out[l, "Nalimov"] <- pval
+  # }
   if (fmt=="alpha") {
-    f <- (n - 2)
-    out[,"Nalimov"] <- sapply(cval, function(x) {
-      switch(
-        as.character(sum(x >= nalimov_crit[max(which(nalimov_crit[, "f"] <= f)), 2:3])),
-        "0" = ".",
-        "1" = ".05",
-        "2" = ".01"
-      )
-    })
+    out[, "Nalimov"] <- pval2level(p = out[, "Nalimov"])
+    # out[l, "Nalimov"] <- switch(
+    #   as.character(sum(out[l, "Nalimov"] >= sapply(c(0.05, 0.01), function(x) { qnalimov(p = x, n = n) }))),
+    #   "0" = ".",
+    #   "1" = ".05",
+    #   "2" = ".01"
+    # )
+    # f <- (n - 2)
+    # out[,"Nalimov"] <- sapply(cval, function(x) {
+    #   switch(
+    #     as.character(sum(x >= nalimov_crit[max(which(nalimov_crit[, "f"] <= f)), 2:3])),
+    #     "0" = ".",
+    #     "1" = ".05",
+    #     "2" = ".01"
+    #   )
+    # })
   }
   return(out)
 }
@@ -127,6 +153,7 @@ Nalimov <- function(lab_means = NULL, fmt = c("alpha", "pval", "cval")) {
 #' @param data Table with columns 'Lab' and 'value'.
 #' @param fmt Output format. Either the p-values directly or expressed qualitatively.
 #' @noRd
+#' @importFrom outliers cochran.test
 #' @examples
 #' test <- eCerto:::test_rv("SR3")$c_fltData()
 #' Cochran(data=test, fmt=c("alpha", "pval")[1])
@@ -154,9 +181,9 @@ Cochran <- function(data=NULL, fmt=c("alpha", "pval", "cval")) {
     if (is.finite(ctest$p.value) && ctest$p.value<=0.05) {
       out[rownames(out)==names(j),"Cochran"] <- switch(
         fmt,
-        "alpha" = paste0("[",i,"] ", ifelse(ctest$p.value<0.01,".01",".05")),
+        "alpha" = paste0("[",i,"] ", pval2level(ctest$p.value)),
         "pval" = ctest$p.value,
-        "cval" = "NA"
+        "cval" = ctest$statistic
       )
       vars <- vars[-j]
       ns <- ns[-j]
@@ -197,26 +224,54 @@ pval2level <- function(p, fmt = c("eCerto")) {
   sapply(p, function(x) { ifelse(is.na(x),".",ifelse(x<0.01,".01",ifelse(x<0.05,".05","n.s."))) })
 }
 
-#' @title crit_val_grubbs.
-#' @description To calculate the critical Grubbs value G.
+#' @title qgrubbs.
+#' @description To calculate the critical Grubbs value z_alpha.
 #' @param p The desired p-value level, i.e. 0.01 or 0.05 for a one sided test.
 #' @param n The number of replicates.
 #' @noRd
 #' @keywords internal
-#' @example crit_val_grubbs(0.05, 5)
-crit_val_grubbs <- function(p, n) {
-  a <- stats::qt(p = p/(2*n), df = n-2)^2
-  return((n-1)/sqrt(n) * sqrt(a / (n - 2 + a)))
+#' @examples
+#' qgrubbs(0.05, 5)
+#' outliers::qgrubbs(p = (1-0.05/2), n = 5)
+qgrubbs <- function(p, n) {
+  t2 <- stats::qt(p = p/(2*n), df = n-2)^2
+  return((n-1)/sqrt(n) * sqrt(t2 / (n-2 + t2)))
 }
 
-#' @title crit_val_nalimov.
+#' @title qnalimov.
 #' @description To calculate the critical Nalimov value r_max.
 #' @param p The desired p-value level, i.e. 0.01 or 0.05 for a one sided test.
 #' @param n The number of replicates.
 #' @noRd
 #' @keywords internal
-#' @example crit_val_nalimov(0.05, 5)
-crit_val_nalimov <- function(p, n) {
-  a <- stats::qt(p = p/n, df = n-2)^2
-  return((n-1)/sqrt(n) * sqrt(a / (n-2+a)) * sqrt(n/(n-1)))
+#' @example
+#' qnalimov(0.05, 5)
+qnalimov <- function(p, n) {
+  t2 <- stats::qt(p = p/n, df = n-2)^2
+  return((n-1)/sqrt(n) * sqrt(t2 / (n-2 + t2)) * sqrt(n/(n-1)))
 }
+
+#' @title pnalimov.
+#' @description To calculate p for a critical Nalimov value r_max.
+#' @param q The r_max obtained by qnalimov.
+#' @param n The number of replicates.
+#' @noRd
+#' @keywords internal
+#' @example
+#' r_max <- qnalimov(0.05, 5)
+#' pnalimov(q = r_max, n = 5)
+pnalimov <- function(q, n) {
+  # reverse Nalimov weighting to yield Grubbs G
+  G <- q/sqrt(n/(n-1))
+  # use reverse function of qgrubbs from outliers package
+  t <- sqrt((G^2*n*(2-n)) / (G^2*n-(n-1)^2))
+  if (is.nan(t)) {
+    res <- 0
+  }
+  else {
+    res <- n * (1 - pt(t, n - 2))
+    res[res > 1] <- 1
+  }
+  return(res)
+}
+

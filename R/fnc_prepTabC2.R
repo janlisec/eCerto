@@ -7,6 +7,7 @@
 #' eCerto:::prepTabC2(data = x)
 #' @return A data frame.
 #' @keywords internal
+#' @importFrom moments skewness kurtosis agostino.test anscombe.test
 #' @noRd
 prepTabC2 <- function(data=NULL, precision=4) {
   x <- sapply(split(data$value, data$Lab), mean)

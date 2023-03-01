@@ -34,7 +34,7 @@ sa <- interaction(H[["data"]][,"analyte"],H[["data"]][,"H_type"])
 # get figure width in pixel
 figs_w <- sapply(levels(sa), function(a) {
   n <- length(levels(factor(H[["data"]][sa==a,"Flasche"])))
-  return(150 + 40 * n)
+  eCerto:::calc_bxp_width(n = n, w_axes = 48, w_point = 40)
 })
 # convert width to inch on screen
 figs_w <- figs_w/72
@@ -59,16 +59,20 @@ if (knitr::is_html_output()) {
 
 `r ifelse(length(unique(H[["data"]][,"analyte"])>=2), "These are the individual Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
 
-```{r, echo=FALSE, comment=NA, message=FALSE, fig.width=max_width, fig.height=5*length(figs_w)}
+```{r, echo=FALSE, comment=NA, message=FALSE, fig.width=max_width}
 widths <- diff(c(0,sort(unique(figs_w)),1))
 mat <- matrix(0, nrow = length(figs_w), ncol = length(widths))
+# make individual plots to allow separate inclusion in i.e. Word reports
 for (i in 1:nrow(mat)) {
-  mat[i,figs_w[i]>=cumsum(widths)] <- i
-}
-layout(mat = mat, widths = widths)
-for (a in levels(sa)) {
+  mat[i,figs_w[i]>=cumsum(widths)] <- 1
+  layout(mat = mat[i,,drop=FALSE], widths = widths)
+  a <- levels(sa)[i]
   try(eCerto:::prepFigH1(x = H[["data"]], sa = a, prec = 4))
 }
+#layout(mat = mat, widths = widths)
+# for (a in levels(sa)) {
+#   try(eCerto:::prepFigH1(x = H[["data"]], sa = a, prec = 4))
+# }
 ```
 
 This is the table of input data:
