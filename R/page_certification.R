@@ -229,8 +229,6 @@ page_CertificationServer = function(id, rv) {
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactive({
       shiny::req(selected_tab())
-      #shiny::req(rv$cur_an)
-      #browser()
       return(c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[selected_tab()]]))
     })
 
@@ -281,14 +279,6 @@ page_CertificationServer = function(id, rv) {
         value = getValue(rv, c("Certification_processing","CertValPlot","Fig01_height"))
       )
     }, ignoreNULL = TRUE)
-
-    # output$cert_mean <- shiny::renderText({
-    #   getValue(rv, c("Certification_processing","cert_mean"))
-    # })
-    #
-    # output$cert_sd <- shiny::renderText({
-    #   getValue(rv, c("Certification_processing","cert_sd"))
-    # })
 
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
@@ -347,30 +337,8 @@ page_CertificationServer = function(id, rv) {
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
       shiny::req(dat(), selected_tab(), input$tabC1_opt2)
-      if (input$tabC1_opt) {
-        # remove filtered labs and re-factor column 'Lab'
-        tmp <- dat()[!dat()[,"L_flt"],]
-        tmp[,"Lab"] <- factor(tmp[,"Lab"])
-      } else {
-        tmp <- dat()
-      }
-      lab_means <- rv$c_lab_means(data=tmp, analyte_name=selected_tab())
-      fmt <- switch(
-        input$tabC1_opt2,
-        "Significance level" = "alpha",
-        "P-value" = "pval",
-        "Test statistic" = "cval"
-      )
-      out <- data.frame(
-        lab_means,
-        Scheffe(data = tmp),
-        Dixon(lab_means = lab_means, fmt = fmt),
-        Grubbs(lab_means = lab_means, fmt = fmt),
-        Nalimov(lab_means = lab_means, fmt = fmt),
-        Cochran(data = tmp, fmt = fmt),
-        stringsAsFactors = FALSE
-      )
-      return(out[order(out[, "mean"]), ])
+      fmt <- switch(input$tabC1_opt2, "Significance level" = "alpha", "P-value" = "pval", "Test statistic" = "cval")
+      prepTabC1(dat = dat(), lab_means = rv$c_lab_means(data = dat()), excl_labs = input$tabC1_opt, fmt = fmt)
     })
     shiny::observeEvent(overview_stats_pre(), {
       setValue(rv, c("Certification_processing","stats"), overview_stats_pre())

@@ -4,10 +4,10 @@
 #' @param ap Analyte specific parameter list.
 #' @param type Either 'kompakt' or 'standard'.
 #' @examples
-# rv <- eCerto:::test_rv(type = "SR3")
-# fd <- rv$c_fltData()
-# ap <- shiny::isolate(eCerto::getValue(rv, c("General", "apm"))[[rv$cur_an]])
-# styleTabC0(x = fd, ap = ap, type=c("kompakt", "standard")[1])
+#' rv <- eCerto:::test_rv(type = "SR3")
+#' fd <- rv$c_fltData()
+#' ap <- shiny::isolate(eCerto::getValue(rv, c("General", "apm"))[[rv$cur_an]])
+#' eCerto:::styleTabC0(x = fd, ap = ap, type=c("kompakt", "standard")[1])
 #' @return A data table object.
 #' @keywords internal
 #' @noRd

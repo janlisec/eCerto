@@ -3,9 +3,9 @@
 #' @param x Object `overview_stats_pre()`.
 #' @param n Rounding precision for specific columns..
 #' @examples
-#' x <- eCerto:::test_Certification_Excel()
-#' x <- eCerto:::prepTabC2(data = x)
-#' eCerto:::styleTabC2(x = x)
+#' rv <- eCerto:::test_rv(type = "SR3")
+#' x <- eCerto:::prepTabC1(dat = shiny::isolate(dat <- rv$c_fltData()))
+#' eCerto:::styleTabC1(x = x)
 #' @return A data table object.
 #' @keywords internal
 #' @noRd

@@ -14,6 +14,7 @@
 # x <- covr::package_coverage(function_exclusions = "page_*")
 # covr::zero_coverage(x = x)
 # covr::function_coverage(fun = eCerto:::app_server)
+# covr::function_coverage(fun = eCerto:::styleTabC1, code = source("tests/testthat/test-fnc_styleTabC1.R"))
 # covr::function_coverage(fun = eCerto:::CertValPlot, code = source("tests/testthat/test-fnc_CertValPlot.R"))
 
 pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)

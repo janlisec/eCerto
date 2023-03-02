@@ -124,17 +124,11 @@ eCerto <- R6::R6Class(
       }
       eCerto:::CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
     },
-    #' @description Compute the analyte means for a specific analyte.
+    #' @description Compute the analyte means for a data set filtered for a specific analyte.
     #' @param data data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.
-    #' @param analyte_name Specify the analyte you want the lab mean statistics for.
     #' @return A data.frame of lab means.
-    c_lab_means = function(data, analyte_name) {
-      if (missing(data)) {
-        data <- private$..cFltData
-      }
-      if (missing(analyte_name)) {
-        analyte_name <- private$..cAnalyte()
-      }
+    c_lab_means = function(data) {
+      if (missing(data)) { data <- private$..cFltData }
       out <- plyr::ldply(split(data$value, data$Lab), function(x) {
         data.frame(
           "mean" = mean(x, na.rm = T),

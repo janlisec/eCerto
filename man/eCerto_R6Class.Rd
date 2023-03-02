@@ -156,17 +156,15 @@ A plot.
 \if{html}{\out{<a id="method-eCerto-c_lab_means"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_lab_means}{}}}
 \subsection{Method \code{c_lab_means()}}{
-Compute the analyte means for a specific analyte.
+Compute the analyte means for a data set filtered for a specific analyte.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_means(data, analyte_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_means(data)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{data}}{data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.}
-
-\item{\code{analyte_name}}{Specify the analyte you want the lab mean statistics for.}
 }
 \if{html}{\out{</div>}}
 }

@@ -58,7 +58,7 @@ m_DataViewServer <- function(id, rv) {
     # Generate an HTML table view of filtered single analyte data
     output$tab1 <- DT::renderDataTable({
       x <- get_input_data(rv = rv, type = input$data_view_select, excl_file = !input$data_view_file)
-      styleTabC0(x = x, ap=getValue(rv, c("General","apm"))[[rv$cur_an]], type=type)
+      styleTabC0(x = x, ap = getValue(rv, c("General","apm"))[[rv$cur_an]], type = input$data_view_select)
     })
 
   })
