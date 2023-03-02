@@ -244,8 +244,7 @@ qgrubbs <- function(p, n) {
 #' @param n The number of replicates.
 #' @noRd
 #' @keywords internal
-#' @example
-#' qnalimov(0.05, 5)
+#' @example qnalimov(0.05, 5)
 qnalimov <- function(p, n) {
   t2 <- stats::qt(p = p/n, df = n-2)^2
   return((n-1)/sqrt(n) * sqrt(t2 / (n-2 + t2)) * sqrt(n/(n-1)))
@@ -257,9 +256,7 @@ qnalimov <- function(p, n) {
 #' @param n The number of replicates.
 #' @noRd
 #' @keywords internal
-#' @example
-#' r_max <- qnalimov(0.05, 5)
-#' pnalimov(q = r_max, n = 5)
+#' @example pnalimov(q = qnalimov(0.05, 5), n = 5)
 pnalimov <- function(q, n) {
   # reverse Nalimov weighting to yield Grubbs G
   G <- q/sqrt(n/(n-1))
@@ -269,7 +266,7 @@ pnalimov <- function(q, n) {
     res <- 0
   }
   else {
-    res <- n * (1 - pt(t, n - 2))
+    res <- n * (1 - stats::pt(t, n - 2))
     res[res > 1] <- 1
   }
   return(res)

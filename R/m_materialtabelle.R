@@ -67,13 +67,8 @@ m_materialtabelleUI <- function(id) {
             shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect", width = "100%")
           ),
           shiny::p(),
-          # shiny::div(
-          #   style="width=100%; margin-bottom: 5px; margin-left: 15px;",
-          #   sub_header(shiny::actionLink(inputId = ns("tabC3postcert"), label = "Post Certification Test"))
-          # ),
           shiny::div(
             style="margin-top: 15px; margin-left: 15px; margin-right: 15px;",
-            #shiny::actionButton(inputId = ns("post_cert_stab"), label = "Check")
             check_stability_UI(id = ns("post_cert_stab"))
           )
         )

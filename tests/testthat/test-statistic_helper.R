@@ -86,14 +86,14 @@ testthat::test_that(
     # test qualitative Nalimov method
     out <- eCerto:::Nalimov(lab_means = lab_means)
     testthat::expect_equal(class(out[,"Nalimov"]), "character")
-    testthat::expect_equal(out["L07","Nalimov"], '.')
+    testthat::expect_equal(out["L07","Nalimov"], 'n.s.')
     out <- eCerto:::Nalimov(lab_means = lab_means, fmt = "pval")
     testthat::expect_equal(class(out[,"Nalimov"]), "numeric")
-    testthat::expect_equal(out["L07","Nalimov"], 0.45406364)
+    testthat::expect_equal(out["L07","Nalimov"], 0.45402331)
     out2 <- sapply(seq(0.0375,0.0425, by=0.0005), function(x) {
       lab_means[1,"mean"] <- x
       eCerto:::Nalimov(lab_means = lab_means)[1,1]
     })
-    testthat::expect_equal(out2, rep(c('.01',".05","."), times=c(5,5,1)))    # currently no quantitative Nalimov method
+    testthat::expect_equal(out2, rep(c('.01',".05","n.s."), times=c(5,5,1)))    # currently no quantitative Nalimov method
   }
 )

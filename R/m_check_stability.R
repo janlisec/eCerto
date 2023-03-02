@@ -48,6 +48,7 @@ check_stability_Server <- function(id, rv = NULL) {
     m_m <- reactiveVal(NA)
     u_m <- reactiveVal(NA)
     sk <- reactiveVal(NA)
+    sk_old <- reactiveVal(NA)
     ra <- reactiveVal(4)
     mt <- reactive({
       req(rv)
@@ -56,6 +57,7 @@ check_stability_Server <- function(id, rv = NULL) {
       m_c(tmp[,"cert_val"])
       u_c(tmp[,"U_abs"]/tmp[,"k"])
       ra(getValue(rv, c("General","apm"))[[rv$cur_an]]$precision_export)
+      sk_old(tmp[,"k"])
       m_m(NA)
       u_m(NA)
       sk(NA)
@@ -75,29 +77,31 @@ check_stability_Server <- function(id, rv = NULL) {
     output$area_input <- shiny::renderUI({
       shiny::tagList(
         shiny::fluidRow(
-          shiny::textAreaInput(
-            inputId = session$ns("txt_textAreaInput"),
-            label = "",
-            placeholder = paste("copy/paste or enter numeric values (one per row) and press calculate afterwards"),
-            width="100%",
-            rows=6
+          shiny::column(width = 8,
+            shiny::textAreaInput(
+              inputId = session$ns("txt_textAreaInput"),
+              label = NULL,
+              placeholder = paste("copy/paste or enter numeric values (one per row) and press calculate afterwards"),
+              width="100%",
+              rows=6
+            )
+          ),
+          shiny::column(width = 4,
+            shiny::actionButton(inputId = session$ns("btn_textAreaInput"), label = "Calculate", width = "100%"),
+            shiny::actionButton(session$ns("btn_textAreaInput2"), "Close", width = "100%")
           )
-        ),
-        shiny::fluidRow(
-          shiny::actionButton(session$ns("btn_textAreaInput"), "Calculate"),
-          shiny::actionButton(session$ns("btn_textAreaInput2"), "Close")
         )
       )
     })
 
     output$res_output <- shiny::renderUI({
       req(mt())
+      txt_col <- ifelse(is.finite(sk()<=sk_old()) && sk()<=sk_old(), "#00FF00", "#FF0000")
       shiny::tagList(
-        p(),
-        HTML("analyte ", mt()$analyte), br(),
-        HTML("m_c = ", round(m_c(), ra()), ", u_c = ", round(u_c(), ra())), br(),
-        HTML("m_m = ", round(m_m(), ra()), ", u_m = ", round(u_m(), ra())), br(),
-        HTML("SK = ", round(sk(), 2))
+        HTML("<strong>analyte ", mt()$analyte, "</strong>"), br(),
+        HTML("mu_c = ", round(m_c(), ra()), ", u_c = ", round(u_c(), ra())), br(),
+        HTML("mu_m = ", round(m_m(), ra()), ", u_m = ", round(u_m(), ra())), br(),
+        HTML(paste0("<font color='", txt_col, "'>"), "<strong>SK = ", round(sk(), 2), "</strong></font>, k_c =", sk_old())
       )
     })
 
@@ -108,6 +112,9 @@ check_stability_Server <- function(id, rv = NULL) {
     })
 
     shiny::observeEvent(input$btn_textAreaInput2, {
+      # reset output
+      out$d <- NA
+      out$counter <- out$counter+1
       shinyjs::hide(id = "area_input")
       shinyjs::hide(id = "res_output")
     })
