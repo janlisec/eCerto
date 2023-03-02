@@ -360,3 +360,61 @@ get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
     "F" = unlist(sapply(f_calc_cols, function(x) { which(colnames(mt)==x) }))
   )
 }
+
+#' @title get_input_data.
+#' @description Helper function to get input data for an analyte.
+#' @param rv rv.
+#' @param type type.
+#' @param excl_file excl_file.
+#' @return Input data frame in either full or kompakt version.
+#' @keywords internal
+#' @noRd
+#' @examples
+#' rv <- eCerto:::test_rv(type = "SR3")
+#' isolate(get_input_data(rv = rv))
+#' isolate(get_input_data(rv = rv, excl_file=TRUE))
+#' isolate(get_input_data(rv = rv, type="s"))
+#' isolate(get_input_data(rv = rv, type="s", excl_file=TRUE))
+get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALSE) {
+  type <- match.arg(type)
+  df <- getValue(rv, c("Certification","data"))
+  apm <- getValue(rv, c("General","apm"))
+  an <- rv$cur_an
+  df <- df[df[,"analyte"]==an,]
+  if (!"File" %in% colnames(df)) df <- cbind(df, "File"="")
+  if (type == "kompakt") {
+    # ensure that "Lab" is a factor
+    if (!is.factor(df[,"Lab"])) df[,"Lab"] <- factor(df[,"Lab"], levels = unique(df[,"Lab"]))
+    fn <- rv$c_lab_codes()
+    p <- getValue(rv, c("General","apm"))[[rv$cur_an]][["precision"]]
+    n_reps <- sort(unique(df$replicate))
+    data <- plyr::ldply(split(df, df$Lab), function(x) {
+      out <- rep(NA, length(n_reps))
+      out[x$replicate] <- x$value
+      matrix(out, ncol = length(n_reps), dimnames = list(NULL, paste0("R", n_reps)))
+    }, .id = "Lab")
+    id_idx <- plyr::ldply(split(df, df$Lab), function(x) {
+      out <- rep(NA, length(n_reps))
+      out[x$replicate] <- x$ID
+      matrix(out, ncol = length(n_reps), dimnames = list(NULL, paste0("R", n_reps)))
+    }, .id = "Lab")
+    out <- data.frame(
+      data[, "Lab", drop = F],
+      round(data[, -1, drop = F], digits = p),
+      "mean" = round(apply(data[, -1, drop = F], 1, mean, na.rm = T), digits = p),
+      "sd" = round(apply(data[, -1, drop = F], 1, stats::sd, na.rm = T), digits = p),
+      "File" = unname(fn[levels(df$Lab)])
+    )
+    if (excl_file) {
+      out <- out[,-which(colnames(out)=="File")]
+    }
+    attr(out, "id_idx") <- id_idx
+    return(out)
+  } else {
+    df <- df[, c("ID", "Lab", "value", "unit", "replicate", "File")]
+    if (excl_file) {
+      df <- df[,-which(colnames(df)=="File")]
+    }
+    return(df)
+  }
+}

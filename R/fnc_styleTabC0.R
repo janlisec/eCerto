@@ -4,12 +4,15 @@
 #' @param ap Analyte specific parameter list.
 #' @param type Either 'kompakt' or 'standard'.
 #' @examples
-#' x <- eCerto:::test_Certification_Excel()
+# rv <- eCerto:::test_rv(type = "SR3")
+# fd <- rv$c_fltData()
+# ap <- shiny::isolate(eCerto::getValue(rv, c("General", "apm"))[[rv$cur_an]])
+# styleTabC0(x = fd, ap = ap, type=c("kompakt", "standard")[1])
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
 styleTabC0 <- function(x, ap, type=c("kompakt", "standard")) {
-
+  type <- match.arg(type)
   if (type == "kompakt") {
     idx <- attr(x, "id_idx")
     if (!("File" %in% colnames(x))) x <- cbind(x, data.frame(" "=" ", check.names = FALSE))
@@ -53,7 +56,6 @@ styleTabC0 <- function(x, ap, type=c("kompakt", "standard")) {
     # round with output precision (JL: currently the same; adjust and remove comment if requested by users)
     dt <- DT::formatCurrency(table = dt, columns = which(colnames(x) %in% c("mean","sd")), currency = "", digits = ap[["precision"]])
   }
-
   if (type == "standard") {
     if (!("File" %in% colnames(x))) x <- cbind(x, data.frame(" "=" ", check.names = FALSE))
     dt <- DT::datatable(
@@ -85,6 +87,5 @@ styleTabC0 <- function(x, ap, type=c("kompakt", "standard")) {
       )
     }
   }
-
   return(dt)
 }
