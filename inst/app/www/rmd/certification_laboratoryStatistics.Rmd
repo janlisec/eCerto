@@ -40,10 +40,12 @@ Test is performed as single (only the most extreme value at each end of the dist
 is tested) as well as double version (the two most extreme values are tested against the 
 rest). Similar to Dixon the test is only applied for $3 \le n \le 30$.
 * <a href="http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html" target="_blank" rel="noopener noreferrer">Nalimov</a>
-This test is implemented based on a website including the critical values table.
+This test was originally implemented based on a website including the critical values table.
+***Note!*** The Nalimov test in its version by Kaiser/Gottschalk is most likely wrong and will be
+removed in a future version of *eCerto*. The correct implementation gives results identical to Grubbs.
 * <a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a> 
 ***Note!*** 
-This test is performed consecutively, *i.e.* the Lab showing the highest variance is tested 
+The Cochran test is performed consecutively, *i.e.* the Lab showing the highest variance is tested 
 first. If significant, it is removed and the procedure is repeated. `excl` indicates that 
 the `sd` of a lab was too low and the lab was removed from the testing procedure.
 

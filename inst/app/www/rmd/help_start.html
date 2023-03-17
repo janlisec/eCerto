@@ -589,6 +589,9 @@ the options panel to the right of <strong>Tab.C1</strong> offers the
 possibility to display the calculated p-values directly for some of the
 tests. As a third option, the calculated test statistic can be displayed
 to check with manual calculations.</p>
+<p><strong><em>Note!</em></strong> <em>eCerto</em> performs outlier
+tests at the lower and upper end of the value distribution independently
+(two one sided tests).</p>
 <p>If any lab is excluded after inspection of <strong>Tab.C1</strong>
 and using the filter section of the analyte panel on top of the page,
 all tests can be conducted also without filtered labs to confirm that no
@@ -618,17 +621,20 @@ most extreme value at each end of the distribution is tested) as well as
 double version (the two most extreme values are tested against the
 rest). Similar to Dixon the test is only applied for <span class="math inline">\(3 \le n \le 30\)</span>.</li>
 <li><a href="http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html" target="_blank" rel="noopener noreferrer">Nalimov</a>
-This test is implemented based on a website including the critical
-values table.</li>
+This test was originally implemented based on a website including the
+critical values table. <strong><em>Note!</em></strong> The Nalimov test
+in its version by Kaiser/Gottschalk is most likely wrong and will be
+removed in a future version of <em>eCerto</em>. The correct
+implementation gives results identical to Grubbs.</li>
 <li><a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a>
-<strong><em>Note!</em></strong> This test is performed consecutively,
-<em>i.e.</em> the Lab showing the highest variance is tested first. If
-significant, it is removed and the procedure is repeated.
-<code>excl</code> indicates that the <code>sd</code> of a lab was too
-low and the lab was removed from the testing procedure.</li>
+<strong><em>Note!</em></strong> The Cochran test is performed
+consecutively, <em>i.e.</em> the Lab showing the highest variance is
+tested first. If significant, it is removed and the procedure is
+repeated. <code>excl</code> indicates that the <code>sd</code> of a lab
+was too low and the lab was removed from the testing procedure.</li>
 </ul>
 <p><strong><em>Note!</em></strong> Most tests require at least 3 data
-points (Labs) and finite differences in Lab means and Lab variance. If
+points (Labs) and finite differences in Lab means and Lab variances. If
 these conditions are not fulfilled <code>Error</code> might be reported
 instead of a P-value.</p>
 </div>

@@ -30,11 +30,10 @@ if (testing) {
   H <- params$Homogeneity
 }
 if (!"H_type" %in% colnames(H[["data"]])) H[["data"]] <- cbind(H[["data"]], "H_type"="hom")
-sa <- interaction(H[["data"]][,"analyte"],H[["data"]][,"H_type"])
+sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"])
 # get figure width in pixel
 figs_w <- sapply(levels(sa), function(a) {
-  n <- length(levels(factor(H[["data"]][sa==a,"Flasche"])))
-  eCerto:::calc_bxp_width(n = n, w_axes = 48, w_point = 40)
+  eCerto:::calc_bxp_width(n = length(levels(factor(H[["data"]][sa==a,"Flasche"]))), w_axes = 48, w_point = 40)
 })
 # convert width to inch on screen
 figs_w <- figs_w/72
