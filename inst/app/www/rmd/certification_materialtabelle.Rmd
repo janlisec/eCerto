@@ -28,22 +28,22 @@ Table column descriptions:
     all labs for this analyte (`n = 2 x 5 = 10`).
 -   `F` columns can be added/edited and may contain correction factors $f_i$ to adjust $\mu$ and obtain 
     the certified mean `cert_val` by $\mu_c = \mu \times \prod f_i$
--   `U` columns can be added and may contain relative uncertainty contributions 
+-   `u` columns can be added and may contain relative uncertainty contributions 
     (e.g. from homogeneity or stability modules)
 
     ***Note!*** 
-    `U` columns containing different uncertainty contributions should always be provided relative to the mean to allow an 
+    `u` columns containing different uncertainty contributions should always be provided relative to the mean to allow an 
     easy combination of the individual terms. Only `U_abs` is expressed as an absolute value.
 
 -   `u_char` describes the *char*acteristic uncertainty, calculated as $u_{char}=\frac{s}{\sqrt{n} \times mean}$
--   `u_com` is the *com*bined uncertainty from all U columns, where all relative uncertainty components $u_i$ 
+-   `u_com` is the *com*bined uncertainty from all `u` columns, where all relative uncertainty components $u_i$ 
     are combined using formula $u_{com}=\sqrt{\sum{u_i^2}}$
 -   `k` is an additional expansion factor for the uncertainty $U=u_{com} \times k$
 -   `U_abs` specifies the absolute uncertainty and is calculated by $U_{abs}=U \times \mu_c$
 
 ***Note!*** 
 Numeric values of $\mu_c$ and $U_{abs}$ are rounded to the number of digits specified by the user at the analyte selection 
-panel (top, `Precision (cert)`). A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all relative `U` 
+panel (top, `Precision (cert)`). A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all relative `u` 
 columns are depicted with fixed 4 digits precision.
 
-**Tab.C3** can be exported together with a report as PDF, Word or HTML document using the download section on top of the page.
+**Tab.C3** can be exported within a report using the download section on top of the page.

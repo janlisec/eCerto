@@ -61,10 +61,10 @@ testthat::test_that(
       name = "SR3_Fe_v26chs.RData",
       datapath = system.file(package = "eCerto", "extdata", "SR3_Fe_v26chs.RData")
     )
+    suppressMessages({ rv <- eCerto$new() })
     # setting the config file to 'dev' ensures that messages are shown because
     # eCerto is set to silent = FALSE
     Sys.setenv("R_CONFIG_ACTIVE" = "dev")
-    rv <- eCerto$new()
     shiny::testServer(
       app = eCerto:::m_RDataImport_Server,
       args = list(rv = rv),

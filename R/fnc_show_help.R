@@ -27,8 +27,11 @@ show_help <- function(filename, show_modal = TRUE) {
       shiny::HTML(
         markdown::markdownToHTML(
           file = file_in,
-          fragment.only = TRUE,
-          extensions = c("tables","autolink","latex_math")
+          # [JL] in markdown version >1.5 the extension function was removed
+          # and replaced by options
+          #extensions = c("tables","autolink","latex_math"),
+          options = "+tables+autolink+latex_math",
+          fragment.only = TRUE
         )
       )
     )
