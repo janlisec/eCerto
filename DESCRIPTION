@@ -24,7 +24,6 @@ LazyDataCompression: bzip2
 Depends:
     R (>= 3.5.0)
 Imports: 
-    agricolae,
     config,
     DT,
     golem,

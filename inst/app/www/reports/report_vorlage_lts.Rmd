@@ -130,7 +130,7 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
       out$File[k] <- paste0(out$File[k], "\\textsuperscript{", idx[k], "}")
     }
     com <- com[!is.na(com)]
-    com <- data.frame("Comments for Tab.1"=sapply(1:length(com), function(i) { paste0("\\textsuperscript{", i, "} ", com[i]) }))
+    com <- data.frame("Comments for Tab.1"=sapply(1:length(com), function(i) { paste0("\\textsuperscript{", i, "} ", com[i]) }), check.names = FALSE)
   } else {
     com <- NULL
   }

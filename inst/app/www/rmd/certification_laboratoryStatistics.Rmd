@@ -30,7 +30,8 @@ can be found using the following links:
 * <a href="https://rdrr.io/cran/agricolae/man/scheffe.test.html" target="_blank" rel="noopener noreferrer">Scheffe</a>
 ***Note!*** 
 Similar letters indicate similar group and hence no difference. The test is performed at 
-two $\alpha$ levels (.01 and .05).
+two $\alpha$ levels (.01 and .05) and re-implemented following the code provided in the
+`agricolae` package.
 * <a href="https://rdrr.io/cran/outliers/man/dixon.test.html" target="_blank" rel="noopener noreferrer">Dixon</a>
 ***Note!*** 
 The Dixon-Test was developed for small sample sizes and will only work for $3 \le n \le 30$.

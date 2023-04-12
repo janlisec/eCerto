@@ -1,11 +1,13 @@
 #' @description BAMTool, Modul: Certification, Scheffe's multiple t-test
 #' @param data Table with columns 'Lab' and 'value'.
-#' @importFrom agricolae scheffe.test
+#' @examples
+#' test <- eCerto:::test_rv("SR3")$c_fltData()
+#' Scheffe(data = test)
 #' @noRd
 Scheffe <- function(data=NULL) {
-  S05 <- try(agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"], silent=TRUE)
+  S05 <- try(scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.05)$group[levels(data$Lab),"groups"], silent=TRUE)
   if (inherits(S05, "try-error")) S05 <- rep("Error", length(levels(data$Lab)))
-  S01 <- try(agricolae::scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.01)$group[levels(data$Lab),"groups"], silent=TRUE)
+  S01 <- try(scheffe.test(y = stats::lm(value~Lab, data=data), trt="Lab", alpha = 0.01)$group[levels(data$Lab),"groups"], silent=TRUE)
   if (inherits(S01, "try-error")) S01 <- rep("Error", length(levels(data$Lab)))
   return(data.frame(
     "Scheffe_05"=S05,
@@ -212,7 +214,7 @@ round_up <- function(x, n=0) {
 }
 
 #' @title pval2level.
-#' @description Will convert a numeric vector of p-values ino a character vector indicating levels.
+#' @description Will convert a numeric vector of p-values into a character vector indicating levels.
 #' @param p A numeric vector of p-values.
 #' @param fmt Character description of the requested output format. Currently only 'eCerto' is supported.
 #' @examples
