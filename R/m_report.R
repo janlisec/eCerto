@@ -29,7 +29,6 @@
 #' }
 #'
 #' @importFrom knitr is_html_output kable
-#' @importFrom kableExtra kable_styling
 #' @importFrom magick image_read
 #' @noRd
 #' @keywords internal

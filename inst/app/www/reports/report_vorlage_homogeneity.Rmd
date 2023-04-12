@@ -79,7 +79,8 @@ This is the table of input data:
 ```{r, echo=FALSE, comment=NA}
 df <- H[["data"]]
 if (knitr::is_html_output()) {
-  kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
+  #knitr::kable(df, row.names=FALSE, format="html", format.args = list(decimal.mark = "."))
+  DT::datatable(data = df, rownames = NULL, options = list(dom = "t", paging = FALSE))
 } else if (knitr::is_latex_output()) {
   knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
 }

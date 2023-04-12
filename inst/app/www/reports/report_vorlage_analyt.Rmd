@@ -8,12 +8,12 @@ params:
   selected_tab: NA
   logo_file: NA
 output:
-  pdf_document:
-    latex_engine: lualatex
-  word_document: 
-    reference_docx: template.docx
   html_document:
     df_print: paged
+  word_document: 
+    reference_docx: template.docx
+  pdf_document:
+    latex_engine: lualatex
 fontsize: 11pt
 ---
 
@@ -83,8 +83,6 @@ This is the imported data which was basis for all further calculations:
 ```{r data_table, echo=FALSE}
   df <- C$data[C$data[,"analyte"]==A,1:7,drop=FALSE]
   if (knitr::is_html_output()) {
-    #kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
-    kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
     eCerto:::styleTabC0(x = df[, c("ID", "Lab", "value", "unit", "replicate", "File")], ap = D, type = "standard")
   } else if (knitr::is_latex_output()) {
     knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
@@ -98,7 +96,6 @@ This is the imported data which was basis for all further calculations:
 ```{r Outlier_Stats, echo=FALSE, comment=NA}
   df <- CP$stats
   if (knitr::is_html_output()) {
-    #kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
     eCerto:::styleTabC1(x = df, n = D[["precision"]])
   } else if (knitr::is_latex_output()) {
     knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
@@ -118,7 +115,6 @@ cat(paste(D$sample_filter, collapse=", "))
 ```{r lab_means, eval=TRUE, echo=FALSE, comment=NA}
 df <- CP$mstats
   if (knitr::is_html_output()) {
-    #kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
     eCerto:::styleTabC2(x = df, n = D[["precision"]])
   } else if (knitr::is_latex_output()) {
     knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))

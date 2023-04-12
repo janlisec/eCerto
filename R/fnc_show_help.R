@@ -10,7 +10,7 @@
 #' )
 #' @noRd
 #' @keywords internal
-#' @importFrom markdown markdownToHTML
+#' @importFrom markdown mark_html
 show_help <- function(filename, show_modal = TRUE) {
   # check if valid path was provided and look up file in 'www' otherwise
   if (!file.exists(filename)) {
@@ -25,7 +25,7 @@ show_help <- function(filename, show_modal = TRUE) {
     message("[show_help] Rendering Rmd file: ", file_in)
     help_text <- shiny::withMathJax(
       shiny::HTML(
-        markdown::markdownToHTML(
+        markdown::mark_html(
           file = file_in,
           # [JL] in markdown version >1.5 the extension function was removed
           # and replaced by options

@@ -6,10 +6,10 @@ params:
   General: NA
   logo_file: NA
 output:
-  word_document: 
-    reference_docx: template.docx
   html_document:
     df_print: paged
+  word_document: 
+    reference_docx: template.docx
   pdf_document:
     latex_engine: lualatex
 fontsize: 11pt
@@ -64,7 +64,7 @@ This is a Report template for demonstration purpose. Specific layouts can be gen
 ```{r mat_tab, echo=FALSE}
   df <- M
   if (knitr::is_html_output()) {
-    kableExtra::kable_styling(knitr::kable(df, format="html", row.names=FALSE, format.args = list(decimal.mark = ".")), font_size = 9)
+    eCerto:::styleTabC3(x = df)
   } else if (knitr::is_latex_output()) {
     knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
   } else {

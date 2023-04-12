@@ -20,7 +20,7 @@ get_local_file <- function(x = NULL) {
   x <- as.character(x)
   stopifnot(length(x)==1)
   if (is.na(shiny::resourcePaths()["www"])) {
-    warning("[get_local_file] No shiny resourcePaths 'www' defined")
+    warning("[get_local_file] No shiny resourcePaths 'www' defined.")
     return(NA)
   } else {
     out <- list.files(path = shiny::resourcePaths()["www"], pattern = x, recursive = TRUE, full.names = TRUE)

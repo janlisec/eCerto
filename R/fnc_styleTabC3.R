@@ -1,9 +1,10 @@
 #' @title styleTabC3.
 #' @description Prepare Tab C3 for HTML.
-#' @param x Object `overview_stats_pre()`.
+#' @param x Object `materialtabelle`.
 #' @param n Rounding precision for specific columns..
 #' @examples
-#' x <- eCerto:::test_Certification_Excel()
+#' x <- shiny::isolate(eCerto::getValue(eCerto:::test_rv(), c("General", "materialtabelle")))
+#' eCerto:::styleTabC3(x)
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
@@ -25,5 +26,4 @@ styleTabC3 <- function(x, precision_U = 4, selected_row = 1, currency_cols = 1) 
   )
   dt <- DT::formatCurrency(table = dt, columns = get_UF_cols(x, "U_round"), currency = "", digits = precision_U)
   return(dt)
-
 }

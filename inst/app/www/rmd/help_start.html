@@ -1049,10 +1049,10 @@ correction factors <span class="math inline">\(f_i\)</span> to adjust
 <span class="math inline">\(\mu\)</span> and obtain the certified mean
 <code>cert_val</code> by <span class="math inline">\(\mu_c = \mu \times
 \prod f_i\)</span></p></li>
-<li><p><code>U</code> columns can be added and may contain relative
+<li><p><code>u</code> columns can be added and may contain relative
 uncertainty contributions (e.g. from homogeneity or stability
 modules)</p>
-<p><strong><em>Note!</em></strong> <code>U</code> columns containing
+<p><strong><em>Note!</em></strong> <code>u</code> columns containing
 different uncertainty contributions should always be provided relative
 to the mean to allow an easy combination of the individual terms. Only
 <code>U_abs</code> is expressed as an absolute value.</p></li>
@@ -1060,7 +1060,7 @@ to the mean to allow an easy combination of the individual terms. Only
 uncertainty, calculated as <span class="math inline">\(u_{char}=\frac{s}{\sqrt{n} \times
 mean}\)</span></p></li>
 <li><p><code>u_com</code> is the <em>com</em>bined uncertainty from all
-U columns, where all relative uncertainty components <span class="math inline">\(u_i\)</span> are combined using formula <span class="math inline">\(u_{com}=\sqrt{\sum{u_i^2}}\)</span></p></li>
+<code>u</code> columns, where all relative uncertainty components <span class="math inline">\(u_i\)</span> are combined using formula <span class="math inline">\(u_{com}=\sqrt{\sum{u_i^2}}\)</span></p></li>
 <li><p><code>k</code> is an additional expansion factor for the
 uncertainty <span class="math inline">\(U=u_{com} \times
 k\)</span></p></li>
@@ -1072,11 +1072,10 @@ calculated by <span class="math inline">\(U_{abs}=U \times
 digits specified by the user at the analyte selection panel (top,
 <code>Precision (cert)</code>). A precision according to DIN 1333 based
 on <span class="math inline">\(U_{abs}\)</span> is suggested. However,
-all relative <code>U</code> columns are depicted with fixed 4 digits
+all relative <code>u</code> columns are depicted with fixed 4 digits
 precision.</p>
-<p><strong>Tab.C3</strong> can be exported together with a report as
-PDF, Word or HTML document using the download section on top of the
-page.</p>
+<p><strong>Tab.C3</strong> can be exported within a report using the
+download section on top of the page.</p>
 </div>
 <div id="editing-options" class="section level3">
 <h3>Editing options</h3>
