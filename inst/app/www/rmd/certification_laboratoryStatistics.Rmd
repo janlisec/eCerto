@@ -12,7 +12,11 @@ directly for some of the tests. As a third option, the calculated test statistic
 be displayed to check with manual calculations.
 
 ***Note!*** *eCerto* performs outlier tests at the lower and upper end of the value
-distribution independently (two one sided tests).
+distribution independently (two one sided tests). This might lead to confusion as 
+P-values for both independent tests are displayed within the same column of **Tab.C1**.
+However, it allows to keep the output compact. Please use results of **Tab.C1** in
+parallel with **Fig.C1** to decide on potential removal of Labs.
+
 
 If any lab is excluded after inspection of **Tab.C1** and using the filter section of 
 the analyte panel on top of the page, all tests can be conducted also without filtered 
@@ -40,10 +44,6 @@ The Dixon-Test was developed for small sample sizes and will only work for $3 \l
 Test is performed as single (only the most extreme value at each end of the distribution 
 is tested) as well as double version (the two most extreme values are tested against the 
 rest). Similar to Dixon the test is only applied for $3 \le n \le 30$.
-* <a href="http://www.statistics4u.info/fundstat_germ/ee_nalimov_outliertest.html" target="_blank" rel="noopener noreferrer">Nalimov</a>
-This test was originally implemented based on a website including the critical values table.
-***Note!*** The Nalimov test in its version by Kaiser/Gottschalk is most likely wrong and will be
-removed in a future version of *eCerto*. The correct implementation gives results identical to Grubbs.
 * <a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a> 
 ***Note!*** 
 The Cochran test is performed consecutively, *i.e.* the Lab showing the highest variance is tested 

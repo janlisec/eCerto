@@ -29,7 +29,6 @@ prepTabC1 <- function(dat, lab_means, excl_labs = FALSE, fmt = c("alpha", "pval"
     Scheffe(data = dat),
     Dixon(lab_means = lab_means, fmt = fmt),
     Grubbs(lab_means = lab_means, fmt = fmt),
-    Nalimov(lab_means = lab_means, fmt = fmt),
     Cochran(data = dat, fmt = fmt),
     stringsAsFactors = FALSE
   )
