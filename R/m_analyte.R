@@ -78,7 +78,6 @@ m_analyteServer = function(id, rv) {
 
     apm <- shiny::reactiveVal() # make a local copy of apm
     shiny::observeEvent(getValue(rv, c("General","apm")), {
-      # $$ToDo$$ attach the unit information to apm if not yet present
       if (!identical(getValue(rv, c("General","apm")), apm())) {
         apm(getValue(rv, c("General","apm")))
       }

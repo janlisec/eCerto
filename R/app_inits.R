@@ -141,6 +141,7 @@ init_apm <- function(x) {
     out$lab_ids <- unique(as.character(y[,"Lab"]))
     if ("S_flt" %in% colnames(y) && any(y[,"S_flt"])) out$sample_filter <- y[which(y[,"S_flt"]),"ID"]
     if ("L_flt" %in% colnames(y) && any(y[,"L_flt"])) out$lab_filter <- unique(as.character(y[which(y[,"L_flt"]),"Lab"]))
+    if ("unit" %in% colnames(y)) out[["unit"]] <- as.character(unique(y[,"unit"])[1])
     return(out)
   }, simplify = FALSE)
   return(apm)

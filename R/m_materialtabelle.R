@@ -140,17 +140,16 @@ m_materialtabelleServer <- function(id, rv) {
         mt <- cbind(mt, "U_abs"=NA)
         attr(mt, "col_code") <- cc
       }
-      # add a column for analyte unit if not yet present
-      if (!("unit" %in% colnames(mt))) {
+      # add a column for analyte unit if not yet present or modify column according to rv object data (stored in apm)
+      if (!("unit" %in% colnames(mt)) | ("unit" %in% colnames(mt) && all(mt[,"unit"]=="U"))) {
         cc <- attr(mt, "col_code")
-        df <- getValue(rv, c("Certification","data"))
-        units <- sapply(split(as.character(df[,"unit"]), df[,"analyte"]), unique)
+        units <- rv$a_p("unit")
         if (identical(names(units), as.character(mt[,"analyte"]))) {
           if (!silent) message("[materialtabelle] Set analyte units for 'mt' from 'rv C data'")
-          mt <- cbind(mt, data.frame("unit"=units))
+          mt[,"unit"] <- units
         } else {
           err_txt("[materialtabelle] Can't set analyte units for Tab.3 - Material table")
-          mt <- cbind(mt, "unit"=rep("", nrow(mt)))
+          mt[,"unit"] <- rep("U", nrow(mt))
         }
         attr(mt, "col_code") <- cc
       }
