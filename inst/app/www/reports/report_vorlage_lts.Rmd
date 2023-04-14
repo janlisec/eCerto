@@ -123,6 +123,10 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
   # table of values (potentially modified)
   com <- v[,"Comment"]
   out <- v[,1:3]
+  # escape special LaTeX characters in `out`
+  for (i in 1:ncol(out)) {
+    if (mode(out[,i])=="character") out[,i] <- knitr:::escape_latex(x = out[,i])
+  }
   if (any(!is.na(com))) {
     idx <- com
     idx[!is.na(com)] <- 1:sum(!is.na(com))
@@ -130,6 +134,8 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
       out$File[k] <- paste0(out$File[k], "\\textsuperscript{", idx[k], "}")
     }
     com <- com[!is.na(com)]
+    # escape special LaTeX characters in `com`
+    com <- knitr:::escape_latex(x = com)
     com <- data.frame("Comments for Tab.1"=sapply(1:length(com), function(i) { paste0("\\textsuperscript{", i, "} ", com[i]) }), check.names = FALSE)
   } else {
     com <- NULL

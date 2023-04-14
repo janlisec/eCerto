@@ -378,7 +378,6 @@ get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
 get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALSE) {
   type <- match.arg(type)
   df <- getValue(rv, c("Certification","data"))
-  apm <- getValue(rv, c("General","apm"))
   an <- rv$cur_an
   df <- df[df[,"analyte"]==an,]
   if (!"File" %in% colnames(df)) df <- cbind(df, "File"="")
