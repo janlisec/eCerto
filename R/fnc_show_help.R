@@ -25,14 +25,8 @@ show_help <- function(filename, show_modal = TRUE) {
     message("[show_help] Rendering Rmd file: ", file_in)
     help_text <- shiny::withMathJax(
       shiny::HTML(
-        markdown::mark_html(
-          file = file_in,
-          # [JL] in markdown version >1.5 the extension function was removed
-          # and replaced by options
-          #extensions = c("tables","autolink","latex_math"),
-          options = "+tables+autolink+latex_math",
-          fragment.only = TRUE
-        )
+        #markdown::mark_html(file = file_in, options = "+tables+autolink+latex_math-standalone")
+        markdown::markdownToHTML(file = file_in, fragment.only = TRUE)
       )
     )
     if (show_modal) {

@@ -6,11 +6,12 @@ output:
 #    keep_tex: true
 # This needs to stay, because 'xcolor' package can not be loaded with option 'table' as this would lead to a clash
 # see this link: https://community.rstudio.com/t/colors-by-names-using-xcolor-latex-error-option-clash-for-package-xcolor/81514/4
-#classoption: table
+classoption: table
 header-includes:
 #- \usepackage{float}
 #- \floatplacement{figure}{H}  
 #- \usepackage{booktabs}
+- \usepackage{xcolor}
 - \usepackage{caption}
 - \usepackage{fontspec}
 - "\\setmainfont{BAMKlavika-Light.ttf}[BoldFont = BAMKlavika-Medium.ttf, ItalicFont = BAMKlavika-LightItalic.ttf, BoldItalicFont = BAMKlavika-MediumItalic.ttf]"
