@@ -12,6 +12,20 @@
 #' @source jan.lisec@@bam.de
 "LTS001"
 
+#' @title Dixon critical values table.
+#' @docType data
+#' @format A data frame containing Dixon critical values with n in rows and alpha in cols.
+#' @usage data(cvals_Dixon)
+#' @source <http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html>
+"cvals_Dixon"
+
+#' @title Grubbs2 critical values table.
+#' @docType data
+#' @format A data frame containing critical values for Double Grubbs test with n in rows and alpha in cols.
+#' @usage data(cvals_Grubbs2)
+#' @source `outliers` package.
+"cvals_Grubbs2"
+
 #' @title test_Stability_Arrhenius.
 #' @keywords internal
 #' @importFrom stats rnorm
