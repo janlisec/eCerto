@@ -15,7 +15,7 @@
 #' @keywords internal
 #' @importFrom moments skewness kurtosis agostino.test anscombe.test
 #' @noRd
-prepTabC1 <- function(dat, lab_means, excl_labs = FALSE, fmt = c("alpha", "pval", "cval")) {
+prepTabC1 <- function(dat, lab_means, excl_labs = FALSE, fmt = c("alpha", "pval", "cval", "cval05", "cval01")) {
   fmt <- match.arg(fmt)
   if (excl_labs) {
     # remove filtered labs and re-factor column 'Lab'

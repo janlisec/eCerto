@@ -106,7 +106,7 @@ page_CertificationUI = function(id) {
             shiny::wellPanel(
               sub_header("Tab.C1 options"),
               shiny::checkboxInput(inputId = ns("tabC1_opt"), label = "Exclude filtered Labs", value = FALSE),
-              shiny::selectInput(inputId = ns("tabC1_opt2"), label = "Select values to show", choices = c("Significance level", "P-value", "Test statistic"), selected = "Significance level")
+              shiny::selectInput(inputId = ns("tabC1_opt2"), label = "Select values to show", choices = c("Significance level", "P-value", "Test statistic", "Critical value a=0.05", "Critical value a=0.01"), selected = "Significance level")
             )
           )
         )
@@ -337,7 +337,7 @@ page_CertificationServer = function(id, rv) {
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
       shiny::req(dat(), selected_tab(), input$tabC1_opt2)
-      fmt <- switch(input$tabC1_opt2, "Significance level" = "alpha", "P-value" = "pval", "Test statistic" = "cval")
+      fmt <- switch(input$tabC1_opt2, "Significance level" = "alpha", "P-value" = "pval", "Test statistic" = "cval", "Critical value a=0.05" = "cval05", "Critical value a=0.01" = "cval01")
       prepTabC1(dat = dat(), lab_means = rv$c_lab_means(data = dat()), excl_labs = input$tabC1_opt, fmt = fmt)
     })
     shiny::observeEvent(overview_stats_pre(), {
