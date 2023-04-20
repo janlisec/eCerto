@@ -13,16 +13,29 @@ available for **R**. Details regarding the conducted statistical test can be fou
 using the following links:
 
 * <a href="https://rdrr.io/r/stats/bartlett.test.html" target="_blank" rel="noopener noreferrer">Bartlett</a>
+s-test of the null hypothesis that the variances in each of the labs is the same.
 * <a href="https://rdrr.io/r/stats/anova.html" target="_blank" rel="noopener noreferrer">ANOVA</a>
+tests if labs are significantly different from each other (which is almost always the case).
+***Note!*** Should the ANOVA P-value be not significant you can select the `pooling` option
+for this analyte.
 * <a href="https://rdrr.io/r/stats/ks.test.html" target="_blank" rel="noopener noreferrer">KS</a>
+-test performs a one-sample (Kolmogorov) test, which is carried out of the null that the distribution 
+of lab means is similar to a normal distribution with parameters $\mu$ and $\sigma$ estimated from
+the analyte data.
 * <a href="https://rdrr.io/cran/moments/man/skewness.html" target="_blank" rel="noopener noreferrer">Skewness</a>
+computes the skewness of the distribution.
 * <a href="https://rdrr.io/cran/moments/man/agostino.test.html" target="_blank" rel="noopener noreferrer">Agostino</a>
+performs the D'Agostino test for skewness in normally distributed data.
 * <a href="https://rdrr.io/cran/moments/man/kurtosis.html" target="_blank" rel="noopener noreferrer">Kurtosis</a>
+computes the estimator of Pearson's measure of kurtosis.
 * <a href="https://rdrr.io/cran/moments/man/anscombe.test.html" target="_blank" rel="noopener noreferrer">Anscombe</a>
+performs the Anscombe-Glynn test of kurtosis for normal distributed samples.
+***Note!*** `Skewness` and `Kurtosis` are computed using a two-sided alternative.
 
 ***Note!*** 
 Some tests need a minimum number of replicates and will not yield a result if this 
 criteria is not met (*i.e.* Agostino).
 
-The `KS test` is used to compare the distribution of Lab means against a normal distribution.
-Besides the respective P-value, also a QQ-plot can be opened using the respective link.
+The is used to compare the distribution of Lab means against a normal distribution.
+Besides the `KS` test P-value, deviation of the data from a normal distribution can also 
+be visually investigated by opening a QQ-plot using the respective link.

@@ -29,15 +29,18 @@ two $\alpha$ levels (.01 and .05) and re-implemented following the code provided
 * <a href="https://rdrr.io/cran/outliers/man/dixon.test.html" target="_blank" rel="noopener noreferrer">Dixon</a>
 ***Note!*** 
 The Dixon-Test was originally developed for small sample sizes of $3 \le n \le 30$. We use
-tabulated critical values for Dixon up to $n=100$ obtained from
-<a href="http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html" target="_blank" rel="noopener noreferrer">here</a>.
+tabulated critical values for Dixon up to $n=100$ obtained from different tables in
+<a href="http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html" target="_blank" rel="noopener noreferrer">this</a>
+website. Different tables are used according to $n$.
 * <a href="https://rdrr.io/cran/outliers/man/grubbs.test.html" target="_blank" rel="noopener noreferrer">Grubbs</a>
 ***Note!*** 
 Test is performed as single (only the most extreme value at each end of the distribution 
 is tested) as well as double version (the two most extreme values are tested against the 
 rest). In accordance with ISO 17025 the double Grubbs Test is only conducted in case that
-the single Grubbs Test is not significant. Critical values for double Grubbs are only
-available for $4 \le n \le 30$.
+the single Grubbs Test is not significant. Critical values for double Grubbs are obtained
+from the provided link for $4 \le n \le 30$ and are estimated for $31 \le n \le 100$ based
+on <a href="https://doi.org/10.1007/s10182-011-0185-y" target="_blank" rel="noopener noreferrer">this</a> 
+paper.
 * <a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a> 
 ***Note!*** 
 The Cochran test is performed consecutively, *i.e.* the Lab showing the highest variance is tested 

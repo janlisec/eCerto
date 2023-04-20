@@ -66,6 +66,7 @@ Dixon <- function(lab_means=NULL, fmt=c("alpha", "pval", "cval", "cval05", "cval
 #' test <- shiny::isolate(eCerto:::test_rv("SR3")$c_lab_means())
 #' Grubbs(lab_means=test, fmt=c("alpha", "pval", "cval")[3])
 #' Grubbs(lab_means=test, fmt="cval05")
+#' Grubbs(lab_means=test, fmt="cval05")
 Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "cval01")) {
   fmt <- match.arg(fmt)
   x <- lab_means[, "mean"]
@@ -83,7 +84,7 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "c
     if (fmt=="cval") { out$Grubbs1[!is.na(out$Grubbs1)] <- abs(lab_means[!is.na(out$Grubbs1),"mean"]-mean(x))/sd(x) }
     if (fmt=="cval05") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(0.05, n) }
     if (fmt=="cval01") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(0.01, n) }
-    if (n >= 4 && (test_Grubbs1_min | test_Grubbs1_max) && n<=30) {
+    if (n >= 4 && (test_Grubbs1_min | test_Grubbs1_max) && n<=100) {
       out$Grubbs2 <- rep(NA, n)
       maxvals <- order(x, decreasing = TRUE)[1:2]
       minvals <- order(x, decreasing = FALSE)[1:2]
@@ -91,6 +92,7 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "c
       # if (test_Grubbs1_max) out$Grubbs2[maxvals] <- outliers::grubbs.test(x = x, type = 20, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, TRUE, FALSE))$p.value
       if (test_Grubbs1_min) out$Grubbs2[minvals] <- grubbs.test(x = x, type = "20", tail = "lower")$p.value
       if (test_Grubbs1_max) out$Grubbs2[maxvals] <- grubbs.test(x = x, type = "20", tail = "upper")$p.value
+      #browser()
       if (fmt=="alpha") out$Grubbs2 <- pval2level(p = out$Grubbs2)
       if (fmt=="cval") {
         if (test_Grubbs1_min) out$Grubbs2[minvals] <- stats::var(x[-minvals])/stats::var(x) * (n - 3)/(n - 1)
@@ -202,14 +204,48 @@ qgrubbs <- function (p, n, type = 10, rev = FALSE) {
       return(1 - res)
     }
   } else {
-    if (n > 30) stop("[qgrubbs] n must be in range 3-30")
+    if (n > 30) warning("[qgrubbs] critical value is estimated for n>30")
     gtwo <- eCerto::cvals_Grubbs2
     pp <- as.numeric(colnames(gtwo))
     if (!rev) res <- qtable(p, pp, gtwo[n-3,]) else res <- qtable(p, gtwo[n-3,], pp)
     res[res < 0] <- 0
     res[res > 1] <- 1
-    return(res)
+    return(unname(res))
   }
+}
+
+#' @title qgrubbs2.
+#' @description To calculate a critical Grubbs value for the double Grubbs test..
+#' @param p The desired p-value level, i.e. 0.01 or 0.05 for a one sided test.
+#' @param n The number of values or labs.
+#' @noRd
+#' @keywords internal
+#' @examples
+#' qgrubbs2(0.05, 5)
+#' par(mfrow=c(1,4))
+#' for (p in c(0.01, 0.025, 0.05, 0.1)) {
+#'   plot(sapply(4:30, function(n) { qgrubbs2(p = p, n = n) }) - eCerto::cvals_Grubbs2[,as.character(p)],
+#'        main=paste("alpha =", p), ylab="Deviation from Tabulated values for Double Grubbs",
+#'        ylim=c(-0.003,0.003), xlab="n")
+#'   abline(h=seq(-0.003,0.003,0.001), col=grey(0.9))
+#' }
+qgrubbs2 <- function(p = 0.05, n = 5) {
+  tmp <- structure(
+    c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1,
+      0.0443, 0.0388, 0.0362, 0.0322, 0.0289, 0.0251,
+      1.0012, 0.9558, 0.925, 0.8833, 0.8501, 0.8169,
+      -4.2493, -3.6613, -3.3101, -2.858, -2.5075, -2.1615
+    ), dim = c(6L, 4L), dimnames = list(NULL, c("p", "a", "b", "c"))
+  )
+  idx <- which(sapply(tmp[,"p"], identical, p))
+  if (length(idx)==0) {
+    warning("[qgrubbs2] no coefficients for this p available")
+    idx <- 1
+  }
+  fn <- tmp[idx,"a"]*n^2 + tmp[idx,"b"]*n + tmp[idx,"c"]
+  fc <- (1-p)^(1/fn)
+  out <- 1 / (1 + 2/(n-3) * stats::qf(p = fc, df1 = 2, df2 = n-3))
+  return(unname(out))
 }
 
 #' @title pgrubbs.
@@ -236,7 +272,13 @@ pgrubbs <- function (q, n, type = 10) {
 #' test <- shiny::isolate(eCerto:::test_rv("SR3")$c_lab_means())
 #' grubbs.test(x = test[,"mean"])
 #' grubbs.test(x = test[,"mean"], tail = "upper")
+#' # comparison with other packages
 #' grubbs.test(x = test[,"mean"], type ="20")
+#' # identical result as for outliers package
+#' outliers::grubbs.test(x = test[,"mean"], type = "20", two.sided = FALSE)
+#' # moderate difference to PMCMRplus package
+#' PMCMRplus::doubleGrubbsTest(x = test[,"mean"], alternative = "less")
+
 grubbs.test <- function (x, type = c("10", "20"), tail = c("lower", "upper")) {
   tail <- match.arg(tail)
   type <- match.arg(type)
