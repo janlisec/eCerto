@@ -6,21 +6,11 @@ if observed at the `.05` and `.01` level respectively. The displayed values `n.s
 `.` indicate either that the test probability was >0.05 or that this lab was not tested
 because it did not contain an extreme value.
 
-Instead of the qualitative significance levels reached in the test, the options panel
-to the right of **Tab.C1** offers the possibility to display the calculated p-values
-directly for some of the tests. As a third option, the calculated test statistic can
-be displayed to check with manual calculations.
-
 ***Note!*** *eCerto* performs outlier tests at the lower and upper end of the value
-distribution independently (two one sided tests). This might lead to confusion as 
+distribution independently (*i.e.* two one sided tests). This might lead to confusion as 
 P-values for both independent tests are displayed within the same column of **Tab.C1**.
-However, it allows to keep the output compact. Please use results of **Tab.C1** in
-parallel with **Fig.C1** to decide on potential removal of Labs.
-
-
-If any lab is excluded after inspection of **Tab.C1** and using the filter section of 
-the analyte panel on top of the page, all tests can be conducted also without filtered 
-labs to confirm that no further outliers are present after removal.
+However, it allows to keep the output compact. Please always use results of **Tab.C1** 
+in parallel with **Fig.C1** to decide on the removal of Labs.
 
 ![**Tab.C1** Laboratory statistics](fig/C_Modul_Tab1.png)
 
@@ -38,12 +28,16 @@ two $\alpha$ levels (.01 and .05) and re-implemented following the code provided
 `agricolae` package.
 * <a href="https://rdrr.io/cran/outliers/man/dixon.test.html" target="_blank" rel="noopener noreferrer">Dixon</a>
 ***Note!*** 
-The Dixon-Test was developed for small sample sizes and will only work for $3 \le n \le 30$.
+The Dixon-Test was originally developed for small sample sizes of $3 \le n \le 30$. We use
+tabulated critical values for Dixon up to $n=100$ obtained from
+<a href="http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html" target="_blank" rel="noopener noreferrer">here</a>.
 * <a href="https://rdrr.io/cran/outliers/man/grubbs.test.html" target="_blank" rel="noopener noreferrer">Grubbs</a>
 ***Note!*** 
 Test is performed as single (only the most extreme value at each end of the distribution 
 is tested) as well as double version (the two most extreme values are tested against the 
-rest). Similar to Dixon the test is only applied for $3 \le n \le 30$.
+rest). In accordance with ISO 17025 the double Grubbs Test is only conducted in case that
+the single Grubbs Test is not significant. Critical values for double Grubbs are only
+available for $4 \le n \le 30$.
 * <a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a> 
 ***Note!*** 
 The Cochran test is performed consecutively, *i.e.* the Lab showing the highest variance is tested 

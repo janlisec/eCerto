@@ -19,7 +19,6 @@ Scheffe <- function(data=NULL) {
 #' @description BAMTool, Modul: Certification, Dixon Test
 #' @param lab_means data.frame, output of Stats function.
 #' @param fmt Output format. Either the p-values directly or expressed qualitatively.
-#' @importFrom outliers dixon.test
 #' @noRd
 #' @examples
 #' test <- shiny::isolate(eCerto:::test_rv("SR3")$c_lab_means())
@@ -63,7 +62,6 @@ Dixon <- function(lab_means=NULL, fmt=c("alpha", "pval", "cval", "cval05", "cval
 #' @param lab_means data.frame, output of Stats function.
 #' @param fmt Output format. Either the p-values directly or expressed qualitatively.
 #' @noRd
-#' @importFrom outliers grubbs.test
 #' @examples
 #' test <- shiny::isolate(eCerto:::test_rv("SR3")$c_lab_means())
 #' Grubbs(lab_means=test, fmt=c("alpha", "pval", "cval")[3])
@@ -73,7 +71,7 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "c
   x <- lab_means[, "mean"]
   n <- length(x)
   out <- data.frame("Grubbs1" = rep(NA, n), row.names = row.names(lab_means))
-  if (n>=3 && n<=30 && diff(range(x))>0) {
+  if (n>=3 && n<=100 && diff(range(x))>0) {
     #smallest_is_extreme <- (max(x) - mean(x)) <= (mean(x) - min(x))
     # out$Grubbs1[which.max(x)] <- outliers::grubbs.test(x = x, type = 10, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, TRUE, FALSE))$p.value
     # out$Grubbs1[which.min(x)] <- outliers::grubbs.test(x = x, type = 10, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, FALSE, TRUE))$p.value
@@ -85,7 +83,7 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "c
     if (fmt=="cval") { out$Grubbs1[!is.na(out$Grubbs1)] <- abs(lab_means[!is.na(out$Grubbs1),"mean"]-mean(x))/sd(x) }
     if (fmt=="cval05") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(0.05, n) }
     if (fmt=="cval01") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(0.01, n) }
-    if (n >= 4 && (test_Grubbs1_min | test_Grubbs1_max)) {
+    if (n >= 4 && (test_Grubbs1_min | test_Grubbs1_max) && n<=30) {
       out$Grubbs2 <- rep(NA, n)
       maxvals <- order(x, decreasing = TRUE)[1:2]
       minvals <- order(x, decreasing = FALSE)[1:2]
@@ -99,12 +97,12 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "c
         if (test_Grubbs1_max) out$Grubbs2[maxvals] <- stats::var(x[-maxvals])/stats::var(x) * (n - 3)/(n - 1)
       }
       if (fmt=="cval05") {
-        if (test_Grubbs1_min) out$Grubbs2[minvals] <- NA
-        if (test_Grubbs1_max) out$Grubbs2[maxvals] <- NA
+        if (test_Grubbs1_min) out$Grubbs2[minvals] <- qgrubbs(0.05, n, type = "20")
+        if (test_Grubbs1_max) out$Grubbs2[maxvals] <- qgrubbs(0.05, n, type = "20")
       }
       if (fmt=="cval01") {
-        if (test_Grubbs1_min) out$Grubbs2[minvals] <- NA
-        if (test_Grubbs1_max) out$Grubbs2[maxvals] <- NA
+        if (test_Grubbs1_min) out$Grubbs2[minvals] <- qgrubbs(0.01, n, type = "20")
+        if (test_Grubbs1_max) out$Grubbs2[maxvals] <- qgrubbs(0.01, n, type = "20")
       }
     }
   } else {

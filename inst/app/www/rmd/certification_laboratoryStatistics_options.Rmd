@@ -1,0 +1,13 @@
+Instead of the qualitative significance levels reached in the test, the options 
+panel to the right of **Tab.C1** offers the possibility to display the calculated 
+`P-values` directly for most of the tests. Further, the calculated `test statistic` 
+values can be displayed. The user can also select to show the `critical values` 
+at $\alpha=0.05$ and $\alpha=0.01$. Depending on the test these are calculated 
+based on the underlying distributions or obtained from tabulated values.
+
+If any lab is excluded after using the filter section of the analyte panel on 
+top of the page, all tests in **Tab.C1** can be conducted without filtered labs 
+selecting the option `Exclude filtered Labs`. This feature allows to confirm 
+whether or not further outliers are present in the data set. Please use the 
+possibility to remove outliers sequentially with caution, *i.e.* refrain from
+*over exclusion* of initially masked outliers.

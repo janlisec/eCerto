@@ -41,7 +41,7 @@ app_ui <- function(request) {
             get_golem_config("app_version"), "|",
             get_golem_config("app_date"), "|",
             '<a href="mailto:jan.lisec@bam.de">jan.lisec@bam.de</a>',
-            ifelse(get_golem_config("bam_server"), '| <a href="https://www.bam.de/Navigation/DE/Services/Datenschutz/datenschutz.html" target="_blank" rel="noopener noreferrer">BAM Datenschutzerkl\u00e4rung</a>', '')
+            ifelse(get_golem_config("bam_server"), '| <a href="https://www.bam.de/Navigation/EN/Services/Privacy-Policy/privacy-policy.html" target="_blank" rel="noopener noreferrer">BAM Privacy Policy</a>', '')
           )
         #)
       ),
@@ -52,13 +52,6 @@ app_ui <- function(request) {
         shiny::div(style="padding-top: 60px;", page_startUI("Start"))
       ),
       shiny::tabPanel(
-        id = "certif_tab",
-        title = "Certification",
-        value = "tP_certification",
-        icon = shiny::icon("angle-right"),
-        shiny::div(style="padding-top: 60px;", page_CertificationUI("certification"))
-      ),
-      shiny::tabPanel(
         id = "homog_tab",
         title = "Homogeneity",
         icon = shiny::icon("angle-right"),
@@ -66,10 +59,18 @@ app_ui <- function(request) {
         shiny::div(style="padding-top: 60px;", page_HomogeneityUI("Homogeneity"))
       ),
       shiny::tabPanel(
+        id = "stab_tab",
         title = "Stability",
         icon = shiny::icon("angle-right"),
         value = "tP_stability",
         shiny::div(style="padding-top: 60px;", page_StabilityUI("Stability"))
+      ),
+      shiny::tabPanel(
+        id = "certif_tab",
+        title = "Certification",
+        value = "tP_certification",
+        icon = shiny::icon("angle-right"),
+        shiny::div(style="padding-top: 60px;", page_CertificationUI("certification"))
       ),
       # Long term stability
       shiny::tabPanel(

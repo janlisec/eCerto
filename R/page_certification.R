@@ -104,7 +104,7 @@ page_CertificationUI = function(id) {
           shiny::column(
             width = 2,
             shiny::wellPanel(
-              sub_header("Tab.C1 options"),
+              sub_header(shiny::actionLink(inputId = ns("tabC1opt_link"), label = "Tab.C1 options"), b=0),
               shiny::checkboxInput(inputId = ns("tabC1_opt"), label = "Exclude filtered Labs", value = FALSE),
               shiny::selectInput(inputId = ns("tabC1_opt2"), label = "Select values to show", choices = c("Significance level", "P-value", "Test statistic", "Critical value a=0.05", "Critical value a=0.01"), selected = "Significance level")
             )
@@ -387,6 +387,9 @@ page_CertificationServer = function(id, rv) {
     # Help Files
     shiny::observeEvent(input$tabC1_link,{
       show_help("certification_laboratoryStatistics")
+    })
+    shiny::observeEvent(input$tabC1opt_link,{
+      show_help("certification_laboratoryStatistics_options")
     })
     shiny::observeEvent(input$stat2_link,{
       show_help("certification_meanDistribution")

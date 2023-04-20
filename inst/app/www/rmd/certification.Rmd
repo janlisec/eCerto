@@ -9,6 +9,9 @@
 ```{r child = 'certification_laboratoryStatistics.Rmd'}
 ```
 
+```{r child = 'certification_laboratoryStatistics_options.Rmd'}
+```
+
 ```{r child = 'certification_meanDistribution.Rmd'}
 ```
 
