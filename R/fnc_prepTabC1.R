@@ -2,6 +2,8 @@
 #' @description Compute lab-stats for Tab C1 of C Module.
 #' @param dat Table with columns 'Lab' and 'value'.
 #' @param precision Rounding precision.
+#' @param excl_labs Exclude filtered Labs from table.
+#' @param fmt Output value depicted in the table.
 #' @examples
 #' rv <- eCerto:::test_rv(type = "SR3")
 #' shiny::isolate(dat <- rv$c_fltData())

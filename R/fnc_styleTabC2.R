@@ -4,7 +4,7 @@
 #' @param n Rounding precision for specific columns..
 #' @examples
 #' x <- eCerto:::test_Certification_Excel()
-#' x <- eCerto:::prepTabC2(data = x)
+#' x <- eCerto:::prepTabC2(dat = x)
 #' eCerto:::styleTabC2(x = x)
 #' @return A data table object.
 #' @keywords internal

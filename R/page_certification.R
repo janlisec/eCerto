@@ -137,7 +137,10 @@ page_CertificationUI = function(id) {
           ),
           shiny::column(
             width = 2,
-            shiny::wellPanel(shiny::uiOutput(outputId = ns("tab2_statement")))
+            shiny::wellPanel(
+              shiny::uiOutput(outputId = ns("tab2_statement")),
+              shiny::checkboxInput(inputId = ns("tabC2_opt"), label = "Exclude filtered Labs", value = FALSE)
+            )
           )
         )
       ),
@@ -350,7 +353,7 @@ page_CertificationServer = function(id, rv) {
     # Tab.2 Labmean statistics
     TabC2_pre <- shiny::reactive({
       shiny::req(dat())
-      prepTabC2(data = dat(), precision = precision())
+      prepTabC2(dat = dat(), precision = precision(), excl_labs = input$tabC2_opt)
     })
     shiny::observeEvent(TabC2_pre(), {
       setValue(rv, c("Certification_processing","mstats"), TabC2_pre())
