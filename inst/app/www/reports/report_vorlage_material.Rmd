@@ -8,10 +8,6 @@ params:
 output:
   html_document:
     df_print: paged
-  word_document: 
-    reference_docx: template.docx
-  pdf_document:
-    latex_engine: lualatex
 fontsize: 11pt
 ---
 
@@ -29,7 +25,7 @@ if (testing) {
   res <- eCerto::CRM001
   M <- res$General$materialtabelle
   G <- res$General
-  A <- paste(names(G[["apm"]]), collapse=", ")
+  A <- names(G[["apm"]])
   if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
     warning(paste(logo_file, "is not in same folder as", report_file))
   }
@@ -37,13 +33,14 @@ if (testing) {
 } else {
   M <- params[["materialtabelle"]]
   G <- params[["General"]]
-  A <- paste(names(G[["apm"]]), collapse=", ")
+  A <- names(G[["apm"]])
   L <- params[["logo_file"]]
 }
 ```
 
 ***Note!*** 
-This is a Report template for demonstration purpose. Specific layouts can be generated on demand.
+This is a Report template for demonstration purpose. Specific layouts can be 
+generated on demand (jan.lisec@bam.de).
 
 ---
 
@@ -51,22 +48,26 @@ This is a Report template for demonstration purpose. Specific layouts can be gen
   knitr::include_graphics(L)
 ```
 
-### Meta Data
+## ***eCerto*** Report
 
-|               |                |               |                                     |
-|--------------:|:---------------|--------------:|:------------------------------------|
-| **Study ID:** | `r G$study_id` |    **Date:**  | `r format(Sys.time(), '%d %B, %Y')` |
-|     **User:** | `r G$user`     | **Analytes:** | `r A`                               |
+**Date: `r format(Sys.time(), '%d %B, %Y')`**
 
+### Modul: Certification
 
-### Material table
+Measurement data of the reference material **`r G$study_id`** was evaluated by 
+`r G$user` statistically using the software tool ***eCerto***. 
+
+**`r G$study_id`** contains `r length(A)` analytes: `r paste(A, collapse=", ")`.
+
+Homogeneity and stability of each analyte were accessed using...
+
+In an inter laboratory comparison study of ... labs, mean values for each 
+analyte were obtained and uncertainty contributions assigned as detailed 
+in **Tab.1**.
 
 ```{r mat_tab, echo=FALSE}
-  df <- M
   if (knitr::is_html_output()) {
-    eCerto:::styleTabC3(x = df)
-  } else if (knitr::is_latex_output()) {
-    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
+    eCerto:::styleTabC3(x = M, apm = G[["apm"]])
   } else {
     knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
   }

@@ -82,8 +82,8 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "c
     test_Grubbs1_max <- out$Grubbs1[which.max(x)]>0.05
     if (fmt=="alpha") out$Grubbs1 <- pval2level(p = out$Grubbs1)
     if (fmt=="cval") { out$Grubbs1[!is.na(out$Grubbs1)] <- abs(lab_means[!is.na(out$Grubbs1),"mean"]-mean(x))/sd(x) }
-    if (fmt=="cval05") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(0.05, n) }
-    if (fmt=="cval01") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(0.01, n) }
+    if (fmt=="cval05") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(1-0.05/2, n) }
+    if (fmt=="cval01") { out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(1-0.01/2, n) }
     if (n >= 4 && (test_Grubbs1_min | test_Grubbs1_max) && n<=100) {
       out$Grubbs2 <- rep(NA, n)
       maxvals <- order(x, decreasing = TRUE)[1:2]

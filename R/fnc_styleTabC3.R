@@ -1,14 +1,39 @@
 #' @title styleTabC3.
 #' @description Prepare Tab C3 for HTML.
 #' @param x Object `materialtabelle`.
-#' @param n Rounding precision for specific columns..
+#' @param apm apm to determine selected rounding precision
+#' @param selected_row should a specific row be selected.
 #' @examples
-#' x <- shiny::isolate(eCerto::getValue(eCerto:::test_rv(), c("General", "materialtabelle")))
+#' x <- shiny::isolate(eCerto::getValue(eCerto:::test_rv(type = "SR3"), c("General", "materialtabelle")))
 #' eCerto:::styleTabC3(x)
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
-styleTabC3 <- function(x, precision_U = 4, selected_row = 1, currency_cols = 1) {
+styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
+  precision_U <- 4
+  if (!is.null(apm)) {
+    # apply analyte specific precision for mean and sd
+    prec <- try(sapply(apm, function(x) {x[["precision"]]} ))
+    if (!inherits(prec, "try-error") && is.numeric(prec) && all(is.finite(prec)) && length(prec)==nrow(x)) {
+      x[,"mean"] <- sapply(1:nrow(x), function(i) { round(x[i,"mean"], prec[i]) })
+      x[,"sd"] <- sapply(1:nrow(x), function(i) { round(x[i,"sd"], prec[i]) })
+    }
+    # apply analyte specific precision for U_abs and cert_val
+    prec_exp <- try(sapply(apm, function(x) {x[["precision_export"]]} ))
+    if (!inherits(prec_exp, "try-error") && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(x)) {
+      #determine number of decimal places required according to DIN1333
+      x[,"cert_val"] <- round_DIN1333(x = x[,"cert_val"], n = prec_exp)
+      # ***Note!*** U_abs is always rounded up
+      x[,"U_abs"] <- round_up(x = x[,"U_abs"], n = prec_exp)
+    }
+  }
+  # rename column header for temporary display
+  cc <- attr(x, "col_code")
+  if (nrow(cc)>=1 && !all(cc[, "Name"] %in% colnames(x))) {
+    for (k in 1:nrow(cc)) {
+      colnames(x)[colnames(x) == cc[k, "ID"]] <- cc[k, "Name"]
+    }
+  }
   dt <- DT::datatable(
     data = x,
     editable = list(

@@ -126,6 +126,7 @@ m_materialtabelleServer <- function(id, rv) {
     })
 
     shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
+      # this section ensures some legacy data to work properly by applying modifications upon load if required
       mt <- getValue(rv, c("General", "materialtabelle"))
       # rename previous "char" column to "u_char" for legacy reasons
       if (any(c("char","com") %in% colnames(mt))) {
@@ -444,21 +445,7 @@ m_materialtabelleServer <- function(id, rv) {
     output$matreport <- DT::renderDT({
       selected_row_idx$redraw
       dt <- mater_table_print()
-      # apply analyte specific precision for mean and sd
-      prec <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision"]]} ))
-      if (!inherits(prec, "try-error") && is.numeric(prec) && all(is.finite(prec)) && length(prec)==nrow(dt)) {
-        dt[,"mean"] <- sapply(1:nrow(dt), function(i) { round(dt[i,"mean"], prec[i]) })
-        dt[,"sd"] <- sapply(1:nrow(dt), function(i) { round(dt[i,"sd"], prec[i]) })
-      }
-      # apply analyte specific precision for U_abs and cert_val
-      prec_exp <- try(sapply(getValue(rv, c("General","apm")), function(x) {x[["precision_export"]]} ))
-      if (!inherits(prec, "try-error") && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(dt)) {
-        #determine number of decimal places required according to DIN1333
-        dt[,"cert_val"] <- round_DIN1333(x = dt[,"cert_val"], n = prec_exp)
-        # ***Note!*** U_abs is always rounded up
-        dt[,"U_abs"] <- round_up(x = dt[,"U_abs"], n = prec_exp)
-      }
-      styleTabC3(x = dt, selected_row = selected_row_idx$row)
+      styleTabC3(x = dt, apm = getValue(rv, c("General","apm")), selected_row = selected_row_idx$row)
     }, server = TRUE)
 
     shiny::observeEvent(input$matreport_rows_selected, {

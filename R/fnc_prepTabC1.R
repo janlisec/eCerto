@@ -34,5 +34,8 @@ prepTabC1 <- function(dat, lab_means, excl_labs = FALSE, fmt = c("alpha", "pval"
     Cochran(data = dat, fmt = fmt),
     stringsAsFactors = FALSE
   )
+  cns <- c("Dixon", "Grubbs1", "Grubbs2", "Cochran")
+  if (fmt %in% c("pval", "cval", "cval05", "cval01")) { out[,cns] <- round(out[,cns], 6) }
+  #if (fmt %in% c("pval")) { for (cn in cns) out[,cn] <- formatC(out[,cn], format="E", digits=2) }
   return(out[order(out[, "mean"]), ])
 }
