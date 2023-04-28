@@ -99,9 +99,9 @@ check_stability_Server <- function(id, rv = NULL) {
       txt_col <- ifelse(is.finite(sk()<=sk_old()) && sk()<=sk_old(), "#00FF00", "#FF0000")
       shiny::tagList(
         HTML("<strong>analyte ", mt()$analyte, "</strong>"), br(),
-        HTML("mu_c = ", round(m_c(), ra()), ", u_c = ", round(u_c(), ra())), br(),
-        HTML("mu_m = ", round(m_m(), ra()), ", u_m = ", round(u_m(), ra())), br(),
-        HTML(paste0("<font color='", txt_col, "'>"), "<strong>SK = ", round(sk(), 2), "</strong></font>, k_c =", sk_old())
+        HTML("<var>µ</var><sub>c</sub> = ", round(m_c(), ra()), ", <var>u</var><sub>c</sub> = ", round(u_c(), ra())), br(),
+        HTML("<var>µ</var><sub>m</sub> = ", round(m_m(), ra()), ", <var>u</var><sub>m</sub> = ", round(u_m(), ra())), br(),
+        HTML(paste0("<font color='", txt_col, "'>"), "<strong><var>SK</var> = ", round(sk(), 2), "</strong></font>, <var>k</var> =", sk_old())
       )
     })
 
