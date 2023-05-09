@@ -96,7 +96,7 @@ check_stability_Server <- function(id, rv = NULL) {
 
     output$res_output <- shiny::renderUI({
       req(mt())
-      txt_col <- ifelse(is.finite(sk()<=sk_old()) && sk()<=sk_old(), "#00FF00", "#FF0000")
+      txt_col <- ifelse(is.finite(sk()<=sk_old()) && sk()<=sk_old(), "#70FF70", "#FF0000")
       shiny::tagList(
         HTML("<strong>analyte ", mt()$analyte, "</strong>"), br(),
         HTML("<var>µ</var><sub>c</sub> = ", round(m_c(), ra()), ", <var>u</var><sub>c</sub> = ", round(u_c(), ra())), br(),
