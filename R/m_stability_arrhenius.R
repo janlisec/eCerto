@@ -41,22 +41,25 @@ m_arrheniusUI <- function(id) {
         ),
         shiny::plotOutput(outputId = ns("FigS2"))
       ),
-      shiny::column(2, shiny::wellPanel(
-        shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
-        sub_header("Options Fig.S2", b=12),
-        shiny::checkboxGroupInput(
-          inputId = ns("s_opt_FigS2"),
-          label = NULL,
-          choices = list(
-            "Show Ref Data" = "show_reference_point",
-            "Use ordinal time" = "plot_nominal_scale",
-            "Time in month" = "plot_in_month",
-            "log-tansform values" = "plot_ln_relative"
+      shiny::column(
+        width = 2,
+        shiny::wellPanel(
+          shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
+          sub_header("Options Fig.S2", b=12),
+          shiny::checkboxGroupInput(
+            inputId = ns("s_opt_FigS2"),
+            label = NULL,
+            choices = list(
+              "Show Ref Data" = "show_reference_point",
+              "Use ordinal time" = "plot_nominal_scale",
+              "Time in month" = "plot_in_month",
+              "log-tansform values" = "plot_ln_relative"
+            ),
+            selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
           ),
-          selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
-        ),
-        shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")
-      ))
+          shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")
+        )
+      )
     ),
     shiny::fluidRow(
       shiny::column(
@@ -97,7 +100,19 @@ m_arrheniusUI <- function(id) {
       ),
       shiny::column(
         width = 2,
-        shiny::wellPanel(shiny::numericInput(inputId = ns("user_temp"), label = "Potential Storage Temp", value = -20, min = -80, max = 23, step = 1, width = "100%"))
+        shiny::wellPanel(
+          shiny::fluidRow(
+            shiny::column(
+              width = 6,
+              sub_header(shiny::actionLink(inputId = ns("ArrheniusStorrageTemp_link"), label = "Potential Storage Temp")),
+              shiny::numericInput(inputId = ns("user_temp"), label = NULL, value = -20, min = -80, max = 23, step = 1)
+            ),
+            shiny::column(
+              width = 6,
+              shiny::checkboxInput(inputId = ns("cbx_storage"), label = "Use sd/mean of reference Temp", value = FALSE)
+            )
+          )
+        )
       )
     )
   )
@@ -234,22 +249,29 @@ m_arrheniusServer <- function(id, rv) {
 
     analyte_cert_vals <- shiny::reactive({
       mt <- getValue(rv, c("General", "materialtabelle"))
-      shiny::validate(shiny::need(
-        expr = mt,
-        message = "An existing material table is needed to extract the certified value used in subsequent calculations."
-      ))
-      l <- which(mt[,"analyte"]==input$analyte)
-      shiny::validate(shiny::need(
-        expr = length(l)==1,
-        message = paste("Could not find analyte", input$analyte, "within column 'analyte' of current material table.")
-      ))
-      cert_val <- mt[l,"cert_val"]
-      U_abs <- mt[l,"U_abs"]
-      coef <- log((cert_val-U_abs)/cert_val)
-      shiny::validate(shiny::need(
-        expr = is.finite(coef),
-        message = "cert_val and sd do not yield a finite value"
-      ))
+      if (input$cbx_storage) {
+        x <- getValue(rv, c("Stability", "data"))
+        x <- x[x[,"analyte"] == input$analyte,]
+        x <- x[x[,"Temp"] == min(x[,"Temp"], na.rm=TRUE),]
+        coef <- log((mean(x[,"Value"])-sd(x[,"Value"]))/mean(x[,"Value"]))
+      } else {
+        shiny::validate(shiny::need(
+          expr = mt,
+          message = "An existing Tab.C3 (material table) is needed to extract the certified value used in subsequent calculations. You might select to use mean and sd of the stability data at reference temperature instead (set checkbox below Fig.S3)."
+        ))
+        l <- which(mt[,"analyte"]==input$analyte)
+        shiny::validate(shiny::need(
+          expr = length(l)==1,
+          message = paste("Could not find analyte", input$analyte, "within column 'analyte' of current material table.")
+        ))
+        cert_val <- mt[l,"cert_val"]
+        U_abs <- mt[l,"U_abs"]
+        coef <- log((cert_val-U_abs)/cert_val)
+        shiny::validate(shiny::need(
+          expr = is.finite(coef),
+          message = "cert_val and sd do not yield a finite value"
+        ))
+      }
       return(coef)
     })
 
@@ -285,6 +307,10 @@ m_arrheniusServer <- function(id, rv) {
 
     shiny::observeEvent(input$ArrheniusPlot2_link, {
       show_help("stability_arrhenius_figS3")
+    })
+
+    shiny::observeEvent(input$ArrheniusStorrageTemp_link, {
+      show_help("stability_arrhenius_storage")
     })
 
     return(out)

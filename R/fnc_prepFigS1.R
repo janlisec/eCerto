@@ -24,7 +24,7 @@
 prepFigS1 <- function(s, an, apm = NULL, U_Def = c("2s", "U"), mt = NULL) {
   U_Def <- match.arg(U_Def)
   l <- s[,"analyte"]==an
-  # Convert to format used in LTS modul
+  # Convert to format used in LTS module
   # load SD, CertVal, unit and U from certification if available
   CertVal <- mean(s[l,"Value"], na.rm=T)
   U <- 2*stats::sd(s[l,"Value"], na.rm=T)
@@ -36,16 +36,17 @@ prepFigS1 <- function(s, an, apm = NULL, U_Def = c("2s", "U"), mt = NULL) {
   }
   KW_Def <- ifelse("KW_Def" %in% colnames(s), unique(s[l,"KW_Def"])[1], an)
   KW_Unit <- ifelse("KW_Unit" %in% colnames(s), unique(s[l,"KW_Unit"])[1], KW_Unit)
-  x <- list("val"=s[l,],
-            "def"=data.frame(
-              "CertVal" = CertVal,
-              "U"= U,
-              "U_Def" = U_Def,
-              "KW" = ifelse(an==KW_Def, NA, an),
-              "KW_Def" = KW_Def,
-              "KW_Unit" = KW_Unit,
-              stringsAsFactors = FALSE
-            )
+  x <- list(
+    "val"=s[l,],
+    "def"=data.frame(
+      "CertVal" = CertVal,
+      "U"= U,
+      "U_Def" = U_Def,
+      "KW" = ifelse(an==KW_Def, NA, an),
+      "KW_Def" = KW_Def,
+      "KW_Unit" = KW_Unit,
+      stringsAsFactors = FALSE
+    )
   )
   return(x)
 }

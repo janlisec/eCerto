@@ -1,0 +1,12 @@
+#### Calculation of possible storage time
+
+When a certified value $\mu_c$ and corresponding uncertainty $U_{abs}$ (`cert_val` and `U_abs`) are available 
+for an analyte in **Tab.C3** of the certification module of *eCerto*, these can be used together with $\mathit{CI}_{upper}$ 
+from **Tab.S2** to calculate the storage time $S_{Month}$ for each evaluated temperature level using:
+
+$$S_{\mathit{Month}}(T) = \frac{ \log( \frac{\mu_c - U_{abs}}{\mu_c})}{e^{\mathit{CI}_{upper}(T)} }$$
+
+***Note!***
+It is recommended to use $\mu_c$ and $U_{abs}$ for these calculations. However, the user can alternatively use 
+mean and standard deviation from the stability data of the reference temperature as an approximation by selecting 
+the respective checkbox.

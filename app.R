@@ -2,7 +2,7 @@
 # Or use the blue button on top of this file
 
 # To deploy to shinyapps.io:
-# rsconnect::deployApp(appDir = "C:/Users/jlisec/Rpackages/Rpackage_eCerto/eCerto", appName = c("test","eCerto")[1], forceUpdate = TRUE)
+# rsconnect::deployApp(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto", appName = c("test","eCerto")[1], forceUpdate = TRUE)
 
 # To check for errors in shinyapps.io:
 # rsconnect::showLogs(appName = "test", account = "jali")
