@@ -13,8 +13,9 @@
 #' @keywords internal
 plot_lts_data <- function(x = NULL, type = 1) {
   # date estimation is approximate (based on ~30d/month or precisely on 365/12=30.42)
-  days_per_month <- 30.4167
+  days_per_month <- 30.41667
 
+  #browser()
   # ensure that data is ordered after time
   x[["val"]] <- x[["val"]][order(x[["val"]][, "Date"]), ]
 
@@ -56,7 +57,14 @@ plot_lts_data <- function(x = NULL, type = 1) {
     graphics::axis(side = 3, at = range(mon), labels = rt[c(1, length(rt))])
     graphics::abline(foo.lm, lty = 2, col = 4) # <-- slope
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
-    graphics::points(vals ~ mon, pch = 24, bg = c(grDevices::grey(0.6), 2)[1 + !is.na(com)])
+    if ("Temp" %in% colnames(x[["val"]])) {
+      # accelerated study plot version indicating different symbols for different Temp levels
+      temps <- color_temperature_levels(x = x[["val"]][, "Temp"])
+      graphics::points(vals ~ mon, pch = temps$pchs, bg = temps$cols)
+    } else {
+      # standard plot using grey points and highlighting commented values if present
+      graphics::points(vals ~ mon, pch = 24, bg = c(grDevices::grey(0.6), 2)[1 + !is.na(com)])
+    }
   }
 
   # generate 'fake time window' plot
