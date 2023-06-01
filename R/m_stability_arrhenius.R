@@ -53,7 +53,8 @@ m_arrheniusUI <- function(id) {
               "Show Ref Data" = "show_reference_point",
               "Use ordinal time" = "plot_nominal_scale",
               "Time in month" = "plot_in_month",
-              "log-tansform values" = "plot_ln_relative"
+              "log-tansform values" = "plot_ln_relative",
+              "Round Month Time" = "round_time"
             ),
             selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
           ),
@@ -109,7 +110,8 @@ m_arrheniusUI <- function(id) {
             ),
             shiny::column(
               width = 6,
-              shiny::checkboxInput(inputId = ns("cbx_storage"), label = "Use sd/mean of reference Temp", value = FALSE)
+              shiny::radioButtons(inputId = ns("rbtn_storage"), label = "Use values from...", choices = list("Tab.C3" = "mt", "Reference Temp" = "rt", "input-box below" = "inp"), selected = "rt"),
+              shiny::numericInput(inputId = ns("num_coef"), label = NULL, value = NULL)
             )
           )
         )
@@ -168,23 +170,34 @@ m_arrheniusServer <- function(id, rv) {
         show_reference_point = "show_reference_point" %in% input$s_opt_FigS2,
         plot_nominal_scale = "plot_nominal_scale" %in% input$s_opt_FigS2,
         plot_in_month = "plot_in_month" %in% input$s_opt_FigS2,
-        plot_ln_relative = "plot_ln_relative" %in% input$s_opt_FigS2
+        plot_ln_relative = "plot_ln_relative" %in% input$s_opt_FigS2,
+        round_time = "round_time" %in% input$s_opt_FigS2
       )
     })
 
     # generate Tab1
     getTab1 <- function(tmp) {
       tf <- factor(tmp[,"Temp"])
-      time <- round(tmp[,"time"]*12/365,2)
+      if ("round_time" %in% input$s_opt_FigS2) {
+        # the version for compatibility with Bremser (round to 1/4 month precision)
+        time <- tmp[,"time"]*12/365
+        time <- round(round(4*time)/4,2)
+      } else {
+        # the day wise precise version
+        time <- round(tmp[,"time"]*12/365,2)
+      }
       val <- log(tmp[,"Value"])
       out <- plyr::ldply(levels(tf)[-1], function(k) {
-        flt <- tmp[,"Temp"]==k
+        # the linear model shall include the reference data
+        flt <- tmp[,"Temp"]==k | tmp[,"Temp"]==levels(tf)[1]
         a <- stats::coef(stats::lm(val[flt] ~ time[flt]))[2]
+        # Rec and RSD are calculated without reference data
+        flt <- tmp[,"Temp"]==k
         return(data.frame(
           "dummy"=k,
           "Rec"=paste0(round(100*mean(tmp[flt,"Value"], na.rm=T),1), "%"),
           "RSD"=paste0(round(100*stats::sd(tmp[flt,"Value"], na.rm=T)/mean(tmp[flt,"Value"], na.rm=T),1), "%"),
-          "1/K"=round(1/(273.15+as.numeric(k)),5),
+          "1/K"=1/(273.15+as.numeric(k)),
           "k_eff"=a,
           "log(-k_eff)"=ifelse(a<0, log(-a), NA),
           check.names=FALSE))
@@ -195,7 +208,7 @@ m_arrheniusServer <- function(id, rv) {
     tab1 <- shiny::reactive({ getTab1(tmp=df()) })
     output$Tab1 <- DT::renderDT({
       out <- tab1()
-      for (i in which(colnames(out) %in% c("k_eff", "log(-k_eff)"))) out[,i] <- round(out[,i], prec)
+      for (i in which(colnames(out) %in% c("1/K", "k_eff", "log(-k_eff)"))) out[,i] <- round(out[,i], prec)
       return(out)
     }, options = list(dom="t"), rownames = FALSE)
 
@@ -247,48 +260,44 @@ m_arrheniusServer <- function(id, rv) {
       return(out)
     }, options = list(dom="t"), rownames = FALSE)
 
-    analyte_cert_vals <- shiny::reactive({
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      if (input$cbx_storage) {
+    observe({
+      req(input$rbtn_storage, input$analyte)
+      if (input$rbtn_storage == "rt") {
         x <- getValue(rv, c("Stability", "data"))
         x <- x[x[,"analyte"] == input$analyte,]
         x <- x[x[,"Temp"] == min(x[,"Temp"], na.rm=TRUE),]
-        coef <- log((mean(x[,"Value"])-sd(x[,"Value"]))/mean(x[,"Value"]))
-      } else {
-        shiny::validate(shiny::need(
-          expr = mt,
-          message = "An existing Tab.C3 (material table) is needed to extract the certified value used in subsequent calculations. You might select to use mean and sd of the stability data at reference temperature instead (set checkbox below Fig.S3)."
-        ))
+        coef <- log((mean(x[,"Value"])-2*sd(x[,"Value"]))/mean(x[,"Value"]))
+        shiny::updateNumericInput(inputId = "num_coef", value = coef)
+        shinyjs::disable(id = "num_coef")
+      }
+      if (input$rbtn_storage == "mt") {
+        mt <- getValue(rv, c("General", "materialtabelle"))
         l <- which(mt[,"analyte"]==input$analyte)
-        shiny::validate(shiny::need(
-          expr = length(l)==1,
-          message = paste("Could not find analyte", input$analyte, "within column 'analyte' of current material table.")
-        ))
         cert_val <- mt[l,"cert_val"]
         U_abs <- mt[l,"U_abs"]
         coef <- log((cert_val-U_abs)/cert_val)
-        shiny::validate(shiny::need(
-          expr = is.finite(coef),
-          message = "cert_val and sd do not yield a finite value"
-        ))
+        shiny::updateNumericInput(inputId = "num_coef", value = coef)
+        shinyjs::disable(id = "num_coef")
       }
-      return(coef)
+      if (input$rbtn_storage == "inp") {
+        shinyjs::enable(id = "num_coef")
+      }
     })
 
     output$outTab <- DT::renderDT({
-      req(tab1exp(), analyte_cert_vals())
+      req(tab1exp(), input$num_coef)
       out <- tab1exp()
-      out[,"month"] <- round(analyte_cert_vals()/(-1*exp(out[,"CI_upper"])))
+      out[,"month"] <- round(input$num_coef/(-1*exp(out[,"CI_upper"])))
       return(out[,c(1,10)])
     }, options = list(dom="t"), rownames = FALSE)
 
     output$user_month <- shiny::renderUI({
-      shiny::req(input$user_temp, tab1(), analyte_cert_vals(), tab2())
+      shiny::req(input$user_temp, tab1(), input$num_coef, tab2())
       ce <- stats::coef(stats::lm(tab1()[,"log(-k_eff)"] ~ tab1()[,"1/K"]))
       ut_K <- 1/(273.15+input$user_temp)
-      m <- as.numeric(round(analyte_cert_vals()/(-1*exp(ce[2]*ut_K + ce[1]))))
+      m <- as.numeric(round(input$num_coef/(-1*exp(ce[2]*ut_K + ce[1]))))
       m_CIup <- sqrt(tab2()[,"u(i)"]^2 + tab2()[,"u(s)"]^2*ut_K^2 + 2*tab2()[,"cov"]*ut_K) + (ce[2]*ut_K + ce[1])
-      m_CIup <- as.numeric(round(analyte_cert_vals()/(-1*exp(m_CIup))))
+      m_CIup <- as.numeric(round(input$num_coef/(-1*exp(m_CIup))))
       shiny::HTML("At the specified temperature of", input$user_temp, " the analyte ", input$analyte, " is expected to be stable for", m, "month (mean) or", m_CIup, "month (CI_upper) respectively.")
     })
 

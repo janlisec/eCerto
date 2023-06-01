@@ -1,6 +1,6 @@
 ### Stability data upload (Excel)
 
-Please prepare data in a single Excel file on seperate tables for each analyte as shown 
+Please prepare data in a single Excel file on separate tables for each analyte as shown 
 in the below example.
 
 ![**Info** Simple Excel import format for stability data](fig/S_Modul_Import.png)
@@ -15,7 +15,7 @@ Excel table including the columns `analyte`, `Temp`, `Date`, `Value` and `unit`.
 
 ![**Info** Excel import format including temperature information for arrhenius calculations](fig/S_Modul_Import_Arrhenius.png)
 
-The `Temp` column obviously should contain temperature levels in\ °C at which samples were
+The `Temp` column obviously should contain temperature levels in °C at which samples were
 stored before measurement. The lowest temperature level will be used as a reference point
 $T_\mathit{ctrl}$. This is also reflected in the specified `Date` values, where 
 $T_\mathit{ctrl}$ will be treated as a reference time point. All other temperature levels
@@ -27,6 +27,6 @@ Using dates instead of specifying storage time directly allows to compute stabil
 potential shelf life in month and as an absolute date.
 
 ***Note!***
-Upload can be also achieved from a previousy created backup file. If a backup file does not 
+Upload can be also achieved from a previously created backup file. If a backup file does not 
 contain any stability data, the Excel upload option will remain active (and will become 
 deactivated if stability data are contained).

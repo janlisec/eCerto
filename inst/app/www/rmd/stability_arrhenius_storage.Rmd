@@ -8,5 +8,6 @@ $$S_{\mathit{Month}}(T) = \frac{ \log( \frac{\mu_c - U_{abs}}{\mu_c})}{e^{\mathi
 
 ***Note!***
 It is recommended to use $\mu_c$ and $U_{abs}$ for these calculations. However, the user can alternatively use 
-mean and standard deviation from the stability data of the reference temperature as an approximation by selecting 
-the respective checkbox.
+mean and 2 x standard deviation from the stability data of the reference temperature as an approximation by selecting 
+the respective radio-button. Also, a direct input of the coefficient used in the above equation 
+$\log(\frac{\mu_c - U_{abs}}{\mu_c})$ is possible.
