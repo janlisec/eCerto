@@ -6,6 +6,7 @@
 #' @param plot_nominal_scale plot_nominal_scale.
 #' @param plot_in_month plot_in_month.
 #' @param plot_ln_relative plot_ln_relative.
+#' @param round_time Round the month time to quarter month precision to be consistent with previous analyses.
 #' @examples
 #' x <- eCerto:::test_Stability_Arrhenius(3)
 #' x$Value <- x$Value/mean(x$Value[x$time==0])
@@ -18,7 +19,7 @@
 #' @importFrom graphics par
 #' @noRd
 #' @keywords internal
-prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE) {
+prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE, round_time = FALSE) {
   stopifnot(is.data.frame(tmp))
   stopifnot(all(c("time", "Value", "Temp") %in% colnames(tmp)))
   stopifnot(is.numeric(tmp[, "time"]))
@@ -27,13 +28,19 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
   if (mean(tmp[tmp[, "time"]==0, "Value"])!=1) warning("Variable 'Value' should be standardized to mean of t=0.")
   time <- tmp[, "time"]
   val <- tmp[, "Value"]
-  if (plot_in_month) time <- round(time * 12 / 365, 2)
+  if (plot_in_month) {
+    time <- round(time * 12 / 365, 2)
+    if (round_time) time <- round(round(4*time)/4,2)
+  }
   if (plot_nominal_scale) time <- factor(time)
   if (plot_ln_relative) val <- log(val)
   tf <- factor(tmp[, "Temp"])
   if (length(levels(tf))>8) message("Nore than 8 Temp levels are not well supported in plotting.")
-  pchs <- c(21:25, 21:23)[as.numeric(tf)]
-  cols <- c(1:8)[as.numeric(tf)]
+  # pchs <- c(21:25, 21:23)[as.numeric(tf)]
+  # cols <- c(1:8)[as.numeric(tf)]
+  ctls <- color_temperature_levels(x = tmp[, "Temp"])
+  pchs <- ctls$pchs
+  cols <- ctls$cols
   mns <- tapply(val, list(tmp[, "Temp"], time), mean, na.rm = TRUE)
   sds <- tapply(val, list(tmp[, "Temp"], time), stats::sd, na.rm = TRUE)
   xlim <- range(as.numeric(time), na.rm = TRUE)
@@ -52,7 +59,7 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
     graphics::abline(h = ifelse(plot_ln_relative, 0, 1), col = grDevices::grey(0.9), lwd = 3)
     flt <- time == 0
     if (show_reference_point) {
-      graphics::points(y = val[flt], x = time[flt], pch = 21, bg = grDevices::grey(0.9), cex = 2)
+      graphics::points(y = val[flt], x = time[flt], pch = ctls$pchs[flt], bg = ctls$cols[flt], cex = 2)
       graphics::abline(h = mean(val[flt], na.rm = TRUE) + c(-1, 1) * stats::sd(val[flt], na.rm = TRUE), col = grDevices::grey(0.9), lwd = 1, lty = 2)
     }
     if (plot_nominal_scale) {
@@ -73,7 +80,8 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
       graphics::mtext(text = paste0("(RSD = ", round(100 * stats::sd(val[flt], na.rm = T) / mean(val[flt], na.rm = T), 1), "%)"), side = 3, line = -3.6, adj = 0.02, cex = cex_plot)
     }
     if (plot_ln_relative & plot_in_month) {
-      lm_res <- stats::coef(stats::lm(val[flt] ~ as.numeric(as.character(time[flt]))))
+      flt_lm <- tmp[, "Temp"] == k | tmp[, "Temp"] == levels(tf)[1]
+      lm_res <- stats::coef(stats::lm(val[flt_lm] ~ as.numeric(as.character(time[flt_lm]))))
       graphics::mtext(text = paste("slope =", round(lm_res[2], 4)), side = 3, line = -1.8, adj = 0.98, col = ifelse(lm_res[2] < 0, 3, 2), cex = cex_plot)
     }
   }
