@@ -28,7 +28,8 @@ prepFigS1 <- function(s, an, apm = NULL, U_Def = c("2s", "U"), mt = NULL) {
   # load SD, CertVal, unit and U from certification if available
   CertVal <- mean(s[l,"Value"], na.rm=T)
   U <- 2*stats::sd(s[l,"Value"], na.rm=T)
-  KW_Unit <- NA
+  unit_col <- tolower(colnames(s))=="unit"
+  KW_Unit <- ifelse(any(unit_col), unique(s[l,unit_col])[1], NA)
   if (!is.null(U_Def) && !is.null(mt) && an %in% names(apm) && apm[[an]][["confirmed"]]) {
     CertVal <- mt[mt[,"analyte"] %in% an, "cert_val"]
     U <- ifelse(U_Def=="U", 1, 2) * mt[mt[,"analyte"] %in% an, ifelse(U_Def=="U", "U_abs", "sd")]
