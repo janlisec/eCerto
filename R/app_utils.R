@@ -417,3 +417,19 @@ get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALS
     return(df)
   }
 }
+
+#' @title color_temperature_levels.
+#' @description Calculate the optimal width for Fig.C1 depending on the number of labs.
+#' @param x Numeric vector of temperatures.
+#' @return data.frame with pch and bg information for vector x.
+#' @keywords internal
+#' @noRd
+#' @examples
+#' eCerto:::color_temperature_levels(x = c(-80, -80, 4, 4, 4, 23))
+color_temperature_levels <- function(x) {
+  temps <- cut(x, breaks=c(-274, -80, -20, 4, 23, 40, 60, 1000))
+  temp_cols <- c("darkblue", "#1b98e0", "lightblue", "yellow", "orange", "red", "darkred")
+  temp_pchs <- c(24,21:23,22,21,25)
+  return(data.frame("Temp" = x, "pchs" = temp_pchs[temps], "cols" = temp_cols[temps]))
+}
+
