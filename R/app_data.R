@@ -34,6 +34,7 @@ test_Stability_Arrhenius = function(seed=4) {
   set.seed(seed)
   x <- data.frame(
     "analyte" = rep("a1", 39),
+    "Date" = as.Date(rep(c("2022-01-01", "2022-01-15", "2022-02-01", "2022-04-01", "2023-01-01"), times = c(3,9,9,9,9))),
     "time" = c(0, 0, 0, rep(c(14, 30.42, 90, 365), each=9)),
     "Value" = stats::rnorm(39, mean=2),
     "Temp" = c(-20, -20, -20, rep(rep(c(4,23,60), each=3), times=4))
