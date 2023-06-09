@@ -21,7 +21,7 @@ testthat::test_that(
               P = c(0.855321094, 0.000135937)),
             class = "data.frame", row.names = c(NA,-2L)
           )
-          testthat::expect_equal(getValue(rv,c("Stability","s_vals")),s_vals_cmp)
+          testthat::expect_equal(getValue(rv,c("Stability","s_vals")), s_vals_cmp)
         }
       )
     )
@@ -58,6 +58,7 @@ testthat::test_that(
           rv = rv_test
         ),
         expr =  {
+          #browser()
           eCerto::setValue(rv_test, c("Stability","data"), eCerto:::test_Stability_Excel() )
           session$flushReact()
           testthat::expect_error(output$s_transfer_ubb, "Please upload certification data to transfer Uncertainty values")
