@@ -11,11 +11,14 @@
 #' if (interactive()) {
 #' shiny::shinyApp(
 #'  ui = shiny::fluidPage(
+#'    shinyjs::useShinyjs(),
 #'    eCerto:::page_StabilityUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
-#'    shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
+#'    #rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
+#'    #shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
+#'    rv <- eCerto:::test_rv(type = "SR3")
+#'    shiny::isolate(eCerto::setValue(rv, c("Stability", "data"), eCerto:::test_Stability_Arrhenius()))
 #'    eCerto:::page_StabilityServer(id = "test", rv = rv)
 #'  }
 #' )
@@ -67,7 +70,6 @@ page_StabilityUI <- function(id) {
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            shiny::uiOutput(outputId = ns("s_sel_analyte")),
             shiny::uiOutput(outputId = ns("s_sel_dev")),
             shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
@@ -103,9 +105,11 @@ page_StabilityServer <- function(id, rv) {
 
     shiny::observeEvent(getValue(rv, c("Stability", "data")), {
       tmp <- getValue(rv, c("Stability", "data"))
-      shinyjs::toggle(id = "s_sel_temp", condition = "Temp" %in% colnames(tmp))
-      shinyjs::toggle(id = "s_switch_arrhenius", condition = "Temp" %in% colnames(tmp))
-      if ("Temp" %in% colnames(tmp)) {
+      # does the data contain Temp information (arrhenius model)
+      test <- "Temp" %in% colnames(tmp)
+      shinyjs::toggle(id = "s_sel_temp", condition = test)
+      shinyjs::toggle(id = "s_switch_arrhenius", condition = test)
+      if (test) {
         lev <- levels(factor(tmp[,"Temp"]))
         shiny::updateSelectInput(inputId = "s_sel_temp", choices = lev, selected = lev)
       } else {
@@ -122,10 +126,10 @@ page_StabilityServer <- function(id, rv) {
       }
     })
 
-    # the complete data table of stability data
+    # the complete data table of stability data as a local copy
     s_Data <- shiny::reactive({
       #shiny::req(input$s_sel_temp)
-      s_dat <- getValue(rv,c("Stability","data"))
+      s_dat <- getValue(rv, c("Stability","data"))
       if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
       if ("Temp" %in% colnames(s_dat)) {
         shiny::validate(shiny::need(expr = input$s_sel_temp != "", message = "Please select a Temp level."))
@@ -143,21 +147,21 @@ page_StabilityServer <- function(id, rv) {
       return(out)
     })
 
-    # Specific UI and events
-    output$s_sel_analyte <- shiny::renderUI({
-      shiny::req(s_Data())
-      lev <- levels(s_Data()[,"analyte"])
-      shinyjs::hidden(shiny::selectInput(inputId = session$ns("s_sel_analyte"), label = "analyte", choices = lev))
+    # we need a local representation of the currently selected analyte in case that there is only a partial overlap between analytes in S and C modul
+    S_analyte <- shiny::reactive({
+      req(s_vals(), rv$cur_an)
+      shiny::validate(shiny::need(expr = rv$cur_an %in% as.character(s_vals()[,"analyte"]), message = paste("Analyte", rv$cur_an, "is not present in S data.")))
+      rv$cur_an
     })
 
     # Tables
     output$s_tab2 <- DT::renderDataTable({
-      shiny::req(s_Data(), input$s_sel_analyte)
+      shiny::req(s_Data(), S_analyte())
       dt <- DT::datatable(
-        data = s_Data()[s_Data()[,"analyte"]==input$s_sel_analyte,c("Date","Value")],
+        data = s_Data()[s_Data()[,"analyte"]==S_analyte(), c("Date", "Value")],
         options = list(paging = TRUE, searching = FALSE), rownames = NULL, selection = "none"
       )
-      prec <- try(getValue(rv, c("General","apm"))[[input$s_sel_analyte]][["precision"]])
+      prec <- try(getValue(rv, c("General","apm"))[[S_analyte()]][["precision"]])
       prec <- ifelse(!is.null(prec) && is.finite(prec), prec, 4)
       dt <- DT::formatCurrency(table = dt, columns = 2, currency = "", digits = prec)
       return(dt)
@@ -175,51 +179,59 @@ page_StabilityServer <- function(id, rv) {
         # trigger a redraw of s_tab1 if the user deselects the current row
         s_tab1_current$redraw <- s_tab1_current$redraw+1
       } else {
-        s_tab1_current$row <- input$s_tab1_rows_selected
-        sel <- as.character(s_vals()[input$s_tab1_rows_selected,"analyte"])
-        shiny::updateSelectInput(session = session, inputId = "s_sel_analyte", selected = sel)
+        if (s_tab1_current$row!=input$s_tab1_rows_selected) {
+          sel <- as.character(s_vals()[input$s_tab1_rows_selected,"analyte"])
+          if (!identical(rv$cur_an, sel)) rv$cur_an <- sel
+        }
       }
-    }, ignoreNULL = FALSE)
+    }, ignoreNULL = FALSE, ignoreInit = TRUE)
+
+    observeEvent(S_analyte(), {
+      req(s_vals())
+      # update view for currently selected analyte (trigger coming from C module or Arrhenius module)
+      if (!(s_tab1_current$row == which(as.character(s_vals()[,"analyte"])==S_analyte()))) {
+        s_tab1_current$row <- which(as.character(s_vals()[,"analyte"])==S_analyte())
+      }
+      # show/hide the input field to select a deviation type (will effect the Figure)
+      if (!is.null(input$s_sel_dev)) {
+        mt <- getValue(rv, c("General", "materialtabelle"))
+        a <- S_analyte()
+        test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
+        shinyjs::toggle(id="s_sel_dev", condition = test)
+      }
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
     output$s_sel_dev <- shiny::renderUI({
-      shiny::req(s_Data(), getValue(rv, c("General", "materialtabelle")), input$s_sel_analyte)
+      shiny::req(s_Data(), getValue(rv, c("General", "materialtabelle")), S_analyte())
       mt <- getValue(rv, c("General", "materialtabelle"))
-      a <- input$s_sel_analyte
       # show element only once mat_tab is available and analyte and mean value exist
-      shiny::req(a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"]))
+      shiny::req(S_analyte() %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==S_analyte()),"mean"]))
       shiny::selectInput(inputId=session$ns("s_sel_dev"), label="deviation to show", choices=c("2s","U"), selected="2s")
-    })
-
-    shiny::observeEvent(input$s_sel_analyte, {
-      # show/hide the input field to select a deviation type (will effect the Figure)
-      shiny::req(input$s_sel_dev)
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      a <- input$s_sel_analyte
-      test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
-      shinyjs::toggle(id="s_sel_dev", condition = test)
     })
 
     output$s_info <- shiny::renderUI({
       # text info shown below the Figure
-      shiny::req(s_Data(), input$s_sel_analyte)
-      an <- input$s_sel_analyte
+      shiny::req(s_Data(), S_analyte())
+      an <- S_analyte()
       aps <- getValue(rv, c("General", "apm"))
       U_type <- "2s"
       U_source <- "stability"
+      U_tab <- "(Fig.S1)"
       if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
         U_type <- input$s_sel_dev
         U_source <- "certification"
+        U_tab <- "(Tab.C3)"
       }
-      shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data for analyte ", an, "."))
+      shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data ", U_tab, " for analyte ", an, "."))
     })
 
     # Fig.S1
     output$s_plot <- shiny::renderPlot({
-      shiny::req(s_Data(), input$s_sel_analyte)
+      shiny::req(s_Data(), S_analyte())
       plot_lts_data(
         x = prepFigS1(
           s = s_Data(),
-          an = input$s_sel_analyte,
+          an = S_analyte(),
           apm = getValue(rv, c("General", "apm")),
           U_Def = input$s_sel_dev,
           mt = getValue(rv, c("General", "materialtabelle"))

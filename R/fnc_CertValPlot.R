@@ -76,7 +76,6 @@ CertValPlot <- function(data = NULL, annotate_id = FALSE, filename_labels = FALS
   graphics::segments(x0 = 1:nrow(ds), y0 = ds$MW - ds$SD, y1 = ds$MW + ds$SD)
   lw <- 0.15
   # lw <- 0.1
-  # browser()
   graphics::segments(x0 = 1:nrow(ds) - lw, x1 = 1:nrow(ds) + lw, y0 = ds$MW - ds$SD)
   graphics::segments(x0 = 1:nrow(ds) - lw, x1 = 1:nrow(ds) + lw, y0 = ds$MW + ds$SD)
   graphics::symbols(x = 1:nrow(ds), y = ds$MW, circles = rep(lw, nrow(ds)), bg = c(3, grDevices::grey(0.8))[1 + ds[, "Filter"]], add = T, inches = FALSE)

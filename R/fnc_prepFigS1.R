@@ -9,8 +9,6 @@
 #' @examples
 #' # s <- s_Data()
 #' s <- eCerto:::test_Stability_Excel()
-#' # an <- input$s_sel_analyte
-#' # apm <- getValue(rv, c("General", "apm"))
 #' apm <- list("Mn"=list("confirmed"=TRUE))
 #' x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm=apm)
 #' eCerto:::plot_lts_data(x=x_prep)
@@ -33,7 +31,8 @@ prepFigS1 <- function(s, an, apm = NULL, U_Def = c("2s", "U"), mt = NULL) {
   if (!is.null(U_Def) && !is.null(mt) && an %in% names(apm) && apm[[an]][["confirmed"]]) {
     CertVal <- mt[mt[,"analyte"] %in% an, "cert_val"]
     U <- ifelse(U_Def=="U", 1, 2) * mt[mt[,"analyte"] %in% an, ifelse(U_Def=="U", "U_abs", "sd")]
-    KW_Unit <- mt[which(mt[,"analyte"] == an), "unit"]
+    unit_col <- tolower(colnames(mt))=="unit"
+    KW_Unit <- ifelse(any(unit_col), mt[which(mt[,"analyte"] == an), which(unit_col)[1]], "NA")
   }
   KW_Def <- ifelse("KW_Def" %in% colnames(s), unique(s[l,"KW_Def"])[1], an)
   KW_Unit <- ifelse("KW_Unit" %in% colnames(s), unique(s[l,"KW_Unit"])[1], KW_Unit)

@@ -93,16 +93,22 @@ m_materialtabelleServer <- function(id, rv) {
       err_txt(NULL)
     }, ignoreNULL = TRUE)
 
+    a <- shiny::reactive({
+      req(rv$a_p("name"))
+      shiny::validate(shiny::need(expr = rv$cur_an %in% rv$a_p("name"), message = paste("Analyte", rv$cur_an, "is not present in C data.")))
+      rv$cur_an
+    })
+
     pooling <- shiny::reactive({
-      shiny::req(rv$cur_an)
-      getValue(rv, c("General","apm"))[[rv$cur_an]][["pooling"]]
+      shiny::req(a(), getValue(rv, c("General","apm")))
+      #getValue(rv, c("General","apm"))[[a()]][["pooling"]]
+      rv$a_p("pooling")[a()]
     })
 
     # helper function to remove unused user columns
     remove_unused_cols <- function(mt=NULL) {
       # strip unused F and U columns from 'mater_table'
       cc <- attr(mt, "col_code")
-      #browser()
       if (nrow(cc)>=1) {
         flt <- sapply(1:nrow(cc), function(i) {
           all(mt[, cc[i, "ID"]] == 1) | all(mt[, cc[i, "ID"]] == 0)
@@ -145,6 +151,14 @@ m_materialtabelleServer <- function(id, rv) {
       if (!("unit" %in% colnames(mt)) | ("unit" %in% colnames(mt) && all(mt[,"unit"]=="U"))) {
         cc <- attr(mt, "col_code")
         units <- rv$a_p("unit")
+        if (is.list(units)) {
+          # [ToDo $$JL$$ Fix that old RData don't contain column "unit" in mt]
+          tmp <- getValue(rv, c("General", "apm"))
+          if (!"unit" %in% names(tmp[[1]])) {
+            tmp <- lapply(tmp, function(x) { c(x, "unit"="U") })
+            setValue(rv, c("General", "apm"), tmp)
+          }
+        }
         if (identical(names(units), as.character(mt[,"analyte"]))) {
           if (!silent) message("[materialtabelle] Set analyte units for 'mt' from 'rv C data'")
           mt[,"unit"] <- units
@@ -246,6 +260,7 @@ m_materialtabelleServer <- function(id, rv) {
       cc <- attr(mater_table(), "col_code")
       if (any(substr(cc[,"ID"],1,1)=="F")) {
         choices <- cc[substr(cc[,"ID"],1,1)=="F","Name"]
+        # $$ToDo JL$$ shinyalert causes an error due to an deprecated if statement which is not yet fixed in CRAN version 3.0 (2023.06.07)
         shinyalert::shinyalert(
           html = TRUE, text = shiny::tagList(
             shiny::selectInput(inputId = session$ns("tmp"), label = "Select F column", choices = choices),
@@ -340,7 +355,7 @@ m_materialtabelleServer <- function(id, rv) {
 
     # data frame of selected analyte
     c_fltData <- shiny::reactive({
-      shiny::req(getValue(rv,c("Certification","data")), getValue(rv,c("General","apm")), rv$cur_an)
+      shiny::req(getValue(rv,c("Certification","data")), getValue(rv,c("General","apm")), a())
       rv$c_fltData(recalc=TRUE)
     })
 
@@ -448,11 +463,19 @@ m_materialtabelleServer <- function(id, rv) {
       styleTabC3(x = dt, apm = getValue(rv, c("General","apm")), selected_row = selected_row_idx$row)
     }, server = TRUE)
 
+    observeEvent(rv$cur_an, {
+      req(mater_table_print(), selected_row_idx$row)
+      if (!identical(rv$cur_an, mater_table_print()[selected_row_idx$row, "analyte"])) {
+        i <- which(as.character(mater_table_print()[,"analyte"])==rv$cur_an)
+        if (length(i)==1) selected_row_idx$row <- i
+      }
+    }, ignoreNULL = TRUE)
+
     shiny::observeEvent(input$matreport_rows_selected, {
       shiny::req(mater_table())
       i <- input$matreport_rows_selected
       if (is.null(i)) {
-        message("input$matreport_rows_selected - [ToDo] implement automatic (re)selection of rows")
+        message("[materialtabelle] input$matreport_rows_selected - [ToDo] implement automatic (re)selection of rows")
         # $$ToDo$$ user deselected row --> reselect previous
         # use proxy <- DT::dataTableProxy('tab') and than
         # DT::selectRows(proxy, selected=selected_row_idx$row
@@ -466,13 +489,14 @@ m_materialtabelleServer <- function(id, rv) {
         an <- as.character(mater_table()[i,"analyte"])
         if (!getValue(rv, c("General", "apm"))[[an]][["confirmed"]]) {
           # mark analyte as confirmed
+          message("[materialtabelle] setting ", an, " as confirmed")
           tmp <- getValue(rv, c("General", "apm"))
           tmp[[an]][["confirmed"]] <- TRUE
           setValue(rv, c("General", "apm"), tmp)
         }
         if (i!=selected_row_idx$row) {
           # update index
-          message("input$matreport_rows_selected - setting selected_row_idx")
+          message("[materialtabelle] input$matreport_rows_selected - setting selected_row_idx")
           selected_row_idx$row <- i
         } else {
           if (is.null(rv$cur_an) || rv$cur_an != an) {

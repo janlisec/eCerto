@@ -93,89 +93,99 @@ m_analyteServer = function(id, rv) {
       err_msg(NULL)
     }, ignoreNULL = TRUE)
 
+    a <- shiny::reactive({
+      req(rv$a_p("name"))
+      shiny::validate(shiny::need(expr = rv$cur_an %in% rv$a_p("name"), message = paste("Analyte", rv$cur_an, "is not present in C data.")))
+      rv$cur_an
+    })
+
     # watch out if analyte did change and
     # update inputs when different analyte is set in rv
-    shiny::observeEvent(rv$cur_an, {
+    shiny::observeEvent(a(), {
       shiny::req(apm())
-      message("[m_analyte] update parameter inputs for ", rv$cur_an)
-      shinyjs::html(id = "curr_analyte", html = apm()[[rv$cur_an]]$name)
-      shiny::updateCheckboxInput(
-        inputId = "pooling",
-        value = apm()[[rv$cur_an]]$pooling
-      )
-      shiny::updateSelectizeInput(
-        inputId = "sample_filter",
-        choices = apm()[[rv$cur_an]]$sample_ids,
-        selected = apm()[[rv$cur_an]]$sample_filter
-      )
-      shiny::updateSelectizeInput(
-        inputId = "lab_filter",
-        choices = apm()[[rv$cur_an]]$lab_ids,
-        selected = apm()[[rv$cur_an]]$lab_filter
-      )
-      shiny::updateNumericInput(
-        inputId = "precision",
-        value = apm()[[rv$cur_an]]$precision
-      )
-      shiny::updateNumericInput(
-        inputId = "precision_export",
-        value = apm()[[rv$cur_an]]$precision_export
-      )
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      n <- digits_DIN1333(x = mt[mt[,"analyte"]==rv$cur_an,"U_abs"])
-      if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong>(", n, ")")) }
+      a <- a()
+      if (a %in% rv$a_p("name")) {
+        message("[m_analyte] update parameter inputs for ", a)
+        shinyjs::html(id = "curr_analyte", html = apm()[[a]]$name)
+        shiny::updateCheckboxInput(
+          inputId = "pooling",
+          value = apm()[[a]]$pooling
+        )
+        shiny::updateSelectizeInput(
+          inputId = "sample_filter",
+          choices = apm()[[a]]$sample_ids,
+          selected = apm()[[a]]$sample_filter
+        )
+        shiny::updateSelectizeInput(
+          inputId = "lab_filter",
+          choices = apm()[[a]]$lab_ids,
+          selected = apm()[[a]]$lab_filter
+        )
+        shiny::updateNumericInput(
+          inputId = "precision",
+          value = apm()[[a]]$precision
+        )
+        shiny::updateNumericInput(
+          inputId = "precision_export",
+          value = apm()[[a]]$precision_export
+        )
+        mt <- getValue(rv, c("General", "materialtabelle"))
+        n <- digits_DIN1333(x = mt[mt[,"analyte"]==a, "U_abs"])
+        if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong>(", n, ")")) }
+      } else {
+        message("[m_analyte] Can't update parameter inputs for ", a)
+      }
     }, ignoreInit = FALSE)
 
     shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
       # this additional observer is required in case that the user interactively manipulates the material table
       shiny::req(apm())
       mt <- getValue(rv, c("General", "materialtabelle"))
-      n <- digits_DIN1333(x = mt[mt[,"analyte"]==rv$cur_an,"U_abs"])
-      #shiny::updateNumericInput(inputId = "precision_export", value = apm()[[rv$cur_an]]$precision_export)
+      n <- digits_DIN1333(x = mt[mt[,"analyte"]==a(),"U_abs"])
       if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong>(", n, ")")) }
     })
 
     # update apm in case of changes in precision inputs
     shiny::observeEvent(input$precision, {
-      shiny::req(apm(), rv$cur_an)
+      shiny::req(apm(), a())
       tmp <- apm()
-      if (!identical(input$precision, tmp[[rv$cur_an]]$precision)) {
+      if (!identical(input$precision, tmp[[a()]]$precision)) {
         message("[m_analyte] update 'precision'")
-        tmp[[rv$cur_an]]$precision <- input$precision
+        tmp[[a()]]$precision <- input$precision
         apm(tmp)
       }
     }, ignoreNULL = FALSE, ignoreInit=TRUE)
 
     # update apm in case of changes in precision_export inputs
     shiny::observeEvent(input$precision_export, {
-      shiny::req(apm(), rv$cur_an)
+      shiny::req(apm(), a())
       tmp <- apm()
-      if (!identical(input$precision_export, tmp[[rv$cur_an]]$precision_export)) {
+      if (!identical(input$precision_export, tmp[[a()]]$precision_export)) {
         message("[m_analyte] update 'precision_export'")
-        tmp[[rv$cur_an]]$precision_export <- input$precision_export
+        tmp[[a()]]$precision_export <- input$precision_export
         apm(tmp)
       }
     }, ignoreNULL = FALSE, ignoreInit=TRUE)
 
     # update apm in case of changes in sample_filter inputs
     shiny::observeEvent(input$sample_filter, {
-      shiny::req(apm(), rv$cur_an)
+      shiny::req(apm(), a())
       tmp <- apm()
-      if (!identical(input$sample_filter, tmp[[rv$cur_an]]$sample_filter)) {
+      if (!identical(input$sample_filter, tmp[[a()]]$sample_filter)) {
         message("[m_analyte] update 'sample_filter'")
-        if (length(input$sample_filter) < length(tmp[[rv$cur_an]]$sample_ids)-1) {
+        if (length(input$sample_filter) < length(tmp[[a()]]$sample_ids)-1) {
           if (is.null(input$sample_filter)) {
-            tmp[[rv$cur_an]]["sample_filter"] <- list(NULL)
+            tmp[[a()]]["sample_filter"] <- list(NULL)
           } else {
-            tmp[[rv$cur_an]]$sample_filter <- input$sample_filter
+            tmp[[a()]]$sample_filter <- input$sample_filter
           }
           apm(tmp)
         } else {
           err_msg("Sorry. Please keep at least 2 replicates for non-filtered labs.")
           shiny::updateSelectizeInput(
             inputId = "sample_filter",
-            choices = apm()[[rv$cur_an]]$sample_ids,
-            selected = apm()[[rv$cur_an]]$sample_filter
+            choices = apm()[[a()]]$sample_ids,
+            selected = apm()[[a()]]$sample_filter
           )
         }
       }
@@ -183,23 +193,23 @@ m_analyteServer = function(id, rv) {
 
     # update apm in case of changes in lab_filter inputs
     shiny::observeEvent(input$lab_filter, {
-      shiny::req(apm(), rv$cur_an)
+      shiny::req(apm(), a())
       tmp <- apm()
-      if (!identical(input$lab_filter, tmp[[rv$cur_an]]$lab_filter)) {
+      if (!identical(input$lab_filter, tmp[[a()]]$lab_filter)) {
         message("[m_analyte] update 'lab_filter'")
-        if (length(input$lab_filter) < length(tmp[[rv$cur_an]]$lab_ids)-1) {
+        if (length(input$lab_filter) < length(tmp[[a()]]$lab_ids)-1) {
           if (is.null(input$lab_filter)) {
-            tmp[[rv$cur_an]]["lab_filter"] <- list(NULL)
+            tmp[[a()]]["lab_filter"] <- list(NULL)
           } else {
-            tmp[[rv$cur_an]]$lab_filter <- input$lab_filter
+            tmp[[a()]]$lab_filter <- input$lab_filter
           }
           apm(tmp)
         } else {
           err_msg("Sorry. Please keep at least 2 labs as statistical tests will fail otherwise.")
           shiny::updateSelectizeInput(
             inputId = "lab_filter",
-            choices = apm()[[rv$cur_an]]$lab_ids,
-            selected = apm()[[rv$cur_an]]$lab_filter
+            choices = apm()[[a()]]$lab_ids,
+            selected = apm()[[a()]]$lab_filter
           )
         }
       }
@@ -207,11 +217,11 @@ m_analyteServer = function(id, rv) {
 
     # update apm in case of changes in pooling
     shiny::observeEvent(input$pooling, {
-      shiny::req(apm(), rv$cur_an)
+      shiny::req(apm(), a())
       tmp <- apm()
-      if (!identical(input$pooling, tmp[[rv$cur_an]]$pooling)) {
+      if (!identical(input$pooling, tmp[[a()]]$pooling)) {
         message("[m_analyte] update 'pooling'")
-        tmp[[rv$cur_an]]$pooling <- input$pooling
+        tmp[[a()]]$pooling <- input$pooling
         apm(tmp)
       }
     }, ignoreNULL = FALSE, ignoreInit=TRUE)

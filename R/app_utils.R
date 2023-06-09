@@ -385,7 +385,7 @@ get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALS
     # ensure that "Lab" is a factor
     if (!is.factor(df[,"Lab"])) df[,"Lab"] <- factor(df[,"Lab"], levels = unique(df[,"Lab"]))
     fn <- rv$c_lab_codes()
-    p <- getValue(rv, c("General","apm"))[[rv$cur_an]][["precision"]]
+    p <- rv$a_p("precision")[an]
     n_reps <- sort(unique(df$replicate))
     data <- plyr::ldply(split(df, df$Lab), function(x) {
       out <- rep(NA, length(n_reps))

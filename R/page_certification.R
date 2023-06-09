@@ -209,9 +209,18 @@ page_CertificationServer = function(id, rv) {
     # report module
     m_reportServer(id = "report", rv = rv)
 
+    # selected_tab() holds the locally selected analyte in the C module
+    # if possible this is similar to the global current analyte (rv$cur_an)
     selected_tab <- shiny::reactiveVal(NULL)
     shiny::observeEvent(rv$cur_an, {
-      selected_tab(rv$cur_an)
+      req(rv$e_present()["Certification"])
+      # ensure that App works in case that S and C data don't match
+      if (rv$cur_an %in% rv$a_p("name")) {
+        selected_tab(rv$cur_an)
+      } else {
+        message("[page_certification] cant change local selected_tab to rv$cur_an as it is not in C list")
+        #browser()
+      }
     }, ignoreInit = TRUE)
 
     shiny::observeEvent(getValue(rv, c("Certification", "data")), {
@@ -219,6 +228,15 @@ page_CertificationServer = function(id, rv) {
         shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standby")
       } else {
         shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "loaded")
+        if (is.null(selected_tab())) {
+          # ensure that App works in case that S and C data don't match
+          if (rv$cur_an %in% rv$a_p("name")) {
+            selected_tab(rv$cur_an)
+          } else {
+            message("[page_certification] cant change local selected_tab to rv$cur_an as it is not in C list")
+            #browser()
+          }
+        }
       }
     }, ignoreNULL = FALSE)
 
@@ -286,7 +304,6 @@ page_CertificationServer = function(id, rv) {
     # CertVal Plot
     output$overview_CertValPlot <- shiny::renderPlot({
       shiny::req(dat())
-      #browser()
       CertValPlot(
         data = dat(),
         annotate_id = "annotate_id" %in% input$C1_opt,
@@ -352,7 +369,7 @@ page_CertificationServer = function(id, rv) {
 
     # Tab.2 Labmean statistics
     TabC2_pre <- shiny::reactive({
-      shiny::req(dat())
+      shiny::req(dat(), precision(), !is.null(input$tabC2_opt))
       prepTabC2(dat = dat(), precision = precision(), excl_labs = input$tabC2_opt)
     })
     shiny::observeEvent(TabC2_pre(), {
@@ -383,7 +400,7 @@ page_CertificationServer = function(id, rv) {
     })
     output$qqplot <- shiny::renderPlot({
       y <- overview_stats_pre()[, "mean"]
-      stats::qqnorm(y = y, main = paste("QQ plot for analyte", rv$cur_an))
+      stats::qqnorm(y = y, main = paste("QQ plot for analyte", selected_tab()))
       stats::qqline(y = y, col = 2)
     }, height = 400, width = 400)
 
