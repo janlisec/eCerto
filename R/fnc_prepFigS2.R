@@ -7,6 +7,7 @@
 #' @param plot_in_month plot_in_month.
 #' @param plot_ln_relative plot_ln_relative.
 #' @param round_time Round the month time to quarter month precision to be consistent with previous analyses.
+#' @param show_ids Overlay sample IDs to identify outlier samples.
 #' @examples
 #' x <- eCerto:::test_Stability_Arrhenius(3)
 #' x$Value <- x$Value/mean(x$Value[x$time==0])
@@ -15,11 +16,12 @@
 #' eCerto:::prepFigS2(tmp = x, plot_nominal_scale = FALSE)
 #' eCerto:::prepFigS2(tmp = x, plot_in_month = FALSE)
 #' eCerto:::prepFigS2(tmp = x, plot_ln_relative = FALSE)
+#' eCerto:::prepFigS2(tmp = x, round_time = TRUE, show_ids =TRUE)
 #' @return A data frame.
 #' @importFrom graphics par
 #' @noRd
 #' @keywords internal
-prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE, round_time = FALSE) {
+prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE, round_time = FALSE, show_ids = FALSE) {
   stopifnot(is.data.frame(tmp))
   stopifnot(all(c("time", "Value", "Temp") %in% colnames(tmp)))
   stopifnot(is.numeric(tmp[, "time"]))
@@ -75,6 +77,10 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
     graphics::lines(x = tmp.x, y = mns[k, ] + sds[k, ], col = unique(cols[tf == k]), lwd = 1, lty = 2)
     flt <- tmp[, "Temp"] == k
     graphics::points(y = val[flt], x = time[flt], pch = pchs[flt], bg = cols[flt], cex = 2)
+    if (show_ids) {
+      #browser()
+      graphics::text(y = val[flt], x = jitter(as.numeric(time[flt]), amount = 0.25), labels = rownames(tmp)[flt], cex=2)
+    }
     if (!plot_ln_relative) {
       graphics::mtext(text = paste0("recovery = ", round(100 * mean(val[flt], na.rm = T), 1), "%"), side = 3, line = -1.8, adj = 0.02, cex = cex_plot)
       graphics::mtext(text = paste0("(RSD = ", round(100 * stats::sd(val[flt], na.rm = T) / mean(val[flt], na.rm = T), 1), "%)"), side = 3, line = -3.6, adj = 0.02, cex = cex_plot)
@@ -82,7 +88,7 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
     if (plot_ln_relative & plot_in_month) {
       flt_lm <- tmp[, "Temp"] == k | tmp[, "Temp"] == levels(tf)[1]
       lm_res <- stats::coef(stats::lm(val[flt_lm] ~ as.numeric(as.character(time[flt_lm]))))
-      graphics::mtext(text = paste("slope =", round(lm_res[2], 4)), side = 3, line = -1.8, adj = 0.98, col = ifelse(lm_res[2] < 0, 3, 2), cex = cex_plot)
+      graphics::mtext(text = paste("slope =", round(lm_res[2], 6)), side = 3, line = -1.8, adj = 0.98, col = ifelse(lm_res[2] < 0, 3, 2), cex = cex_plot)
     }
   }
   invisible(NULL)

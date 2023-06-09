@@ -102,7 +102,7 @@ eCerto <- R6::R6Class(
         # this case needs to be taken care of here
         if (length(keys)>=2 && is.reactivevalues(purrr::pluck(private$..eData, !!!keys[-length(keys)]))) {
           #browser()
-          # [JL20230118_the out commented version stopped working after purr update and...]
+          # [JL20230118_the out commented version stopped working after purrr update and...]
           #purrr::pluck(private$..eData, !!!keys) <- NULL
           # [...was replaced by this version]
           purrr::pluck(private$..eData, !!!keys[-length(keys)])[[keys[length(keys)]]] <- NULL
@@ -193,11 +193,14 @@ eCerto <- R6::R6Class(
         return(private$..cAnalyte())
       } else {
         if (!identical(a, private$..cAnalyte())) {
-          # set current analyte on focus in C Module and recalculate dependent reactive variables
-          private$..cFltData <- eCerto:::c_filter_data(
-            x = private$..eData[["Certification"]][["data"]],
-            c_apm = private$..eData[["General"]][["apm"]][[a]]
-          )
+          if (self$e_present()["Certification"] & a %in% self$a_p("name")) {
+            #browser()
+            # set current analyte on focus in C Module and recalculate dependent reactive variables if C data are present and a is valid
+            private$..cFltData <- eCerto:::c_filter_data(
+              x = private$..eData[["Certification"]][["data"]],
+              c_apm = private$..eData[["General"]][["apm"]][[a]]
+            )
+          }
           private$..cAnalyte(a)
         }
       }

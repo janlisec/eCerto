@@ -13,9 +13,11 @@
 #'    eCerto:::m_arrheniusUI(id = "arrhenius")
 #'  ),
 #'  server = function(input, output, session) {
-#'  rv <- eCerto:::test_rv()
-#'  x <- eCerto:::test_Stability_Arrhenius()
-#'  isolate(setValue(rv, c("Stability", "data"), x))
+#'    rv <- eCerto:::test_rv(type = "SR3")
+#'    shiny::isolate(eCerto::setValue(rv, c("Stability", "data"), eCerto:::test_Stability_Arrhenius()))
+#'  #rv <- eCerto$new(init_rv())
+#'  #x <- eCerto:::test_Stability_Arrhenius()
+#'  #isolate(setValue(rv, c("Stability", "data"), x))
 #'  out <- eCerto:::m_arrheniusServer(id = "arrhenius", rv = rv)
 #'  shiny::observeEvent(out$switch, { print(out$switch) })
 #'  }
@@ -45,6 +47,7 @@ m_arrheniusUI <- function(id) {
         width = 2,
         shiny::wellPanel(
           shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
+          shiny::selectInput(inputId = ns("flt_ids"), label = "exclude ids", choices = "", multiple = TRUE),
           sub_header("Options Fig.S2", b=12),
           shiny::checkboxGroupInput(
             inputId = ns("s_opt_FigS2"),
@@ -54,7 +57,8 @@ m_arrheniusUI <- function(id) {
               "Use ordinal time" = "plot_nominal_scale",
               "Time in month" = "plot_in_month",
               "log-tansform values" = "plot_ln_relative",
-              "Round Month Time" = "round_time"
+              "Round Month Time" = "round_time",
+              "Show sample IDs" = "show_ids"
             ),
             selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
           ),
@@ -64,40 +68,28 @@ m_arrheniusUI <- function(id) {
     ),
     shiny::fluidRow(
       shiny::column(
-        width = 10,
+        width = 8,
         shiny::div(
           style="width=100%; margin-bottom: 5px;",
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("ArrheniusTab_link"),
-              label = "Tab.S2 - calculation of possible storage time"
-            )
-          )
+          sub_header(shiny::actionLink(inputId = ns("ArrheniusTab_link"), label = "Tab.S2 - calculation of possible storage time"))
         ),
         shiny::fluidRow(
           shiny::column(width = 6, DT::DTOutput(outputId = ns("Tab1"))),
           shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
           shiny::column(width = 2, DT::DTOutput(outputId = ns("outTab")))
         ),
-        DT::DTOutput(outputId = ns("Tab2"))
+        shiny::fluidRow(
+          shiny::column(width = 10, DT::DTOutput(outputId = ns("Tab2"))),
+          shiny::column(width = 2, shiny::uiOutput(outputId = ns("user_month")))
+        )
       ),
       shiny::column(
         width = 2,
         shiny::div(
           style="width=100%; margin-bottom: 5px;",
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("ArrheniusPlot2_link"),
-              label = "Fig.S3 - Arrhenius model"
-            )
-          )
+          sub_header(shiny::actionLink(inputId = ns("ArrheniusPlot2_link"), label = "Fig.S3 - Arrhenius model"))
         ),
-        shiny::plotOutput(outputId = ns("Fig2")))
-    ),
-    shiny::fluidRow(
-      shiny::column(
-        width = 10,
-        shiny::uiOutput(outputId = ns("user_month"))
+        shiny::plotOutput(outputId = ns("Fig2"))
       ),
       shiny::column(
         width = 2,
@@ -143,13 +135,34 @@ m_arrheniusServer <- function(id, rv) {
       out$switch <- out$switch+1
     }, ignoreInit = TRUE)
 
+    an <- reactiveVal()
     shiny::observeEvent(getValue(rv, c("Stability", "data")), {
-      shiny::updateSelectInput(session = session, inputId = "analyte", choices = unique(as.character(getValue(rv, c("Stability", "data"))[,"analyte"])))
+      x <- getValue(rv, c("Stability", "data"))
+      if (!is.factor(x[,"analyte"])) x[,"analyte"] <- factor(x[,"analyte"])
+      an(levels(x[,"analyte"]))
+      shiny::updateSelectInput(session = session, inputId = "analyte", choices = an())
+      shiny::updateSelectInput(session = session, inputId = "flt_ids", choices = 1:nrow(x))
     })
+
+    shiny::observeEvent(rv$cur_an, {
+      req(input$analyte, an())
+      if (!identical(input$analyte, rv$cur_an) && rv$cur_an %in% an()) shiny::updateSelectInput(session = session, inputId = "analyte", choices = an(), selected = rv$cur_an)
+      if (!is.null(input$flt_ids)) shiny::updateSelectInput(session = session, inputId = "flt_ids", selected = NULL)
+    }, ignoreNULL = TRUE)
+
+    shiny::observeEvent(input$analyte, {
+      if (is.null(rv$cur_an) | !identical(rv$cur_an, input$analyte)) rv$cur_an <- input$analyte
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
+
 
     df <- shiny::reactive({
       shiny::req(input$analyte)
       dat <- getValue(rv, c("Stability", "data"))
+      # [ToDo JL] the filtering step should be initiated during upload and user selections should be saved
+      rownames(dat) <- 1:nrow(dat)
+      if (length(input$flt_ids)>=1) {
+        dat <- dat[-as.numeric(input$flt_ids),]
+      }
       req_col <- c("analyte","time","Value","Temp")
       shiny::validate(shiny::need(req_col %in% colnames(dat), message = paste("These columns required for Arrhenius calculations are not available:", paste(req_col[!(req_col %in% colnames(dat))], collapse=", "))))
       shiny::validate(shiny::need(input$analyte %in% as.character(dat[,"analyte"]), message="How did you manage to specify a non existent analyte name?"))
@@ -165,13 +178,15 @@ m_arrheniusServer <- function(id, rv) {
     })
 
     output$FigS2 <- shiny::renderPlot({
+      req(df())
       prepFigS2(
         tmp=df(),
         show_reference_point = "show_reference_point" %in% input$s_opt_FigS2,
         plot_nominal_scale = "plot_nominal_scale" %in% input$s_opt_FigS2,
         plot_in_month = "plot_in_month" %in% input$s_opt_FigS2,
         plot_ln_relative = "plot_ln_relative" %in% input$s_opt_FigS2,
-        round_time = "round_time" %in% input$s_opt_FigS2
+        round_time = "round_time" %in% input$s_opt_FigS2,
+        show_ids = "show_ids" %in% input$s_opt_FigS2
       )
     })
 
@@ -205,7 +220,10 @@ m_arrheniusServer <- function(id, rv) {
       colnames(out)[1] <- "T [\u00B0C]"
       return(out)
     }
-    tab1 <- shiny::reactive({ getTab1(tmp=df()) })
+    tab1 <- shiny::reactive({
+      req(df())
+      getTab1(tmp=df())
+    })
     output$Tab1 <- DT::renderDT({
       out <- tab1()
       for (i in which(colnames(out) %in% c("1/K", "k_eff", "log(-k_eff)"))) out[,i] <- round(out[,i], prec)
@@ -265,7 +283,7 @@ m_arrheniusServer <- function(id, rv) {
       if (input$rbtn_storage == "rt") {
         x <- getValue(rv, c("Stability", "data"))
         x <- x[x[,"analyte"] == input$analyte,]
-        x <- x[x[,"Temp"] == min(x[,"Temp"], na.rm=TRUE),]
+        if ("Temp" %in% colnames(x)) { x <- x[x[,"Temp"] == min(x[,"Temp"], na.rm=TRUE),] }
         coef <- log((mean(x[,"Value"])-2*sd(x[,"Value"]))/mean(x[,"Value"]))
         shiny::updateNumericInput(inputId = "num_coef", value = coef)
         shinyjs::disable(id = "num_coef")
