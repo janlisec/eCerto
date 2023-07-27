@@ -6,7 +6,7 @@ the standard error `SE` of the slope.
 
 To determine if the slope $m$ is significantly different from $m=0$ we perform a t-test by 
 calculating the t-statistic $t_m = |m| / s(m)$ and comparing the result with the two-tailed 
-critical value of Student’s $t$ for n − 2 degrees of freedom to obtain the P-values in column `P`.
+critical value of Student's $t$ for n - 2 degrees of freedom to obtain the P-values in column `P`.
 
 ![**Tab.S1** Calculation of uncertainty contributions from stability assay](fig/S_Modul_Tab1.png)
 

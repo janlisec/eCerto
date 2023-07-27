@@ -1,6 +1,6 @@
 #### Calculation of possible storage time
 
-Besides `Rec`overy and `RSD` for each temperature level $T_i$ (`T [°C]`), the slope `k_eff` and 
+Besides `Rec`overy and `RSD` for each temperature level $T_i$, the slope `k_eff` and 
 the log-transformation of it's negative value `log(-k_eff)` are provided in **Tab.S2**.
 
 ![**Tab.S2** Calculation of possible storage time](fig/S_Modul_Tab2a.png)
@@ -37,4 +37,4 @@ $$S_{\mathit{Month}}(T) = \frac{ \log( \frac{\mu_c - U_{abs}}{\mu_c})}{e^{\mathi
 
 ***Note!***
 Extrapolation beyond the range of storage conditions tested (for example, predicting degradation rates 
-at −20\ °C from an experiment involving only temperatures above 0\ °C) can be unreliable and is not recommended.
+at −20°C from an experiment involving only temperatures above 0°C) can be unreliable and is not recommended.
