@@ -129,9 +129,8 @@ m_analyteServer = function(id, rv) {
           inputId = "precision_export",
           value = apm()[[a]]$precision_export
         )
-        mt <- getValue(rv, c("General", "materialtabelle"))
-        n <- digits_DIN1333(x = mt[mt[,"analyte"]==a, "U_abs"])
-        if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong>(", n, ")")) }
+        # check if color of suggested rounding is already correct for this analyte
+        update_DIN1333_HTML()
       } else {
         message("[m_analyte] Can't update parameter inputs for ", a)
       }
@@ -140,9 +139,7 @@ m_analyteServer = function(id, rv) {
     shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
       # this additional observer is required in case that the user interactively manipulates the material table
       shiny::req(apm())
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      n <- digits_DIN1333(x = mt[mt[,"analyte"]==a(),"U_abs"])
-      if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong>(", n, ")")) }
+      update_DIN1333_HTML()
     })
 
     # update apm in case of changes in precision inputs
@@ -164,8 +161,19 @@ m_analyteServer = function(id, rv) {
         message("[m_analyte] update 'precision_export'")
         tmp[[a()]]$precision_export <- input$precision_export
         apm(tmp)
+        update_DIN1333_HTML()
       }
     }, ignoreNULL = FALSE, ignoreInit=TRUE)
+
+    # update DIN1333 HTML
+    update_DIN1333_HTML <- function() {
+      shiny::isolate({
+        mt <- getValue(rv, c("General", "materialtabelle"))
+        n <- digits_DIN1333(x = mt[mt[,"analyte"]==a(), "U_abs"])
+        n_col <- ifelse(n==apm()[[a()]]$precision_export, "#00FF00", "#FF0000")
+        if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong><span style = 'background-color: ", n_col, "'>(", n, ")</span>")) }
+      })
+    }
 
     # update apm in case of changes in sample_filter inputs
     shiny::observeEvent(input$sample_filter, {
