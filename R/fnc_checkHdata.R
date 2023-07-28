@@ -10,9 +10,9 @@
 #'@keywords internal
 checkHdata <- function(x) {
   message("[checkHdata] perform statistics on imported homogeneity data")
-  # rename if if first column is not named 'analyte' and convert to factor
+  # rename if first column is not named 'analyte' and convert to factor but keep order of elements
   colnames(x)[1] <- "analyte"
-  x[,"analyte"] <- factor(x[,"analyte"])
+  x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
   # ensure that there is a second column 'H_type' and convert to factor with at least one level
   if (colnames(x)[2]!="H_type" && colnames(x)[3]=="value") {
     x <- cbind(x[,"analyte",drop=FALSE], data.frame("H_type"=gl(n = 1, k = nrow(x), labels = "hom")), x[,2:ncol(x)])
