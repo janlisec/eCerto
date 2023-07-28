@@ -310,7 +310,7 @@ h_statement <- function(x, a) {
       shiny::column(
         width = 12,
         shiny::HTML(
-          "The tested items (Flasche) are ", s1, "(ANOVA P-value = ", pn(a_P, 2), ").",
+          "The tested items (Flasche) are ", s1, "(ANOVA P-value = ", pn(a_P, 2), ", alpha-level = 0.05).",
           "<p>The uncertainty value for analyte ", a_name, "was determined as<b>", pn(a_sd), "</b>.</p>", s2
         )
       )
