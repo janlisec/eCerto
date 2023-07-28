@@ -128,9 +128,9 @@ page_StabilityServer <- function(id, rv) {
 
     # the complete data table of stability data as a local copy
     s_Data <- shiny::reactive({
-      #shiny::req(input$s_sel_temp)
+      shiny::req(getValue(rv, c("Stability","data")))
       s_dat <- getValue(rv, c("Stability","data"))
-      if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
+      if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"], levels=unique(s_dat[,"analyte"]))
       if ("Temp" %in% colnames(s_dat)) {
         shiny::validate(shiny::need(expr = input$s_sel_temp != "", message = "Please select a Temp level."))
         s_dat <- s_dat[as.character(s_dat[,"Temp"]) %in% input$s_sel_temp,]

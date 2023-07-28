@@ -272,7 +272,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
         shiny::validate(shiny::need(is.numeric(s_dat[,"Value"]), "Column 'Value' in input file contains non-numeric values."))
         if (!inherits(s_dat[,"Date"], "Date")) { s_dat[,"Date"] <- as.Date.character(s_dat[,"Date"], tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d")) }
         shiny::validate(shiny::need(inherits(s_dat[,"Date"], "Date"), "Sorry, could not convert column 'Date' into correct format."))
-        s_dat[,"analyte"] <- factor(s_dat[,"analyte"])
+        s_dat[,"analyte"] <- factor(s_dat[,"analyte"], levels = unique(s_dat[,"analyte"]))
         out$data <- s_dat
       }
     }, ignoreInit = TRUE)

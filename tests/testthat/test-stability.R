@@ -58,7 +58,6 @@ testthat::test_that(
           rv = rv_test
         ),
         expr =  {
-          #browser()
           eCerto::setValue(rv_test, c("Stability","data"), eCerto:::test_Stability_Excel() )
           session$flushReact()
           testthat::expect_error(output$s_transfer_ubb, "Please upload certification data to transfer Uncertainty values")

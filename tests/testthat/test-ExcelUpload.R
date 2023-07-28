@@ -94,7 +94,11 @@ testthat::test_that(
           session$setInputs(moduleSelect = "Stability", excel_file = xlsx_test, sheet_number = 1, file_number = 1, file_name = "Stability_Testdata.xlsx")
           session$flushReact()
           session$setInputs(btn_load = "click")
-          testthat::expect_equal(out$data, eCerto:::test_Stability_Excel())
+          # $$JL$$ upload module was changed to respect analyte order from Excel file
+          # original test data have to be modified to reflect this change
+          comp <- eCerto:::test_Stability_Excel()
+          comp[,"analyte"] <- factor(comp[,"analyte"], levels=c("Si","Mn"))
+          testthat::expect_equal(out$data, comp)
         }
       )
     )
