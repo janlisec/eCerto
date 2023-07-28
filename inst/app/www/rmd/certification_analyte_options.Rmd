@@ -45,8 +45,9 @@ upload data using a different (more appropriate) unit and, for instance, switch 
 #### DIN1333
 
 *eCerto* suggests the rounding precision for $\mu_c$ and $U_{abs}$ according to DIN 1333. The appropriate
-value is displayed right over the input box of `Precision (Cert)`. It's backgroun is colored green if it is 
-in accordance with the user selected value and red otherwise.
+value is displayed right over the input box of `Precision (Cert)`. It's background is colored 
+<span style="background-color: #00FF00;">green</span> if it is in accordance with the user selected value 
+and <span style="background-color: #FF0000;">red</span> otherwise.
 
 The significant digit is determined based on the first non-zero digit in $U_{abs}$. The position will be
 shown above the analyte parameter `Precision (Cert)` upon selection of an analyte in **Tab.C3**. Once found, 

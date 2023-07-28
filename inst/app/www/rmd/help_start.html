@@ -521,9 +521,11 @@ which can be set per individual analyte</div>
 <h4>Pooling</h4>
 <p><code>pooling</code> means that calculations in the material table
 (<code>mean</code>, <code>sd</code> and uncertainty columns) are not
-based on the lab means, but rather on all measured values. This is
-justified when the between lab variance is smaller than the within lab
-variance. Selecting this option will also affect <code>n</code> in
+based on the lab means, but rather on <em>all</em> measured values. This
+is justified when the between lab variance is smaller than the within
+lab variance (check if the ANOVA P-value is insignificant in
+<strong>Tab.C2</strong>, if so pooling might be allowed).</p>
+<p>Selecting this option will also affect <code>n</code> in
 <strong>Tab.C3</strong> being either the number of included labs or the
 number of finite data points from these labs.</p>
 </div>
@@ -544,34 +546,38 @@ in <strong>Tab.C3</strong>.</p>
 </div>
 <div id="rounding" class="section level4">
 <h4>Rounding</h4>
-<p><strong><em>Note!</em></strong> Internally, all calculations are
-performed on non-rounded values (as imported). Only the visual output to
-the user is rounded to improve readability.</p>
-<p>Because analytes within an RM might be measured at very different
-scales it is possible to define analyte specific precision values for
-rounding. The <code>Precision (Tables)</code> value is used for all
-values displayed in tables. An exception is <strong>Tab.C3</strong>.
-Here, <code>Precision (Cert)</code> is used to round <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(U_{abs}\)</span> to allow to comply with DIN/ISO
-regulations on rounding.</p>
-<p><em>eCerto</em> suggests the rounding precision for <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(U_{abs}\)</span> according to DIN 1333. The
-position of the significant digit is determined based on the first
-non-zero digit in <span class="math inline">\(U_{abs}\)</span>. The
-position will be shown above the analyte parameter
-<code>Precision (Cert)</code> upon selection of an analyte in
-<strong>Tab.C3</strong>. Once found, the respective digit will be
-rounded up for <span class="math inline">\(\mu_c\)</span> if the
-consecutive digit is <span class="math inline">\(\ge 5\)</span> and down
-otherwise. For <span class="math inline">\(U_{abs}\)</span> the rounding
-procedure is a bit more complicated. If the respective digit is 1 or 2,
-than the consecutive digit will be rounded up. If the respective digit
-is <span class="math inline">\(\ge 3\)</span>, than it will be rounded
-up itself.</p>
-<p>The user can specify negative numbers for
-<code>Precision (Cert)</code> to indicate a desired rounding digit left
-of the decimal separator, <em>i.e.</em> <span class="math inline">\(-1\)</span> to round an uncertainty of 13.1 up to
-20. If the uncertainty is even larger, the user should consider to
+<p><strong><em>Note!</em></strong> Internally, <em>all calculations are
+performed on non-rounded values</em> (as imported). Only the visual
+output to the user is rounded to improve readability. Because analytes
+within an RM might be measured at very different scales it is possible
+to define analyte specific precision values for rounding. The
+<code>Precision (Tables)</code> value is used for most values displayed
+in tables.</p>
+<p>The only exception is <strong>Tab.C3</strong>. Here,
+<code>Precision (Cert)</code> is used to round <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(U_{abs}\)</span> to allow to comply with DIN/ISO
+regulations on rounding and columns containing relative uncertainties
+are rounded to fixed 4 digit precision.</p>
+<p>The user can decide the rounding precision for <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(U_{abs}\)</span> and even specify negative numbers
+for <code>Precision (Cert)</code> to indicate a desired rounding digit
+left of the decimal separator (<em>i.e.</em> <span class="math inline">\(-1\)</span> to round an uncertainty of 13.1 up to
+20). If the uncertainty is even larger, the user should consider to
 upload data using a different (more appropriate) unit and, for instance,
 switch from mg/L to g/L.</p>
+</div>
+<div id="din1333" class="section level4">
+<h4>DIN1333</h4>
+<p><em>eCerto</em> suggests the rounding precision for <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(U_{abs}\)</span> according to DIN 1333. The
+appropriate value is displayed right over the input box of
+<code>Precision (Cert)</code>. It’s background is colored <span style="background-color: #00FF00;">green</span> if it is in accordance
+with the user selected value and <span style="background-color: #FF0000;">red</span> otherwise.</p>
+<p>The significant digit is determined based on the first non-zero digit
+in <span class="math inline">\(U_{abs}\)</span>. The position will be
+shown above the analyte parameter <code>Precision (Cert)</code> upon
+selection of an analyte in <strong>Tab.C3</strong>. Once found, the
+respective digit will be rounded up for <span class="math inline">\(\mu_c\)</span> if the consecutive digit is <span class="math inline">\(\ge 5\)</span> and down otherwise. For <span class="math inline">\(U_{abs}\)</span> the rounding procedure is a bit
+more complicated. If the respective digit is 1 or 2, than the
+consecutive digit will be rounded up. If the respective digit is <span class="math inline">\(\ge 3\)</span>, than it will be rounded up
+itself.</p>
 </div>
 </div>
 <div id="laboratory-statistics-to-identify-potential-outliers-for-lab-means-and-lab-variances" class="section level3">
