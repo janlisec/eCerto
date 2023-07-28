@@ -3,6 +3,26 @@
     "Version": "4.3.1",
     "Repositories": [
       {
+        "Name": "BioCsoft",
+        "URL": "https://bioconductor.org/packages/3.17/bioc"
+      },
+      {
+        "Name": "BioCann",
+        "URL": "https://bioconductor.org/packages/3.17/data/annotation"
+      },
+      {
+        "Name": "BioCexp",
+        "URL": "https://bioconductor.org/packages/3.17/data/experiment"
+      },
+      {
+        "Name": "BioCworkflows",
+        "URL": "https://bioconductor.org/packages/3.17/workflows"
+      },
+      {
+        "Name": "BioCbooks",
+        "URL": "https://bioconductor.org/packages/3.17/books"
+      },
+      {
         "Name": "CRAN",
         "URL": "https://packagemanager.posit.co/cran/latest"
       }
@@ -269,13 +289,13 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "5.0.2",
+      "Version": "5.0.1",
       "Source": "Repository",
-      "Repository": "https://jeroen.r-universe.dev",
+      "Repository": "RSPM",
       "Requirements": [
         "R"
       ],
-      "Hash": "511bacbfa153a15251166b463b4da4f9"
+      "Hash": "2118af9cb164c8d2dddc7b89eaf732d9"
     },
     "desc": {
       "Package": "desc",
@@ -320,7 +340,13 @@
     "eCerto": {
       "Package": "eCerto",
       "Version": "0.1.68",
-      "Source": "Bioconductor",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "janlisec",
+      "RemoteRepo": "eCerto",
+      "RemoteRef": "main",
+      "RemoteSha": "a900d332a37089164b65551e84d02f789e1625b3",
       "Requirements": [
         "DT",
         "R",
@@ -340,7 +366,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "40b421424a535d2e69efdbf901d80ab4"
+      "Hash": "1df7730e76624a5eed503b33f867aac1"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -995,22 +1021,18 @@
     },
     "shinyalert": {
       "Package": "shinyalert",
-      "Version": "3.0.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "shinyalert",
-      "RemoteUsername": "daattali",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "7f208efcf7428a35237e96133dc068e569a55075",
+      "Version": "3.0.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "htmltools",
+        "knitr",
         "shiny",
         "stats",
         "uuid"
       ],
-      "Hash": "f4c396dcde666b20268fd8f69d345a53"
+      "Hash": "2fd42421abd79dcaf0855fa1d21599a3"
     },
     "shinyjs": {
       "Package": "shinyjs",

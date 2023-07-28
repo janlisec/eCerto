@@ -132,7 +132,7 @@ m_xlsx_range_select_Server <- function(
       tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
     })
 
-    # das Proxy der Tabelle, um sicherstellen zu können, dass immer nur 2 Zellen angewählt werden können (proxy version kann serverseitig manipuliert werden)
+    # table Proxy to ensure that only 2 cells are selected at any time
     uitab_proxy <- DT::dataTableProxy("uitab")
 
     # if rows and columns in the DT() have been selected
