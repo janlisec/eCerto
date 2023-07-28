@@ -1,9 +1,0 @@
-name: test
-title: test
-username:
-account: jali
-server: shinyapps.io
-hostUrl: https://api.shinyapps.io/v1
-appId: 4916649
-bundleId: 7505921
-url: https://jali.shinyapps.io/test/
