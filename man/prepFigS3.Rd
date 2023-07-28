@@ -20,12 +20,12 @@ tbd.
 }
 \examples{
 x <- data.frame(
-  "dummy_name" = c("0", "4"),
-  "1/K" = 1/(c(0, 4)+273.15),
-  "log(-k_eff)" = c(1, 2),
-  "CI_upper" = c(2, 3),
-  "CI_lower" = c(0, 1),
-  "log(k)_calc" = c(1, 2),
+  "dummy_name" = c("0", "2", "4"),
+  "1/K" = 1/(c(0, 2, 4) + 273.15),
+  "log(-k_eff)" = 1:3,
+  "CI_upper" = 2:4,
+  "CI_lower" = 0:2,
+  "log(k)_calc" = 1:3,
   check.names = FALSE
 )
 eCerto:::prepFigS3(tab = x)

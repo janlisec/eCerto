@@ -4,12 +4,12 @@
 #' @param tab The table containing data as basis for plot generation.
 #' @examples
 #' x <- data.frame(
-#'   "dummy_name" = c("0", "4"),
-#'   "1/K" = 1/(c(0, 4)+273.15),
-#'   "log(-k_eff)" = c(1, 2),
-#'   "CI_upper" = c(2, 3),
-#'   "CI_lower" = c(0, 1),
-#'   "log(k)_calc" = c(1, 2),
+#'   "dummy_name" = c("0", "2", "4"),
+#'   "1/K" = 1/(c(0, 2, 4) + 273.15),
+#'   "log(-k_eff)" = 1:3,
+#'   "CI_upper" = 2:4,
+#'   "CI_lower" = 0:2,
+#'   "log(k)_calc" = 1:3,
 #'   check.names = FALSE
 #' )
 #' eCerto:::prepFigS3(tab = x)
@@ -29,9 +29,10 @@ prepFigS3 <- function(tab) {
   ylim <- range(c(tab[,"log(-k_eff)"], tab[,"CI_upper"], tab[,"CI_lower"]), na.rm=TRUE)
   opar <- graphics::par(no.readonly = TRUE)
   on.exit(par(opar))
-  graphics::par(mar=c(5,4,2.5,1))
-  plot(xlim, ylim, xlab="1/K", ylab=expression(ln(-k[eff])), type="n", main="")
+  graphics::par(mar=c(4.5,4.5,4,1.5))
+  plot(xlim, ylim, xlab="Inverse Temp [1/K]", ylab=expression(ln(-k[eff])), type="n", main="")
   graphics::axis(side = 3, at = 1/(273.15+as.numeric(tab[,1])), labels = tab[,1])
+  graphics::mtext(side = 3, line = 2.5,  adj = 0.5, text = "Temp [°C]")
   graphics::lines(x=tab[,"1/K"], y=tab[,"CI_upper"], col=2, lwd=1, lty=2)
   graphics::lines(x=tab[,"1/K"], y=tab[,"log(k)_calc"], col=2, lwd=3)
   graphics::lines(x=tab[,"1/K"], y=tab[,"CI_lower"], col=2, lwd=1, lty=2)
