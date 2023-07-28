@@ -1,6 +1,10 @@
 # History files
 .Rhistory
 .Rapp.history
+.Rprofile
+Portable_Work_Directory.Rproj
+# rsconnect files
+rsconnect/
 # Session Data files
 .RData
 # User-specific files
