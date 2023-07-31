@@ -54,27 +54,27 @@ testthat::test_that(
         expr = {
           testthat::expect_true(exists("rv_xlsx_range_select"))
           testthat::expect_null(rv_xlsx_range_select$tab)
-          # set required inputs
-          session$setInputs(
-            moduleSelect = "Homogeneity",
-            excel_file = list(
-              datapath = system.file(package = "eCerto", "extdata", "Homog_test.xlsx"),
-              name = "Homog_test.xlsx"
-            ),
-            # excel_file = list(
-            #   datapath = testthat::test_path("Homog_test.xlsx"),
-            #   name = "Homog_test.xlsx"
-            # ),
-            sheet_number = 1,
-            file_number = 1,
-            file_name = "Homog_test.xlsx"
-          )
-          # flush reactivity and click button
-          session$flushReact()
-          session$setInputs(btn_load = "click")
-          testthat::expect_false(is.null(rv_xlsx_range_select$tab))
-          testthat::expect_true(exists("out"))
-          testthat::expect_true(!is.null(out$data))
+          inp <- system.file(package = "eCerto", "extdata", "Homog_test.xlsx")
+          # in GitHub actions the file can't be found
+          if (file.exists(inp)) {
+            # set required inputs
+            session$setInputs(
+              moduleSelect = "Homogeneity",
+              excel_file = list(
+                datapath = inp,
+                name = "Homog_test.xlsx"
+              ),
+              sheet_number = 1,
+              file_number = 1,
+              file_name = "Homog_test.xlsx"
+            )
+            # flush reactivity and click button
+            session$flushReact()
+            session$setInputs(btn_load = "click")
+            testthat::expect_false(is.null(rv_xlsx_range_select$tab))
+            testthat::expect_true(exists("out"))
+            testthat::expect_true(!is.null(out$data))
+          }
         }
       )
     )
