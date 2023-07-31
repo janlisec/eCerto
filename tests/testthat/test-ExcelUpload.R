@@ -61,6 +61,10 @@ testthat::test_that(
               datapath = system.file(package = "eCerto", "extdata", "Homog_test.xlsx"),
               name = "Homog_test.xlsx"
             ),
+            # excel_file = list(
+            #   datapath = testthat::test_path("Homog_test.xlsx"),
+            #   name = "Homog_test.xlsx"
+            # ),
             sheet_number = 1,
             file_number = 1,
             file_name = "Homog_test.xlsx"
