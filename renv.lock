@@ -340,13 +340,7 @@
     "eCerto": {
       "Package": "eCerto",
       "Version": "0.2.1",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "janlisec",
-      "RemoteRepo": "eCerto",
-      "RemoteRef": "main",
-      "RemoteSha": "ea19485013610c09a6394b3015f781382d468047",
+      "Source": "Bioconductor",
       "Requirements": [
         "DT",
         "R",
@@ -366,7 +360,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "213807b058cf878dfc1bdf1b91bff778"
+      "Hash": "59bbd3bd07b66d9164a1e57e048f3ae9"
     },
     "ellipsis": {
       "Package": "ellipsis",
