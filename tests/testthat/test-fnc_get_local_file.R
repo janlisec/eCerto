@@ -5,7 +5,7 @@ testthat::test_that(
     testthat::expect_error(eCerto:::get_local_file(x = NULL))
     testthat::expect_error(eCerto:::get_local_file(x = c("", "")))
     # check that function returns warning if 'www' does not exist as resourcePath
-    if ("www" %in% names(resourcePaths())) removeResourcePath("www")
+    if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
     testthat::expect_warning(eCerto:::get_local_file(x=""))
     # check that function returns NA if 'www' does not exist as resourcePath
     suppressWarnings(x <- eCerto:::get_local_file(x = ""))

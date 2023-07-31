@@ -37,3 +37,6 @@ testthat::test_that(
     testthat::expect_equal(unname(test$c_analytes()), c("X", "Y", "Z"))
   }
 )
+
+# clean up
+rm(app, init_vals)
