@@ -1,42 +1,31 @@
-# Don't run these tests on the CRAN build servers
-testthat::skip_on_cran()
-
-# remove resource path 'www' to get consistent snapshots
-if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
-
-# run this test app in a headless browser using shinytest2
-app <- shinytest2::AppDriver$new(eCerto::run_app(), name = "run_app")
-
-# get initial app values
-init_vals <- app$get_values()
-
 testthat::test_that(
-  desc = "modules/components are named consistently such that function 'to_startPage' still works",
+  desc = "app can be started in initial state",
   code = {
+    # Don't run these tests on the CRAN build servers
+    testthat::skip_on_cran()
+
+    # remove resource path 'www' to get consistent snapshots
+    if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
+
+    # run this test app in a headless browser using shinytest2
+    app <- shinytest2::AppDriver$new(eCerto::run_app(), name = "run_app")
+
+    # get initial app values
+    init_vals <- app$get_values()
+
     # check if modules/components are named such that function 'to_startPage' still works
     testthat::expect_true("Start-excelfile-moduleSelect" %in% names(init_vals$input))
-  }
-)
 
-testthat::test_that(
-  desc = "Check that test data load button is still present and with consistent name",
-  code = {
-    # check if modules/components are named such that function 'to_startPage' still works
+    # Check that test data load button is still present and with consistent name
     testthat::expect_true("Start-load_test_data" %in% names(init_vals$input))
-  }
-)
 
-testthat::test_that(
-  desc = "R6 object is initialized empty and filled with test data upon user click",
-  code = {
     # check if empty R6 object was initialized
     testthat::expect_true(identical(init_vals$export$`rv`$c_analytes(), list()))
+
     # check if loading test data works
     app$click(input = "Start-load_test_data")
     test <- app$get_values(export = "rv")$export$rv
     testthat::expect_equal(unname(test$c_analytes()), c("X", "Y", "Z"))
-  }
-)
 
-# clean up
-rm(app, init_vals)
+    }
+)
