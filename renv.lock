@@ -346,7 +346,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "3d45dc623c2e046b1ea8f9d44c88b6b154641c2f",
+      "RemoteSha": "e39750c29802dacbb70889c90694947649ace4f4",
       "Requirements": [
         "DT",
         "R",
@@ -366,7 +366,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "8372c7796570d636092daa8ac3080c11"
+      "Hash": "c813f387e035c445b98d61f426585151"
     },
     "ellipsis": {
       "Package": "ellipsis",
