@@ -49,9 +49,6 @@ jobs:
           name: coverage-test-failures
           path: ${{ runner.temp }}/package
 
-name: code-coverage
-
-jobs:
   code-coverage:
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
