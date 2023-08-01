@@ -165,24 +165,16 @@ update_reactivecell = function(r, colname, analyterow = NULL, value) {
 to_startPage = function(session, value="Certification") {
   # this function will break if shiny input IDs get changed
   # ToDo: implement in testthat that 'Start' and 'Start-moduleSelect' are present
-  shiny::updateNavbarPage(
-    session = session,
-    inputId = "navbarpage",
-    selected = "Start"
-  )
-  shiny::updateSelectInput(
-    session = session,
-    inputId = "Start-excelfile-moduleSelect",
-    selected = value
-  )
+  shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "Start")
+  shiny::updateSelectInput(session = session, inputId = "Start-excelfile-moduleSelect", selected = value)
 }
 
 #' @title listNames
 #' @description Provides names of nested list elements, but ignores data frame column names.
 #'     Refer to  <https://stackoverflow.com/q/68453593/6946122> for details.
-#' @param l Nested list or R6 containing reactiveValues or reactiveValues
-#' @param maxDepth the maximum depth, the names of list should be returned
-#' @param split should the returning list be returned as nested  (TRUE) or as point-separated list (FALSE)?#'
+#' @param l Nested list or R6 containing reactiveValues.
+#' @param maxDepth The maximum depth, the names of list should be returned.
+#' @param split Should the returning list be returned as nested  (TRUE) or as point-separated list (FALSE)?
 #' @return A list if split == TRUE, otherwise a character vector of names.
 #' @keywords internal
 #' @noRd
