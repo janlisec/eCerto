@@ -15,7 +15,6 @@ plot_lts_data <- function(x = NULL, type = 1) {
   # date estimation is approximate (based on ~30d/month or precisely on 365/12=30.42)
   days_per_month <- 30.41667
 
-  #browser()
   # ensure that data is ordered after time
   x[["val"]] <- x[["val"]][order(x[["val"]][, "Date"]), ]
 

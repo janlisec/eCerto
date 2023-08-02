@@ -23,8 +23,6 @@ testthat::test_that(
 
     app$click("test-load_test_data")
 
-    #browser()
-
     # check if module did start by comparing with previously recorded snapshot
     app$expect_values(export = "test")
 

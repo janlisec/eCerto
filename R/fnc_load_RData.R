@@ -29,7 +29,7 @@ fnc_load_RData <- function(x = NULL) {
         # rv should contain all variables from uploaded x except for deprecated once
         # split must be false here, otherwise one name list is of class character
         # the other of class list -> Error
-        #browser()
+
         # remove deprecated elements from 'x'
         deprecated_elements <- c(
           "Certification_processing.opt",

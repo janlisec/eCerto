@@ -78,7 +78,6 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
     flt <- tmp[, "Temp"] == k
     graphics::points(y = val[flt], x = time[flt], pch = pchs[flt], bg = cols[flt], cex = 2)
     if (show_ids) {
-      #browser()
       graphics::text(y = val[flt], x = jitter(as.numeric(time[flt]), amount = 0.25), labels = rownames(tmp)[flt], cex=2)
     }
     if (!plot_ln_relative) {

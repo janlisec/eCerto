@@ -49,7 +49,6 @@ testthat::test_that(
       shiny::testServer(
         app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn2,sheet = sheetNo), {
-          #browser()
           testthat::expect_warning(
             testthat::expect_error(tab(),"uploaded Excel files contain an empty one"),
             "Invalid file; Please upload a .xlsx file")

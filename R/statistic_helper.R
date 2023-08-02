@@ -92,7 +92,6 @@ Grubbs <- function(lab_means = NULL, fmt=c("alpha", "pval", "cval", "cval05", "c
       # if (test_Grubbs1_max) out$Grubbs2[maxvals] <- outliers::grubbs.test(x = x, type = 20, two.sided = FALSE, opposite = ifelse(smallest_is_extreme, TRUE, FALSE))$p.value
       if (test_Grubbs1_min) out$Grubbs2[minvals] <- grubbs.test(x = x, type = "20", tail = "lower")$p.value
       if (test_Grubbs1_max) out$Grubbs2[maxvals] <- grubbs.test(x = x, type = "20", tail = "upper")$p.value
-      #browser()
       if (fmt=="alpha") out$Grubbs2 <- pval2level(p = out$Grubbs2)
       if (fmt=="cval") {
         if (test_Grubbs1_min) out$Grubbs2[minvals] <- stats::var(x[-minvals])/stats::var(x) * (n - 3)/(n - 1)
@@ -455,7 +454,6 @@ dixon.test <- function (x, opposite = FALSE, two.sided = FALSE) {
       (x[n] - x[n - 2])/(x[n] - x[3])
     )
   }
-  #browser()
   #pval <- outliers::pdixon(q, n, type)
   pval <- pdixon(q, n)
   if (two.sided) {

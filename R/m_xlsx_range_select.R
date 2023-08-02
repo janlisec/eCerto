@@ -186,7 +186,6 @@ m_xlsx_range_select_Server <- function(
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({
         shiny::req(tab())
-      #browser()
         idx <- ifelse(excelformat() == "Stability", sheet(), file())
         out <- tab()[[idx]]
         if (prod(dim(out)) > 1) {

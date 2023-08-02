@@ -219,7 +219,6 @@ page_CertificationServer = function(id, rv) {
         selected_tab(rv$cur_an)
       } else {
         message("[page_certification] cant change local selected_tab to rv$cur_an as it is not in C list")
-        #browser()
       }
     }, ignoreInit = TRUE)
 
@@ -234,7 +233,6 @@ page_CertificationServer = function(id, rv) {
             selected_tab(rv$cur_an)
           } else {
             message("[page_certification] cant change local selected_tab to rv$cur_an as it is not in C list")
-            #browser()
           }
         }
       }
