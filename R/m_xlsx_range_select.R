@@ -104,12 +104,8 @@ m_xlsx_range_select_Server <- function(
         }
       } else if (xl_fmt == "Stability") {
         # for Stability, all sheets are loaded in Background
-        l <- lapply(sheet(),function(x) {
-          fnc_load_xlsx(
-            filepath = current_file_input()$datapath[1],
-            sheet = x,
-            method="openxlsx"
-          )
+        l <- lapply(1:length(xlsxSheetNames(current_file_input()$datapath)), function(x) {
+          fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = x, method="openxlsx")
         })
       } else if (xl_fmt == "Homogeneity") {
         l <- list(fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method="openxlsx"))
@@ -190,7 +186,9 @@ m_xlsx_range_select_Server <- function(
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({
         shiny::req(tab())
-        out <- tab()[[file()]]
+      #browser()
+        idx <- ifelse(excelformat() == "Stability", sheet(), file())
+        out <- tab()[[idx]]
         if (prod(dim(out)) > 1) {
           # limit preview to 10 characters per cell
           out <- apply(out, 2, substr, start = 1, stop = 10)

@@ -154,7 +154,8 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
     rv_xlsx_range_select <- m_xlsx_range_select_Server(
       id = "rng_select",
       current_file_input = current_file_input,
-      sheet = sheetnumber,
+      #sheet = sheetnumber,
+      sheet = shiny::reactive({ as.numeric(input$sheet_number) }),
       file = file_number,
       excelformat = exl_fmt
     )
@@ -254,7 +255,8 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
           # (1) as simple two column format (Date, Value) with separate tables for each analyte
           sheetnames <- xlsxSheetNames(input$excel_file$datapath[1])
           s_dat <- plyr::ldply(
-            sheetnumber(),
+            1:length(xlsxSheetNames(input$excel_file$datapath)),
+            #sheetnumber(),
             function(x) {
               cbind(
                 "analyte"= sheetnames[x],
