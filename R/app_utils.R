@@ -419,6 +419,10 @@ get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALS
 #' @examples
 #' eCerto:::color_temperature_levels(x = c(-80, -80, 4, 4, 4, 23))
 color_temperature_levels <- function(x) {
+  if (!is.numeric(x)) {
+    x <- try(as.numeric(x), silent = TRUE)
+    if (inherits(x, "try-error")) stop("[color_temperature_levels] Can not convert data to numeric.")
+  }
   temps <- cut(x, breaks=c(-274, -80, -20, 4, 23, 40, 60, 1000))
   temp_cols <- c("darkblue", "#1b98e0", "lightblue", "yellow", "orange", "red", "darkred")
   temp_pchs <- c(24,21:23,22,21,25)
