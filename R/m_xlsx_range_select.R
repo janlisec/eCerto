@@ -74,6 +74,8 @@ m_xlsx_range_select_Server <- function(
       paste0(LETTERS[sc], sr, ":", LETTERS[ec], er)
     } #getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
 
+    fmt_idx <- reactive({ ifelse(excelformat() == "Stability", sheet(), file()) })
+
     tab <- shiny::reactive({
       shiny::req(current_file_input(), sheet(), file(), excelformat())
       #xl_fmt <- shiny::isolate(excelformat())
@@ -122,8 +124,8 @@ m_xlsx_range_select_Server <- function(
       tab_param$tab_upload <- shiny::isolate(tab()) # unchanged table from upload (for checking if row and column was selected)
       tab_param$start_row <- 1
       tab_param$start_col <- 1
-      tab_param$end_row <- nrow(tab()[[file()]])
-      tab_param$end_col <- ncol(tab()[[file()]])
+      tab_param$end_row <- nrow(tab()[[fmt_idx()]])
+      tab_param$end_col <- ncol(tab()[[fmt_idx()]])
       # as user response in UI
       tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
     })
@@ -186,19 +188,18 @@ m_xlsx_range_select_Server <- function(
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT({
         shiny::req(tab())
-        idx <- ifelse(excelformat() == "Stability", sheet(), file())
-        out <- tab()[[idx]]
+        out <- tab()[[fmt_idx()]]
         if (prod(dim(out)) > 1) {
           # limit preview to 10 characters per cell
           out <- apply(out, 2, substr, start = 1, stop = 10)
         }
         return(out)
       },
-      options = list("dom" = "t", "pageLength" = nrow(tab()[[file()]]), ordering = FALSE),
+      options = list("dom" = "t", "pageLength" = nrow(tab()[[fmt_idx()]]), ordering = FALSE),
       selection = if (excelformat() == "Stability") {
         "none"
       } else {
-        list(target = "cell", selectable = matrix(-1 * c(1:nrow(tab()[[file()]]), rep(0, nrow(tab()[[file()]]))), ncol = 2))
+        list(target = "cell", selectable = matrix(-1 * c(1:nrow(tab()[[fmt_idx()]]), rep(0, nrow(tab()[[fmt_idx()]]))), ncol = 2))
       }
     )
 

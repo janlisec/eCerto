@@ -135,15 +135,15 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
       current_file_input(input$excel_file)
     })
 
-    sheetnumber <- shiny::reactive({
-      shiny::req(input$sheet_number)
-      switch (
-        exl_fmt(),
-        "Certification" = as.numeric(input$sheet_number),
-        "Homogeneity" = as.numeric(input$sheet_number),
-        "Stability" = 1:length(xlsxSheetNames(input$excel_file$datapath))
-      )
-    })
+    # sheetnumber <- shiny::reactive({
+    #   shiny::req(input$sheet_number)
+    #   switch (
+    #     exl_fmt(),
+    #     "Certification" = as.numeric(input$sheet_number),
+    #     "Homogeneity" = as.numeric(input$sheet_number),
+    #     "Stability" = 1:length(xlsxSheetNames(input$excel_file$datapath))
+    #   )
+    # })
 
     file_number <- shiny::reactive({
       shiny::req(input$file_name)
@@ -228,7 +228,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
         # (1) as simple two column format (Date, Value) with separate tables for each analyte
         # (2) as LTS format with a meta data header containing machine info, certification data etc.
         # (3) as a data frame giving 'Temp' info additionally to compute Arrhenius estimate of uncertainty
-        test_format <- tab_flt[[1]] # openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
+        test_format <- tab_flt[[as.numeric(input$sheet_number)]] # openxlsx::read.xlsx(xlsxFile = input$s_input_file$datapath[1], sheet = 1)
         if (ncol(test_format)>=4) {
           if ("KW" %in% colnames(test_format)) {
             # (2) as LTS format with a meta data header containing machine infos, certification data etc.
@@ -238,7 +238,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
             colnames(s_dat)[colnames(s_dat)=="KW"] <- "analyte"
           } else {
             # (3) as a dataframe giving Temp info additionally to compute Arrhenius estimate of uncertainty
-            s_dat <- tab_flt[[1]]
+            s_dat <- tab_flt[[as.numeric(input$sheet_number)]]
             cns <- c("analyte","Value","Date","Temp")
             if (!all(cns %in% colnames(s_dat))) {
               shinyalert::shinyalert(
@@ -255,7 +255,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
           # (1) as simple two column format (Date, Value) with separate tables for each analyte
           sheetnames <- xlsxSheetNames(input$excel_file$datapath[1])
           s_dat <- plyr::ldply(
-            1:length(xlsxSheetNames(input$excel_file$datapath)),
+            1:length(sheetnames),
             #sheetnumber(),
             function(x) {
               cbind(
