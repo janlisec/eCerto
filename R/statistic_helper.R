@@ -174,18 +174,23 @@ Cochran <- function(data=NULL, fmt=c("alpha", "pval", "cval", "cval05", "cval01"
 }
 
 #' @title qgrubbs.
-#' @description To calculate the critical Grubbs value z_alpha. ToDo [JL] This should be reimplemented to really get q for a specific p, while currently we have to modify p as shown in examples.
+#' @description To calculate the critical Grubbs value z_alpha.
+#'     ToDo [JL] This should be re-implemented to really get q for a specific p,
+#'     while currently we have to modify p as shown in examples.
 #' @param p The desired p-value level, i.e. 0.01 or 0.05 for a one sided test.
 #' @param n The number of values or labs.
+#' @param type Use type=10 for single Grubbs and 20 for double Grubbs.
+#' @param rev Use rev=TRUE to obtain the P-value instead of z_alpha.
 #' @noRd
 #' @keywords internal
 #' @examples
 #' qgrubbs(0.05, 5)
 #' qgrubbs(p = (1-0.05/2), n = 5)
-# qgrubbs <- function(p, n) {
-#   t2 <- stats::qt(p = p/(2*n), df = n-2)^2
-#   return((n-1)/sqrt(n) * sqrt(t2 / (n-2 + t2)))
-# }
+#' qgrubbs_test <- function(p, n) {
+#'   t2 <- stats::qt(p = p/(2*n), df = n-2)^2
+#'   return((n-1)/sqrt(n) * sqrt(t2 / (n-2 + t2)))
+#' }
+#' qgrubbs_test(0.05, 5)
 qgrubbs <- function (p, n, type = 10, rev = FALSE) {
   if (type == 10) {
     if (!rev) {
@@ -214,12 +219,13 @@ qgrubbs <- function (p, n, type = 10, rev = FALSE) {
 }
 
 #' @title qgrubbs2.
-#' @description To calculate a critical Grubbs value for the double Grubbs test..
+#' @description To calculate a critical Grubbs value for the double Grubbs test.
 #' @param p The desired p-value level, i.e. 0.01 or 0.05 for a one sided test.
 #' @param n The number of values or labs.
 #' @noRd
 #' @keywords internal
 #' @examples
+#' qgrubbs(0.05, 5, type = 20)
 #' qgrubbs2(0.05, 5)
 #' par(mfrow=c(1,4))
 #' for (p in c(0.01, 0.025, 0.05, 0.1)) {
@@ -419,7 +425,9 @@ pdixon <- function (q, n) {
 #' @title dixon.test.
 #' @description To calculate the Dixon test statistic.
 #' @param x The vector of lab variances.
-#' @param ns The (mean) number of replicates per lab.
+#' @param opposite Testing lower or upper end for FALSE and TRUE respectively.
+#'     In eCerto only the one sided version is used.
+#' @param two.sided
 #' @noRd
 #' @keywords internal
 #' @examples
@@ -454,7 +462,6 @@ dixon.test <- function (x, opposite = FALSE, two.sided = FALSE) {
       (x[n] - x[n - 2])/(x[n] - x[3])
     )
   }
-  #pval <- outliers::pdixon(q, n, type)
   pval <- pdixon(q, n)
   if (two.sided) {
     pval <- 2 * pval

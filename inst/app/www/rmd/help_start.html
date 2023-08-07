@@ -379,6 +379,8 @@ value calculation and vizualization of the currently selected
 analyte</a></li>
 <li><a href="#analyte-and-material-reports" id="toc-analyte-and-material-reports">Analyte and material
 reports</a></li>
+<li><a href="#details-on-tests" id="toc-details-on-tests">Details on
+tests</a></li>
 </ul></li>
 <li><a href="#homogeneity" id="toc-homogeneity">Homogeneity</a>
 <ul>
@@ -752,6 +754,636 @@ or Certification Report</div>
 demonstration purpose only. Very likely, we will implement a set of
 recommended report layouts in the future upon user suggestions.</p>
 <hr />
+</div>
+<div id="details-on-tests" class="section level3">
+<h3>Details on tests</h3>
+<p>Tests used for outlier detection often rely on tabulated critical
+values. Decisions to reject or not reject a potential outlier can be
+dependent on the source of the critical values.</p>
+<p>Where ever possible, we tried to omit using fixed tables and rather
+implemented critical value calculation <em>ab initio</em>. However, to
+be transparent, we detail the mathematical approach for each test in the
+following.</p>
+<p><strong><em>Note!</em></strong> Several test functions were
+implemented based on the functions obtained in the R package
+<code>outliers</code> by Lukasz Komsta. Modifications were made to allow
+testing up to n=100 laboratories (was restricted to n=30 in package
+<code>outliers</code>).</p>
+<div id="cochran" class="section level4">
+<h4>Cochran</h4>
+<p>The critical value is calculated internally using formula</p>
+<pre class="r"><code>eCerto:::qcochran</code></pre>
+<pre><code>## function (p, n, k) {
+##   f &lt;- stats::qf(p/k, (n - 1) * (k - 1), n - 1)
+##   c &lt;- 1/(1 + (k - 1) * f)
+##   return(c)
+## }
+## &lt;bytecode: 0x000001c5e2549410&gt;
+## &lt;environment: namespace:eCerto&gt;</code></pre>
+<p>where <em>p</em>, <em>n</em> and <em>k</em> are the desired p-value
+level, the number of replicates per group and the number of groups
+respectively. <code>stats::qf()</code> is the quantile function of the
+f-distribution as implemented in the R <code>stats</code> package.
+Likewise, <code>stats::pf()</code> is used to compute the Cochran
+P-value via</p>
+<pre class="r"><code>eCerto:::pcochran</code></pre>
+<pre><code>## function (q, n, k) {
+##   f &lt;- (1/q - 1)/(k - 1)
+##   p &lt;- 1 - stats::pf(f, (n - 1) * (k - 1), n - 1) * k
+##   p[p &lt; 0] &lt;- 0
+##   p[p &gt; 1] &lt;- 1
+##   return(p)
+## }
+## &lt;bytecode: 0x000001c5e27208e8&gt;
+## &lt;environment: namespace:eCerto&gt;</code></pre>
+<p>The test is based on “Snedecor, G.W., Cochran, W.G. (1980).
+Statistical Methods (seventh edition). Iowa State University Press,
+Ames, Iowa”.</p>
+</div>
+<div id="dixon" class="section level4">
+<h4>Dixon</h4>
+<p>The Dixon test statistic is calculated depending on the number of
+labs (n) using</p>
+<pre class="r"><code>eCerto:::dixon.test</code></pre>
+<pre><code>## function (x, opposite = FALSE, two.sided = FALSE) {
+##   x &lt;- sort(x[stats::complete.cases(x)])
+##   n &lt;- length(x)
+##   if (n &lt;= 7) {
+##     type &lt;- &quot;10&quot;
+##   } else if (n &gt; 7 &amp; n &lt;= 10) {
+##     type &lt;- &quot;11&quot;
+##   } else if (n &gt; 10 &amp; n &lt;= 13) {
+##     type &lt;- &quot;21&quot;
+##   } else type &lt;- &quot;22&quot;
+##   if (xor(((x[n] - mean(x)) &lt; (mean(x) - x[1])), opposite)) {
+##     alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
+##     q &lt;- switch(
+##       type,
+##       &quot;10&quot; = (x[2] - x[1])/(x[n] - x[1]),
+##       &quot;11&quot; = (x[2] - x[1])/(x[n - 1] - x[1]),
+##       &quot;21&quot; = (x[3] - x[1])/(x[n - 1] - x[1]),
+##       (x[3] - x[1])/(x[n - 2] - x[1])
+##     )
+##   } else {
+##     alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
+##     q &lt;- switch(
+##       type,
+##       &quot;10&quot; = (x[n] - x[n - 1])/(x[n] - x[1]),
+##       &quot;11&quot; = (x[n] - x[n - 1])/(x[n] - x[2]),
+##       &quot;21&quot; = (x[n] - x[n - 2])/(x[n] - x[2]),
+##       (x[n] - x[n - 2])/(x[n] - x[3])
+##     )
+##   }
+##   #browser()
+##   #pval &lt;- outliers::pdixon(q, n, type)
+##   pval &lt;- pdixon(q, n)
+##   if (two.sided) {
+##     pval &lt;- 2 * pval
+##     if (pval &gt; 1) pval &lt;- 2 - pval
+##   }
+##   out &lt;- list(
+##     &quot;statistic&quot; = c(Q = q),
+##     &quot;alternative&quot; = alt,
+##     &quot;p.value&quot; = pval,
+##     &quot;method&quot; = &quot;Dixon test for outliers&quot;,
+##     &quot;data.name&quot; = &quot;eCerto internal&quot;
+##   )
+##   class(out) &lt;- &quot;htest&quot;
+##   return(out)
+## }
+## &lt;bytecode: 0x000001c5e289bd90&gt;
+## &lt;environment: namespace:eCerto&gt;</code></pre>
+<p>In <strong><em>eCerto</em></strong> the one-sided version of the
+Dixon test is applied consecutively at the lower and upper end. Critical
+values are stored in tabulated form internally and P-values are derived
+by comparison.</p>
+<pre class="r"><code>eCerto::cvals_Dixon</code></pre>
+<pre><code>##     0.001 0.002 0.005  0.01  0.02  0.05   0.1   0.2   0.3   0.4   0.5   0.6
+## 3   0.999 0.998 0.994 0.988 0.976 0.941 0.886 0.782 0.684 0.591 0.500 0.409
+## 4   0.964 0.949 0.921 0.889 0.847 0.766 0.679 0.561 0.471 0.394 0.324 0.257
+## 5   0.895 0.869 0.824 0.782 0.729 0.643 0.559 0.452 0.373 0.308 0.250 0.196
+## 6   0.822 0.792 0.744 0.698 0.646 0.563 0.484 0.387 0.318 0.261 0.210 0.164
+## 7   0.763 0.731 0.681 0.636 0.587 0.507 0.433 0.344 0.281 0.230 0.184 0.143
+## 8   0.799 0.769 0.724 0.682 0.633 0.554 0.480 0.386 0.318 0.260 0.210 0.164
+## 9   0.750 0.720 0.675 0.634 0.586 0.512 0.441 0.352 0.288 0.236 0.189 0.148
+## 10  0.713 0.683 0.637 0.597 0.551 0.477 0.409 0.325 0.265 0.216 0.173 0.134
+## 11  0.770 0.746 0.708 0.674 0.636 0.575 0.518 0.445 0.391 0.348 0.305 0.265
+## 12  0.739 0.714 0.676 0.643 0.605 0.546 0.489 0.420 0.370 0.326 0.285 0.247
+## 13  0.713 0.687 0.649 0.617 0.580 0.522 0.467 0.399 0.351 0.308 0.269 0.232
+## 14  0.732 0.708 0.672 0.640 0.603 0.546 0.491 0.422 0.370 0.328 0.287 0.247
+## 15  0.708 0.685 0.648 0.617 0.582 0.524 0.470 0.403 0.353 0.312 0.273 0.234
+## 16  0.691 0.667 0.630 0.598 0.562 0.505 0.453 0.386 0.338 0.298 0.261 0.223
+## 17  0.671 0.647 0.611 0.580 0.545 0.489 0.437 0.373 0.325 0.286 0.250 0.214
+## 18  0.652 0.628 0.594 0.564 0.529 0.475 0.424 0.361 0.314 0.276 0.241 0.206
+## 19  0.640 0.617 0.581 0.551 0.517 0.462 0.412 0.349 0.304 0.268 0.233 0.199
+## 20  0.627 0.604 0.568 0.538 0.503 0.450 0.401 0.339 0.295 0.260 0.226 0.193
+## 25  0.574 0.550 0.517 0.489 0.457 0.406 0.359 0.302 0.262 0.227 0.196 0.168
+## 30  0.539 0.517 0.484 0.456 0.425 0.376 0.332 0.278 0.239 0.208 0.180 0.153
+## 35  0.511 0.490 0.459 0.431 0.400 0.354 0.311 0.260    NA    NA    NA    NA
+## 40  0.490 0.469 0.438 0.412 0.382 0.337 0.295 0.246    NA    NA    NA    NA
+## 45  0.475 0.454 0.423 0.397 0.368 0.323 0.283 0.234    NA    NA    NA    NA
+## 50  0.460 0.439 0.410 0.384 0.355 0.312 0.272 0.226    NA    NA    NA    NA
+## 60  0.437 0.417 0.388 0.363 0.336 0.294 0.256 0.211    NA    NA    NA    NA
+## 70  0.422 0.403 0.374 0.349 0.321 0.280 0.244 0.201    NA    NA    NA    NA
+## 80  0.408 0.389 0.360 0.337 0.310 0.270 0.234 0.192    NA    NA    NA    NA
+## 90  0.397 0.377 0.350 0.326 0.300 0.261 0.226 0.185    NA    NA    NA    NA
+## 100 0.387 0.368 0.341 0.317 0.292 0.253 0.219 0.179    NA    NA    NA    NA
+##       0.7   0.8   0.9  0.95
+## 3   0.316 0.219 0.114 0.059
+## 4   0.193 0.130 0.065 0.033
+## 5   0.146 0.097 0.048 0.023
+## 6   0.121 0.079 0.038 0.018
+## 7   0.105 0.068 0.032 0.016
+## 8   0.121 0.079 0.037 0.019
+## 9   0.107 0.070 0.033 0.016
+## 10  0.098 0.063 0.030 0.014
+## 11  0.221 0.173 0.118 0.080
+## 12  0.206 0.161 0.110 0.074
+## 13  0.194 0.152 0.104 0.070
+## 14  0.208 0.166 0.115 0.079
+## 15  0.196 0.156 0.109 0.075
+## 16  0.186 0.148 0.104 0.071
+## 17  0.178 0.142 0.099 0.067
+## 18  0.171 0.135 0.094 0.063
+## 19  0.165 0.103 0.090 0.060
+## 20  0.160 0.125 0.086 0.057
+## 25  0.138 0.108 0.073 0.045
+## 30  0.126 0.098 0.067 0.041
+## 35     NA    NA    NA    NA
+## 40     NA    NA    NA    NA
+## 45     NA    NA    NA    NA
+## 50     NA    NA    NA    NA
+## 60     NA    NA    NA    NA
+## 70     NA    NA    NA    NA
+## 80     NA    NA    NA    NA
+## 90     NA    NA    NA    NA
+## 100    NA    NA    NA    NA</code></pre>
+<p>Values for non-tabulated combinations of <em>p</em> and <em>n</em>
+are derived by interpolation using function <code>qtable</code></p>
+<pre class="r"><code>eCerto:::qtable</code></pre>
+<pre><code>## function (p, probs, quants) {
+##   quants &lt;- quants[order(probs)]
+##   probs &lt;- sort(probs)
+##   res &lt;- vector()
+##   for (n in 1:length(p)) {
+##     pp &lt;- p[n]
+##     if (pp &lt;= probs[1]) {
+##       q0 &lt;- quants[c(1, 2)]
+##       p0 &lt;- probs[c(1, 2)]
+##       fit &lt;- stats::lm(q0 ~ p0)
+##     }
+##     else if (pp &gt;= probs[length(probs)]) {
+##       q0 &lt;- quants[c(length(quants) - 1, length(quants))]
+##       p0 &lt;- probs[c(length(probs) - 1, length(probs))]
+##       fit &lt;- stats::lm(q0 ~ p0)
+##     }
+##     else {
+##       x0 &lt;- which(abs(pp - probs) == min(abs(pp - probs)))
+##       x1 &lt;- which(abs(pp - probs) == sort(abs(pp - probs))[2])
+##       x &lt;- min(c(x0, x1))
+##       if (x == 1)
+##         x &lt;- 2
+##       if (x &gt; length(probs) - 2)
+##         x &lt;- length(probs) - 2
+##       i &lt;- c(x - 1, x, x + 1, x + 2)
+##       q0 &lt;- quants[i]
+##       p0 &lt;- probs[i]
+##       fit &lt;- stats::lm(q0 ~ poly(p0, 3))
+##     }
+##     res &lt;- c(res, stats::predict(fit, newdata = list(p0 = pp)))
+##   }
+##   return(res)
+## }
+## &lt;bytecode: 0x000001c5e2b98a28&gt;
+## &lt;environment: namespace:eCerto&gt;</code></pre>
+<p>The test is based on “Dixon, W.J. (1950). Analysis of extreme values.
+Ann. Math. Stat. 21, 4, 488-506”.</p>
+</div>
+<div id="grubbs" class="section level4">
+<h4>Grubbs</h4>
+<p>The Grubbs test statistic is calculated either for a single or a
+double outlier at both ends of the distribution consecutively using</p>
+<pre class="r"><code>eCerto:::grubbs.test</code></pre>
+<pre><code>## function (x, type = c(&quot;10&quot;, &quot;20&quot;), tail = c(&quot;lower&quot;, &quot;upper&quot;)) {
+##   tail &lt;- match.arg(tail)
+##   type &lt;- match.arg(type)
+##   x &lt;- sort(x[stats::complete.cases(x)])
+##   n &lt;- length(x)
+##   if (type == 10) {
+##     # single Grubbs
+##     if (tail==&quot;lower&quot;) {
+##       alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
+##       o &lt;- x[1]
+##       d &lt;- x[2:n]
+##     } else {
+##       alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
+##       o &lt;- x[n]
+##       d &lt;- x[1:(n - 1)]
+##     }
+##     g &lt;- abs(o - mean(x))/sd(x)
+##     u &lt;- stats::var(d)/stats::var(x) * (n - 2)/(n - 1)
+##     pval &lt;- 1 - pgrubbs(g, n, type = 10)
+##     method &lt;- &quot;Grubbs test for one outlier&quot;
+##   } else {
+##     # double Grubbs
+##     if (tail==&quot;lower&quot;) {
+##       alt = paste(&quot;lowest values&quot;, x[1], &quot;,&quot;, x[2], &quot;are outliers&quot;)
+##       u &lt;- stats::var(x[3:n])/stats::var(x) * (n - 3)/(n - 1)
+##     } else {
+##       alt = paste(&quot;highest values&quot;, x[n - 1], &quot;,&quot;, x[n], &quot;are outliers&quot;)
+##       u &lt;- stats::var(x[1:(n - 2)])/stats::var(x) * (n - 3)/(n - 1)
+##     }
+##     g &lt;- NULL
+##     pval &lt;- pgrubbs(u, n, type = 20)
+##     method &lt;- &quot;Grubbs test for two outliers&quot;
+##   }
+##   out &lt;- list(
+##     &quot;statistic&quot; = c(G = g, U = u),
+##     &quot;alternative&quot; = alt,
+##     &quot;p.value&quot; = pval,
+##     &quot;method&quot; = method,
+##     &quot;data.name&quot; = &quot;eCerto internal&quot;
+##   )
+##   class(out) &lt;- &quot;htest&quot;
+##   return(out)
+## }
+## &lt;bytecode: 0x000001c5e2d14b00&gt;
+## &lt;environment: namespace:eCerto&gt;</code></pre>
+<p>Critical values for the single Grubbs test are calculated internally
+using</p>
+<pre class="r"><code>eCerto:::qgrubbs</code></pre>
+<pre><code>## function (p, n, type = 10, rev = FALSE) {
+##   if (type == 10) {
+##     if (!rev) {
+##       t2 &lt;- stats::qt((1 - p)/n, n - 2)^2
+##       return(((n - 1)/sqrt(n)) * sqrt(t2/(n - 2 + t2)))
+##     } else {
+##       s &lt;- (p^2 * n * (2 - n))/(p^2 * n - (n - 1)^2)
+##       t &lt;- sqrt(s)
+##       if (is.nan(t)) {
+##         res &lt;- 0
+##       } else {
+##         res &lt;- n * (1 - stats::pt(t, n - 2))
+##         res[res &gt; 1] &lt;- 1
+##       }
+##       return(1 - res)
+##     }
+##   } else {
+##     if (n &gt; 30) warning(&quot;[qgrubbs] critical value is estimated for n&gt;30&quot;)
+##     gtwo &lt;- eCerto::cvals_Grubbs2
+##     pp &lt;- as.numeric(colnames(gtwo))
+##     if (!rev) res &lt;- qtable(p, pp, gtwo[n-3,]) else res &lt;- qtable(p, gtwo[n-3,], pp)
+##     res[res &lt; 0] &lt;- 0
+##     res[res &gt; 1] &lt;- 1
+##     return(unname(res))
+##   }
+## }
+## &lt;bytecode: 0x000001c5e2f346f0&gt;
+## &lt;environment: namespace:eCerto&gt;</code></pre>
+<p>Critical values for the double Grubbs test are stored in tabulated
+form internally and P-values are derived by comparison.</p>
+<pre class="r"><code>eCerto::cvals_Grubbs2</code></pre>
+<pre><code>##          0.01     0.025      0.05       0.1  0.15   0.2   0.4   0.6   0.8   0.9
+## 4   0.0000100 0.0002000 0.0008000 0.0031000 0.007 0.013 0.055 0.138 0.283 0.399
+## 5   0.0035000 0.0090000 0.0183000 0.0376000 0.058 0.078 0.169 0.276 0.410 0.502
+## 6   0.0186000 0.0349000 0.0565000 0.0921000 0.124 0.153 0.257 0.361 0.478 0.562
+## 7   0.0440000 0.0708000 0.1020000 0.1479000 0.186 0.217 0.325 0.423 0.530 0.605
+## 8   0.0750000 0.1101000 0.1478000 0.1994000 0.238 0.271 0.376 0.468 0.568 0.635
+## 9   0.1082000 0.1492000 0.1909000 0.2454000 0.285 0.319 0.420 0.507 0.598 0.658
+## 10  0.1415000 0.1865000 0.2305000 0.2863000 0.326 0.358 0.455 0.537 0.622 0.678
+## 11  0.1736000 0.2212000 0.2666000 0.3226000 0.363 0.394 0.487 0.564 0.624 0.695
+## 12  0.2044000 0.2536000 0.2996000 0.3552000 0.393 0.424 0.514 0.585 0.660 0.709
+## 13  0.2333000 0.2836000 0.3295000 0.3843000 0.421 0.451 0.537 0.605 0.676 0.721
+## 14  0.2605000 0.3112000 0.3568000 0.4106000 0.447 0.477 0.558 0.622 0.689 0.733
+## 15  0.2859000 0.3367000 0.3818000 0.4345000 0.469 0.497 0.576 0.639 0.701 0.742
+## 16  0.3098000 0.3603000 0.4048000 0.4562000 0.491 0.518 0.593 0.653 0.713 0.751
+## 17  0.3321000 0.3822000 0.4259000 0.4761000 0.511 0.536 0.609 0.666 0.723 0.760
+## 18  0.3530000 0.4025000 0.4455000 0.4944000 0.526 0.552 0.622 0.676 0.732 0.767
+## 19  0.3725000 0.4214000 0.4636000 0.5113000 0.543 0.567 0.635 0.688 0.740 0.774
+## 20  0.3909000 0.4391000 0.4804000 0.5269000 0.559 0.582 0.647 0.697 0.748 0.781
+## 21  0.4080000 0.4570000 0.4960000 0.5420000 0.571 0.594 0.657 0.706 0.755 0.786
+## 22  0.4250000 0.4740000 0.5120000 0.5560000 0.584 0.606 0.668 0.715 0.762 0.792
+## 23  0.4420000 0.4860000 0.5240000 0.5680000 0.596 0.618 0.677 0.723 0.769 0.797
+## 24  0.4530000 0.5000000 0.5380000 0.5810000 0.608 0.628 0.686 0.730 0.774 0.802
+## 25  0.4660000 0.5110000 0.5470000 0.5890000 0.616 0.637 0.693 0.736 0.779 0.807
+## 26  0.4820000 0.5250000 0.5610000 0.6010000 0.627 0.647 0.701 0.743 0.784 0.811
+## 27  0.4920000 0.5360000 0.5720000 0.6110000 0.636 0.655 0.709 0.749 0.789 0.815
+## 28  0.5050000 0.5480000 0.5830000 0.6210000 0.646 0.664 0.716 0.755 0.794 0.819
+## 29  0.5160000 0.5580000 0.5920000 0.6290000 0.654 0.672 0.722 0.760 0.798 0.822
+## 30  0.5280000 0.5680000 0.6020000 0.6380000 0.661 0.679 0.728 0.765 0.802 0.826
+## 31  0.5372868 0.5772676 0.6102430 0.6464495    NA    NA    NA    NA    NA    NA
+## 32  0.5469586 0.5862373 0.6185703 0.6540149    NA    NA    NA    NA    NA    NA
+## 33  0.5561974 0.5947918 0.6265036 0.6612160    NA    NA    NA    NA    NA    NA
+## 34  0.5650319 0.6029601 0.6340714 0.6680797    NA    NA    NA    NA    NA    NA
+## 35  0.5734886 0.6107684 0.6412993 0.6746302    NA    NA    NA    NA    NA    NA
+## 36  0.5815914 0.6182408 0.6482105 0.6808895    NA    NA    NA    NA    NA    NA
+## 37  0.5893627 0.6253990 0.6548261 0.6868775    NA    NA    NA    NA    NA    NA
+## 38  0.5968227 0.6322633 0.6611656 0.6926123    NA    NA    NA    NA    NA    NA
+## 39  0.6039901 0.6388517 0.6672465 0.6981103    NA    NA    NA    NA    NA    NA
+## 40  0.6108823 0.6451813 0.6730849 0.7033867    NA    NA    NA    NA    NA    NA
+## 41  0.6175151 0.6512674 0.6786957 0.7084551    NA    NA    NA    NA    NA    NA
+## 42  0.6239033 0.6571243 0.6840924 0.7133283    NA    NA    NA    NA    NA    NA
+## 43  0.6300605 0.6627652 0.6892877 0.7180179    NA    NA    NA    NA    NA    NA
+## 44  0.6359993 0.6682022 0.6942929 0.7225345    NA    NA    NA    NA    NA    NA
+## 45  0.6417314 0.6734465 0.6991188 0.7268880    NA    NA    NA    NA    NA    NA
+## 46  0.6472678 0.6785087 0.7037754 0.7310875    NA    NA    NA    NA    NA    NA
+## 47  0.6526186 0.6833983 0.7082716 0.7351414    NA    NA    NA    NA    NA    NA
+## 48  0.6577933 0.6881243 0.7126160 0.7390576    NA    NA    NA    NA    NA    NA
+## 49  0.6628006 0.6926952 0.7168164 0.7428433    NA    NA    NA    NA    NA    NA
+## 50  0.6676487 0.6971187 0.7208803 0.7465051    NA    NA    NA    NA    NA    NA
+## 51  0.6723454 0.7014021 0.7248145 0.7500495    NA    NA    NA    NA    NA    NA
+## 52  0.6768979 0.7055523 0.7286253 0.7534822    NA    NA    NA    NA    NA    NA
+## 53  0.6813130 0.7095754 0.7323187 0.7568087    NA    NA    NA    NA    NA    NA
+## 54  0.6855968 0.7134776 0.7359003 0.7600341    NA    NA    NA    NA    NA    NA
+## 55  0.6897555 0.7172644 0.7393752 0.7631631    NA    NA    NA    NA    NA    NA
+## 56  0.6937945 0.7209411 0.7427485 0.7662002    NA    NA    NA    NA    NA    NA
+## 57  0.6977191 0.7245125 0.7460247 0.7691496    NA    NA    NA    NA    NA    NA
+## 58  0.7015343 0.7279832 0.7492080 0.7720153    NA    NA    NA    NA    NA    NA
+## 59  0.7052447 0.7313578 0.7523027 0.7748008    NA    NA    NA    NA    NA    NA
+## 60  0.7088548 0.7346402 0.7553124 0.7775098    NA    NA    NA    NA    NA    NA
+## 61  0.7123686 0.7378343 0.7582408 0.7801455    NA    NA    NA    NA    NA    NA
+## 62  0.7157901 0.7409437 0.7610912 0.7827108    NA    NA    NA    NA    NA    NA
+## 63  0.7191231 0.7439720 0.7638670 0.7852089    NA    NA    NA    NA    NA    NA
+## 64  0.7223710 0.7469224 0.7665711 0.7876424    NA    NA    NA    NA    NA    NA
+## 65  0.7255371 0.7497979 0.7692063 0.7900138    NA    NA    NA    NA    NA    NA
+## 66  0.7286246 0.7526015 0.7717754 0.7923257    NA    NA    NA    NA    NA    NA
+## 67  0.7316365 0.7553360 0.7742810 0.7945804    NA    NA    NA    NA    NA    NA
+## 68  0.7345756 0.7580040 0.7767254 0.7967801    NA    NA    NA    NA    NA    NA
+## 69  0.7374446 0.7606079 0.7791110 0.7989269    NA    NA    NA    NA    NA    NA
+## 70  0.7402461 0.7631502 0.7814400 0.8010227    NA    NA    NA    NA    NA    NA
+## 71  0.7429826 0.7656331 0.7837145 0.8030694    NA    NA    NA    NA    NA    NA
+## 72  0.7456562 0.7680587 0.7859364 0.8050689    NA    NA    NA    NA    NA    NA
+## 73  0.7482693 0.7704291 0.7881076 0.8070227    NA    NA    NA    NA    NA    NA
+## 74  0.7508240 0.7727461 0.7902299 0.8089326    NA    NA    NA    NA    NA    NA
+## 75  0.7533222 0.7750118 0.7923050 0.8108001    NA    NA    NA    NA    NA    NA
+## 76  0.7557659 0.7772277 0.7943346 0.8126266    NA    NA    NA    NA    NA    NA
+## 77  0.7581569 0.7793957 0.7963201 0.8144136    NA    NA    NA    NA    NA    NA
+## 78  0.7604969 0.7815173 0.7982631 0.8161623    NA    NA    NA    NA    NA    NA
+## 79  0.7627876 0.7835939 0.8001650 0.8178741    NA    NA    NA    NA    NA    NA
+## 80  0.7650306 0.7856272 0.8020270 0.8195501    NA    NA    NA    NA    NA    NA
+## 81  0.7672275 0.7876185 0.8038506 0.8211915    NA    NA    NA    NA    NA    NA
+## 82  0.7693796 0.7895691 0.8056370 0.8227995    NA    NA    NA    NA    NA    NA
+## 83  0.7714885 0.7914804 0.8073872 0.8243750    NA    NA    NA    NA    NA    NA
+## 84  0.7735553 0.7933534 0.8091026 0.8259192    NA    NA    NA    NA    NA    NA
+## 85  0.7755815 0.7951895 0.8107840 0.8274330    NA    NA    NA    NA    NA    NA
+## 86  0.7775682 0.7969898 0.8124326 0.8289172    NA    NA    NA    NA    NA    NA
+## 87  0.7795166 0.7987553 0.8140494 0.8303729    NA    NA    NA    NA    NA    NA
+## 88  0.7814279 0.8004870 0.8156353 0.8318008    NA    NA    NA    NA    NA    NA
+## 89  0.7833031 0.8021860 0.8171912 0.8332019    NA    NA    NA    NA    NA    NA
+## 90  0.7851434 0.8038532 0.8187180 0.8345768    NA    NA    NA    NA    NA    NA
+## 91  0.7869496 0.8054896 0.8202166 0.8359263    NA    NA    NA    NA    NA    NA
+## 92  0.7887227 0.8070959 0.8216878 0.8372513    NA    NA    NA    NA    NA    NA
+## 93  0.7904638 0.8086732 0.8231322 0.8385522    NA    NA    NA    NA    NA    NA
+## 94  0.7921737 0.8102221 0.8245508 0.8398300    NA    NA    NA    NA    NA    NA
+## 95  0.7938532 0.8117435 0.8259442 0.8410851    NA    NA    NA    NA    NA    NA
+## 96  0.7955031 0.8132381 0.8273131 0.8423182    NA    NA    NA    NA    NA    NA
+## 97  0.7971244 0.8147066 0.8286581 0.8435299    NA    NA    NA    NA    NA    NA
+## 98  0.7987177 0.8161498 0.8299800 0.8447208    NA    NA    NA    NA    NA    NA
+## 99  0.8002838 0.8175684 0.8312793 0.8458915    NA    NA    NA    NA    NA    NA
+## 100 0.8018233 0.8189629 0.8325566 0.8470424    NA    NA    NA    NA    NA    NA
+##      0.95 0.975  0.99
+## 4   0.482 0.540 0.589
+## 5   0.571 0.630 0.689
+## 6   0.626 0.674 0.724
+## 7   0.659 0.701 0.743
+## 8   0.684 0.722 0.763
+## 9   0.703 0.738 0.776
+## 10  0.721 0.753 0.787
+## 11  0.734 0.765 0.797
+## 12  0.745 0.773 0.802
+## 13  0.755 0.782 0.809
+## 14  0.765 0.789 0.817
+## 15  0.773 0.797 0.822
+## 16  0.780 0.803 0.826
+## 17  0.787 0.808 0.831
+## 18  0.793 0.814 0.835
+## 19  0.799 0.818 0.838
+## 20  0.805 0.823 0.843
+## 21  0.810 0.828 0.847
+## 22  0.815 0.834 0.850
+## 23  0.819 0.836 0.853
+## 24  0.823 0.840 0.857
+## 25  0.827 0.843 0.860
+## 26  0.830 0.845 0.861
+## 27  0.834 0.849 0.864
+## 28  0.837 0.851 0.866
+## 29  0.840 0.854 0.869
+## 30  0.842 0.856 0.870
+## 31     NA    NA    NA
+## 32     NA    NA    NA
+## 33     NA    NA    NA
+## 34     NA    NA    NA
+## 35     NA    NA    NA
+## 36     NA    NA    NA
+## 37     NA    NA    NA
+## 38     NA    NA    NA
+## 39     NA    NA    NA
+## 40     NA    NA    NA
+## 41     NA    NA    NA
+## 42     NA    NA    NA
+## 43     NA    NA    NA
+## 44     NA    NA    NA
+## 45     NA    NA    NA
+## 46     NA    NA    NA
+## 47     NA    NA    NA
+## 48     NA    NA    NA
+## 49     NA    NA    NA
+## 50     NA    NA    NA
+## 51     NA    NA    NA
+## 52     NA    NA    NA
+## 53     NA    NA    NA
+## 54     NA    NA    NA
+## 55     NA    NA    NA
+## 56     NA    NA    NA
+## 57     NA    NA    NA
+## 58     NA    NA    NA
+## 59     NA    NA    NA
+## 60     NA    NA    NA
+## 61     NA    NA    NA
+## 62     NA    NA    NA
+## 63     NA    NA    NA
+## 64     NA    NA    NA
+## 65     NA    NA    NA
+## 66     NA    NA    NA
+## 67     NA    NA    NA
+## 68     NA    NA    NA
+## 69     NA    NA    NA
+## 70     NA    NA    NA
+## 71     NA    NA    NA
+## 72     NA    NA    NA
+## 73     NA    NA    NA
+## 74     NA    NA    NA
+## 75     NA    NA    NA
+## 76     NA    NA    NA
+## 77     NA    NA    NA
+## 78     NA    NA    NA
+## 79     NA    NA    NA
+## 80     NA    NA    NA
+## 81     NA    NA    NA
+## 82     NA    NA    NA
+## 83     NA    NA    NA
+## 84     NA    NA    NA
+## 85     NA    NA    NA
+## 86     NA    NA    NA
+## 87     NA    NA    NA
+## 88     NA    NA    NA
+## 89     NA    NA    NA
+## 90     NA    NA    NA
+## 91     NA    NA    NA
+## 92     NA    NA    NA
+## 93     NA    NA    NA
+## 94     NA    NA    NA
+## 95     NA    NA    NA
+## 96     NA    NA    NA
+## 97     NA    NA    NA
+## 98     NA    NA    NA
+## 99     NA    NA    NA
+## 100    NA    NA    NA</code></pre>
+<p>The test is based on “Grubbs, F.E. (1950). Sample Criteria for
+testing outlying observations. Ann. Math. Stat. 21, 1, 27-58”.</p>
+</div>
+<div id="scheffe" class="section level4">
+<h4>Scheffe</h4>
+<p>The Scheffe multiple comparison test is calculated on the result of
+<code>stats::lm()</code></p>
+<pre class="r"><code>eCerto:::scheffe.test</code></pre>
+<pre><code>## function(y, trt, alpha = 0.05) {
+##   # helper functions
+##   last_char &lt;- function(x)  {
+##     x &lt;- sub(&quot; +$&quot;, &quot;&quot;, x)
+##     return(substr(x, nchar(x), nchar(x)))
+##   }
+##   orderPvalue &lt;- function(means, alpha, pmat) {
+##     letras &lt;- c(letters[1:26], LETTERS[1:26], rep(&quot; &quot;, 2000))
+##     n &lt;- nrow(means)
+##     idx &lt;- (1:n)[order(means[, 2], decreasing = TRUE)]
+##     w &lt;- means[order(means[, 2], decreasing = TRUE), ]
+##     M &lt;- rep(&quot;&quot;, n)
+##     k &lt;- 1
+##     j &lt;- 1
+##     i &lt;- 1
+##     cambio &lt;- n
+##     cambio1 &lt;- 0
+##     chequeo &lt;- 0
+##     M[1] &lt;- letras[k]
+##     while (j &lt; n) {
+##       chequeo &lt;- chequeo + 1
+##       if (chequeo &gt; n) {
+##         break
+##       }
+##       for (i in j:n) {
+##         s &lt;- pmat[idx[i], idx[j]] &gt; alpha
+##         if (s) {
+##           if (last_char(M[i]) != letras[k]) {
+##             M[i] &lt;- paste(M[i], letras[k], sep = &quot;&quot;)
+##           }
+##         } else {
+##           k &lt;- k + 1
+##           cambio &lt;- i
+##           cambio1 &lt;- 0
+##           ja &lt;- j
+##           M[cambio] &lt;- paste(M[cambio], letras[k], sep = &quot;&quot;)
+##           for (v in ja:cambio) {
+##             if (pmat[idx[v], idx[cambio]] &lt;= alpha) {
+##               j &lt;- j + 1
+##               cambio1 &lt;- 1
+##             } else {
+##               break
+##             }
+##           }
+##           break
+##         }
+##       }
+##       if (cambio1 == 0) {
+##         j &lt;- j + 1
+##       }
+##     }
+##     output &lt;- data.frame(&quot;mean&quot; = as.numeric(w[,2]), groups = M, row.names = as.character(w[,1]))
+##     if (k &gt; 52) {
+##       cat(&quot;\n&quot;, k, &quot;groups are estimated. The number of groups exceeded the maximum of 52 labels.\n&quot;)
+##     }
+##     invisible(output)
+##   }
+##   # scheffe test
+##   name.y &lt;- paste(deparse(substitute(y)))
+##   name.t &lt;- paste(deparse(substitute(trt)))
+##   A &lt;- y$model
+##   DFerror &lt;- stats::df.residual(y)
+##   MSerror &lt;- stats::deviance(y) / DFerror
+##   #Fc &lt;- anova(y)[trt, 4]
+##   y &lt;- A[, 1]
+##   ipch &lt;- pmatch(trt, names(A))
+##   nipch &lt;- length(ipch)
+##   for (i in 1:nipch) {
+##     if (is.na(ipch[i])) {
+##       return(trt)
+##     }
+##   }
+##   name.t &lt;- names(A)[ipch][1]
+##   trt &lt;- A[, ipch]
+##   if (nipch &gt; 1) {
+##     trt &lt;- A[, ipch[1]]
+##     for (i in 2:nipch) {
+##       name.t &lt;- paste(name.t, names(A)[ipch][i], sep = &quot;:&quot;)
+##       trt &lt;- paste(trt, A[, ipch[i]], sep = &quot;:&quot;)
+##     }
+##   }
+##   name.y &lt;- names(A)[1]
+##   df &lt;- subset(data.frame(&quot;value&quot; = y, &quot;Lab&quot; = trt), is.na(y) == FALSE)
+##   # JL
+##   means &lt;- plyr::ldply(split(df$value, df$Lab), function(x) {
+##     data.frame(
+##       &quot;mean&quot; = mean(x, na.rm = T),
+##       &quot;sd&quot; = stats::sd(x, na.rm = T),
+##       &quot;n&quot; = sum(is.finite(x)),
+##       stringsAsFactors = FALSE
+##     )
+##   }, .id = &quot;Lab&quot;)
+##   ntr &lt;- nrow(means)
+##   Fprob &lt;- stats::qf(1 - alpha, ntr - 1, DFerror)
+##   Tprob &lt;- sqrt(Fprob * (ntr - 1))
+##   nr &lt;- unique(means[, 4])
+##   scheffe &lt;- Tprob * sqrt(2 * MSerror / nr)
+##   statistics &lt;- data.frame(&quot;MSerror&quot; = MSerror, &quot;Df&quot; = DFerror, &quot;F&quot; = Fprob, &quot;Mean&quot; = mean(df[, 1]), &quot;CV&quot; = sqrt(MSerror) * 100 / mean(df[, 1]))
+##   if (length(nr) == 1) { statistics &lt;- data.frame(statistics, &quot;Scheffe&quot; = Tprob, &quot;CriticalDifference&quot; = scheffe) }
+##   comb &lt;- utils::combn(ntr, 2)
+##   nn &lt;- ncol(comb)
+##   dif &lt;- rep(0, nn)
+##   LCL &lt;- dif
+##   UCL &lt;- dif
+##   pval &lt;- rep(0, nn)
+##   for (k in 1:nn) {
+##     i &lt;- comb[1, k]
+##     j &lt;- comb[2, k]
+##     dif[k] &lt;- means[i, 2] - means[j, 2]
+##     sdtdif &lt;- sqrt(MSerror * (1 / means[i, 4] + 1 / means[j,4]))
+##     pval[k] &lt;- round(1 - stats::pf(abs(dif[k])^2 / ((ntr - 1) * sdtdif^2), ntr - 1, DFerror), 4)
+##     LCL[k] &lt;- dif[k] - Tprob * sdtdif
+##     UCL[k] &lt;- dif[k] + Tprob * sdtdif
+##   }
+##   pmat &lt;- matrix(1, ncol = ntr, nrow = ntr)
+##   k &lt;- 0
+##   for (i in 1:(ntr - 1)) {
+##     for (j in (i + 1):ntr) {
+##       k &lt;- k + 1
+##       pmat[i, j] &lt;- pval[k]
+##       pmat[j, i] &lt;- pval[k]
+##     }
+##   }
+##   groups &lt;- orderPvalue(means, alpha, pmat)
+##   names(groups)[1] &lt;- name.y
+##   parameters &lt;- data.frame(test = &quot;Scheffe&quot;, name.t = name.t, ntr = ntr, alpha = alpha)
+##   rownames(parameters) &lt;- &quot; &quot;
+##   rownames(statistics) &lt;- &quot; &quot;
+##   rownames(means) &lt;- means[, 1]
+##   means &lt;- means[, -1]
+##   output &lt;- list(statistics = statistics, parameters = parameters, means = means, comparison = NULL, groups = groups)
+##   class(output) &lt;- &quot;group&quot;
+##   return(output)
+## }
+## &lt;bytecode: 0x000001c5e3389800&gt;
+## &lt;environment: namespace:eCerto&gt;</code></pre>
+</div>
 </div>
 </div>
 <div id="homogeneity" class="section level2">

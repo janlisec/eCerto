@@ -1,0 +1,91 @@
+### Details on tests
+
+Tests used for outlier detection often rely on tabulated critical values. Decisions 
+to reject or not reject a potential outlier can be dependent on the source of the 
+critical values.
+
+Where ever possible, we tried to omit using fixed tables and rather implemented 
+critical value calculation *ab initio*. However, to be transparent, we detail the 
+mathematical approach for each test in the following.
+
+***Note!*** Several test functions were implemented based on the functions obtained in 
+the R package `outliers` by Lukasz Komsta. Modifications were made to allow testing
+up to n=100 laboratories (was restricted to n=30 in package `outliers`).
+
+#### Cochran
+
+The critical value is calculated internally using formula
+
+```{r}
+eCerto:::qcochran
+```
+where *p*, *n* and *k* are the desired p-value level, the number of replicates 
+per group and the number of groups respectively. `stats::qf()` is the quantile 
+function of the f-distribution as implemented in the R `stats` package. Likewise, 
+`stats::pf()` is used to compute the Cochran P-value via
+
+```{r}
+eCerto:::pcochran
+```
+
+The test is based on "Snedecor, G.W., Cochran, W.G. (1980). Statistical Methods 
+(seventh edition). Iowa State University Press, Ames, Iowa".
+
+#### Dixon
+
+The Dixon test statistic is calculated depending on the number of labs (n) using
+
+```{r}
+eCerto:::dixon.test
+```
+
+In ***eCerto*** the one-sided version of the Dixon test is applied consecutively
+at the lower and upper end. Critical values are stored in tabulated form internally 
+and P-values are derived by comparison.
+
+```{r}
+eCerto::cvals_Dixon
+```
+
+Values for non-tabulated combinations of *p* and *n* are derived by interpolation
+using function `qtable`
+
+```{r}
+eCerto:::qtable
+```
+
+The test is based on "Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. 
+Stat. 21, 4, 488-506".
+
+#### Grubbs
+
+The Grubbs test statistic is calculated either for a single or a double outlier at
+both ends of the distribution consecutively using
+
+```{r}
+eCerto:::grubbs.test
+```
+
+Critical values for the single Grubbs test are calculated internally using
+
+```{r}
+eCerto:::qgrubbs
+```
+
+Critical values for the double Grubbs test are stored in tabulated form internally 
+and P-values are derived by comparison.
+
+```{r}
+eCerto::cvals_Grubbs2
+```
+
+The test is based on "Grubbs, F.E. (1950). Sample Criteria for testing outlying 
+observations. Ann. Math. Stat. 21, 1, 27-58".
+
+#### Scheffe
+
+The Scheffe multiple comparison test is calculated on the result of `stats::lm()`
+
+```{r}
+eCerto:::scheffe.test
+```

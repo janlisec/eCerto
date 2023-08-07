@@ -20,3 +20,6 @@
 
 ```{r child = 'certification_report.Rmd'}
 ```
+
+```{r child = 'certification_tests.Rmd'}
+```
