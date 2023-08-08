@@ -28,8 +28,32 @@ function of the f-distribution as implemented in the R `stats` package. Likewise
 eCerto:::pcochran
 ```
 
-The test is based on "Snedecor, G.W., Cochran, W.G. (1980). Statistical Methods 
-(seventh edition). Iowa State University Press, Ames, Iowa".
+For comparison with critical values tabulated elsewhere you can generate a respective
+table in R using
+
+```{r}
+ps <- c(0.01, 0.05)
+ns <- c(3:10, seq(20,100,20))
+ks <- 2:20
+out <- lapply(ps, function(p) {
+  sapply(ns, function(n) {
+    sapply(ks, function(k) {
+      eCerto:::qcochran(p=p, n=n, k=k)
+    })
+  })
+})
+names(out) <- paste0("alpha=", ps)
+lapply(out, function(x) {
+  colnames(x) <- paste0("n=", ns)
+  rownames(x) <- paste0("k=", ks)
+  round(x, 4)
+})
+
+```
+
+
+The test is originally based on:  
+"Snedecor, G.W., Cochran, W.G. (1980). Statistical Methods (seventh edition). Iowa State University Press, Ames, Iowa".
 
 #### Dixon
 
@@ -55,7 +79,7 @@ using function `qtable`
 eCerto:::qtable
 ```
 
-The test is based on:  
+The test is originally based on:  
 "Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. Stat. 21, 4, 488-506"  
 "Dean, R.B.; Dixon, W.J. (1951). Simplified statistics for small numbers of observations. Anal.Chem. 23, 636-638"  
 "Dixon, W.J. (1953). Processing data for outliers. J. Biometrics. 9, 74-89"
@@ -75,18 +99,36 @@ Critical values for the single Grubbs test are calculated internally using
 eCerto:::qgrubbs
 ```
 
+For comparison with critical values tabulated elsewhere you can generate a respective
+table in R using
+
+```{r}
+ps <- c(0.01, 0.025, 0.05, 0.1)
+ns <- c(3:10, seq(20,100,10))
+out <- sapply(ps, function(p) {
+  sapply(ns, function(n) {
+    eCerto:::qgrubbs(p=p, n=n)
+  })
+})
+colnames(out) <- paste0("a=", ps)
+rownames(out) <- paste0("n=", ns)
+round(out, 4)
+```
 Critical values for the double Grubbs test are stored in tabulated form internally 
 and P-values are derived by comparison.
 
 ```{r}
-eCerto::cvals_Grubbs2[,1:4]
+ps <- c(0.01, 0.025, 0.05, 0.1)
+ns <- c(4:10, seq(20,100,10))
+out <- eCerto::cvals_Grubbs2
+round(out[rownames(out)%in%ns, colnames(out)%in%ps], 4)
 ```
 
 ***Note!*** Critical values for double Grubbs are obtained from the `outliers` package 
 for 4≤n≤30 and are estimated for 31≤n≤100 based on the approximation described in
 [this paper](https://link.springer.com/article/10.1007/s10182-011-0185-y).
 
-The test is based on:  
+The test is originally based on:  
 "Grubbs, F.E. (1950). Sample Criteria for testing outlying observations. Ann. Math. Stat. 21, 1, 27-58".
 
 #### Scheffe
@@ -98,5 +140,5 @@ as published in the `agricolae` package. It is calculated on the result of `stat
 eCerto:::scheffe.test
 ```
 
-The test is based on:  
+The test is originally based on:  
 "Steel, R.; Torri, J.; Dickey, D. (1997) Principles and Procedures of Statistics: A Biometrical Approach. pp189"

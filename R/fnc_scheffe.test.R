@@ -48,8 +48,16 @@ scheffe.test <- function(y, trt, alpha = 0.05) {
   Tprob <- sqrt(Fprob * (ntr - 1))
   nr <- unique(means[, 4])
   scheffe <- Tprob * sqrt(2 * MSerror / nr)
-  statistics <- data.frame("MSerror" = MSerror, "Df" = DFerror, "F" = Fprob, "Mean" = mean(df[, 1]), "CV" = sqrt(MSerror) * 100 / mean(df[, 1]))
-  if (length(nr) == 1) { statistics <- data.frame(statistics, "Scheffe" = Tprob, "CriticalDifference" = scheffe) }
+  statistics <- data.frame(
+    "MSerror" = MSerror,
+    "Df" = DFerror,
+    "F" = Fprob,
+    "Mean" = mean(df[, 1]),
+    "CV" = sqrt(MSerror) * 100 / mean(df[, 1])
+  )
+  if (length(nr) == 1) {
+    statistics <- data.frame(statistics, "Scheffe" = Tprob, "CriticalDifference" = scheffe)
+  }
   comb <- utils::combn(ntr, 2)
   nn <- ncol(comb)
   dif <- rep(0, nn)
@@ -81,7 +89,13 @@ scheffe.test <- function(y, trt, alpha = 0.05) {
   rownames(statistics) <- " "
   rownames(means) <- means[, 1]
   means <- means[, -1]
-  output <- list(statistics = statistics, parameters = parameters, means = means, comparison = NULL, groups = groups)
+  output <- list(
+    statistics = statistics,
+    parameters = parameters,
+    means = means,
+    comparison = NULL,
+    groups = groups
+  )
   class(output) <- "group"
   return(output)
 }
