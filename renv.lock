@@ -339,14 +339,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.2.1",
+      "Version": "0.2.2",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "e19c80d57e6f87b7e7e041b4e5c8674960b27f03",
+      "RemoteSha": "b359537bbeefa8cb41a9c60448f26a2b7b8cc921",
       "Requirements": [
         "DT",
         "R",
@@ -366,7 +366,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "d94346e504cc9c869303fb87ac9ce747"
+      "Hash": "eed6745b8f6e7b57f5c66da622c611d0"
     },
     "ellipsis": {
       "Package": "ellipsis",

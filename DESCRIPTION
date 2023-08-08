@@ -36,7 +36,7 @@ Imports:
     R6,
     rmarkdown,
     shiny,
-    shinyalert,
+    shinyalert (>= 3.0.0.9000),
     shinyjs,
     tidyxl
 Suggests: 
