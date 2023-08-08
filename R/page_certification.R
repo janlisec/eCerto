@@ -367,8 +367,8 @@ page_CertificationServer = function(id, rv) {
 
     # Tab.2 Labmean statistics
     TabC2_pre <- shiny::reactive({
-      shiny::req(dat(), precision(), !is.null(input$tabC2_opt))
-      prepTabC2(dat = dat(), precision = precision(), excl_labs = input$tabC2_opt)
+      shiny::req(dat(), !is.null(input$tabC2_opt))
+      prepTabC2(dat = dat(), excl_labs = input$tabC2_opt)
     })
     shiny::observeEvent(TabC2_pre(), {
       setValue(rv, c("Certification_processing","mstats"), TabC2_pre())
@@ -379,11 +379,11 @@ page_CertificationServer = function(id, rv) {
 
     # Normality statement and QQ plot
     output$tab2_statement <- shiny::renderUI({
-      KS_p <- TabC2_pre()[,"KS_p"]
+      KS_p <- as.numeric(TabC2_pre()[,"KS_p"]) < 0.05
       shiny::fluidRow(
         shiny::column(
           width = 12,
-          shiny::HTML(paste0("The data is", ifelse(as.numeric(KS_p) < 0.05, " not ", " "), "normally distributed (KS_p=", KS_p, ").")),
+          shiny::HTML(paste0("The data is", ifelse(KS_p, " not ", " "), "normally distributed (KS<sub>p</sub>", ifelse(KS_p, "<", "&ge;"), "0.05).")),
           shiny::HTML("Show "), shiny::actionLink(inputId = session$ns("qqplot_link"), label = "QQ-Plot"), shiny::HTML(" of Lab means.")
         )
       )
