@@ -43,6 +43,10 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
     return(style_x)
   } else {
     x <- style_x
+    colnames(x) <- gsub("_between", "<sub>between</sub>", colnames(x))
+    colnames(x) <- gsub("_within", "<sub>within</sub>", colnames(x))
+    colnames(x) <- gsub("^s_bb$", "s<sub>bb</sub>", colnames(x))
+    colnames(x) <- gsub("^s_bb_min$", "s<sub>bb,min</sub>", colnames(x))
     inv_cols <- grep("style_", colnames(x))-1
     if (length(unique(x[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
     # prepare DT
@@ -56,7 +60,7 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
           list(className = 'dt-right', targets='_all')
         )
       ),
-      rownames=NULL, selection = list(mode="single", target="row", selected=cr)
+      rownames=NULL, escape = FALSE, selection = list(mode="single", target="row", selected=cr)
     )
     # style different DT columns
     dt <- DT::formatStyle(
@@ -68,14 +72,14 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
     )
     dt <- DT::formatStyle(
       table = dt,
-      columns = "s_bb",
+      columns = "s<sub>bb</sub>",
       valueColumns = "style_s_bb",
       target = "cell",
       fontWeight = DT::styleValue()
     )
     dt <- DT::formatStyle(
       table = dt,
-      columns = "s_bb_min",
+      columns = "s<sub>bb,min</sub>",
       valueColumns = "style_s_bb_min",
       target = "cell",
       fontWeight = DT::styleValue()
