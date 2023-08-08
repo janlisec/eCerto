@@ -346,7 +346,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "e39750c29802dacbb70889c90694947649ace4f4",
+      "RemoteSha": "e19c80d57e6f87b7e7e041b4e5c8674960b27f03",
       "Requirements": [
         "DT",
         "R",
@@ -366,7 +366,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "c813f387e035c445b98d61f426585151"
+      "Hash": "d94346e504cc9c869303fb87ac9ce747"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -1021,18 +1021,22 @@
     },
     "shinyalert": {
       "Package": "shinyalert",
-      "Version": "3.0.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
+      "Version": "3.0.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "daattali",
+      "RemoteRepo": "shinyalert",
+      "RemoteRef": "master",
+      "RemoteSha": "7f208efcf7428a35237e96133dc068e569a55075",
       "Requirements": [
         "R",
         "htmltools",
-        "knitr",
         "shiny",
         "stats",
         "uuid"
       ],
-      "Hash": "2fd42421abd79dcaf0855fa1d21599a3"
+      "Hash": "2cefd0bed0eaf514f04a8c81011222da"
     },
     "shinyjs": {
       "Package": "shinyjs",
