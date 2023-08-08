@@ -19,7 +19,7 @@ The critical value is calculated internally using formula
 ```{r}
 eCerto:::qcochran
 ```
-where *p*, *n* and *k* are the desired p-value level, the number of replicates 
+where *p*, *n* and *k* are the desired alpha level, the number of replicates 
 per group and the number of groups respectively. `stats::qf()` is the quantile 
 function of the f-distribution as implemented in the R `stats` package. Likewise, 
 `stats::pf()` is used to compute the Cochran P-value via
@@ -33,8 +33,8 @@ table in R using
 
 ```{r}
 ps <- c(0.01, 0.05)
-ns <- c(3:10, seq(20,100,20))
-ks <- 2:20
+ns <- c(3:9, seq(10,20,5))
+ks <- c(2:14, seq(15,30,5))
 out <- lapply(ps, function(p) {
   sapply(ns, function(n) {
     sapply(ks, function(k) {
@@ -104,7 +104,7 @@ table in R using
 
 ```{r}
 ps <- c(0.01, 0.025, 0.05, 0.1)
-ns <- c(3:10, seq(20,100,10))
+ns <- c(3:10, seq(20,100,40))
 out <- sapply(ps, function(p) {
   sapply(ns, function(n) {
     eCerto:::qgrubbs(p=p, n=n)
@@ -119,7 +119,7 @@ and P-values are derived by comparison.
 
 ```{r}
 ps <- c(0.01, 0.025, 0.05, 0.1)
-ns <- c(4:10, seq(20,100,10))
+ns <- c(4:10, seq(20,100,40))
 out <- eCerto::cvals_Grubbs2
 round(out[rownames(out)%in%ns, colnames(out)%in%ps], 4)
 ```
