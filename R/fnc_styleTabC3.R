@@ -27,18 +27,23 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
       x[,"U_abs"] <- round_up(x = x[,"U_abs"], n = prec_exp)
     }
   }
-  # rename column header for temporary display
+  u_cols <- get_UF_cols(x, "U_round")
   cc <- attr(x, "col_code")
+  non_edit_cols <- list(columns = which(!(colnames(x) %in% c("k", cc[,"Name"])))-1)
+  # rename column header for temporary display
   if (nrow(cc)>=1 && !all(cc[, "Name"] %in% colnames(x))) {
     for (k in 1:nrow(cc)) {
       colnames(x)[colnames(x) == cc[k, "ID"]] <- cc[k, "Name"]
     }
   }
+  colnames(x) <- gsub("^U_abs$", "U<sub>abs</sub>", colnames(x))
+  colnames(x) <- gsub("^u_char$", "u<sub>char</sub>", colnames(x))
+  colnames(x) <- gsub("^u_com$", "u<sub>com</sub>", colnames(x))
   dt <- DT::datatable(
     data = x,
     editable = list(
       target = "cell",
-      disable = list(columns = which(!(colnames(x) %in% c("k", attr(x, "col_code")[,"Name"])))-1)
+      disable = non_edit_cols
     ),
     options = list(
       dom = "t", paging = FALSE, scrollX = TRUE, ordering = FALSE,
@@ -47,8 +52,8 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
         list("width"= "30px", "targets" = which(colnames(x) %in% c("n","k"))-1)
       )
     ),
-    rownames = NULL, selection = list(mode="single", target="row", selected=selected_row)
+    rownames = NULL, escape = FALSE, selection = list(mode="single", target="row", selected=selected_row)
   )
-  dt <- DT::formatCurrency(table = dt, columns = get_UF_cols(x, "U_round"), currency = "", digits = precision_U)
+  dt <- DT::formatCurrency(table = dt, columns = u_cols, currency = "", digits = precision_U)
   return(dt)
 }

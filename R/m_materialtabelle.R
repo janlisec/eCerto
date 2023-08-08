@@ -53,7 +53,7 @@ m_materialtabelleUI <- function(id) {
             shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = wb),
             shiny::actionButton(inputId = ns("c_remF"), label = "Del", width = wb),
             shiny::actionButton(inputId = ns("c_renF"), label = "Ren", width = wb),
-            shiny::strong("F-cols")
+            shiny::strong("F cols")
           ),
           shiny::p(
             style = "margin-left: 15px;",
