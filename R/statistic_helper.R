@@ -229,10 +229,14 @@ qgrubbs <- function (p, n, type = 10, rev = FALSE) {
 #' qgrubbs2(0.05, 5)
 #' par(mfrow=c(1,4))
 #' for (p in c(0.01, 0.025, 0.05, 0.1)) {
-#'   plot(sapply(4:30, function(n) { qgrubbs2(p = p, n = n) }) - eCerto::cvals_Grubbs2[,as.character(p)],
-#'        main=paste("alpha =", p), ylab="Deviation from Tabulated values for Double Grubbs",
-#'        ylim=c(-0.003,0.003), xlab="n")
-#'   abline(h=seq(-0.003,0.003,0.001), col=grey(0.9))
+#'   x <- sapply(4:100, function(n) { qgrubbs2(p = p, n = n) })
+#'   plot(
+#'     x - eCerto::cvals_Grubbs2[,as.character(p)],
+#'     main=paste("alpha =", p),
+#'     ylab="Deviation from Tabulated values for Double Grubbs",
+#'     ylim=c(-0.003,0.003), xlab="n"
+#'   )
+#'   abline(h=seq(-0.003, 0.003, 0.001), col=grey(0.9))
 #' }
 qgrubbs2 <- function(p = 0.05, n = 5) {
   tmp <- structure(
@@ -427,7 +431,7 @@ pdixon <- function (q, n) {
 #' @param x The vector of lab variances.
 #' @param opposite Testing lower or upper end for FALSE and TRUE respectively.
 #'     In eCerto only the one sided version is used.
-#' @param two.sided
+#' @param two.sided two.sided.
 #' @noRd
 #' @keywords internal
 #' @examples

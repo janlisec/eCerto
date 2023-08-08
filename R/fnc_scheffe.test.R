@@ -1,5 +1,6 @@
 #' @title scheffe.test.
-#' @description A re-implementation of the scheffe.test as published in the `agricolae` package.
+#' @description A re-implementation of the scheffe.test as published in the
+#'     `agricolae` package <https://rdrr.io/cran/agricolae/man/scheffe.test.html>.
 #' @param y Output of linear model function `lm`.
 #' @param trt Factor which was used in the call to `lm`.
 #' @param alpha alpha level for grouping.
@@ -9,69 +10,11 @@
 #' @noRd
 #' @keywords internal
 scheffe.test <- function(y, trt, alpha = 0.05) {
-  # helper functions
-  last_char <- function(x)  {
-    x <- sub(" +$", "", x)
-    return(substr(x, nchar(x), nchar(x)))
-  }
-  orderPvalue <- function(means, alpha, pmat) {
-    letras <- c(letters[1:26], LETTERS[1:26], rep(" ", 2000))
-    n <- nrow(means)
-    idx <- (1:n)[order(means[, 2], decreasing = TRUE)]
-    w <- means[order(means[, 2], decreasing = TRUE), ]
-    M <- rep("", n)
-    k <- 1
-    j <- 1
-    i <- 1
-    cambio <- n
-    cambio1 <- 0
-    chequeo <- 0
-    M[1] <- letras[k]
-    while (j < n) {
-      chequeo <- chequeo + 1
-      if (chequeo > n) {
-        break
-      }
-      for (i in j:n) {
-        s <- pmat[idx[i], idx[j]] > alpha
-        if (s) {
-          if (last_char(M[i]) != letras[k]) {
-            M[i] <- paste(M[i], letras[k], sep = "")
-          }
-        } else {
-          k <- k + 1
-          cambio <- i
-          cambio1 <- 0
-          ja <- j
-          M[cambio] <- paste(M[cambio], letras[k], sep = "")
-          for (v in ja:cambio) {
-            if (pmat[idx[v], idx[cambio]] <= alpha) {
-              j <- j + 1
-              cambio1 <- 1
-            } else {
-              break
-            }
-          }
-          break
-        }
-      }
-      if (cambio1 == 0) {
-        j <- j + 1
-      }
-    }
-    output <- data.frame("mean" = as.numeric(w[,2]), groups = M, row.names = as.character(w[,1]))
-    if (k > 52) {
-      cat("\n", k, "groups are estimated. The number of groups exceeded the maximum of 52 labels.\n")
-    }
-    invisible(output)
-  }
-  # scheffe test
   name.y <- paste(deparse(substitute(y)))
   name.t <- paste(deparse(substitute(trt)))
   A <- y$model
   DFerror <- stats::df.residual(y)
   MSerror <- stats::deviance(y) / DFerror
-  #Fc <- anova(y)[trt, 4]
   y <- A[, 1]
   ipch <- pmatch(trt, names(A))
   nipch <- length(ipch)

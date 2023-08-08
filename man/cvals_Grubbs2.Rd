@@ -8,7 +8,7 @@
 A data frame containing critical values for Double Grubbs test with n in rows and alpha in cols.
 }
 \source{
-\code{outliers} package.
+\code{outliers} package and \url{https://link.springer.com/article/10.1007/s10182-011-0185-y}.
 }
 \usage{
 data(cvals_Grubbs2)

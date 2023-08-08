@@ -429,3 +429,66 @@ color_temperature_levels <- function(x) {
   return(data.frame("Temp" = x, "pchs" = temp_pchs[temps], "cols" = temp_cols[temps]))
 }
 
+#' @title orderPvalue.
+#' @description Groups means from Scheffe-test according to P-value.
+#' @param means means.
+#' @param alpha alpha.
+#' @param pmat pmat.
+#' @return Input data frame in either full or kompakt version.
+#' @keywords internal
+#' @noRd
+#' @examples
+#' rv <- eCerto:::test_rv(type = "SR3")
+#' isolate(get_input_data(rv = rv))
+#' isolate(get_input_data(rv = rv, excl_file=TRUE))
+#' isolate(get_input_data(rv = rv, type="s"))
+#' isolate(get_input_data(rv = rv, type="s", excl_file=TRUE))
+orderPvalue <- function(means, alpha, pmat) {
+  # helper functions
+  last_char <- function(x)  {
+    x <- sub(" +$", "", x)
+    return(substr(x, nchar(x), nchar(x)))
+  }
+  symb <- c(letters[1:26], LETTERS[1:26], rep(" ", 2000))
+  n <- nrow(means)
+  idx <- (1:n)[order(means[, 2], decreasing = TRUE)]
+  w <- means[order(means[, 2], decreasing = TRUE), ]
+  M <- rep("", n)
+  k <- 1
+  j <- 1
+  i <- 1
+  cambio <- n
+  cambio1 <- 0
+  chk <- 0
+  M[1] <- symb[k]
+  while (j < n) {
+    chk <- chk + 1
+    if (chk > n) { break }
+    for (i in j:n) {
+      if (pmat[idx[i], idx[j]] > alpha) {
+        if (last_char(M[i]) != symb[k]) {
+          M[i] <- paste0(M[i], symb[k])
+        }
+      } else {
+        k <- k + 1
+        cambio <- i
+        cambio1 <- 0
+        ja <- j
+        M[cambio] <- paste0(M[cambio], symb[k])
+        for (v in ja:cambio) {
+          if (pmat[idx[v], idx[cambio]] <= alpha) {
+            j <- j + 1
+            cambio1 <- 1
+          } else {
+            break
+          }
+        }
+        break
+      }
+    }
+    if (cambio1 == 0) { j <- j + 1 }
+  }
+  output <- data.frame("mean" = as.numeric(w[,2]), groups = M, row.names = as.character(w[,1]))
+  if (k > 52) { message("\nThe number of estimated groups (", k, ") exceeded the maximum number of available labels (52).\n") }
+  invisible(output)
+}
