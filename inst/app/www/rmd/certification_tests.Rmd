@@ -91,7 +91,7 @@ The test is based on:
 
 #### Scheffe
 
-The Scheffe multiple comparison test is a re-implementation of the scheffe.test 
+The Scheffe multiple comparison test is a re-implementation of the function `scheffe.test()`
 as published in the `agricolae` package. It is calculated on the result of `stats::lm()`.
 
 ```{r}

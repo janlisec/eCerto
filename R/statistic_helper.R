@@ -282,15 +282,15 @@ pgrubbs <- function (q, n, type = 10) {
 #' grubbs.test(x = test[,"mean"])
 #' grubbs.test(x = test[,"mean"], tail = "upper")
 #' # comparison with other packages
-#' grubbs.test(x = test[,"mean"], type ="20")
+#' grubbs.test(x = test[,"mean"], type = 20)
 #' # identical result as for outliers package
-#' outliers::grubbs.test(x = test[,"mean"], type = "20", two.sided = FALSE)
+#' outliers::grubbs.test(x = test[,"mean"], type = 20, two.sided = FALSE)
 #' # moderate difference to PMCMRplus package
 #' PMCMRplus::doubleGrubbsTest(x = test[,"mean"], alternative = "less")
 
-grubbs.test <- function (x, type = c("10", "20"), tail = c("lower", "upper")) {
+grubbs.test <- function (x, type = 10, tail = c("lower", "upper")) {
   tail <- match.arg(tail)
-  type <- match.arg(type)
+  if (!any(type==c(10, 20))) message("'grubbs.test' is only implemented for type = c(10, 20). Using type = 20 (double Grubbs).")
   x <- sort(x[stats::complete.cases(x)])
   n <- length(x)
   if (type == 10) {
@@ -311,10 +311,10 @@ grubbs.test <- function (x, type = c("10", "20"), tail = c("lower", "upper")) {
   } else {
     # double Grubbs
     if (tail=="lower") {
-      alt = paste("lowest values", x[1], ",", x[2], "are outliers")
+      alt = paste("lowest values", x[1], "and", x[2], "are outliers")
       u <- stats::var(x[3:n])/stats::var(x) * (n - 3)/(n - 1)
     } else {
-      alt = paste("highest values", x[n - 1], ",", x[n], "are outliers")
+      alt = paste("highest values", x[n - 1], "and", x[n], "are outliers")
       u <- stats::var(x[1:(n - 2)])/stats::var(x) * (n - 3)/(n - 1)
     }
     g <- NULL
