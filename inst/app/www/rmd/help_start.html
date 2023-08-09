@@ -771,22 +771,29 @@ testing up to n=100 laboratories (was restricted to n=30 in package
 <code>outliers</code>).</p>
 <div id="cochran" class="section level4">
 <h4>Cochran</h4>
-<p>The critical value is calculated internally using formula</p>
-<pre class="r"><code>eCerto:::qcochran</code></pre>
+The critical value is calculated internally using formula
+<details>
+<summary>
+<code>eCerto:::qcochran</code>
+</summary>
 <pre><code>## function (p, n, k) {
 ##   f &lt;- stats::qf(p/k, (n - 1) * (k - 1), n - 1)
 ##   c &lt;- 1/(1 + (k - 1) * f)
 ##   return(c)
 ## }
-## &lt;bytecode: 0x000001a88a81d8c8&gt;
+## &lt;bytecode: 0x000001ba0cb45f18&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
-<p>where <em>p</em>, <em>n</em> and <em>k</em> are the desired alpha
-level, the number of replicates per group and the number of groups
-respectively. <code>stats::qf()</code> is the quantile function of the
-f-distribution as implemented in the R <code>stats</code> package.
-Likewise, <code>stats::pf()</code> is used to compute the Cochran
-P-value via</p>
-<pre class="r"><code>eCerto:::pcochran</code></pre>
+</details>
+where parameters <em>p</em>, <em>n</em> and <em>k</em> define the
+desired alpha level, the number of replicates per group and the number
+of groups respectively. <code>stats::qf()</code> is the quantile
+function of the f-distribution as implemented in the R
+<code>stats</code> package. Likewise, <code>stats::pf()</code> is used
+to compute the Cochran P-value via function
+<details>
+<summary>
+<code>eCerto:::pcochran</code>
+</summary>
 <pre><code>## function (q, n, k) {
 ##   f &lt;- (1/q - 1)/(k - 1)
 ##   p &lt;- 1 - stats::pf(f, (n - 1) * (k - 1), n - 1) * k
@@ -794,10 +801,15 @@ P-value via</p>
 ##   p[p &gt; 1] &lt;- 1
 ##   return(p)
 ## }
-## &lt;bytecode: 0x000001a88a9fabc0&gt;
+## &lt;bytecode: 0x000001ba0cd172b0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
-<p>For comparison with critical values tabulated elsewhere you can
-generate a respective table in R using</p>
+</details>
+<br> For comparison with critical values tabulated elsewhere you can
+generate a respective table in R.
+<details>
+<summary>
+Show code
+</summary>
 <pre class="r"><code>ps &lt;- c(0.01, 0.05)
 ns &lt;- c(3:9, seq(10,20,5))
 ks &lt;- c(2:14, seq(15,30,5))
@@ -814,6 +826,11 @@ lapply(out, function(x) {
   rownames(x) &lt;- paste0(&quot;k=&quot;, ks)
   round(x, 4)
 })</code></pre>
+</details>
+<details>
+<summary>
+Show Cochran critical values table
+</summary>
 <pre><code>## $`alpha=0.01`
 ##         n=3    n=4    n=5    n=6    n=7    n=8    n=9   n=10   n=15   n=20
 ## k=2  0.9950 0.9794 0.9586 0.9373 0.9172 0.8988 0.8823 0.8674 0.8113 0.7744
@@ -853,15 +870,19 @@ lapply(out, function(x) {
 ## k=20 0.2705 0.2205 0.1921 0.1735 0.1602 0.1502 0.1422 0.1358 0.1157 0.1048
 ## k=25 0.2281 0.1846 0.1601 0.1441 0.1328 0.1242 0.1174 0.1120 0.0949 0.0857
 ## k=30 0.1979 0.1593 0.1377 0.1236 0.1137 0.1061 0.1003 0.0955 0.0806 0.0727</code></pre>
-<p>The test is originally based on:<br />
+</details>
+<p><br> The test is originally based on:<br />
 “Snedecor, G.W., Cochran, W.G. (1980). Statistical Methods (seventh
 edition). Iowa State University Press, Ames, Iowa”.</p>
 </div>
 <div id="dixon" class="section level4">
 <h4>Dixon</h4>
-<p>The Dixon test statistic is calculated depending on the number of
-labs (n) using</p>
-<pre class="r"><code>eCerto:::dixon.test</code></pre>
+The Dixon test statistic is calculated depending on the number of labs
+(n) using the function
+<details>
+<summary>
+<code>eCerto:::dixon.test</code>
+</summary>
 <pre><code>## function (x, opposite = FALSE, two.sided = FALSE) {
 ##   x &lt;- sort(x[stats::complete.cases(x)])
 ##   n &lt;- length(x)
@@ -906,14 +927,19 @@ labs (n) using</p>
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x000001a890d1e298&gt;
+## &lt;bytecode: 0x000001ba13103ea8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
-<p>In <strong><em>eCerto</em></strong> the one-sided version of the
+</details>
+<br> In <strong><em>eCerto</em></strong> the one-sided version of the
 Dixon test is applied consecutively at the lower and upper end. Critical
-values are stored in tabulated form internally and have been combined in
-a single table from <a href="http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html">this
-source</a>.</p>
-<pre class="r"><code>eCerto::cvals_Dixon[,1:8]</code></pre>
+values are stored in tabulated form internally
+(<code>eCerto::cvals_Dixon</code>) and have been combined in a single
+table from <a href="http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html">this
+source</a>.
+<details>
+<summary>
+Show Dixon critical values table
+</summary>
 <pre><code>##     0.001 0.002 0.005  0.01  0.02  0.05   0.1   0.2
 ## 3   0.999 0.998 0.994 0.988 0.976 0.941 0.886 0.782
 ## 4   0.964 0.949 0.921 0.889 0.847 0.766 0.679 0.561
@@ -944,9 +970,13 @@ source</a>.</p>
 ## 80  0.408 0.389 0.360 0.337 0.310 0.270 0.234 0.192
 ## 90  0.397 0.377 0.350 0.326 0.300 0.261 0.226 0.185
 ## 100 0.387 0.368 0.341 0.317 0.292 0.253 0.219 0.179</code></pre>
-<p>Values for non-tabulated combinations of <em>p</em> and <em>n</em>
-are derived by interpolation using function <code>qtable</code></p>
-<pre class="r"><code>eCerto:::qtable</code></pre>
+</details>
+<br> Values for non-tabulated combinations of <em>p</em> and <em>n</em>
+are derived by interpolation using function
+<details>
+<summary>
+<code>eCerto:::qtable</code>
+</summary>
 <pre><code>## function (p, probs, quants) {
 ##   quants &lt;- quants[order(probs)]
 ##   probs &lt;- sort(probs)
@@ -980,9 +1010,10 @@ are derived by interpolation using function <code>qtable</code></p>
 ##   }
 ##   return(res)
 ## }
-## &lt;bytecode: 0x000001a8911fe9d0&gt;
+## &lt;bytecode: 0x000001ba135ab1a0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
-<p>The test is originally based on:<br />
+</details>
+<p><br> The test is originally based on:<br />
 “Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. Stat. 21, 4,
 488-506”<br />
 “Dean, R.B.; Dixon, W.J. (1951). Simplified statistics for small numbers
@@ -992,9 +1023,12 @@ of observations. Anal.Chem. 23, 636-638”<br />
 </div>
 <div id="grubbs" class="section level4">
 <h4>Grubbs</h4>
-<p>The Grubbs test statistic is calculated either for a single or a
-double outlier at both ends of the distribution consecutively using</p>
-<pre class="r"><code>eCerto:::grubbs.test</code></pre>
+The Grubbs test statistic is calculated either for a single or a double
+outlier at both ends of the distribution consecutively using
+<details>
+<summary>
+<code>eCerto:::grubbs.test</code>
+</summary>
 <pre><code>## function (x, type = 10, tail = c(&quot;lower&quot;, &quot;upper&quot;)) {
 ##   tail &lt;- match.arg(tail)
 ##   if (!any(type==c(10, 20))) {
@@ -1040,11 +1074,15 @@ double outlier at both ends of the distribution consecutively using</p>
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x000001a88f824720&gt;
+## &lt;bytecode: 0x000001ba1194c280&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
-<p>Critical values for the single Grubbs test are calculated internally
-using</p>
-<pre class="r"><code>eCerto:::qgrubbs</code></pre>
+</details>
+<br> Critical values for the single Grubbs test are calculated
+internally using
+<details>
+<summary>
+<code>eCerto:::qgrubbs</code>
+</summary>
 <pre><code>## function (p, n, type = 10, rev = FALSE) {
 ##   if (type == 10) {
 ##     if (!rev) {
@@ -1071,10 +1109,15 @@ using</p>
 ##     return(unname(res))
 ##   }
 ## }
-## &lt;bytecode: 0x000001a88f38c628&gt;
+## &lt;bytecode: 0x000001ba10cc0450&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
-<p>For comparison with critical values tabulated elsewhere you can
-generate a respective table in R using</p>
+</details>
+<br> For comparison with critical values tabulated elsewhere you can
+generate a respective table in R.
+<details>
+<summary>
+Show code
+</summary>
 <pre class="r"><code>ps &lt;- c(0.01, 0.025, 0.05, 0.1)
 ns &lt;- c(3:10, seq(20,100,40))
 out &lt;- sapply(ps, function(p) {
@@ -1085,6 +1128,11 @@ out &lt;- sapply(ps, function(p) {
 colnames(out) &lt;- paste0(&quot;a=&quot;, ps)
 rownames(out) &lt;- paste0(&quot;n=&quot;, ns)
 round(out, 4)</code></pre>
+</details>
+<details>
+<summary>
+Show Grubbs (single) critical values table
+</summary>
 <pre><code>##       a=0.01 a=0.025 a=0.05  a=0.1
 ## n=3   0.5878  0.6033 0.6289 0.6787
 ## n=4   0.7575  0.7688 0.7875 0.8250
@@ -1097,12 +1145,14 @@ round(out, 4)</code></pre>
 ## n=20  1.6118  1.6184 1.6297 1.6529
 ## n=60  2.0999  2.1057 2.1155 2.1358
 ## n=100 2.3040  2.3095 2.3188 2.3381</code></pre>
-<p>Critical values for the double Grubbs test are stored in tabulated
-form internally and P-values are derived by comparison.</p>
-<pre class="r"><code>ps &lt;- c(0.01, 0.025, 0.05, 0.1)
-ns &lt;- c(4:10, seq(20,100,40))
-out &lt;- eCerto::cvals_Grubbs2
-round(out[rownames(out)%in%ns, colnames(out)%in%ps], 4)</code></pre>
+</details>
+<br> Critical values for the double Grubbs test are stored in tabulated
+form internally (<code>eCerto::cvals_Grubbs2</code>) and P-values are
+derived by comparison.
+<details>
+<summary>
+Show Grubbs (double) critical values table
+</summary>
 <pre><code>##       0.01  0.025   0.05    0.1
 ## 4   0.0000 0.0002 0.0008 0.0031
 ## 5   0.0035 0.0090 0.0183 0.0376
@@ -1114,9 +1164,11 @@ round(out[rownames(out)%in%ns, colnames(out)%in%ps], 4)</code></pre>
 ## 20  0.3909 0.4391 0.4804 0.5269
 ## 60  0.7089 0.7346 0.7553 0.7775
 ## 100 0.8018 0.8190 0.8326 0.8470</code></pre>
-<p><strong><em>Note!</em></strong> Critical values for double Grubbs are
-obtained from the <code>outliers</code> package for 4≤n≤30 and are
-estimated for 31≤n≤100 based on the approximation described in <a href="https://link.springer.com/article/10.1007/s10182-011-0185-y">this
+</details>
+<p><br> <strong><em>Note!</em></strong> Critical values for double
+Grubbs are obtained from the <code>outliers</code> package for 4≤n≤30
+and are estimated for 31≤n≤100 based on the approximation described in
+<a href="https://link.springer.com/article/10.1007/s10182-011-0185-y">this
 paper</a>.</p>
 <p>The test is originally based on:<br />
 “Grubbs, F.E. (1950). Sample Criteria for testing outlying observations.
@@ -1124,11 +1176,13 @@ Ann. Math. Stat. 21, 1, 27-58”.</p>
 </div>
 <div id="scheffe" class="section level4">
 <h4>Scheffe</h4>
-<p>The Scheffe multiple comparison test is a re-implementation of the
-function <code>scheffe.test()</code> as published in the
-<code>agricolae</code> package. It is calculated on the result of
-<code>stats::lm()</code>.</p>
-<pre class="r"><code>eCerto:::scheffe.test</code></pre>
+The Scheffe multiple comparison test is a re-implementation of the
+respective function published in the <code>agricolae</code> package. It
+is calculated on the result of <code>stats::lm()</code>.
+<details>
+<summary>
+<code>eCerto:::scheffe.test</code>
+</summary>
 <pre><code>## function(y, trt, alpha = 0.05) {
 ##   name.y &lt;- paste(deparse(substitute(y)))
 ##   name.t &lt;- paste(deparse(substitute(trt)))
@@ -1219,8 +1273,9 @@ function <code>scheffe.test()</code> as published in the
 ##   class(output) &lt;- &quot;group&quot;
 ##   return(output)
 ## }
-## &lt;bytecode: 0x000001a88a7a62b0&gt;
+## &lt;bytecode: 0x000001ba0cba7cc0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
+</details>
 <p>The test is originally based on:<br />
 “Steel, R.; Torri, J.; Dickey, D. (1997) Principles and Procedures of
 Statistics: A Biometrical Approach. pp189”</p>

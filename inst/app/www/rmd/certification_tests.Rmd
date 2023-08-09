@@ -15,23 +15,33 @@ up to n=100 laboratories (was restricted to n=30 in package `outliers`).
 #### Cochran
 
 The critical value is calculated internally using formula
+<details>
+  <summary>`eCerto:::qcochran`</summary>
 
-```{r}
+```{r, echo=FALSE, eval=TRUE}
 eCerto:::qcochran
 ```
-where *p*, *n* and *k* are the desired alpha level, the number of replicates 
+</details> 
+
+where parameters *p*, *n* and *k* define the desired alpha level, the number of replicates 
 per group and the number of groups respectively. `stats::qf()` is the quantile 
 function of the f-distribution as implemented in the R `stats` package. Likewise, 
-`stats::pf()` is used to compute the Cochran P-value via
+`stats::pf()` is used to compute the Cochran P-value via function
+<details>
+  <summary>`eCerto:::pcochran`</summary>
 
-```{r}
+```{r, echo=FALSE, eval=TRUE}
 eCerto:::pcochran
 ```
 
-For comparison with critical values tabulated elsewhere you can generate a respective
-table in R using
+</details> 
 
-```{r}
+<br> For comparison with critical values tabulated elsewhere you can generate a respective
+table in R.
+<details>
+  <summary>Show code</summary>
+
+```{r, echo=TRUE, eval=FALSE}
 ps <- c(0.01, 0.05)
 ns <- c(3:9, seq(10,20,5))
 ks <- c(2:14, seq(15,30,5))
@@ -48,38 +58,75 @@ lapply(out, function(x) {
   rownames(x) <- paste0("k=", ks)
   round(x, 4)
 })
-
 ```
 
+</details> 
 
-The test is originally based on:  
+<details>
+  <summary>Show Cochran critical values table</summary>
+
+```{r, echo=FALSE, eval=TRUE}
+ps <- c(0.01, 0.05)
+ns <- c(3:9, seq(10,20,5))
+ks <- c(2:14, seq(15,30,5))
+out <- lapply(ps, function(p) {
+  sapply(ns, function(n) {
+    sapply(ks, function(k) {
+      eCerto:::qcochran(p=p, n=n, k=k)
+    })
+  })
+})
+names(out) <- paste0("alpha=", ps)
+lapply(out, function(x) {
+  colnames(x) <- paste0("n=", ns)
+  rownames(x) <- paste0("k=", ks)
+  round(x, 4)
+})
+```
+
+</details> 
+
+<br> The test is originally based on:  
 "Snedecor, G.W., Cochran, W.G. (1980). Statistical Methods (seventh edition). Iowa State University Press, Ames, Iowa".
 
 #### Dixon
 
 The Dixon test statistic is calculated depending on the number of labs (n) using
+the function 
+<details>
+  <summary>`eCerto:::dixon.test`</summary>
 
-```{r}
+```{r, echo=FALSE, eval=TRUE}
 eCerto:::dixon.test
 ```
 
-In ***eCerto*** the one-sided version of the Dixon test is applied consecutively
-at the lower and upper end. Critical values are stored in tabulated form internally 
-and have been combined in a single table from 
-[this source](http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html).
+</details> 
 
-```{r}
+<br> In ***eCerto*** the one-sided version of the Dixon test is applied consecutively
+at the lower and upper end. Critical values are stored in tabulated form internally 
+(`eCerto::cvals_Dixon`) and have been combined in a single table from 
+[this source](http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html).
+<details>
+  <summary>Show Dixon critical values table</summary>
+
+```{r, echo=FALSE, eval=TRUE}
 eCerto::cvals_Dixon[,1:8]
 ```
 
-Values for non-tabulated combinations of *p* and *n* are derived by interpolation
-using function `qtable`
+</details> 
 
-```{r}
+<br> Values for non-tabulated combinations of *p* and *n* are derived by interpolation
+using function
+<details>
+  <summary>`eCerto:::qtable`</summary>
+  
+```{r, echo=FALSE, eval=TRUE}
 eCerto:::qtable
 ```
 
-The test is originally based on:  
+</details> 
+
+<br> The test is originally based on:  
 "Dixon, W.J. (1950). Analysis of extreme values. Ann. Math. Stat. 21, 4, 488-506"  
 "Dean, R.B.; Dixon, W.J. (1951). Simplified statistics for small numbers of observations. Anal.Chem. 23, 636-638"  
 "Dixon, W.J. (1953). Processing data for outliers. J. Biometrics. 9, 74-89"
@@ -88,21 +135,31 @@ The test is originally based on:
 
 The Grubbs test statistic is calculated either for a single or a double outlier at
 both ends of the distribution consecutively using
-
-```{r}
+<details>
+  <summary>`eCerto:::grubbs.test`</summary>
+  
+```{r, echo=FALSE, eval=TRUE}
 eCerto:::grubbs.test
 ```
 
-Critical values for the single Grubbs test are calculated internally using
+</details> 
 
-```{r}
+<br> Critical values for the single Grubbs test are calculated internally using
+<details>
+  <summary>`eCerto:::qgrubbs`</summary>
+  
+```{r, echo=FALSE, eval=TRUE}
 eCerto:::qgrubbs
 ```
 
-For comparison with critical values tabulated elsewhere you can generate a respective
-table in R using
+</details> 
 
-```{r}
+<br> For comparison with critical values tabulated elsewhere you can generate a respective
+table in R.
+<details>
+  <summary>Show code</summary>
+
+```{r, echo=TRUE, eval=FALSE}
 ps <- c(0.01, 0.025, 0.05, 0.1)
 ns <- c(3:10, seq(20,100,40))
 out <- sapply(ps, function(p) {
@@ -114,17 +171,40 @@ colnames(out) <- paste0("a=", ps)
 rownames(out) <- paste0("n=", ns)
 round(out, 4)
 ```
-Critical values for the double Grubbs test are stored in tabulated form internally 
-and P-values are derived by comparison.
+</details> 
 
-```{r}
+<details>
+  <summary>Show Grubbs (single) critical values table</summary>
+
+```{r, echo=FALSE, eval=TRUE}
+ps <- c(0.01, 0.025, 0.05, 0.1)
+ns <- c(3:10, seq(20,100,40))
+out <- sapply(ps, function(p) {
+  sapply(ns, function(n) {
+    eCerto:::qgrubbs(p=p, n=n)
+  })
+})
+colnames(out) <- paste0("a=", ps)
+rownames(out) <- paste0("n=", ns)
+round(out, 4)
+```
+</details> 
+
+<br> Critical values for the double Grubbs test are stored in tabulated form internally 
+(`eCerto::cvals_Grubbs2`) and P-values are derived by comparison.
+<details>
+  <summary>Show Grubbs (double) critical values table</summary>
+
+```{r, echo=FALSE, eval=TRUE}
 ps <- c(0.01, 0.025, 0.05, 0.1)
 ns <- c(4:10, seq(20,100,40))
 out <- eCerto::cvals_Grubbs2
 round(out[rownames(out)%in%ns, colnames(out)%in%ps], 4)
 ```
 
-***Note!*** Critical values for double Grubbs are obtained from the `outliers` package 
+</details> 
+
+<br> ***Note!*** Critical values for double Grubbs are obtained from the `outliers` package 
 for 4≤n≤30 and are estimated for 31≤n≤100 based on the approximation described in
 [this paper](https://link.springer.com/article/10.1007/s10182-011-0185-y).
 
@@ -133,12 +213,16 @@ The test is originally based on:
 
 #### Scheffe
 
-The Scheffe multiple comparison test is a re-implementation of the function `scheffe.test()`
-as published in the `agricolae` package. It is calculated on the result of `stats::lm()`.
+The Scheffe multiple comparison test is a re-implementation of the respective function
+published in the `agricolae` package. It is calculated on the result of `stats::lm()`.
+<details>
+  <summary>`eCerto:::scheffe.test`</summary>
 
-```{r}
+```{r, echo=FALSE, eval=TRUE}
 eCerto:::scheffe.test
 ```
+
+</details> 
 
 The test is originally based on:  
 "Steel, R.; Torri, J.; Dickey, D. (1997) Principles and Procedures of Statistics: A Biometrical Approach. pp189"
