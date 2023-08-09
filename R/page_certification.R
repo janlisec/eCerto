@@ -355,14 +355,13 @@ page_CertificationServer = function(id, rv) {
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
       shiny::req(dat(), selected_tab(), input$tabC1_opt2)
-      fmt <- switch(input$tabC1_opt2, "Significance level" = "alpha", "P-value" = "pval", "Test statistic" = "cval", "Critical value a=0.05" = "cval05", "Critical value a=0.01" = "cval01")
-      prepTabC1(dat = dat(), lab_means = rv$c_lab_means(data = dat()), excl_labs = input$tabC1_opt, fmt = fmt)
+      prepTabC1(dat = dat(), lab_means = rv$c_lab_means(data = dat()), excl_labs = input$tabC1_opt, fmt = encode_fmt(input$tabC1_opt2))
     })
     shiny::observeEvent(overview_stats_pre(), {
       setValue(rv, c("Certification_processing","stats"), overview_stats_pre())
     })
     output$overview_stats <- DT::renderDataTable({
-      styleTabC1(x = overview_stats_pre(), n = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]])
+      styleTabC1(x = overview_stats_pre(), n = rv$a_p()[selected_tab()], fmt = encode_fmt(input$tabC1_opt2))
     })
 
     # Tab.2 Labmean statistics

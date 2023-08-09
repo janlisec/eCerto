@@ -492,3 +492,20 @@ orderPvalue <- function(means, alpha, pmat) {
   if (k > 52) { message("\nThe number of estimated groups (", k, ") exceeded the maximum number of available labels (52).\n") }
   invisible(output)
 }
+
+#' @title encode_fmt.
+#' @description Helper function to get the correct fmt for Tab.C1 styling.
+#' @param rv rv.
+#' @return Character vector of length 1.
+#' @keywords internal
+#' @noRd
+encode_fmt <- function(x) {
+  switch(
+    x,
+    "Significance level" = "alpha",
+    "P-value" = "pval",
+    "Test statistic" = "cval",
+    "Critical value a=0.05" = "cval05",
+    "Critical value a=0.01" = "cval01"
+  )
+}

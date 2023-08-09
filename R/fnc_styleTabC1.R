@@ -1,7 +1,8 @@
 #' @title styleTabC1.
 #' @description Prepare Tab C1 for HTML.
 #' @param x Object `overview_stats_pre()`.
-#' @param n Rounding precision for specific columns..
+#' @param n Rounding precision for mean/sd columns.
+#' @param fmt Output value depicted in the table.
 #' @examples
 #' rv <- eCerto:::test_rv(type = "SR3")
 #' shiny::isolate(dat <- rv$c_fltData())
@@ -11,7 +12,13 @@
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
-styleTabC1 <- function(x, n=4) {
+styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cval01")) {
+  fmt <- match.arg(fmt)
+  if (fmt %in% c("pval", "cval", "cval05", "cval01")) {
+    cns <- c("Dixon", "Grubbs1", "Grubbs2", "Cochran")
+    cns <- cns[cns %in% colnames(x)]
+    if (length(cns)>=1) x[,cns] <- round(x[,cns], 6)
+  }
   nc <- ncol(x)
   colnames(x) <- gsub("_01", "<sub>.01</sub>", colnames(x))
   colnames(x) <- gsub("_05", "<sub>.05</sub>", colnames(x))
