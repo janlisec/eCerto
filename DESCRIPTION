@@ -45,6 +45,7 @@ Suggests:
     testthat (>= 3.0.0),
     tibble,
     vdiffr
+Remotes: github::daattali/shinyalert
 biocViews:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
