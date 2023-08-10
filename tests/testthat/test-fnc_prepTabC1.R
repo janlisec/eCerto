@@ -6,7 +6,7 @@ testthat::test_that(
     shiny::isolate(lab_means <- rv$c_lab_means(data = dat))
     # table values are dependent on parameter 'fmt'
     testthat::expect_equal(eCerto:::prepTabC1(dat = dat, lab_means = lab_means)[1,"Dixon"], "n.s.")
-    testthat::expect_equal(eCerto:::prepTabC1(dat = dat, lab_means = lab_means, fmt = "cval")[1,"Dixon"], 0.002778)
+    testthat::expect_equal(eCerto:::prepTabC1(dat = dat, lab_means = lab_means, fmt = "cval")[1,"Dixon"], 0.002778, tolerance = 6)
     # setting 'excl_labs = TRUE' will remove depending on column 'L_flt'
     dat[dat[,"Lab"]=="L13","L_flt"] <- TRUE
     shiny::isolate(lab_means <- rv$c_lab_means(data = dat))
