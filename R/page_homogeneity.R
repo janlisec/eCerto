@@ -195,24 +195,7 @@ page_HomogeneityServer = function(id, rv) {
 
     output$h_tab2 <- DT::renderDataTable({
       shiny::req(tab_H2(), precision())
-      tab <- tab_H2()
-      #message("[H] rendering tab2")
-      cols <- which(colnames(tab) %in% c("mean","sd"))
-      for (i in cols) tab[,i] <- pn(tab[,i], precision())
-      tab <- DT::datatable(
-        data = tab,
-        options = list(
-          dom = "t",
-          pageLength = -1,
-          columnDefs = list(
-            list(className = 'dt-right', targets='_all')
-          )
-        ),
-        rownames=NULL, selection = "none"
-      )
-      #DT::formatCurrency(table = tab, columns = cols, currency = "", digits = precision())
-      #DT::formatSignif(table = tab, columns = cols, digits = precision())
-      return(tab)
+      styleTabH2(x = tab_H2(), precision = precision())
     })
 
     # Plots & Print
