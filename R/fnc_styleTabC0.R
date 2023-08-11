@@ -25,7 +25,8 @@ styleTabC0 <- function(x, ap, type=c("kompakt", "standard")) {
         columnDefs = list(
           list("width"= "80px", "targets" = which(!(colnames(x) %in% c("Lab", " ", "File")))-1),
           list("width"= "30px", "targets" = which(colnames(x) %in% c("Lab"))-1),
-          list(className = 'dt-right', targets = "_all")
+          list(className = 'dt-right', targets = (1:(ncol(x)-1))-1),
+          list(className = 'dt-left', targets = ncol(x)-1)
         )
       ),
       rownames = NULL,
