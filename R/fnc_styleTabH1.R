@@ -49,15 +49,20 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
     colnames(x) <- gsub("^s_bb_min$", "s<sub>bb,min</sub>", colnames(x))
     inv_cols <- grep("style_", colnames(x))-1
     if (length(unique(x[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
+    # attach a blank column at the end
+    x <- cbind(x, data.frame(" "=" ", check.names = FALSE))
     # prepare DT
     dt <- DT::datatable(
       data = x,
       options = list(
-        dom = "t",
-        pageLength = -1,
+        dom = "t", paging = FALSE, searching = FALSE, ordering = FALSE,
         columnDefs = list(
+          list("width"= paste0(max(c(60, nchar(as.character(x[,"analyte"]))*5)), "px"), "targets" = which(colnames(x) %in% c("analyte"))-1),
+          list("width"= "60px", "targets" = which(!(colnames(x) %in% c("analyte", " ", "n", "N")))-1),
+          list("width"= "30px", "targets" = which(colnames(x) %in% c("n", "N"))-1),
           list(visible = FALSE, targets = inv_cols),
-          list(className = 'dt-right', targets='_all')
+          list(className = 'dt-right', targets = which(!(colnames(x) %in% c("analyte")))-1),
+          list(className = 'dt-left', targets = which(colnames(x) %in% c("analyte"))-1)
         )
       ),
       rownames=NULL, escape = FALSE, selection = list(mode="single", target="row", selected=cr)
