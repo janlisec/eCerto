@@ -63,12 +63,14 @@ m_ExcelUpload_UI <- function(id) {
         ),
         shiny::div(
           style = "float: right; margin-right: 15px; margin-top: 15px;",
-          shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range"))
+          shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range", style = "background-color: rgb(140,180,15)"))
         )
       )
     ),
     # preview Excel table
     m_xlsx_range_select_UI(ns("rng_select")),
+    # show welcome screen if no range select is needed
+    div(id = ns("welcome_screen"), welcome_screen(id=id))
   )
 }
 
@@ -95,14 +97,15 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
       shiny::req(exl_fmt())
       message("[ExcelUpload] render upload UI")
       current_file_input(NULL)
+      rv$e_present()
       shinyjs::hideElement(id = "sheet_number")
       shinyjs::hideElement(id = "file_name")
       shinyjs::hideElement(id = "btn_load")
-      if (rv$e_present()[exl_fmt()]) {
-        shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
-      } else {
-        shinyjs::html(id = "info_msg", html = "")
-      }
+      # if (rv$e_present()[exl_fmt()]) {
+      #   shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
+      # } else {
+      #   shinyjs::html(id = "info_msg", html = "")
+      # }
       shiny::tagList(
         shiny::fileInput(
           inputId = session$ns("excel_file"),
@@ -111,6 +114,18 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
           accept = "xlsx"
         )
       )
+    })
+
+    shiny::observe({
+      req(rv$e_present(), exl_fmt())
+      cat("NOW\n")
+      if (rv$e_present()[exl_fmt()]) {
+        shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
+      } else {
+        shinyjs::html(id = "info_msg", html = "")
+      }
+      # hide welcome screen when some data was loaded already
+      shinyjs::toggleElement(id = "welcome_screen", condition = !any(rv$e_present()))
     })
 
     # Excel Sheet-number selector
@@ -300,6 +315,9 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
         setValue(rv, c("General","materialtabelle"), init_materialtabelle(levels(getValue(rv, c("Certification", "data"))[,"analyte"])))
       }
     }, ignoreInit = TRUE)
+
+    # Help section -------------------------------------------------------------
+    shiny::observeEvent(input$getHelp, { show_help("start_gethelp") })
 
   })
 }

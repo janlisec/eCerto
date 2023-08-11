@@ -26,10 +26,9 @@
 m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    sub_header("Load", b=0),
     shiny::fileInput(
       inputId = ns("in_file_ecerto_backup"),
-      label = "Select Previous Analysis",
+      label = "Load Previous Analysis",
       multiple = FALSE,
       accept = c("RData")
     )

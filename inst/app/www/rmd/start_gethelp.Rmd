@@ -11,8 +11,8 @@ Links should be rendered in <span style="color: blue;">blue</span> color on your
 screen. Often, table or figure captions are used for this purpose, so watch out 
 for help-links close to the area you are working on.
 
-You'll find a working example on page `Start` in the Excel upload section. To 
-upload data, tables have to be prepared in Excel using specific cell formats, 
+You'll find a working example on page `Start` (--> **Load Test Data**). To upload 
+your own data, tables have to be prepared in Excel using specific cell formats, 
 column names and column orders. To learn about these formats you can click on 
 the word <span style="color: blue;">example</span> right over the select box.
 Magic: the help section opened by this link is dependent on the value selected 

@@ -26,26 +26,9 @@ m_RDataExport_UI <- function(id) {
   shiny::tagList(
     shiny::div(
       id = ns("savepanel"),
-      sub_header("Save", b=0),
-      shiny::fluidRow(
-        shiny::column(
-          width = 6,
-          shiny::textInput(
-            inputId = ns("user"),
-            label = "User",
-            value = "Jan Lisec"
-          )
-        ),
-        shiny::column(
-          width = 6,
-          shiny::textInput(
-            inputId = ns("study_id"),
-            label = "Study ID",
-            value = "CRM001"
-          )
-        )
-      ),
       sub_header("Save Current Analysis"),
+      shiny::textInput(inputId = ns("user"), label = "User", value = "Jan Lisec"),
+      shiny::textInput(inputId = ns("study_id"), label = "Study ID", value = "CRM001"),
       shiny::downloadButton(outputId = ns('ecerto_backup'), label = "Backup")
     )
   )

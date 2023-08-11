@@ -509,3 +509,52 @@ encode_fmt <- function(x) {
     "Critical value a=0.01" = "cval01"
   )
 }
+
+#' @title welcome_screen.
+#' @description Show the start-up welcome_screen.
+#' @param id id.
+#' @return tagList/HTML.
+#' @keywords internal
+#' @noRd
+welcome_screen <- function(id = id) {
+  ns <- shiny::NS(id)
+  shiny::tagList(
+    shiny::div(
+    style = "height: 70vh;",
+      shiny::div(
+        style = "height: 100%; background-color: rgb(210,0,30); text-align: center; border-radius: 4px; padding: 15px;",
+        #style = "position: absolute; bottom: 50px; top: 50px; height: 100%; background-color: rgb(210,0,30); text-align: center;",
+        shiny::div(
+          style = "background-color: rgb(0,175,240); color: white; margin: 15px; border-radius: 4px; text-shadow: 2px 2px 0px #D2001E; font-weight: 700; padding: 15px;",
+          p(style = "font-size: 28px", "Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
+          p(style = "font-size: 42px", "Welcome to eCerto!"),
+          shiny::img(src = "www/hex-eCerto.png", width = "120px", margin = "auto", alt="eCerto Hex-Logo")
+        ),
+        shiny::fluidRow(
+          shiny::column(
+            width = 6,
+            shiny::div(
+              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
+              "Click on", shiny::actionLink(inputId = ns("getHelp"), label = shiny::HTML("<strong>this Link</strong>")), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!")
+            ),
+            shiny::div(
+              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
+              shiny::HTML("Read the extensive <strong>Help section</strong> (top menue) if you want to know everything!")
+            )
+          ),
+          shiny::column(
+            width = 6,
+            shiny::div(
+              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
+              shiny::HTML("Open some <strong>Test Data</strong> using the 'Load' button in the top right corner!")
+            ),
+            shiny::div(
+              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
+              shiny::HTML("Import your own data from <strong>Excel files</strong> using the 'Browse' button at the top!")
+            )
+          )
+        )
+      )
+    )
+  )
+}

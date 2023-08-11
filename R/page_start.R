@@ -34,25 +34,14 @@ page_startUI <- function(id) {
     shiny::column(
       width = 2,
       shiny::wellPanel(
-        shiny::div(
-          style = "margin-bottom: 15px;",
-          shiny::tagList("Click on", shiny::actionLink(inputId = ns("getHelp"), label = shiny::HTML("<strong>this Link</strong>")), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!"))
-        ),
-        shiny::fluidRow(
-          style = "margin-bottom: 15px;",
-          shiny::column(
-            width = 6,
-            sub_header("Restart Session"),
-            shiny::actionButton(inputId = ns("session_restart"), label = "Restart", width="80%")
-          ),
-          shiny::column(
-            width = 6,
-            sub_header("Load Test Data"),
-            shiny::actionButton(inputId = ns("load_test_data"), label = "Load", width="80%")
-          )
-        ),
+        shiny::actionButton(inputId = ns("load_test_data"), label = "Load Test Data", width="100%", style = "font-weight: 700; background-color: rgb(0,175,240);"),
+        hr(),
         m_RDataImport_UI(ns("Rdatain")),
-        m_RDataExport_UI(ns("Rdataex"))
+        hr(),
+        m_RDataExport_UI(ns("Rdataex")),
+        hr(),
+        shiny::actionButton(inputId = ns("session_restart"), label = "Restart eCerto App", width="100%", style = "font-weight: 700; background-color: rgb(210,0,30)")
+
       )
     )
   )
