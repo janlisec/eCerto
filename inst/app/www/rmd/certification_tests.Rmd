@@ -1,4 +1,4 @@
-### Details on tests
+### Statistical test details
 
 Tests used for outlier detection often rely on tabulated critical values. Decisions 
 to reject or not reject a potential outlier can be dependent on the source of the 
