@@ -8,6 +8,8 @@
 
 <!-- badges: end -->
 
+<img src="inst/app/www/hex-eCerto.png" width="170" align="right"/>
+
 **eCerto** is an R-package providing functions to perform statistical tests
 required during the production of a certified reference material.
 
