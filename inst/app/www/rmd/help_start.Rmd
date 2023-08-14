@@ -3,11 +3,39 @@ title: "*eCerto* (Statistics for CRM production)"
 output:
   html_document:
     toc: true
+    toc_depth: 3
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    self_contained: yes
+    
   #pagedown::html_paged:
     # change to true for a self-contained document, but it'll be a litte slower for Pandoc to render
     # self_contained: true
   #  toc: true
 ---
+
+
+```{css, eval = TRUE, echo = FALSE}
+.tocify-header {
+  text-indent: initial;
+}
+
+.tocify-subheader > .tocify-item {
+  text-indent: initial;
+  padding-left: 25px;
+}
+
+.tocify-subheader .tocify-subheader > .tocify-item {
+  text-indent: initial;
+  padding-left: 50px;
+}
+
+.tocify-subheader .tocify-subheader .tocify-subheader > .tocify-item {
+  text-indent: initial;
+  padding-left: 60px;
+}
+```
 
 <style>
 p.caption {
