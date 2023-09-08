@@ -8,15 +8,11 @@ output:
       collapsed: false
       smooth_scroll: true
     self_contained: yes
-    
-  #pagedown::html_paged:
-    # change to true for a self-contained document, but it'll be a litte slower for Pandoc to render
-    # self_contained: true
-  #  toc: true
 ---
 
 
 ```{css, eval = TRUE, echo = FALSE}
+
 .tocify-header {
   text-indent: initial;
 }

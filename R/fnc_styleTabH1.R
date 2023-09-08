@@ -28,7 +28,7 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
   for (cn in c("M_between","M_within","P","s_bb","s_bb_min")) {
     style_x[,cn] <- pn(style_x[,cn], 4)
   }
-  # check if analyte is present in C modul
+  # check if analyte is present in C module
   if (!is.null(mt)) {
     style_x[,"style_analyte"] <- sapply(style_x[,"analyte"], function(x) {
       ifelse(x %in% mt[,"analyte"], "", "red")
