@@ -76,7 +76,7 @@ m_ExcelUpload_UI <- function(id) {
 
 #' @noRd
 #' @keywords internal
-m_ExcelUpload_Server <- function(id, rv = NULL) {
+m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
 
   ns <- shiny::NS(id)
   silent <- get_golem_config("silent")
@@ -318,6 +318,9 @@ m_ExcelUpload_Server <- function(id, rv = NULL) {
 
     # Help section -------------------------------------------------------------
     shiny::observeEvent(input$getHelp, { show_help("start_gethelp") })
+    shiny::observeEvent(input$showHelp, {
+      shiny::updateNavbarPage(session = msession, inputId = "navbarpage", selected = "tP_help")
+    })
 
   })
 }

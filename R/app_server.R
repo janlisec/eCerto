@@ -16,7 +16,7 @@ app_server <- function( input, output, session ) {
 
   # Panels --------------------------------------------------------------------
   # start page
-  page_startServer(id="Start", rv=rv)
+  page_startServer(id="Start", rv=rv, msession = session)
 
   # Certification Modul
   page_CertificationServer(id = "certification", rv = rv)
@@ -48,11 +48,11 @@ app_server <- function( input, output, session ) {
   shiny::observeEvent(getValue(rv, c("Certification", "input_files")), {
     shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_certification")
   })
-  shiny::observeEvent(getValue(rv, c("Homogeneity", "input_files")), {
-    shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_homogeneity")
-  })
   shiny::observeEvent(getValue(rv, c("Stability", "input_files")), {
     shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_stability")
+  })
+  shiny::observeEvent(getValue(rv, c("Homogeneity", "input_files")), {
+    shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_homogeneity")
   })
 
 }
