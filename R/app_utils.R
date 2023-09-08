@@ -539,7 +539,7 @@ welcome_screen <- function(id = id) {
             ),
             shiny::div(
               style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
-              "Read the extensive", shiny::actionLink(inputId = ns("showHelp"), label = shiny::HTML("<strong>Help section</strong>")), shiny::HTML("(top menue) if you want to know everything!"),
+              "Read the extensive", shiny::actionLink(inputId = ns("showHelp"), label = shiny::HTML("<strong>Online Help</strong>")), shiny::HTML("(see top menue) if you want to know everything!"),
             )
           ),
           shiny::column(
