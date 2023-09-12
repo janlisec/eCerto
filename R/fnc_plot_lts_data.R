@@ -88,8 +88,8 @@ plot_lts_data <- function(x = NULL, type = 1) {
       #browser()
       ## the solution calculating CI for predicted (y_hat) values
       newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out=length(mon))
-      preds <- predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
-      polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = grey(0.9), border = NA)
+      preds <- stats::predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
+      graphics::polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = grDevices::grey(0.9), border = NA)
       #lines(newx, preds[ ,3], lty = 'dashed', col = 'blue')
       #lines(newx, preds[ ,2], lty = 'dashed', col = 'blue')
 

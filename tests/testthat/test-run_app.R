@@ -8,6 +8,10 @@ testthat::test_that(
     if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
 
     # run this test app in a headless browser using shinytest2
+    if (is.null(getOption("shiny.testmode"))) {
+      options(shiny.testmode = TRUE)
+      on.exit(options(shiny.testmode = NULL))
+    }
     app <- shinytest2::AppDriver$new(eCerto::run_app(), name = "run_app")
 
     # get initial app values

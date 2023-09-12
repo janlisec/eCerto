@@ -262,9 +262,9 @@ m_longtermstabilityServer = function(id) {
     })
 
     output$LTS_plot2 <- shiny::renderPlot({
-      shiny::req(datalist[["lts_data"]], i())
+      shiny::req(datalist[["lts_data"]], i(), input$show_plot_L3)
       input$LTS_ApplyNewValue
-      req(input$show_plot_L3)
+      #validate(need(input$show_plot_L3))
       tmp <- datalist$lts_data[[i()]]
       if(nrow(tmp[["val"]])>=6) {
         est <- sapply(6:nrow(tmp[["val"]]), function(i) {

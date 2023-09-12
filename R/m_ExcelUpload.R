@@ -118,7 +118,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
 
     shiny::observe({
       req(rv$e_present(), exl_fmt())
-      cat("NOW\n")
+      #cat("NOW\n")
       if (rv$e_present()[exl_fmt()]) {
         shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
       } else {
