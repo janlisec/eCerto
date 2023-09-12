@@ -67,11 +67,17 @@ m_longtermstabilityUI = function(id) {
               shiny::column(2, shiny::strong("New Comment"), shiny::p(), shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment"))
             )
           ),
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("FigL1_link"),
-              label = "Fig.L1 - Long Term Stability calculation"
-            )
+          shiny::fluidRow(
+            shiny::div(style = "float: left; width: 45%; max-width: 290px; padding-left: 15px; margin-top: 10px",
+              shiny::strong(
+                shiny::actionLink(
+                  inputId = ns("FigL1_link"),
+                  label = "Fig.L1 - Long Term Stability calculation"
+                )
+              ),
+            ),
+            shiny::div(style = "float: left; width: 25%; max-width: 160px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_ci"), label = shiny::HTML("Show CI<sub>95</sub> (slope)"), value = FALSE)),
+            shiny::div(style = "float: left; width: 30%; max-width: 210px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_plot_L3"), label = shiny::HTML("Show running predictor plot"), value = FALSE))
           ),
           shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click")))),
           shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_2"), height = "450px"))),
@@ -252,12 +258,13 @@ m_longtermstabilityServer = function(id) {
     output$LTS_plot1_2 = shiny::renderPlot({
       shiny::req(datalist[["lts_data"]], i())
       input$LTS_ApplyNewValue
-      plot_lts_data(x = datalist$lts_data[[i()]], type=2)
+      plot_lts_data(x = datalist$lts_data[[i()]], type=ifelse(input$show_ci, 3, 2))
     })
 
     output$LTS_plot2 <- shiny::renderPlot({
       shiny::req(datalist[["lts_data"]], i())
       input$LTS_ApplyNewValue
+      req(input$show_plot_L3)
       tmp <- datalist$lts_data[[i()]]
       if(nrow(tmp[["val"]])>=6) {
         est <- sapply(6:nrow(tmp[["val"]]), function(i) {

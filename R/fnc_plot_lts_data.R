@@ -6,8 +6,16 @@
 #' @param type type of plot (see return).
 #'
 #' @return The plot function can be used to return only the calculated
-#'     LTS value (in month) with type=0. If type=1 or 2 the normal or
-#'     adjusted LTS plot will be computed additionally.
+#'     LTS value (in month) with type=0. If type = 1 or 2 the normal or
+#'     adjusted LTS plot will be computed additionally. For type = 3, the
+#'     CI of the regression line will be shown additionally.
+#'
+#' @examples
+#' x <- LTS001[[1]]
+#' (plot_lts_data(x = x, type = 0))
+#' (plot_lts_data(x = x))
+#' plot_lts_data(x = x, type = 2)
+#' plot_lts_data(x = x, type = 3)
 #'
 #' @noRd
 #' @keywords internal
@@ -27,6 +35,7 @@ plot_lts_data <- function(x = NULL, type = 1) {
   foo.lm <- stats::lm(vals ~ mon)
   a <- stats::coef(foo.lm)[1]
   b <- stats::coef(foo.lm)[2]
+  #b.ci <- confint(object = foo.lm, parm = 'mon', level = 0.95)
 
   # extract relevant values from definition part
   U <- x[["def"]][, "U"]
@@ -67,17 +76,37 @@ plot_lts_data <- function(x = NULL, type = 1) {
   }
 
   # generate 'fake time window' plot
-  if (type == 2) {
+  if (type %in% c(2,3)) {
     plot(
       c(foo_adj, mn + b * foo_lts) ~ c(mon, foo_lts),
-      pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4),
-      ylim = range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U)),
+      ylim = range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U)), type = "n",
       xlab = "Month [n]", ylab = paste(ylab, "adjusted"), sub = sub, main = paste(main, "(adjusted)")
     )
+    adj.lm <- stats::lm(foo_adj ~ mon)
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))
-    graphics::abline(stats::lm(foo_adj ~ mon), lty = 2, col = 4)
+    if (type == 3) {
+      #browser()
+      ## the solution calculating CI for predicted (y_hat) values
+      newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out=length(mon))
+      preds <- predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
+      polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = grey(0.9), border = NA)
+      #lines(newx, preds[ ,3], lty = 'dashed', col = 'blue')
+      #lines(newx, preds[ ,2], lty = 'dashed', col = 'blue')
+
+      ## ISO Guide (B.21) solution
+      # ...
+
+      ## the solution calculating CI for the lm coefficients
+      # adj.ci <- confint(adj.lm)
+      # apply(adj.ci, 2, function(x) { graphics::abline(x, col=grey(0.9)) })
+      # x.max <- max(c(mon, foo_lts))
+      # polygon(x = rep(c(0, x.max), each=2), y = c(adj.ci[1,], rev(adj.ci[1,] + adj.ci[2,]*x.max)), col = grey(0.9), border = NA)
+    }
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
+    graphics::abline(adj.lm, lty = 2, col = 4)
     graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste("n =", foo_lts))
+    graphics::points(x = c(mon, foo_lts), y = c(foo_adj, mn + b * foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
+
   }
 
   names(foo_lts) <- as.character(as.POSIXlt(as.Date(rt[1] + foo_lts * days_per_month, origin = "1900-01-01")))
