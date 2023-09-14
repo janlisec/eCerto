@@ -7,11 +7,13 @@ using formula:
 
 $$\mathit{SK} = {|\mu_c - \mu_m| \over \sqrt{u_c^2 + u_m^2}}$$
 
-where $\mu_m$ and $u_m$ are mean and standard deviation of post certification 
-measurements performed on a CRM specimen, and where $u_c$ is the absolute
-certified uncertainty without expansion, $u_c = u_{com} \times \mu_c$.
+where $\mu_m$ is the mean and $u_m = \sigma / \sqrt{N}$ is the standard uncertainty
+of post certification measurements performed on a CRM specimen, and where 
+$u_c = u_{com} \times \mu_c$ is the absolute certified uncertainty without expansion.
+
 If $\mathit{SK} \le k$ is fulfilled, this indicates that the material is sufficiently 
 stable.
 
 ***Note!***
-$k$ is similar to the expansion factor set during certification (see **Tab.C3**).
+$k$ is set based on the expansion factor associated with the analyte given in **Tab.C3**.
+It is recommended to keep $k=2$ as this will ensure a 95% confidence for $\mathit{SK}$.

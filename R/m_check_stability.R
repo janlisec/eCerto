@@ -109,6 +109,7 @@ check_stability_Server <- function(id, rv = NULL) {
       shiny::updateTextAreaInput(inputId = "txt_textAreaInput", value = "")
       shinyjs::show(id = "area_input")
       shinyjs::show(id = "res_output")
+      shinyjs::hide(id = "btn_main")
     })
 
     shiny::observeEvent(input$btn_textAreaInput2, {
@@ -117,6 +118,7 @@ check_stability_Server <- function(id, rv = NULL) {
       out$counter <- out$counter+1
       shinyjs::hide(id = "area_input")
       shinyjs::hide(id = "res_output")
+      shinyjs::show(id = "btn_main")
     })
 
     shiny::observeEvent(input$btn_textAreaInput, {
@@ -140,7 +142,7 @@ check_stability_Server <- function(id, rv = NULL) {
 
     shiny::observeEvent(out$counter, {
       m_m(mean(out$d, na.rm=TRUE))
-      u_m(stats::sd(out$d, na.rm=TRUE))
+      u_m(stats::sd(out$d, na.rm=TRUE)/sqrt(sum(is.finite(out$d))))
       sk(abs(m_c()-m_m())/sqrt(u_c()^2+u_m()^2))
     }, ignoreInit = TRUE)
 

@@ -1865,7 +1865,7 @@ The critical value is calculated internally using formula
 ##   c &lt;- 1/(1 + (k - 1) * f)
 ##   return(c)
 ## }
-## &lt;bytecode: 0x000001f8911d5758&gt;
+## &lt;bytecode: 0x000001de927ca938&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 where parameters <em>p</em>, <em>n</em> and <em>k</em> define the
@@ -1885,7 +1885,7 @@ to compute the Cochran P-value via function
 ##   p[p &gt; 1] &lt;- 1
 ##   return(p)
 ## }
-## &lt;bytecode: 0x000001f891392008&gt;
+## &lt;bytecode: 0x000001de9297f958&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2011,7 +2011,7 @@ The Dixon test statistic is calculated depending on the number of labs
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x000001f89223e620&gt;
+## &lt;bytecode: 0x000001de99176c30&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> In <strong><em>eCerto</em></strong> the one-sided version of the
@@ -2094,7 +2094,7 @@ are derived by interpolation using function
 ##   }
 ##   return(res)
 ## }
-## &lt;bytecode: 0x000001f892600b88&gt;
+## &lt;bytecode: 0x000001de97504430&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p><br> The test is originally based on:<br />
@@ -2158,7 +2158,7 @@ outlier at both ends of the distribution consecutively using
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x000001f89287cd08&gt;
+## &lt;bytecode: 0x000001de97e75eb0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> Critical values for the single Grubbs test are calculated
@@ -2193,7 +2193,7 @@ internally using
 ##     return(unname(res))
 ##   }
 ## }
-## &lt;bytecode: 0x000001f8963724a8&gt;
+## &lt;bytecode: 0x000001de98008fd8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2357,7 +2357,7 @@ is calculated on the result of <code>stats::lm()</code>.
 ##   class(output) &lt;- &quot;group&quot;
 ##   return(output)
 ## }
-## &lt;bytecode: 0x000001f890fb4030&gt;
+## &lt;bytecode: 0x000001de9286f2c0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p>The test is originally based on:<br />
@@ -2398,13 +2398,13 @@ value.</p>
 <div id="homogeneity-statistics" class="section level3">
 <h3>Homogeneity statistics</h3>
 <p>The uncertainty contribution of the Homogeneity measurements
-<code>U_bb</code> (uncertainty between bottles) is calculated for each
-analyte based on variance obtained by an ANOVA and is transfered to a
-user specified column in the material table of the certification
-module.</p>
-<p><strong><em>Note!</em></strong> Transfer is only sucessfull in case
-that an analyte of matching name can be found found (see colum
-<code>In_Cert_Module</code>).</p>
+<code>u_bb</code> (uncertainty between bottles) is calculated for each
+analyte based on variance obtained by an ANOVA and is transferred to a
+user specified column in the material table of the certification module
+(<strong>Tab.C3</strong>).</p>
+<p><strong><em>Note!</em></strong> Values for <code>u_bb</code> can be
+transferred to <strong>Tab.C3</strong> in case that matching analyte
+names are present (analyte names are depicted in red if not found).</p>
 </div>
 <div id="homogeneity-boxplot" class="section level3">
 <h3>Homogeneity boxplot</h3>
@@ -2465,7 +2465,7 @@ modul). Analytes not present there will be rendered in red.</p>
 </div>
 <div id="homogeneity-report" class="section level3">
 <h3>Homogeneity report</h3>
-<p>Figures and tables can currently be exported in PDF format.</p>
+<p>Figures and tables can currently be exported in HTML format.</p>
 <p><strong><em>Note!</em></strong> Report layout and format are
 currently under debate and might change in the future depending on user
 demand.</p>
@@ -2772,18 +2772,21 @@ units.</p>
 <h3>Post certification</h3>
 <p>To check if the certified values of a CRM, <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(u_c\)</span>, remain stable, a post certification
 measurement can be performed and evaluated according to ISO GUIDE
-35:2017 (8.10.3.2) by calculating a stability criterium <span class="math inline">\(\mathit{SK}\)</span> using formula:</p>
+35:2017 (8.10.3.2) by calculating a stability criteria <span class="math inline">\(\mathit{SK}\)</span> using formula:</p>
 <p><span class="math display">\[\mathit{SK} = {|\mu_c - \mu_m| \over
 \sqrt{u_c^2 + u_m^2}}\]</span></p>
-<p>where <span class="math inline">\(\mu_m\)</span> and <span class="math inline">\(u_m\)</span> are mean and standard deviation of
-post certification measurements performed on a CRM specimen, and where
-<span class="math inline">\(u_c\)</span> is the absolute certified
-uncertainty without expansion, <span class="math inline">\(u_c = u_{com}
-\times \mu_c\)</span>. If <span class="math inline">\(\mathit{SK} \le
-k\)</span> is fulfilled, this indicates that the material is
-sufficiently stable.</p>
-<p><strong><em>Note!</em></strong> <span class="math inline">\(k\)</span> is similar to the expansion factor set
-during certification (see <strong>Tab.C3</strong>).</p>
+<p>where <span class="math inline">\(\mu_m\)</span> is the mean and
+<span class="math inline">\(u_m = \sigma / \sqrt{N}\)</span> is the
+standard uncertainty of post certification measurements performed on a
+CRM specimen, and where <span class="math inline">\(u_c = u_{com} \times
+\mu_c\)</span> is the absolute certified uncertainty without
+expansion.</p>
+<p>If <span class="math inline">\(\mathit{SK} \le k\)</span> is
+fulfilled, this indicates that the material is sufficiently stable.</p>
+<p><strong><em>Note!</em></strong> <span class="math inline">\(k\)</span> is set based on the expansion factor
+associated with the analyte given in <strong>Tab.C3</strong>. It is
+recommended to keep <span class="math inline">\(k=2\)</span> as this
+will ensure a 95% confidence for <span class="math inline">\(\mathit{SK}\)</span>.</p>
 <hr />
 </div>
 </div>
