@@ -7,8 +7,9 @@
 calc_time_diff(
   x = NULL,
   d_start = NULL,
-  type = c("year", "mon", "day")[2],
-  origin = "1900-01-01"
+  type = c("mon", "day", "year"),
+  origin = "1900-01-01",
+  exact = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ calc_time_diff(
 \item{type}{You may specify 'year' or 'day' instead of month here.}
 
 \item{origin}{The origin used.}
+
+\item{exact}{}
 }
 \value{
 A numeric vector of length \code{x} containing calculated time differences
@@ -31,6 +34,7 @@ a specific start date \code{d_start} in month (days or years).
 \examples{
 x <- c("2022-02-01", "2022-02-03", "2022-03-01", "2024-02-01")
 calc_time_diff(x=x)
+calc_time_diff(x=x, exact = TRUE)
 calc_time_diff(x=x, type="day")
 calc_time_diff(x=x, type="year")
 calc_time_diff(x=x, type="year", d_start="2021-12-31")
