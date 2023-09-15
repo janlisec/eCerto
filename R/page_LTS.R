@@ -60,7 +60,7 @@ m_longtermstabilityUI = function(id) {
                     inputId = ns("datacomment"),
                     label = "data comment",
                     value = "",
-                    placeholder = "select point or row to comment"
+                    placeholder = "select point or row, enter comment and confirm"
                   )
                 )
               ),
@@ -79,7 +79,7 @@ m_longtermstabilityUI = function(id) {
             shiny::div(style = "float: left; width: 25%; max-width: 160px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_ci"), label = shiny::HTML("Show CI<sub>95</sub> (slope)"), value = FALSE)),
             shiny::div(style = "float: left; width: 30%; max-width: 210px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_plot_L3"), label = shiny::HTML("Show running predictor plot"), value = FALSE))
           ),
-          shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click")))),
+          shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover")))),
           shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_2"), height = "450px"))),
           shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot2"), height = "450px")))
         )
@@ -208,10 +208,10 @@ m_longtermstabilityServer = function(id) {
 
     # helper data.frame containing only Month and Value information of current KW
     d <- shiny::reactive({
-      x = datalist$lts_data[[i()]]
+      x<- datalist$lts_data[[i()]]
       vals <- x[["val"]][,"Value"]
       rt <- x[["val"]][,"Date"]
-      mon <- calc_time_diff(rt)
+      mon <- round(calc_time_diff(x = rt, type = "mon", exact = TRUE), 2)
       data.frame(mon, vals)
     })
 
@@ -249,9 +249,8 @@ m_longtermstabilityServer = function(id) {
       plot_lts_data(x = datalist$lts_data[[i()]], type=1)
       ### if a point in data table is selected --> mark in plot 1
       sr <- input$LTS_vals_rows_selected
-      tmp <- datalist$lts_data[[i()]][["val"]]
       if (length(sr)) {
-       graphics::points(x = rep(calc_time_diff(tmp[,"Date"])[sr],2), y = rep(tmp[sr,"Value"],2), pch = c(21,4), cex = 2, col = 5)
+        graphics::points(x = rep(d()[sr,"mon"],2), y = rep(d()[sr,"vals"],2), pch = c(21, 4), cex = 2, col = 5)
       }
     })
 
@@ -281,9 +280,15 @@ m_longtermstabilityServer = function(id) {
     proxy = DT::dataTableProxy("LTS_vals")
 
     #  when clicking on a point in the plot, select Rows in data table proxy
+    shiny::observeEvent(input$plot1_hover, {
+      p <- input$plot1_hover
+      #browser()
+      #print(shiny::nearPoints(d(), p, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10))
+    })
+    #  when clicking on a point in the plot, select Rows in data table proxy
     shiny::observeEvent(input$plot1_click, {
       # 1/3 nearest point to click location
-      a <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE)
+      a <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10)
       # 2/3 index in table
       if (nrow(a)>=2) {
         shinyalert::shinyalert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
