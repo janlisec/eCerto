@@ -3,7 +3,7 @@
 #'@details tbd.
 #'@param x The Hom data from an session R6 object.
 #'@param mt The mt from an session R6 object.
-#'@param apm The apm from an session R6 object.
+#'@param prec The precision of all analytes from x (names vector).
 #'@param output Return either the dataframe with styling information in columns or the corresponding datatable object.
 #'@param cr Current row selected (relevant if output = 'dt').
 #'@examples
@@ -12,17 +12,18 @@
 #'eCerto:::styleTabH1(x = x)
 #'mt <- data.frame("analyte"="Fe")
 #'eCerto:::styleTabH1(x = x, mt = mt)
-#'apm <- list("Fe"=list("precision"=2))
-#'eCerto:::styleTabH1(x = x, apm = apm)
-#'eCerto:::styleTabH1(x = x, output = "dt")
+#'prec <- unlist(list("Fe"=2))
+#'eCerto:::styleTabH1(x = x, prec = prec)
+#'eCerto:::styleTabH1(x = x, output = "dt", prec = prec)
 #'@return A data frame or a datatable object depending on parameter 'output'.
 #'@keywords internal
-styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr = 1) {
+styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr = 1) {
   message("[styleTabH1] styling Tab.H1")
   style_x <- x
   for (i in 1:nrow(style_x)) {
     an <- as.character(style_x[i,"analyte"])
-    style_x[i,"mean"] <- pn(as.numeric(style_x[i,"mean"]), ifelse(an %in% names(apm), apm[[an]][["precision"]], 4))
+    #style_x[i,"mean"] <- pn(as.numeric(style_x[i,"mean"]), ifelse(an %in% names(apm), apm[[an]][["precision"]], 4))
+    style_x[i,"mean"] <- pn(as.numeric(style_x[i,"mean"]), ifelse(an %in% names(prec), prec[an], 4))
   }
   # round the following columns with fixed precision of 4 digits
   for (cn in c("M_between","M_within","P","s_bb","s_bb_min")) {
@@ -43,12 +44,15 @@ styleTabH1 <- function(x, mt = NULL, apm = NULL, output = c("df", "dt")[1], cr =
     return(style_x)
   } else {
     x <- style_x
+    # set invisible cols
+    inv_cols <- grep("style_", colnames(x))-1
+    if (length(unique(x[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
+    # format substring column header
+    colnames(x) <- gsub("_type", "<sub>type</sub>", colnames(x))
     colnames(x) <- gsub("_between", "<sub>between</sub>", colnames(x))
     colnames(x) <- gsub("_within", "<sub>within</sub>", colnames(x))
     colnames(x) <- gsub("^s_bb$", "s<sub>bb</sub>", colnames(x))
     colnames(x) <- gsub("^s_bb_min$", "s<sub>bb,min</sub>", colnames(x))
-    inv_cols <- grep("style_", colnames(x))-1
-    if (length(unique(x[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
     # attach a blank column at the end
     x <- cbind(x, data.frame(" "=" ", check.names = FALSE))
     # prepare DT

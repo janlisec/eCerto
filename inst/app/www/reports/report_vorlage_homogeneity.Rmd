@@ -3,6 +3,8 @@ title: '&nbsp;'
 title-meta: "Homogeneity-Report"
 params:
   Homogeneity: NA
+  xlab: NA
+  precision: NA
 output:
   html_document:
     df_print: paged
@@ -23,14 +25,25 @@ This is a general report template. Specific layouts can be generated on demand.
 # get a local representation of all data provided by Shiny
 testing <- length(params$Homogeneity)==1L && (is.na(params$Homogeneity) | params$Homogeneity=="NA")
 if (testing) {
-  res <- eCerto::CRM001
-  H <- res[["Homogeneity"]]
-  #'x <- eCerto:::test_homog()$data
+  H <- eCerto::CRM001[["Homogeneity"]]
+  xlab <- "Flasche"
+  an <- unique(as.character(H[["data"]][,"analyte"]))
+  prec <- 5:3; names(prec) <- an
 } else {
   H <- params$Homogeneity
+  xlab <- params$xlab
+  prec <- params$precision
+  if (length(prec)==0) {
+    an <- unique(as.character(H[["data"]][,"analyte"]))
+    prec <- rep(4, length(an))
+    names(prec) <- an
+  }
 }
 if (!"H_type" %in% colnames(H[["data"]])) H[["data"]] <- cbind(H[["data"]], "H_type"="hom")
-sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"])
+sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"], drop = TRUE)
+prec2 <- sapply(levels(sa), function(lsa) {
+  unname(prec[sapply(names(prec), function(x) { substr(lsa, 1, nchar(x))==x })])
+})
 # get figure width in pixel
 figs_w <- sapply(levels(sa), function(a) {
   eCerto:::calc_bxp_width(n = length(levels(factor(H[["data"]][sa==a,"Flasche"]))), w_axes = 48, w_point = 40)
@@ -48,7 +61,12 @@ This is the table of uncertainties associated with homogeneity:
 ```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 df <- eCerto:::prepTabH1(x = H[["data"]])
 if (knitr::is_html_output()) {
-  eCerto:::styleTabH1(x = df, output = "dt")
+  eCerto:::styleTabH1(
+    x = df, 
+    mt = data.frame("analyte"=unique(as.character(df[,"analyte"]))), 
+    prec = prec,
+    output = "dt"
+  )
 } else if (knitr::is_latex_output()) {
   knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
 }
@@ -66,20 +84,15 @@ for (i in 1:nrow(mat)) {
   mat[i,figs_w[i]>=cumsum(widths)] <- 1
   layout(mat = mat[i,,drop=FALSE], widths = widths)
   a <- levels(sa)[i]
-  try(eCerto:::prepFigH1(x = H[["data"]], sa = a, prec = 4))
+  try(eCerto:::prepFigH1(x = H[["data"]], sa = a, prec = prec2[a], xlab = xlab))
 }
-#layout(mat = mat, widths = widths)
-# for (a in levels(sa)) {
-#   try(eCerto:::prepFigH1(x = H[["data"]], sa = a, prec = 4))
-# }
 ```
 
-This is the table of input data:
+This is the table of (non rounded) input data:
 
 ```{r, echo=FALSE, comment=NA}
 df <- H[["data"]]
 if (knitr::is_html_output()) {
-  #knitr::kable(df, row.names=FALSE, format="html", format.args = list(decimal.mark = "."))
   DT::datatable(data = df, rownames = NULL, options = list(dom = "t", paging = FALSE))
 } else if (knitr::is_latex_output()) {
   knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))

@@ -37,8 +37,8 @@ testthat::test_that(
         as.character(o2[,"style_analyte"]),
         rep(c("","red"), each=2)
       )
-      apm <- list("Fe"=list("precision"=2))
-      o3 <- eCerto:::styleTabH1(x = x, apm = apm)
+      prec <- unlist(list("Fe"=2))
+      o3 <- eCerto:::styleTabH1(x = x, prec = prec)
       testthat::expect_equal(
         o3[,"mean"],
         c("0.29","0.29","0.2905","0.2935")

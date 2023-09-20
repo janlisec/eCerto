@@ -92,7 +92,8 @@ page_HomogeneityUI <- function(id) {
           shiny::wellPanel(
             shinyjs::hidden(shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices="")),
             shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
-            shiny::downloadButton(ns("h_Report"), label="Download")
+            shiny::downloadButton(ns("h_Report"), label="Download"),
+            shiny::textInput(inputId = ns("FigH1_xlab"), label = "x-label", value = "Flasche")
           )
         )
       )
@@ -175,7 +176,8 @@ page_HomogeneityServer = function(id, rv) {
       dt <- styleTabH1(
         x = h_vals(),
         mt = getValue(rv, c("General", "materialtabelle")),
-        apm = getValue(rv, c("General", "apm")),
+        prec = rv$a_p("precision"),
+        #prec = getValue(rv, c("General", "apm")),
         output = "dt", cr = h_tab1_current$row
       )
       return(dt)
@@ -205,8 +207,8 @@ page_HomogeneityServer = function(id, rv) {
       calc_bxp_width(n = length(levels(factor(x[interaction(x[,1], x[,2])==input$h_sel_analyt, 3]))))
     })
     output$h_boxplot <- shiny::renderPlot({
-      shiny::req(h_Data(), input$h_sel_analyt, precision())
-      prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision())
+      shiny::req(h_Data(), input$h_sel_analyt, precision(), input$FigH1_xlab)
+      prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab)
     }, height=504, width=shiny::reactive({fig_width()}))
 
     output$h_txt <- shiny::renderUI({
@@ -239,7 +241,11 @@ page_HomogeneityServer = function(id, rv) {
               output_file = file,
               #output_format = rmarkdown::pdf_document(),
               output_format = rmarkdown::html_document(),
-              params = list("Homogeneity" = shiny::reactiveValuesToList(getValue(rv,"Homogeneity"))),
+              params = list(
+                "Homogeneity" = shiny::reactiveValuesToList(getValue(rv, "Homogeneity")),
+                "xlab" = input$FigH1_xlab,
+                "precision" = rv$a_p("precision")
+              ),
               envir = new.env(parent = globalenv())
             )
           },

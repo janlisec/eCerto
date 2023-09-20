@@ -9,9 +9,11 @@
 #'eCerto:::prepFigH1(x = x, sa = "Fe.radial")
 #'@return A data frame.
 #'@keywords internal
-prepFigH1 <- function(x, sa=NULL, prec=4) {
+prepFigH1 <- function(x, sa=NULL, prec=4, xlab="Flasche") {
   message("[prepFigH1] generate boxplot for imported homogeneity data")
   stopifnot(all(c("analyte", "H_type", "Flasche", "value") %in% colnames(x)))
+  prec <- try(as.integer(prec[1]))
+  if (inherits(prec, "try-error") || length(prec)!=1 || is.na(prec)) prec <- 4L
   h_dat <- x
   an <- ifelse(
     length(unique(h_dat[,"H_type"]))==1,
@@ -31,7 +33,7 @@ prepFigH1 <- function(x, sa=NULL, prec=4) {
     x = c(0.6,0.4+length(levels(h_dat[,"Flasche"]))),
     y = range(h_dat[,"value"], na.rm=T),
     type = "n", axes=F,
-    xlab = "Flasche", ylab = paste0(an, " [", unique(h_dat["unit"]), "]")
+    xlab = xlab, ylab = paste0(an, " [", unique(h_dat["unit"]), "]")
   )
   graphics::abline(h=omn, lty=2)
   graphics::abline(h=omn+c(-1,1)*osd, lty=2, col=grDevices::grey(0.8))

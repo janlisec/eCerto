@@ -4,7 +4,7 @@
 \alias{prepFigH1}
 \title{fnc_prepFigH1.}
 \usage{
-prepFigH1(x, sa = NULL, prec = 4)
+prepFigH1(x, sa = NULL, prec = 4, xlab = "Flasche")
 }
 \arguments{
 \item{x}{The Hom data from an session R6 object.}
