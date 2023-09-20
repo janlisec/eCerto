@@ -7,7 +7,7 @@
 #' @param d_start A specific start date (if unspecified the minimum of x will be used to ensure positive values).
 #' @param type You may specify 'year' or 'day' instead of month here.
 #' @param origin The origin used.
-#' @param exact
+#' @param exact Function will return exact values instead of full month and year if this is set to TRUE.
 #'
 #' @examples
 #' x <- c("2022-02-01", "2022-02-03", "2022-03-01", "2024-02-01")
