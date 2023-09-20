@@ -21,7 +21,7 @@ calc_time_diff(
 
 \item{origin}{The origin used.}
 
-\item{exact}{}
+\item{exact}{Function will return exact values instead of full month and year if this is set to TRUE.}
 }
 \value{
 A numeric vector of length \code{x} containing calculated time differences

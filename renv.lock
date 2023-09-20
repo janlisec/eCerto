@@ -343,15 +343,15 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.2.3",
+      "Version": "0.2.4",
       "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteUsername": "janlisec",
-      "RemoteRepo": "eCerto",
-      "RemoteRef": "main",
-      "RemoteSha": "9223c2920aca0e6b8542194142dd8161bc2271d1",
-      "RemoteHost": "api.github.com",
       "Remotes": "github::daattali/shinyalert",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "eCerto",
+      "RemoteUsername": "janlisec",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e10ebfd18ac1c6b3a4a6947025fee25913441315",
       "Requirements": [
         "DT",
         "R",
@@ -371,7 +371,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "4464accbaadb953993cdbb5245715f97"
+      "Hash": "8681412052ad62acd63e2d1734236c0d"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -582,9 +582,9 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.43",
+      "Version": "1.44",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "evaluate",
@@ -594,7 +594,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "9775eb076713f627c07ce41d8199d8f6"
+      "Hash": "60885b9f746c9dfaef110d070b5f7dc0"
     },
     "later": {
       "Package": "later",
@@ -916,7 +916,7 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.24",
+      "Version": "2.25",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -936,7 +936,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "3854c37590717c08c32ec8542a2e0a35"
+      "Hash": "d65e35823c817f09f4de424fcdfa812a"
     },
     "rprojroot": {
       "Package": "rprojroot",
