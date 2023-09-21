@@ -118,7 +118,6 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
 
     shiny::observe({
       req(rv$e_present(), exl_fmt())
-      #cat("NOW\n")
       if (rv$e_present()[exl_fmt()]) {
         shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
       } else {
@@ -193,7 +192,6 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         if (!"value" %in% colnames(tab_flt)) message("m_ExcelUpload_Server: observeEvent(input$btn_load): No column 'value' found in input file.")
         if (!is.numeric(tab_flt[,"value"])) message("m_ExcelUpload_Server: observeEvent(input$btn_load): Column 'value' in input file contains non-numeric values.")
         out$data <- tab_flt
-
       } else if (exl_fmt() == "Certification") {
         if (!silent) message("[m_ExcelUpload_Server] Load Certification data")
         for (i in 1:length(tab_flt)) {
@@ -228,8 +226,8 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         ) {
           if(!silent) message("[m_ExcelUpload] Forgot select row and column?")
           shinyalert::shinyalert(
-            title = "Forgot select row and column?",
-            text = "You're trying to upload Certification data without selection of row and column. Are you sure to proceed?",
+            title = "Forgot to select a range?",
+            text = "You're trying to upload the complete table without limiting to a specific range. Are you sure to proceed?",
             showCancelButton = TRUE,
             showConfirmButton = TRUE,
             callbackR = function(x) { if(x != FALSE) error_modal() }
