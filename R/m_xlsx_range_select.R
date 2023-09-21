@@ -191,7 +191,8 @@ m_xlsx_range_select_Server <- function(
         out <- tab()[[fmt_idx()]]
         if (prod(dim(out)) > 1) {
           # limit preview to 10 characters per cell
-          out <- apply(out, 2, substr, start = 1, stop = 10)
+          # JL: keep the [] to keep the dimensions even for a single row entry
+          out[] <- apply(out, 2, substr, start = 1, stop = 10)
         }
         return(out)
       },
