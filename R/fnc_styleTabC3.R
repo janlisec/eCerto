@@ -23,7 +23,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
     if (!inherits(prec_exp, "try-error") && is.numeric(prec_exp) && all(is.finite(prec_exp)) && length(prec_exp)==nrow(x)) {
       #determine number of decimal places required according to DIN1333
       x[,"cert_val"] <- round_DIN1333(x = x[,"cert_val"], n = prec_exp)
-      # ***Note!*** U_abs is always rounded up
+      # ***Note!*** U_abs is always rounded up; number of decimal places according to DIN1333
       x[,"U_abs"] <- round_up(x = x[,"U_abs"], n = prec_exp)
     }
   }
@@ -56,5 +56,6 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
     rownames = NULL, escape = FALSE, selection = list(mode="single", target="row", selected=selected_row)
   )
   dt <- DT::formatCurrency(table = dt, columns = u_cols, currency = "", digits = precision_U)
+  dt <- DT::formatCurrency(table = dt, columns = "cert_val", currency = "", digits = prec_exp)
   return(dt)
 }
