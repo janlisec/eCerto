@@ -11,6 +11,7 @@
 #' @noRd
 styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
   precision_U <- 4
+  prec_exp <- NULL
   if (!is.null(apm)) {
     # apply analyte specific precision for mean and sd
     prec <- try(sapply(apm, function(x) {x[["precision"]]} ))
@@ -56,6 +57,6 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
     rownames = NULL, escape = FALSE, selection = list(mode="single", target="row", selected=selected_row)
   )
   dt <- DT::formatCurrency(table = dt, columns = u_cols, currency = "", digits = precision_U)
-  dt <- DT::formatCurrency(table = dt, columns = "cert_val", currency = "", digits = prec_exp)
+  if (!is.null(prec_exp)) dt <- DT::formatCurrency(table = dt, columns = "cert_val", currency = "", digits = prec_exp)
   return(dt)
 }
