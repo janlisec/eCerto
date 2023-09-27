@@ -11,7 +11,7 @@ testthat::test_that(
         expr =  {
           eCerto::setValue(rv_test, c("Stability","data"), eCerto:::test_Stability_Excel() )
           session$flushReact()
-          s_vals_cmp <- structure(
+          s_vals_cmp_day <- structure(
             list(
               analyte = structure(1:2, .Label = c("Mn", "Si"), class = "factor"),
               mon_diff = c(88, 88),
@@ -21,7 +21,17 @@ testthat::test_that(
               P = c(0.855321094, 0.000135937)),
             class = "data.frame", row.names = c(NA,-2L)
           )
-          testthat::expect_equal(getValue(rv,c("Stability","s_vals")), s_vals_cmp)
+          s_vals_cmp_month <- structure(
+            list(
+              analyte = structure(1:2, levels = c("Mn", "Si"), class = "factor"),
+              mon_diff = c(88.3, 88.3),
+              slope = c(-0.000673493626114624, -1.95873570319798e-05),
+              SE_slope = c(0.00367471067431989, 4.73816331290521e-06),
+              u_stab = c(2.47489421696982e-06, 9.28080964857025e-11),
+              P = c(0.855321094344113, 0.000135937030629598)),
+            class = "data.frame", row.names = c(NA, -2L)
+          )
+          testthat::expect_equal(getValue(rv,c("Stability","s_vals")), s_vals_cmp_month)
         }
       )
     )
