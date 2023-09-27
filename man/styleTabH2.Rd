@@ -7,15 +7,9 @@
 styleTabH2(x, precision = 4)
 }
 \arguments{
-\item{x}{The Hom data from an session R6 object.}
+\item{x}{data.frame.}
 
-\item{mt}{The mt from an session R6 object.}
-
-\item{apm}{The apm from an session R6 object.}
-
-\item{output}{Return either the dataframe with styling information in columns or the corresponding datatable object.}
-
-\item{cr}{Current row selected (relevant if output = 'dt').}
+\item{precision}{Rounding precision.}
 }
 \value{
 A datatable object.
@@ -27,7 +21,7 @@ A datatable object.
 tbd.
 }
 \examples{
-x <- data.frame("Flasche"=LETTERS[1:3], "mean"=1:3, "sd" = rnorm(3), "n" = 4:6)
+x <- data.frame("Item"=LETTERS[1:3], "mean"=1:3, "sd" = rnorm(3), "n" = 4:6)
 eCerto:::styleTabH2(x = x)
 eCerto:::styleTabH2(x = x, precision = 2)
 }

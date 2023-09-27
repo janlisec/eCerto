@@ -173,7 +173,6 @@ page_StabilityServer <- function(id, rv) {
       s_tab1_current$redraw
       styleTabS1(x = s_vals(), mt = getValue(rv, c("General", "materialtabelle")), sr = s_tab1_current$row)
     })
-
     shiny::observeEvent(input$s_tab1_rows_selected, {
       if (is.null(input$s_tab1_rows_selected)) {
         # trigger a redraw of s_tab1 if the user deselects the current row
