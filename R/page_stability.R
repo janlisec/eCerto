@@ -49,7 +49,13 @@ page_StabilityUI <- function(id) {
           ),
           DT::dataTableOutput(ns("s_tab1"))
         ),
-        shiny::column(width = 2, shiny::wellPanel(m_TransferUUI(id = ns("s_transfer"))))
+        shiny::column(
+          width = 2,
+          shiny::wellPanel(
+            m_TransferUUI(id = ns("s_transfer")),
+            shinyjs::hidden(shiny::radioButtons(inputId = ns("time_fmt"), label = "Time format in lm", choices = c("mon", "day"), selected = "mon"))
+          )
+        )
       ),
       shiny::p(),
       shiny::fluidRow(
@@ -142,7 +148,7 @@ page_StabilityServer <- function(id, rv) {
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data())
-      out <- prepTabS1(x = s_Data())
+      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt)
       setValue(rv, c("Stability","s_vals"), out)
       return(out)
     })

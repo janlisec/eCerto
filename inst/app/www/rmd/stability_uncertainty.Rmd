@@ -1,8 +1,12 @@
 ### Stability uncertainty calculation
 
-The parameters of all linear models are collected in **Tab.S1** and obtained from formula 
+The parameters of all linear models are collected in **Tab.S1** and the potential
+uncertainty contribution of the material stability is obtained from formula 
 $u_{stab}=|m \times err|$ where $m$ is the `slope` of the linear model and $err$ is 
 the standard error `SE` of the slope. 
+
+As we express time in month, the slope $m$ represents a monthly change of the measured
+property and can be used to estimate shelf life should $m$ be significant.
 
 To determine if the slope $m$ is significantly different from $m=0$ we perform a t-test by 
 calculating the t-statistic $t_m = |m| / s(m)$ and comparing the result with the two-tailed 
