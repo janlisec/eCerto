@@ -1,6 +1,6 @@
 ### Post certification
 
-To check if the certified values of a CRM, $\mu_c$ and $u_c$, remain stable, 
+To check if the certified value of a CRM $\mu_c$ remains stable, 
 a post certification measurement can be performed and evaluated according 
 to ISO GUIDE 35:2017 (8.10.3.2) by calculating a stability criteria $\mathit{SK}$
 using formula:
