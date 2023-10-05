@@ -40,6 +40,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
   colnames(x) <- gsub("^U_abs$", "U<sub>abs</sub>", colnames(x))
   colnames(x) <- gsub("^u_char$", "u<sub>char</sub>", colnames(x))
   colnames(x) <- gsub("^u_com$", "u<sub>com</sub>", colnames(x))
+  colnames(x) <- gsub("^cert_val$", "µ<sub>c</sub>", colnames(x))
   dt <- DT::datatable(
     data = x,
     editable = list(
@@ -57,6 +58,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
     rownames = NULL, escape = FALSE, selection = list(mode="single", target="row", selected=selected_row)
   )
   dt <- DT::formatCurrency(table = dt, columns = u_cols, currency = "", digits = precision_U)
-  if (!is.null(prec_exp)) dt <- DT::formatCurrency(table = dt, columns = "cert_val", currency = "", digits = prec_exp)
+  #if (!is.null(prec_exp)) dt <- DT::formatCurrency(table = dt, columns = "cert_val", currency = "", digits = prec_exp)
+  if (!is.null(prec_exp)) dt <- DT::formatCurrency(table = dt, columns = "µ<sub>c</sub>", currency = "", digits = prec_exp)
   return(dt)
 }
