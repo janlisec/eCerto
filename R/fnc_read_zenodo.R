@@ -1,18 +1,20 @@
-#' @title fnc_check_RData.
-#' @description \code{fnc_check_RData} will check a filepath if it specifieds an
-#'     RData file containing an object 'res'.
+#' @title read_zenodo.
+#' @description \code{read_zenodo} will read (download to temp folder first) an
+#'     RData file containing an object 'res' from a zenodo DOI.
 #' @details `eCerto` allows to store imported data and user specified parameter
 #'     values in RData files for backup. The files can be re-imported to `eCerto`
 #'     at later time points. At this point values need to be put into the correct
-#'     slots of an `eCerto`object. To pre-check such a backup file is the purpose
-#'     of this function.
-#' @param x Character vector specifying a path to an RData file.
+#'     slots of an `eCerto`object. Such files can be stored in zenodo and imported
+#'     via DOI.
+#' @param id A zenodo DOI.
 #' @return A object 'res' from an RData file.
 #' @keywords internal
 #' @noRd
 read_zenodo <- function(id) {
   record <- id# <- "8380870"
   base_url <- "https://zenodo.org/api/records/"
+
+  verify_suggested(c("curl", "jsonlite", "fs"))
 
   req <- curl::curl_fetch_memory(paste0(base_url, record))
   content <- jsonlite::fromJSON(rawToChar(req$content))

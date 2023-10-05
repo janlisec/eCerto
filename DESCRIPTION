@@ -40,10 +40,11 @@ Imports:
     shinyjs,
     tidyxl
 Suggests: 
+    curl,
     fs,
+    jsonlite,
     shinytest2,
     testthat (>= 3.0.0),
-    tibble,
     vdiffr
 Remotes: github::daattali/shinyalert
 biocViews:
