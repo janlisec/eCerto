@@ -90,10 +90,10 @@ page_HomogeneityUI <- function(id) {
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            shinyjs::hidden(shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices="")),
-            shiny::HTML("<p style=margin-bottom:2%;><strong>Save Table/Figure</strong></p>"),
+            sub_header("Save Table"),
             shiny::downloadButton(ns("h_Report"), label="Download"),
-            shiny::textInput(inputId = ns("FigH1_xlab"), label = "x-label", value = "Flasche")
+            shiny::p(shiny::textInput(inputId = ns("FigH1_xlab"), label = "x-label/tab-header", value = "Flasche")),
+            shinyjs::hidden(shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices=""))
           )
         )
       )
@@ -152,6 +152,7 @@ page_HomogeneityServer = function(id, rv) {
         data.frame("mean"=mean(x,na.rm=T), "sd"=stats::sd(x,na.rm=T), "n"=sum(is.finite(x)))
       }, .id="Flasche")
       rownames(out) <- out[,"Flasche"]
+      colnames(out) <- gsub("Flasche", input$FigH1_xlab, colnames(out))
       return(out)
     })
 
@@ -169,6 +170,7 @@ page_HomogeneityServer = function(id, rv) {
     })
 
     # Tables
+    h_tab1_current <- shiny::reactiveValues("row"=1, "redraw"=0)
     output$h_tab1 <- DT::renderDataTable({
       shiny::req(h_vals())
       # watch the reactiveVal 'redraw' to avoid the user deselecting all rows
@@ -177,12 +179,10 @@ page_HomogeneityServer = function(id, rv) {
         x = h_vals(),
         mt = getValue(rv, c("General", "materialtabelle")),
         prec = rv$a_p("precision"),
-        #prec = getValue(rv, c("General", "apm")),
         output = "dt", cr = h_tab1_current$row
       )
       return(dt)
     })
-    h_tab1_current <- shiny::reactiveValues("row"=1, "redraw"=0)
     shiny::observeEvent(input$h_tab1_rows_selected, {
       if (is.null(input$h_tab1_rows_selected)) {
         # trigger a redraw of h_tab1 if the user deselects the current row
