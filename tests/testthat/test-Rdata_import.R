@@ -46,7 +46,7 @@ testthat::test_that(
         args = list(rv = rv),
         expr = {
           session$setInputs(in_file_ecerto_backup = excel)
-          testthat::expect_error(rdata(),"Only RData allowed.")
+          testthat::expect_error(rdata(), "File extension different from RData.")
         }
       )
     )
