@@ -1866,7 +1866,7 @@ The critical value is calculated internally using formula
 ##     c &lt;- 1/(1 + (k - 1) * f)
 ##     return(c)
 ## }
-## &lt;bytecode: 0x00000213a54f1540&gt;
+## &lt;bytecode: 0x000001c39ec1f330&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 where parameters <em>p</em>, <em>n</em> and <em>k</em> define the
@@ -1887,7 +1887,7 @@ to compute the Cochran P-value via function
 ##     p[p &gt; 1] &lt;- 1
 ##     return(p)
 ## }
-## &lt;bytecode: 0x00000213a56b5dd0&gt;
+## &lt;bytecode: 0x000001c39edbdbd8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2008,7 +2008,7 @@ The Dixon test statistic is calculated depending on the number of labs
 ##     class(out) &lt;- &quot;htest&quot;
 ##     return(out)
 ## }
-## &lt;bytecode: 0x00000213abe68e10&gt;
+## &lt;bytecode: 0x000001c3a5513c08&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> In <strong><em>eCerto</em></strong> the one-sided version of the
@@ -2092,7 +2092,7 @@ are derived by interpolation using function
 ##     }
 ##     return(res)
 ## }
-## &lt;bytecode: 0x00000213aa389108&gt;
+## &lt;bytecode: 0x000001c3a3a82ac0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p><br> The test is originally based on:<br />
@@ -2156,7 +2156,7 @@ outlier at both ends of the distribution consecutively using
 ##     class(out) &lt;- &quot;htest&quot;
 ##     return(out)
 ## }
-## &lt;bytecode: 0x00000213a7495758&gt;
+## &lt;bytecode: 0x000001c3a0b8f990&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> Critical values for the single Grubbs test are calculated
@@ -2198,7 +2198,7 @@ internally using
 ##         return(unname(res))
 ##     }
 ## }
-## &lt;bytecode: 0x00000213aac50b90&gt;
+## &lt;bytecode: 0x000001c3a437d310&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2354,7 +2354,7 @@ is calculated on the result of <code>stats::lm()</code>.
 ##     class(output) &lt;- &quot;group&quot;
 ##     return(output)
 ## }
-## &lt;bytecode: 0x00000213a5432f80&gt;
+## &lt;bytecode: 0x000001c39eb5c510&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p>The test is originally based on:<br />
@@ -2770,9 +2770,9 @@ units.</p>
 </div>
 <div id="post-certification" class="section level3">
 <h3>Post certification</h3>
-<p>To check if the certified values of a CRM, <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(u_c\)</span>, remain stable, a post certification
-measurement can be performed and evaluated according to ISO GUIDE
-35:2017 (8.10.3.2) by calculating a stability criteria <span class="math inline">\(\mathit{SK}\)</span> using formula:</p>
+<p>To check if the certified value of a CRM <span class="math inline">\(\mu_c\)</span> remains stable, a post
+certification measurement can be performed and evaluated according to
+ISO GUIDE 35:2017 (8.10.3.2) by calculating a stability criteria <span class="math inline">\(\mathit{SK}\)</span> using formula:</p>
 <p><span class="math display">\[\mathit{SK} = {|\mu_c - \mu_m| \over
 \sqrt{u_c^2 + u_m^2}}\]</span></p>
 <p>where <span class="math inline">\(\mu_m\)</span> is the mean and

@@ -49,22 +49,7 @@ m_RDataImport_Server = function(id, rv) {
 
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
-      file.type <- tools::file_ext(input$in_file_ecerto_backup$datapath)
-      shiny::validate(
-        shiny::need(tolower(file.type) == "rdata","Only RData allowed."),
-        shiny::need(length(file.type) == 1, "Please select only one RData file.")
-      )
-      file.type <- "RData"
-      load_envir <- new.env()
-      tryCatch({
-        load(input$in_file_ecerto_backup$datapath[1], envir = load_envir)
-      }, error = function(e) {
-        stop(shiny::safeError(e))
-      })
-      # check if 'res' is contained in loaded workspace
-      obj <- ls(envir = load_envir)
-      obj <- obj[obj %in% "res"]
-      return(base::get(x = obj, envir = load_envir))
+      fnc_check_RData(x = input$in_file_ecerto_backup$datapath)
     }, ignoreNULL = TRUE)
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
