@@ -8,7 +8,7 @@ library(eCerto)
 # x <- covr::package_coverage(function_exclusions = "page_*")
 # covr::zero_coverage(x = x)
 # covr::function_coverage(fun = eCerto:::app_server)
-# covr::function_coverage(fun = eCerto:::fnc_load_RData, code = source("tests/testthat/test-fnc_load_RData.R"))
+# covr::function_coverage(fun = eCerto:::list2rv, code = source("tests/testthat/test-list2rv.R"))
 
 ## tests with snaps fail upon "RCHECK" while being successful in "test_check"
 ## setting R_TESTS avoids this problem

@@ -49,13 +49,13 @@ m_RDataImport_Server = function(id, rv) {
 
     # Upload
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup, {
-      fnc_check_RData(x = input$in_file_ecerto_backup$datapath)
+      check_RData(x = input$in_file_ecerto_backup$datapath)
     }, ignoreNULL = TRUE)
 
     # Is anything already uploaded via Excel? If so, show Window Dialog
     shiny::observeEvent(rdata(), {
       test <- rv$e_present()
-      if (any(test)){
+      if (any(test)) {
         if (!silent) message("[RDataImport] Found existing data. Overwrite?")
         if (!is.null(shiny::getDefaultReactiveDomain())) {
           shiny::showModal(
@@ -88,7 +88,7 @@ m_RDataImport_Server = function(id, rv) {
     })
 
     shiny::observeEvent(continue(), {
-      tmp <- fnc_load_RData(x = rdata())
+      tmp <- list2rv(x = rdata())
       continue(NULL)
       rvreturn(tmp)
     }, ignoreNULL = TRUE)

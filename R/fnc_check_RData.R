@@ -1,5 +1,5 @@
-#' @title fnc_check_RData.
-#' @description \code{fnc_check_RData} will check a file path if it specifies an
+#' @title check_RData.
+#' @description \code{check_RData} will check a file path if it specifies an
 #'     RData file containing an object 'res'.
 #' @details `eCerto` allows to store imported data and user specified parameter
 #'     values in RData files for backup. The files can be re-imported to `eCerto`
@@ -10,11 +10,11 @@
 #' @return A object 'res' from an RData file.
 #' @keywords internal
 #' @noRd
-fnc_check_RData <- function(x = NULL) {
+check_RData <- function(x = NULL) {
   file.type <- tools::file_ext(x)
   shiny::validate(
     shiny::need(length(file.type) == 1, "Multiple files provided. Please select a single RData file containing an object 'res'."),
-    shiny::need(tolower(file.type) == "rdata","File extension different from RData. Please select a single RData file containing an object 'res'.")
+    shiny::need(tolower(file.type) %in% c("rdata","rda"),"File extension different from RData. Please select a single RData file containing an object 'res'.")
   )
   file.type <- "RData"
   load_envir <- new.env()

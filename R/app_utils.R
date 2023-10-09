@@ -120,7 +120,6 @@ pn <- function(n=NULL, p=4L) {
 #' @noRd
 #' @keywords internal
 update_reactivecell = function(r, colname, analyterow = NULL, value) {
-
   if(!is.data.frame(r()))
     stop("r is not a data frame")
   if(!colname %in% colnames(r()))

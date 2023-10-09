@@ -8,32 +8,31 @@
 #'     via DOI.
 #' @param id A zenodo DOI.
 #' @return A object 'res' from an RData file.
+#' @examples
+#' x <- read_zenodo(id = "8380870")
+#'
 #' @keywords internal
 #' @noRd
 read_zenodo <- function(id) {
-  record <- id# <- "8380870"
-  base_url <- "https://zenodo.org/api/records/"
 
+  # check for suggested packages being present
   verify_suggested(c("curl", "jsonlite", "fs"))
 
-  req <- curl::curl_fetch_memory(paste0(base_url, record))
-  content <- jsonlite::fromJSON(rawToChar(req$content))
+  # get content for zenodo record
+  base_url <- "https://zenodo.org/api/records/"
+  zen_record <- curl::curl_fetch_memory(paste0(base_url, id))
+  content <- jsonlite::fromJSON(rawToChar(zen_record$content))
 
+  # get and check url
   file_urls <- content$files$links$self
   if (length(file_urls)>=2) {
     message("[read_zenodo] More than one file in this zenodo record, please select a unique id. Reading first file only.")
     file_urls <- file_urls[1]
   }
 
-  filenames <- basename(file_urls)
-  if (!tolower(tools::file_ext(filenames)) %in% c("rdata","rda")){
-    message("[read_zenodo] Expecting RData or rda file type.")
-  }
-  dest <- fs::path(tempdir(), filenames)
-
-
+  # download from url to temp file and load in R session
+  dest <- fs::path(tempdir(), basename(file_urls))
   curl::curl_download(url = file_urls, destfile = dest, quiet = FALSE)
-
-  x <- load(dest)
+  return(check_RData(x = dest))
 
 }

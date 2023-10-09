@@ -16,7 +16,7 @@ testthat::test_that(
       expr = {
         session$setInputs(in_file_ecerto_backup = rdat)
         session$flushReact()
-        rvreturn(eCerto:::fnc_load_RData(x = rdata()))
+        rvreturn(eCerto:::list2rv(x = rdata()))
         # 'rvreturn()' is a reactiveValue object within the tested model that contains the uploaded data
         testthat::expect_equal(sort(eCerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability"))
         testthat::expect_equal(eCerto::getValue(rvreturn(), c("General","user")),"JL")

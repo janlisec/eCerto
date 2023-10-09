@@ -1,6 +1,7 @@
-#' @title fnc_load_RData.
-#' @description \code{fnc_load_RData} will check and convert values in an RData file and prepare
-#'     the internal reactive values list 'rv'.
+#' @title list2rv.
+#' @description \code{list2rv} will check and convert values from a list (e.g.
+#'     as stored in an RData file) and prepare the internal reactive values list
+#'     'rv'.
 #' @details `eCerto` allows to store imported data and user specified parameter
 #'     values in RData files for backup. The files can be re-imported to `eCerto`
 #'     at later time points. At this point values need to be put into the correct
@@ -10,7 +11,7 @@
 #' @return  A reactive values list 'rv'.
 #' @keywords internal
 #' @noRd
-fnc_load_RData <- function(x = NULL) {
+list2rv <- function(x = NULL) {
 
   silent <- get_golem_config("silent")
 

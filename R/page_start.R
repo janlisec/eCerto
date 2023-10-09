@@ -35,6 +35,7 @@ page_startUI <- function(id) {
       width = 2,
       shiny::wellPanel(
         shiny::actionButton(inputId = ns("load_test_data"), label = "Load Test Data", width="100%", style = "font-weight: 700; background-color: rgb(0,175,240);"),
+        shiny::actionButton(inputId = ns("load_zenodo_data"), label = "Load from Zenodo", width="100%", style = "font-weight: 700; background-color: rgb(0,175,240);"),
         hr(),
         m_RDataImport_UI(ns("Rdatain")),
         hr(),
@@ -82,8 +83,12 @@ page_startServer = function(id, rv, msession = NULL) {
     })
 
     # helper function
-    load_test_data <- function() {
-      rv_test <- fnc_load_RData(x = eCerto::CRM001)
+    load_test_data <- function(x = NULL) {
+      if (is.null(x)) {
+        rv_test <- list2rv(x = eCerto::CRM001)
+      } else {
+        rv_test <- list2rv(x = x)
+      }
       rv_test_names <- listNames(rv_test, split = TRUE)
       rv_name <- listNames(rv, split = TRUE)
       if (identical(rv_test_names, rv_name)) {
@@ -99,7 +104,8 @@ page_startServer = function(id, rv, msession = NULL) {
     # Load Test Data -----------------------------------------------------------
     shiny::observeEvent(input$load_test_data, {
       # check if data was already uploaded or this is a new session
-      if (all(sapply(getValue(rv, "modules"), function(x) { is.null(getValue(rv, c(x, "data"))) }))) {
+      if (all(!rv$e_present())) {
+      #if (all(sapply(getValue(rv, "modules"), function(x) { is.null(getValue(rv, c(x, "data"))) }))) {
         load_test_data()
       } else {
         shiny::showModal(shiny::modalDialog(
@@ -121,9 +127,26 @@ page_startServer = function(id, rv, msession = NULL) {
       shiny::removeModal()
     })
     shiny::observeEvent(continue(), {
+      browser()
       load_test_data()
       continue(NULL)
     }, ignoreNULL = TRUE)
+
+    # Load Zenodo Data ---------------------------------------------------------
+    shiny::observeEvent(input$load_zenodo_data, {
+      shinyalert::shinyalert(
+        title = "Import fom Zenodo",
+        html = TRUE,
+        text = shiny::tagList(shiny::textInput(inputId = session$ns("z_id"), label = "Zenodo Record ID", value = "8380870")),
+        cancelButtonText = "Cancel", confirmButtonText = "Load", showCancelButton = TRUE, size = "xs",
+        callbackR = function(value) {
+          if (value) {
+            x <- read_zenodo(input$z_id)
+            load_test_data(x = x)
+          }
+        }
+      )
+    })
 
     # Help section -------------------------------------------------------------
     shiny::observeEvent(input$getHelp, { show_help("start_gethelp") })
