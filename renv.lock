@@ -350,7 +350,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "324bdc49b56828ae6f02451f1535fd81d8180d81",
+      "RemoteSha": "6e4bca60579c27c8c5a4daf42c770d3d20175e78",
       "Remotes": "github::daattali/shinyalert",
       "Requirements": [
         "DT",
@@ -371,7 +371,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "be6b4f591267e953b88e6732b0abf683"
+      "Hash": "b2aeb5026ab61638f6f7f5c1c4d3df93"
     },
     "ellipsis": {
       "Package": "ellipsis",
