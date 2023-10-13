@@ -4,6 +4,8 @@
 #'
 #' @param x data.
 #' @param type type of plot (see return).
+#' @param t_cert The time of certification (in month). If provided it will be
+#'     used to calculate u_stab according to Iso Guide 35 section 8.7.3.
 #'
 #' @return The plot function can be used to return only the calculated
 #'     LTS value (in month) with type=0. If type = 1 or 2 the normal or
@@ -11,7 +13,7 @@
 #'     CI of the regression line will be shown additionally.
 #'
 #' @examples
-#' x <- LTS001[[1]]
+#' x <- eCerto::LTS001[[1]]
 #' (plot_lts_data(x = x, type = 0))
 #' (plot_lts_data(x = x))
 #' plot_lts_data(x = x, type = 2)
@@ -19,7 +21,7 @@
 #'
 #' @noRd
 #' @keywords internal
-plot_lts_data <- function(x = NULL, type = 1) {
+plot_lts_data <- function(x = NULL, type = 1, t_cert = 0) {
   # date estimation is approximate (based on ~30d/month or precisely on 365/12=30.42)
   days_per_month <- 30.41667
 
@@ -35,6 +37,7 @@ plot_lts_data <- function(x = NULL, type = 1) {
   foo.lm <- stats::lm(vals ~ mon)
   a <- stats::coef(foo.lm)[1]
   b <- stats::coef(foo.lm)[2]
+  SE_b <- summary(foo.lm)$coefficients["mon", 2]
   #b.ci <- confint(object = foo.lm, parm = 'mon', level = 0.95)
 
   # extract relevant values from definition part
@@ -43,6 +46,10 @@ plot_lts_data <- function(x = NULL, type = 1) {
   ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]), "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
   main <- x[["def"]][, "KW"]
   sub <- x[["def"]][, "U_Def"]
+  sub <- paste0("green lines: ", sub, ", blue line: slope, red line: ", "mean")
+  if (t_cert>0) {
+    sub <- paste0(sub, ", u_stab(t_cert = ", t_cert, "): ", pn(round(SE_b*t_cert, 4)))
+  }
 
   # correct values by coef estimate
   foo_adj <- vals - (a - mn)
@@ -63,6 +70,10 @@ plot_lts_data <- function(x = NULL, type = 1) {
       xlab = "Month [n]", ylab = ylab, sub = sub, main = main
     )
     graphics::axis(side = 3, at = range(mon), labels = rt[c(1, length(rt))])
+    if (t_cert>0) {
+      x_end <- max(c(max(mon), t_cert, U/SE_b))
+      graphics::polygon(x = c(0, x_end, x_end, 0), y = c(mn,mn+SE_b*x_end,mn-SE_b*x_end,mn), col = grey(0.9), border = NA)
+    }
     graphics::abline(foo.lm, lty = 2, col = 4) # <-- slope
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
     if ("Temp" %in% colnames(x[["val"]])) {

@@ -10,10 +10,11 @@
 #' @return A data frame.
 #' @keywords internal
 #' @noRd
-prepTabS1 <- function(x, time_fmt = c("mon", "day")) {
+prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60) {
   message("[prepTabS1] perform statistics on imported stability data")
   time_fmt <- match.arg(time_fmt)
   stopifnot(all(c("analyte", "Value", "Date") %in% colnames(x)))
+  if (!is.numeric(t_cert) | (is.numeric(t_cert) && !(t_cert>0))) t_cert <- as.numeric(NA)
   plyr::ldply(split(x, x[,"analyte"]), function(x) {
     if (time_fmt == "day") {
       x_lm <- stats::lm(Value ~ Date, data=x)
@@ -34,7 +35,7 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day")) {
       "mon_diff"=mon_diff,
       "slope"=x_coef[1],
       "SE_slope"=x_coef[2],
-      "u_stab"=abs(x_coef[1]*x_coef[2]),
+      "u_stab"=abs(t_cert*x_coef[2]),
       "P"=x_coef[4]
     )
   }, .id="analyte")

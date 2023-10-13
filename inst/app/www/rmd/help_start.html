@@ -1860,13 +1860,12 @@ The critical value is calculated internally using formula
 <summary>
 <code>eCerto:::qcochran</code>
 </summary>
-<pre><code>## function (p, n, k) 
-## {
-##     f &lt;- stats::qf(p/k, (n - 1) * (k - 1), n - 1)
-##     c &lt;- 1/(1 + (k - 1) * f)
-##     return(c)
+<pre><code>## function (p, n, k) {
+##   f &lt;- stats::qf(p/k, (n - 1) * (k - 1), n - 1)
+##   c &lt;- 1/(1 + (k - 1) * f)
+##   return(c)
 ## }
-## &lt;bytecode: 0x000001c39ec1f330&gt;
+## &lt;bytecode: 0x0000029702d1f728&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 where parameters <em>p</em>, <em>n</em> and <em>k</em> define the
@@ -1879,15 +1878,14 @@ to compute the Cochran P-value via function
 <summary>
 <code>eCerto:::pcochran</code>
 </summary>
-<pre><code>## function (q, n, k) 
-## {
-##     f &lt;- (1/q - 1)/(k - 1)
-##     p &lt;- 1 - stats::pf(f, (n - 1) * (k - 1), n - 1) * k
-##     p[p &lt; 0] &lt;- 0
-##     p[p &gt; 1] &lt;- 1
-##     return(p)
+<pre><code>## function (q, n, k) {
+##   f &lt;- (1/q - 1)/(k - 1)
+##   p &lt;- 1 - stats::pf(f, (n - 1) * (k - 1), n - 1) * k
+##   p[p &lt; 0] &lt;- 0
+##   p[p &gt; 1] &lt;- 1
+##   return(p)
 ## }
-## &lt;bytecode: 0x000001c39edbdbd8&gt;
+## &lt;bytecode: 0x0000029702ee7c28&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -1969,46 +1967,51 @@ The Dixon test statistic is calculated depending on the number of labs
 <summary>
 <code>eCerto:::dixon.test</code>
 </summary>
-<pre><code>## function (x, opposite = FALSE, two.sided = FALSE) 
-## {
-##     x &lt;- sort(x[stats::complete.cases(x)])
-##     n &lt;- length(x)
-##     if (n &lt;= 7) {
-##         type &lt;- &quot;10&quot;
-##     }
-##     else if (n &gt; 7 &amp; n &lt;= 10) {
-##         type &lt;- &quot;11&quot;
-##     }
-##     else if (n &gt; 10 &amp; n &lt;= 13) {
-##         type &lt;- &quot;21&quot;
-##     }
-##     else type &lt;- &quot;22&quot;
-##     if (xor(((x[n] - mean(x)) &lt; (mean(x) - x[1])), opposite)) {
-##         alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
-##         q &lt;- switch(type, `10` = (x[2] - x[1])/(x[n] - x[1]), 
-##             `11` = (x[2] - x[1])/(x[n - 1] - x[1]), `21` = (x[3] - 
-##                 x[1])/(x[n - 1] - x[1]), (x[3] - x[1])/(x[n - 
-##                 2] - x[1]))
-##     }
-##     else {
-##         alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
-##         q &lt;- switch(type, `10` = (x[n] - x[n - 1])/(x[n] - x[1]), 
-##             `11` = (x[n] - x[n - 1])/(x[n] - x[2]), `21` = (x[n] - 
-##                 x[n - 2])/(x[n] - x[2]), (x[n] - x[n - 2])/(x[n] - 
-##                 x[3]))
-##     }
-##     pval &lt;- pdixon(q, n)
-##     if (two.sided) {
-##         pval &lt;- 2 * pval
-##         if (pval &gt; 1) 
-##             pval &lt;- 2 - pval
-##     }
-##     out &lt;- list(statistic = c(Q = q), alternative = alt, p.value = pval, 
-##         method = &quot;Dixon test for outliers&quot;, data.name = &quot;eCerto internal&quot;)
-##     class(out) &lt;- &quot;htest&quot;
-##     return(out)
+<pre><code>## function (x, opposite = FALSE, two.sided = FALSE) {
+##   x &lt;- sort(x[stats::complete.cases(x)])
+##   n &lt;- length(x)
+##   if (n &lt;= 7) {
+##     type &lt;- &quot;10&quot;
+##   } else if (n &gt; 7 &amp; n &lt;= 10) {
+##     type &lt;- &quot;11&quot;
+##   } else if (n &gt; 10 &amp; n &lt;= 13) {
+##     type &lt;- &quot;21&quot;
+##   } else type &lt;- &quot;22&quot;
+##   if (xor(((x[n] - mean(x)) &lt; (mean(x) - x[1])), opposite)) {
+##     alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
+##     q &lt;- switch(
+##       type,
+##       &quot;10&quot; = (x[2] - x[1])/(x[n] - x[1]),
+##       &quot;11&quot; = (x[2] - x[1])/(x[n - 1] - x[1]),
+##       &quot;21&quot; = (x[3] - x[1])/(x[n - 1] - x[1]),
+##       (x[3] - x[1])/(x[n - 2] - x[1])
+##     )
+##   } else {
+##     alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
+##     q &lt;- switch(
+##       type,
+##       &quot;10&quot; = (x[n] - x[n - 1])/(x[n] - x[1]),
+##       &quot;11&quot; = (x[n] - x[n - 1])/(x[n] - x[2]),
+##       &quot;21&quot; = (x[n] - x[n - 2])/(x[n] - x[2]),
+##       (x[n] - x[n - 2])/(x[n] - x[3])
+##     )
+##   }
+##   pval &lt;- pdixon(q, n)
+##   if (two.sided) {
+##     pval &lt;- 2 * pval
+##     if (pval &gt; 1) pval &lt;- 2 - pval
+##   }
+##   out &lt;- list(
+##     &quot;statistic&quot; = c(Q = q),
+##     &quot;alternative&quot; = alt,
+##     &quot;p.value&quot; = pval,
+##     &quot;method&quot; = &quot;Dixon test for outliers&quot;,
+##     &quot;data.name&quot; = &quot;eCerto internal&quot;
+##   )
+##   class(out) &lt;- &quot;htest&quot;
+##   return(out)
 ## }
-## &lt;bytecode: 0x000001c3a5513c08&gt;
+## &lt;bytecode: 0x0000029704419028&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> In <strong><em>eCerto</em></strong> the one-sided version of the
@@ -2058,41 +2061,40 @@ are derived by interpolation using function
 <summary>
 <code>eCerto:::qtable</code>
 </summary>
-<pre><code>## function (p, probs, quants) 
-## {
-##     quants &lt;- quants[order(probs)]
-##     probs &lt;- sort(probs)
-##     res &lt;- vector()
-##     for (n in 1:length(p)) {
-##         pp &lt;- p[n]
-##         if (pp &lt;= probs[1]) {
-##             q0 &lt;- quants[c(1, 2)]
-##             p0 &lt;- probs[c(1, 2)]
-##             fit &lt;- stats::lm(q0 ~ p0)
-##         }
-##         else if (pp &gt;= probs[length(probs)]) {
-##             q0 &lt;- quants[c(length(quants) - 1, length(quants))]
-##             p0 &lt;- probs[c(length(probs) - 1, length(probs))]
-##             fit &lt;- stats::lm(q0 ~ p0)
-##         }
-##         else {
-##             x0 &lt;- which(abs(pp - probs) == min(abs(pp - probs)))
-##             x1 &lt;- which(abs(pp - probs) == sort(abs(pp - probs))[2])
-##             x &lt;- min(c(x0, x1))
-##             if (x == 1) 
-##                 x &lt;- 2
-##             if (x &gt; length(probs) - 2) 
-##                 x &lt;- length(probs) - 2
-##             i &lt;- c(x - 1, x, x + 1, x + 2)
-##             q0 &lt;- quants[i]
-##             p0 &lt;- probs[i]
-##             fit &lt;- stats::lm(q0 ~ poly(p0, 3))
-##         }
-##         res &lt;- c(res, stats::predict(fit, newdata = list(p0 = pp)))
+<pre><code>## function (p, probs, quants) {
+##   quants &lt;- quants[order(probs)]
+##   probs &lt;- sort(probs)
+##   res &lt;- vector()
+##   for (n in 1:length(p)) {
+##     pp &lt;- p[n]
+##     if (pp &lt;= probs[1]) {
+##       q0 &lt;- quants[c(1, 2)]
+##       p0 &lt;- probs[c(1, 2)]
+##       fit &lt;- stats::lm(q0 ~ p0)
 ##     }
-##     return(res)
+##     else if (pp &gt;= probs[length(probs)]) {
+##       q0 &lt;- quants[c(length(quants) - 1, length(quants))]
+##       p0 &lt;- probs[c(length(probs) - 1, length(probs))]
+##       fit &lt;- stats::lm(q0 ~ p0)
+##     }
+##     else {
+##       x0 &lt;- which(abs(pp - probs) == min(abs(pp - probs)))
+##       x1 &lt;- which(abs(pp - probs) == sort(abs(pp - probs))[2])
+##       x &lt;- min(c(x0, x1))
+##       if (x == 1)
+##         x &lt;- 2
+##       if (x &gt; length(probs) - 2)
+##         x &lt;- length(probs) - 2
+##       i &lt;- c(x - 1, x, x + 1, x + 2)
+##       q0 &lt;- quants[i]
+##       p0 &lt;- probs[i]
+##       fit &lt;- stats::lm(q0 ~ poly(p0, 3))
+##     }
+##     res &lt;- c(res, stats::predict(fit, newdata = list(p0 = pp)))
+##   }
+##   return(res)
 ## }
-## &lt;bytecode: 0x000001c3a3a82ac0&gt;
+## &lt;bytecode: 0x000002970932b340&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p><br> The test is originally based on:<br />
@@ -2111,52 +2113,52 @@ outlier at both ends of the distribution consecutively using
 <summary>
 <code>eCerto:::grubbs.test</code>
 </summary>
-<pre><code>## function (x, type = 10, tail = c(&quot;lower&quot;, &quot;upper&quot;)) 
-## {
-##     tail &lt;- match.arg(tail)
-##     if (!any(type == c(10, 20))) {
-##         message(&quot;&#39;grubbs.test&#39; is only implemented for type = 10 or 20. Using type = 20 (double Grubbs).&quot;)
+<pre><code>## function (x, type = 10, tail = c(&quot;lower&quot;, &quot;upper&quot;)) {
+##   tail &lt;- match.arg(tail)
+##   if (!any(type==c(10, 20))) {
+##     message(&quot;&#39;grubbs.test&#39; is only implemented for type = 10 or 20. Using type = 20 (double Grubbs).&quot;)
+##   }
+##   x &lt;- sort(x[stats::complete.cases(x)])
+##   n &lt;- length(x)
+##   if (type == 10) {
+##     # single Grubbs
+##     if (tail==&quot;lower&quot;) {
+##       alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
+##       o &lt;- x[1]
+##       d &lt;- x[2:n]
+##     } else {
+##       alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
+##       o &lt;- x[n]
+##       d &lt;- x[1:(n - 1)]
 ##     }
-##     x &lt;- sort(x[stats::complete.cases(x)])
-##     n &lt;- length(x)
-##     if (type == 10) {
-##         if (tail == &quot;lower&quot;) {
-##             alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
-##             o &lt;- x[1]
-##             d &lt;- x[2:n]
-##         }
-##         else {
-##             alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
-##             o &lt;- x[n]
-##             d &lt;- x[1:(n - 1)]
-##         }
-##         g &lt;- abs(o - mean(x))/sd(x)
-##         u &lt;- stats::var(d)/stats::var(x) * (n - 2)/(n - 1)
-##         pval &lt;- 1 - pgrubbs(g, n, type = 10)
-##         method &lt;- &quot;Grubbs test for one outlier&quot;
+##     g &lt;- abs(o - mean(x))/sd(x)
+##     u &lt;- stats::var(d)/stats::var(x) * (n - 2)/(n - 1)
+##     pval &lt;- 1 - pgrubbs(g, n, type = 10)
+##     method &lt;- &quot;Grubbs test for one outlier&quot;
+##   } else {
+##     # double Grubbs
+##     if (tail==&quot;lower&quot;) {
+##       alt = paste(&quot;lowest values&quot;, x[1], &quot;and&quot;, x[2], &quot;are outliers&quot;)
+##       u &lt;- stats::var(x[3:n])/stats::var(x) * (n - 3)/(n - 1)
+##     } else {
+##       alt = paste(&quot;highest values&quot;, x[n - 1], &quot;and&quot;, x[n], &quot;are outliers&quot;)
+##       u &lt;- stats::var(x[1:(n - 2)])/stats::var(x) * (n - 3)/(n - 1)
 ##     }
-##     else {
-##         if (tail == &quot;lower&quot;) {
-##             alt = paste(&quot;lowest values&quot;, x[1], &quot;and&quot;, x[2], &quot;are outliers&quot;)
-##             u &lt;- stats::var(x[3:n])/stats::var(x) * (n - 3)/(n - 
-##                 1)
-##         }
-##         else {
-##             alt = paste(&quot;highest values&quot;, x[n - 1], &quot;and&quot;, x[n], 
-##                 &quot;are outliers&quot;)
-##             u &lt;- stats::var(x[1:(n - 2)])/stats::var(x) * (n - 
-##                 3)/(n - 1)
-##         }
-##         g &lt;- NULL
-##         pval &lt;- pgrubbs(u, n, type = 20)
-##         method &lt;- &quot;Grubbs test for two outliers&quot;
-##     }
-##     out &lt;- list(statistic = c(G = g, U = u), alternative = alt, 
-##         p.value = pval, method = method, data.name = &quot;eCerto internal&quot;)
-##     class(out) &lt;- &quot;htest&quot;
-##     return(out)
+##     g &lt;- NULL
+##     pval &lt;- pgrubbs(u, n, type = 20)
+##     method &lt;- &quot;Grubbs test for two outliers&quot;
+##   }
+##   out &lt;- list(
+##     &quot;statistic&quot; = c(G = g, U = u),
+##     &quot;alternative&quot; = alt,
+##     &quot;p.value&quot; = pval,
+##     &quot;method&quot; = method,
+##     &quot;data.name&quot; = &quot;eCerto internal&quot;
+##   )
+##   class(out) &lt;- &quot;htest&quot;
+##   return(out)
 ## }
-## &lt;bytecode: 0x000001c3a0b8f990&gt;
+## &lt;bytecode: 0x0000029709dd5748&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> Critical values for the single Grubbs test are calculated
@@ -2165,40 +2167,33 @@ internally using
 <summary>
 <code>eCerto:::qgrubbs</code>
 </summary>
-<pre><code>## function (p, n, type = 10, rev = FALSE) 
-## {
-##     if (type == 10) {
-##         if (!rev) {
-##             t2 &lt;- stats::qt((1 - p)/n, n - 2)^2
-##             return(((n - 1)/sqrt(n)) * sqrt(t2/(n - 2 + t2)))
-##         }
-##         else {
-##             s &lt;- (p^2 * n * (2 - n))/(p^2 * n - (n - 1)^2)
-##             t &lt;- sqrt(s)
-##             if (is.nan(t)) {
-##                 res &lt;- 0
-##             }
-##             else {
-##                 res &lt;- n * (1 - stats::pt(t, n - 2))
-##                 res[res &gt; 1] &lt;- 1
-##             }
-##             return(1 - res)
-##         }
-##     }
-##     else {
-##         if (n &gt; 30) 
-##             warning(&quot;[qgrubbs] critical value is estimated for n&gt;30&quot;)
-##         gtwo &lt;- eCerto::cvals_Grubbs2
-##         pp &lt;- as.numeric(colnames(gtwo))
-##         if (!rev) 
-##             res &lt;- qtable(p, pp, gtwo[n - 3, ])
-##         else res &lt;- qtable(p, gtwo[n - 3, ], pp)
-##         res[res &lt; 0] &lt;- 0
+<pre><code>## function (p, n, type = 10, rev = FALSE) {
+##   if (type == 10) {
+##     if (!rev) {
+##       t2 &lt;- stats::qt((1 - p)/n, n - 2)^2
+##       return(((n - 1)/sqrt(n)) * sqrt(t2/(n - 2 + t2)))
+##     } else {
+##       s &lt;- (p^2 * n * (2 - n))/(p^2 * n - (n - 1)^2)
+##       t &lt;- sqrt(s)
+##       if (is.nan(t)) {
+##         res &lt;- 0
+##       } else {
+##         res &lt;- n * (1 - stats::pt(t, n - 2))
 ##         res[res &gt; 1] &lt;- 1
-##         return(unname(res))
+##       }
+##       return(1 - res)
 ##     }
+##   } else {
+##     if (n &gt; 30) warning(&quot;[qgrubbs] critical value is estimated for n&gt;30&quot;)
+##     gtwo &lt;- eCerto::cvals_Grubbs2
+##     pp &lt;- as.numeric(colnames(gtwo))
+##     if (!rev) res &lt;- qtable(p, pp, gtwo[n-3,]) else res &lt;- qtable(p, gtwo[n-3,], pp)
+##     res[res &lt; 0] &lt;- 0
+##     res[res &gt; 1] &lt;- 1
+##     return(unname(res))
+##   }
 ## }
-## &lt;bytecode: 0x000001c3a437d310&gt;
+## &lt;bytecode: 0x0000029709f7b570&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2272,89 +2267,97 @@ is calculated on the result of <code>stats::lm()</code>.
 <summary>
 <code>eCerto:::scheffe.test</code>
 </summary>
-<pre><code>## function (y, trt, alpha = 0.05) 
-## {
-##     name.y &lt;- paste(deparse(substitute(y)))
-##     name.t &lt;- paste(deparse(substitute(trt)))
-##     A &lt;- y$model
-##     DFerror &lt;- stats::df.residual(y)
-##     MSerror &lt;- stats::deviance(y)/DFerror
-##     y &lt;- A[, 1]
-##     ipch &lt;- pmatch(trt, names(A))
-##     nipch &lt;- length(ipch)
-##     for (i in 1:nipch) {
-##         if (is.na(ipch[i])) {
-##             return(trt)
-##         }
+<pre><code>## function(y, trt, alpha = 0.05) {
+##   name.y &lt;- paste(deparse(substitute(y)))
+##   name.t &lt;- paste(deparse(substitute(trt)))
+##   A &lt;- y$model
+##   DFerror &lt;- stats::df.residual(y)
+##   MSerror &lt;- stats::deviance(y) / DFerror
+##   y &lt;- A[, 1]
+##   ipch &lt;- pmatch(trt, names(A))
+##   nipch &lt;- length(ipch)
+##   for (i in 1:nipch) {
+##     if (is.na(ipch[i])) {
+##       return(trt)
 ##     }
-##     name.t &lt;- names(A)[ipch][1]
-##     trt &lt;- A[, ipch]
-##     if (nipch &gt; 1) {
-##         trt &lt;- A[, ipch[1]]
-##         for (i in 2:nipch) {
-##             name.t &lt;- paste(name.t, names(A)[ipch][i], sep = &quot;:&quot;)
-##             trt &lt;- paste(trt, A[, ipch[i]], sep = &quot;:&quot;)
-##         }
+##   }
+##   name.t &lt;- names(A)[ipch][1]
+##   trt &lt;- A[, ipch]
+##   if (nipch &gt; 1) {
+##     trt &lt;- A[, ipch[1]]
+##     for (i in 2:nipch) {
+##       name.t &lt;- paste(name.t, names(A)[ipch][i], sep = &quot;:&quot;)
+##       trt &lt;- paste(trt, A[, ipch[i]], sep = &quot;:&quot;)
 ##     }
-##     name.y &lt;- names(A)[1]
-##     df &lt;- subset(data.frame(value = y, Lab = trt), is.na(y) == 
-##         FALSE)
-##     means &lt;- plyr::ldply(split(df$value, df$Lab), function(x) {
-##         data.frame(mean = mean(x, na.rm = T), sd = stats::sd(x, 
-##             na.rm = T), n = sum(is.finite(x)), stringsAsFactors = FALSE)
-##     }, .id = &quot;Lab&quot;)
-##     ntr &lt;- nrow(means)
-##     Fprob &lt;- stats::qf(1 - alpha, ntr - 1, DFerror)
-##     Tprob &lt;- sqrt(Fprob * (ntr - 1))
-##     nr &lt;- unique(means[, 4])
-##     scheffe &lt;- Tprob * sqrt(2 * MSerror/nr)
-##     statistics &lt;- data.frame(MSerror = MSerror, Df = DFerror, 
-##         F = Fprob, Mean = mean(df[, 1]), CV = sqrt(MSerror) * 
-##             100/mean(df[, 1]))
-##     if (length(nr) == 1) {
-##         statistics &lt;- data.frame(statistics, Scheffe = Tprob, 
-##             CriticalDifference = scheffe)
+##   }
+##   name.y &lt;- names(A)[1]
+##   df &lt;- subset(data.frame(&quot;value&quot; = y, &quot;Lab&quot; = trt), is.na(y) == FALSE)
+##   # JL
+##   means &lt;- plyr::ldply(split(df$value, df$Lab), function(x) {
+##     data.frame(
+##       &quot;mean&quot; = mean(x, na.rm = T),
+##       &quot;sd&quot; = stats::sd(x, na.rm = T),
+##       &quot;n&quot; = sum(is.finite(x)),
+##       stringsAsFactors = FALSE
+##     )
+##   }, .id = &quot;Lab&quot;)
+##   ntr &lt;- nrow(means)
+##   Fprob &lt;- stats::qf(1 - alpha, ntr - 1, DFerror)
+##   Tprob &lt;- sqrt(Fprob * (ntr - 1))
+##   nr &lt;- unique(means[, 4])
+##   scheffe &lt;- Tprob * sqrt(2 * MSerror / nr)
+##   statistics &lt;- data.frame(
+##     &quot;MSerror&quot; = MSerror,
+##     &quot;Df&quot; = DFerror,
+##     &quot;F&quot; = Fprob,
+##     &quot;Mean&quot; = mean(df[, 1]),
+##     &quot;CV&quot; = sqrt(MSerror) * 100 / mean(df[, 1])
+##   )
+##   if (length(nr) == 1) {
+##     statistics &lt;- data.frame(statistics, &quot;Scheffe&quot; = Tprob, &quot;CriticalDifference&quot; = scheffe)
+##   }
+##   comb &lt;- utils::combn(ntr, 2)
+##   nn &lt;- ncol(comb)
+##   dif &lt;- rep(0, nn)
+##   LCL &lt;- dif
+##   UCL &lt;- dif
+##   pval &lt;- rep(0, nn)
+##   for (k in 1:nn) {
+##     i &lt;- comb[1, k]
+##     j &lt;- comb[2, k]
+##     dif[k] &lt;- means[i, 2] - means[j, 2]
+##     sdtdif &lt;- sqrt(MSerror * (1 / means[i, 4] + 1 / means[j,4]))
+##     pval[k] &lt;- round(1 - stats::pf(abs(dif[k])^2 / ((ntr - 1) * sdtdif^2), ntr - 1, DFerror), 4)
+##     LCL[k] &lt;- dif[k] - Tprob * sdtdif
+##     UCL[k] &lt;- dif[k] + Tprob * sdtdif
+##   }
+##   pmat &lt;- matrix(1, ncol = ntr, nrow = ntr)
+##   k &lt;- 0
+##   for (i in 1:(ntr - 1)) {
+##     for (j in (i + 1):ntr) {
+##       k &lt;- k + 1
+##       pmat[i, j] &lt;- pval[k]
+##       pmat[j, i] &lt;- pval[k]
 ##     }
-##     comb &lt;- utils::combn(ntr, 2)
-##     nn &lt;- ncol(comb)
-##     dif &lt;- rep(0, nn)
-##     LCL &lt;- dif
-##     UCL &lt;- dif
-##     pval &lt;- rep(0, nn)
-##     for (k in 1:nn) {
-##         i &lt;- comb[1, k]
-##         j &lt;- comb[2, k]
-##         dif[k] &lt;- means[i, 2] - means[j, 2]
-##         sdtdif &lt;- sqrt(MSerror * (1/means[i, 4] + 1/means[j, 
-##             4]))
-##         pval[k] &lt;- round(1 - stats::pf(abs(dif[k])^2/((ntr - 
-##             1) * sdtdif^2), ntr - 1, DFerror), 4)
-##         LCL[k] &lt;- dif[k] - Tprob * sdtdif
-##         UCL[k] &lt;- dif[k] + Tprob * sdtdif
-##     }
-##     pmat &lt;- matrix(1, ncol = ntr, nrow = ntr)
-##     k &lt;- 0
-##     for (i in 1:(ntr - 1)) {
-##         for (j in (i + 1):ntr) {
-##             k &lt;- k + 1
-##             pmat[i, j] &lt;- pval[k]
-##             pmat[j, i] &lt;- pval[k]
-##         }
-##     }
-##     groups &lt;- orderPvalue(means, alpha, pmat)
-##     names(groups)[1] &lt;- name.y
-##     parameters &lt;- data.frame(test = &quot;Scheffe&quot;, name.t = name.t, 
-##         ntr = ntr, alpha = alpha)
-##     rownames(parameters) &lt;- &quot; &quot;
-##     rownames(statistics) &lt;- &quot; &quot;
-##     rownames(means) &lt;- means[, 1]
-##     means &lt;- means[, -1]
-##     output &lt;- list(statistics = statistics, parameters = parameters, 
-##         means = means, comparison = NULL, groups = groups)
-##     class(output) &lt;- &quot;group&quot;
-##     return(output)
+##   }
+##   groups &lt;- orderPvalue(means, alpha, pmat)
+##   names(groups)[1] &lt;- name.y
+##   parameters &lt;- data.frame(test = &quot;Scheffe&quot;, name.t = name.t, ntr = ntr, alpha = alpha)
+##   rownames(parameters) &lt;- &quot; &quot;
+##   rownames(statistics) &lt;- &quot; &quot;
+##   rownames(means) &lt;- means[, 1]
+##   means &lt;- means[, -1]
+##   output &lt;- list(
+##     statistics = statistics,
+##     parameters = parameters,
+##     means = means,
+##     comparison = NULL,
+##     groups = groups
+##   )
+##   class(output) &lt;- &quot;group&quot;
+##   return(output)
 ## }
-## &lt;bytecode: 0x000001c39eb5c510&gt;
+## &lt;bytecode: 0x0000029702dd1218&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p>The test is originally based on:<br />
@@ -2539,11 +2542,15 @@ visualizing stability data</div>
 <h3>Stability uncertainty calculation</h3>
 <p>The parameters of all linear models are collected in
 <strong>Tab.S1</strong> and the potential uncertainty contribution of
-the material stability is obtained from formula <span class="math inline">\(u_{stab}=|m \times err|\)</span> where <span class="math inline">\(m\)</span> is the <code>slope</code> of the linear
-model and <span class="math inline">\(err\)</span> is the standard error
-<code>SE</code> of the slope.</p>
-<p>As we express time in month, the slope <span class="math inline">\(m\)</span> represents a monthly change of the
-measured property and can be used to estimate shelf life should <span class="math inline">\(m\)</span> be significant.</p>
+the material stability is obtained from formula <span class="math inline">\(u_{stab}=|t_{cert} \times err|\)</span> where
+<span class="math inline">\(t_{cert}\)</span> is the expected shelf life
+of the CRM (in month) and <span class="math inline">\(err\)</span> is
+the standard error <code>SE</code> of the slope of the linear model.</p>
+<p>The expected shelf life can be set by the user and should incorporate
+the time until the first certification monitoring and the certified
+shelf life of the material. This estimation of stability uncertainty is
+based on section 8.7.3 of ISO GUIDE 35:2017 and valid in the absence of
+a significant trend.</p>
 <p>To determine if the slope <span class="math inline">\(m\)</span> is
 significantly different from <span class="math inline">\(m=0\)</span> we
 perform a t-test by calculating the t-statistic <span class="math inline">\(t_m = |m| / s(m)\)</span> and comparing the result

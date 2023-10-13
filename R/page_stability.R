@@ -77,6 +77,7 @@ page_StabilityUI <- function(id) {
           width = 2,
           shiny::wellPanel(
             shiny::uiOutput(outputId = ns("s_sel_dev")),
+            shiny::numericInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", value = 60, min = 0),
             shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
           )
@@ -148,7 +149,7 @@ page_StabilityServer <- function(id, rv) {
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data())
-      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt)
+      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life)
       setValue(rv, c("Stability","s_vals"), out)
       return(out)
     })
@@ -227,7 +228,10 @@ page_StabilityServer <- function(id, rv) {
         U_source <- "certification"
         U_tab <- "(Tab.C3)"
       }
-      shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data ", U_tab, " for analyte ", an, "."))
+      shiny::div(
+        style = "height: 80px; padding-top: 10px",
+        shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data ", U_tab, " for analyte ", an, "."))
+      )
     })
 
     # Fig.S1
@@ -240,7 +244,8 @@ page_StabilityServer <- function(id, rv) {
           apm = getValue(rv, c("General", "apm")),
           U_Def = input$s_sel_dev,
           mt = getValue(rv, c("General", "materialtabelle"))
-        )
+        ),
+        t_cert = input$s_shelf_life
       )
     })
 
