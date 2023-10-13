@@ -9,7 +9,7 @@
 #' @param id A zenodo DOI.
 #' @return A object 'res' from an RData file.
 #' @examples
-#' x <- read_zenodo(id = "8380870")
+#' x <- eCerto:::read_zenodo(id = "8380870")
 #'
 #' @keywords internal
 #' @noRd

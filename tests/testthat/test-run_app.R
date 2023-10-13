@@ -19,15 +19,15 @@ testthat::test_that(
 
     # check if modules/components are named such that function 'to_startPage' still works
     testthat::expect_true("Start-excelfile-moduleSelect" %in% names(init_vals$input))
-
+browser()
     # Check that test data load button is still present and with consistent name
-    testthat::expect_true("Start-load_test_data" %in% names(init_vals$input))
+    testthat::expect_true("Start-Rdatain-load_test_data" %in% names(init_vals$input))
 
     # check if empty R6 object was initialized
     testthat::expect_true(identical(init_vals$export$`rv`$c_analytes(), list()))
 
     # check if loading test data works
-    app$click(input = "Start-load_test_data")
+    app$click(input = "Start-Rdatain-load_test_data")
     test <- app$get_values(export = "rv")$export$rv
     testthat::expect_equal(unname(test$c_analytes()), c("X", "Y", "Z"))
 

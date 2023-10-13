@@ -423,8 +423,8 @@ m_materialtabelleServer <- function(id, rv) {
     # shiny::observeEvent(c_fltData(),{
     shiny::observe({
       shiny::req(c_fltData())
-      if(!is.null(mater_table())) {
-        an <- c_fltData()[1,"analyte"]
+      an <- as.character(c_fltData()[1,"analyte"])
+      if(!is.null(mater_table()) && an %in% mater_table()[,"analyte"]) {
         if (!silent) message("[materialtabelle] update initiated for ", an)
         update_reactivecell(r = mater_table, colname = "mean", analyterow = an, value = cert_mean())
         update_reactivecell(r = mater_table, colname = "sd", analyterow = an, value = cert_sd())
@@ -524,13 +524,10 @@ m_materialtabelleServer <- function(id, rv) {
 
     check_stability_Server(id = "post_cert_stab", rv = rv)
 
-    shiny::observeEvent(input$tabC3head, {
-      show_help("certification_materialtabelle")
-    })
+    # Help section -------------------------------------------------------------
 
-    shiny::observeEvent(input$tabC3opt, {
-      show_help("certification_materialtabelle_opt")
-    })
+    shiny::observeEvent(input$tabC3head, { show_help("certification_materialtabelle") })
+    shiny::observeEvent(input$tabC3opt, { show_help("certification_materialtabelle_opt") })
 
   })
 }

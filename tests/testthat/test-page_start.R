@@ -21,7 +21,7 @@ testthat::test_that(
     # run this test app in a headless browser using shinytest2
     app <- shinytest2::AppDriver$new(test_app, name = "page_start")
 
-    app$click("test-load_test_data")
+    app$click("test-Rdatain-load_test_data")
 
     # check if module did start by comparing with previously recorded snapshot
     app$expect_values(export = "test")

@@ -66,6 +66,17 @@ test_rv <- function(type = c("generic", "SR3")) {
     setValue(rv, c("General","apm"), apm)
     setValue(rv, c("General","materialtabelle"), mt)
     rv$cur_an <- "Si"
+    # ToDo: Example in m_report fails (analyte report acn not be exported to HTML)
+    # this can be either solved in here by filling slots but should be better resolved
+    # changing the param forwarded to the Rmd file to 'rv' and modifying the Rmd accordingly
+    # setValue(
+    #   rv, c("Certification_processing","stats"),
+    #   prepTabC1(dat = rv$c_fltData(), lab_means = rv$c_lab_means(data = rv$c_fltData()))
+    # )
+    # setValue(
+    #   rv, c("Certification_processing","mstats"),
+    #   prepTabC2(dat = rv$c_fltData())
+    # )
   })
   return(rv)
 }

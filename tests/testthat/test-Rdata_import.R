@@ -16,17 +16,16 @@ testthat::test_that(
       expr = {
         session$setInputs(in_file_ecerto_backup = rdat)
         session$flushReact()
-        rvreturn(eCerto:::list2rv(x = rdata()))
-        # 'rvreturn()' is a reactiveValue object within the tested model that contains the uploaded data
-        testthat::expect_equal(sort(eCerto::getValue(rvreturn(),"modules")),c("Certification", "Homogeneity", "Stability"))
-        testthat::expect_equal(eCerto::getValue(rvreturn(), c("General","user")),"JL")
+        tmp_rv <- eCerto:::list2rv(x = rdata())
+        testthat::expect_equal(sort(eCerto::getValue(tmp_rv,"modules")),c("Certification", "Homogeneity", "Stability"))
+        testthat::expect_equal(eCerto::getValue(tmp_rv, c("General","user")),"JL")
         # because time_stamp changes every runtime, exclude it for testing as follows
-        general <- eCerto::getValue(rvreturn(),"General")
+        general <- eCerto::getValue(tmp_rv,"General")
         testthat::expect_equal(is.null(general$apm), FALSE)
         testthat::expect_equal(is.null(general$dataformat_version), FALSE)
-        testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Certification","data"))), FALSE)
-        testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Homogeneity","data"))), FALSE)
-        testthat::expect_equal(is.null(eCerto::getValue(rvreturn(),c("Stability","data"))), FALSE)
+        testthat::expect_equal(is.null(eCerto::getValue(tmp_rv,c("Certification","data"))), FALSE)
+        testthat::expect_equal(is.null(eCerto::getValue(tmp_rv,c("Homogeneity","data"))), FALSE)
+        testthat::expect_equal(is.null(eCerto::getValue(tmp_rv,c("Stability","data"))), FALSE)
       }
     )
   }
@@ -61,19 +60,21 @@ testthat::test_that(
       name = "SR3_Fe_v26chs.RData",
       datapath = system.file(package = "eCerto", "extdata", "SR3_Fe_v26chs.RData")
     )
-    suppressMessages({ rv <- eCerto$new() })
-    # setting the config file to 'dev' ensures that messages are shown because
-    # eCerto is set to silent = FALSE
-    Sys.setenv("R_CONFIG_ACTIVE" = "dev")
+    suppressMessages({ rv <- eCerto$new(eCerto:::init_rv()) })
+    # setting the config file to 'dev' ensures that messages are shown
+    # if you use 'expect_message' and 'default' if not
+    #Sys.setenv("R_CONFIG_ACTIVE" = "dev")
+    Sys.setenv("R_CONFIG_ACTIVE" = "default")
     shiny::testServer(
       app = eCerto:::m_RDataImport_Server,
       args = list(rv = rv),
       expr = {
-        testthat::expect_message(
-          session$setInputs(in_file_ecerto_backup = rdat),
-          "Found existing data"
-        )
-        testthat::expect_equal(rvreturn(), NULL)
+        testthat::expect_equal(unname(rv$e_present()), c(F,F,F))
+        testthat::expect_true(all(nchar(div_check_present())==0))
+        session$setInputs(in_file_ecerto_backup = rdat)
+        session$flushReact()
+        testthat::expect_equal(unname(rv$e_present()), c(T,T,T))
+        testthat::expect_true(all(nchar(div_check_present())>0))
       }
     )
     # reset to 'default' or silent afterwards

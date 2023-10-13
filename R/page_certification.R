@@ -212,6 +212,7 @@ page_CertificationServer = function(id, rv) {
     # selected_tab() holds the locally selected analyte in the C module
     # if possible this is similar to the global current analyte (rv$cur_an)
     selected_tab <- shiny::reactiveVal(NULL)
+    #selected_tab_valid <- shiny::reactive({ selected_tab() %in% rv$a_p("name") })
     shiny::observeEvent(rv$cur_an, {
       req(rv$e_present()["Certification"])
       # ensure that App works in case that S and C data don't match
@@ -240,14 +241,14 @@ page_CertificationServer = function(id, rv) {
 
     # --- --- --- --- --- --- --- --- --- --- ---
     precision <- shiny::reactive({
-      shiny::req(selected_tab())
+      shiny::req(selected_tab(), selected_tab() %in% rv$a_p("name"))
       getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]]
     })
 
     # this data.frame contains the following columns for each analyte:
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactive({
-      shiny::req(selected_tab())
+      shiny::req(selected_tab(), selected_tab() %in% rv$a_p("name"))
       return(c_filter_data(x = getValue(rv,c("Certification","data")), c_apm = getValue(rv,c("General","apm"))[[selected_tab()]]))
     })
 
@@ -354,13 +355,14 @@ page_CertificationServer = function(id, rv) {
 
     # Tab.1 Outlier statistics
     overview_stats_pre <- shiny::reactive({
-      shiny::req(dat(), selected_tab(), input$tabC1_opt2)
+      shiny::req(dat(), selected_tab(), selected_tab() %in% rv$a_p("name"), input$tabC1_opt2)
       prepTabC1(dat = dat(), lab_means = rv$c_lab_means(data = dat()), excl_labs = input$tabC1_opt, fmt = encode_fmt(input$tabC1_opt2))
     })
     shiny::observeEvent(overview_stats_pre(), {
       setValue(rv, c("Certification_processing","stats"), overview_stats_pre())
     })
     output$overview_stats <- DT::renderDataTable({
+      req(selected_tab() %in% rv$a_p("name"))
       styleTabC1(x = overview_stats_pre(), n = rv$a_p()[selected_tab()], fmt = encode_fmt(input$tabC1_opt2))
     })
 
@@ -373,6 +375,7 @@ page_CertificationServer = function(id, rv) {
       setValue(rv, c("Certification_processing","mstats"), TabC2_pre())
     })
     output$TabC2 <- DT::renderDataTable({
+      req(selected_tab() %in% rv$a_p("name"))
       styleTabC2(x = TabC2_pre(), n = getValue(rv, c("General","apm"))[[selected_tab()]][["precision"]])
     })
 
@@ -396,6 +399,7 @@ page_CertificationServer = function(id, rv) {
       )
     })
     output$qqplot <- shiny::renderPlot({
+      req(selected_tab() %in% rv$a_p("name"))
       y <- overview_stats_pre()[, "mean"]
       stats::qqnorm(y = y, main = paste("QQ plot for analyte", selected_tab()))
       stats::qqline(y = y, col = 2)

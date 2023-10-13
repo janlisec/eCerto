@@ -17,7 +17,7 @@
 #'    eCerto:::m_reportUI(id = "test")
 #'  ),
 #'  server = function(input, output, session) {
-#'    rv <- eCerto::eCerto$new() # initiate persistent variables
+#'    rv <- eCerto:::test_rv(type = "SR3") # initiate persistent variables
 #'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
 #'    shiny::addResourcePath("www", system.file("app", "www", package = "eCerto"))
 #'    eCerto:::m_reportServer(
