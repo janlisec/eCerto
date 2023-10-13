@@ -19,7 +19,7 @@ testthat::test_that(
 
     # check if modules/components are named such that function 'to_startPage' still works
     testthat::expect_true("Start-excelfile-moduleSelect" %in% names(init_vals$input))
-browser()
+
     # Check that test data load button is still present and with consistent name
     testthat::expect_true("Start-Rdatain-load_test_data" %in% names(init_vals$input))
 
