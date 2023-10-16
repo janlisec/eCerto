@@ -72,7 +72,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0) {
     graphics::axis(side = 3, at = range(mon), labels = rt[c(1, length(rt))])
     if (t_cert>0) {
       x_end <- max(c(max(mon), t_cert, U/SE_b))
-      graphics::polygon(x = c(0, x_end, x_end, 0), y = c(mn,mn+SE_b*x_end,mn-SE_b*x_end,mn), col = grey(0.9), border = NA)
+      graphics::polygon(x = c(0, x_end, x_end, 0), y = c(mn,mn+SE_b*x_end,mn-SE_b*x_end,mn), col = grDevices::grey(0.9), border = NA)
     }
     graphics::abline(foo.lm, lty = 2, col = 4) # <-- slope
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
@@ -91,7 +91,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0) {
     plot(
       c(foo_adj, mn + b * foo_lts) ~ c(mon, foo_lts),
       ylim = range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U)), type = "n",
-      xlab = "Month [n]", ylab = paste(ylab, "adjusted"), sub = sub, main = paste(main, "(adjusted)")
+      xlab = "Month [n]", ylab = paste(ylab, "adjusted"), sub = sub, main = ifelse(is.na(main), "", paste(main, "(adjusted)"))
     )
     adj.lm <- stats::lm(foo_adj ~ mon)
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))

@@ -76,8 +76,10 @@ page_StabilityUI <- function(id) {
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            shiny::uiOutput(outputId = ns("s_sel_dev")),
+            #shiny::uiOutput(outputId = ns("s_sel_dev")),
+            shiny::radioButtons(inputId = ns("s_sel_dev"), label = "Deviation type", choices = list("2s"="2s", "U_abs"="U"), inline = TRUE),
             shiny::numericInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", value = 60, min = 0),
+            shiny::radioButtons(inputId = ns("plot_type"), label = "Plot type", choices = list("standard"=1, "adjusted"=3), inline = TRUE),
             shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
           )
@@ -143,6 +145,7 @@ page_StabilityServer <- function(id, rv) {
         s_dat <- s_dat[as.character(s_dat[,"Temp"]) %in% input$s_sel_temp,]
         shiny::validate(shiny::need(expr = diff(range(s_dat[,"time"]))>0, message = "Please select Temp levels such that independent time points exist."))
       }
+
       return(s_dat)
     })
 
@@ -157,6 +160,7 @@ page_StabilityServer <- function(id, rv) {
     # we need a local representation of the currently selected analyte in case that there is only a partial overlap between analytes in S and C modul
     S_analyte <- shiny::reactive({
       req(s_vals(), rv$cur_an)
+      if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
       shiny::validate(shiny::need(expr = rv$cur_an %in% as.character(s_vals()[,"analyte"]), message = paste("Analyte", rv$cur_an, "is not present in S data.")))
       rv$cur_an
     })
@@ -199,21 +203,30 @@ page_StabilityServer <- function(id, rv) {
         s_tab1_current$row <- which(as.character(s_vals()[,"analyte"])==S_analyte())
       }
       # show/hide the input field to select a deviation type (will effect the Figure)
+      # if (!is.null(input$s_sel_dev)) {
+      #   browser()
+      #   mt <- getValue(rv, c("General", "materialtabelle"))
+      #   a <- S_analyte()
+      #   test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
+      #   shinyjs::toggle(id="s_sel_dev", condition = test)
+      # }
       if (!is.null(input$s_sel_dev)) {
         mt <- getValue(rv, c("General", "materialtabelle"))
         a <- S_analyte()
         test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
-        shinyjs::toggle(id="s_sel_dev", condition = test)
+        if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
       }
+
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
-    output$s_sel_dev <- shiny::renderUI({
-      shiny::req(s_Data(), getValue(rv, c("General", "materialtabelle")), S_analyte())
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      # show element only once mat_tab is available and analyte and mean value exist
-      shiny::req(S_analyte() %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==S_analyte()),"mean"]))
-      shiny::selectInput(inputId=session$ns("s_sel_dev"), label="deviation to show", choices=c("2s","U"), selected="2s")
-    })
+    # output$s_sel_dev <- shiny::renderUI({
+    #   shiny::req(s_Data(), getValue(rv, c("General", "materialtabelle")), S_analyte())
+    #   mt <- getValue(rv, c("General", "materialtabelle"))
+    #   # show element only once mat_tab is available and analyte and mean value exist
+    #   shiny::req(S_analyte() %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==S_analyte()),"mean"]))
+    #   browser()
+    #   shiny::selectInput(inputId=session$ns("s_sel_dev"), label="deviation to show", choices=c("2s","U"), selected="2s")
+    # })
 
     output$s_info <- shiny::renderUI({
       # text info shown below the Figure
@@ -223,7 +236,8 @@ page_StabilityServer <- function(id, rv) {
       U_type <- "2s"
       U_source <- "stability"
       U_tab <- "(Fig.S1)"
-      if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
+      #if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
+      if (rv$e_present()["Certification"] && an %in% names(aps) && aps[[an]][["confirmed"]]) {
         U_type <- input$s_sel_dev
         U_source <- "certification"
         U_tab <- "(Tab.C3)"
@@ -245,6 +259,7 @@ page_StabilityServer <- function(id, rv) {
           U_Def = input$s_sel_dev,
           mt = getValue(rv, c("General", "materialtabelle"))
         ),
+        type = as.numeric(input$plot_type),
         t_cert = input$s_shelf_life
       )
     })
