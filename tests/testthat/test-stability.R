@@ -10,7 +10,8 @@ testthat::test_that(
         ),
         expr =  {
           eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )
-          session$setInputs(s_shelf_life = 60)
+          session$setInputs("s_shelf_life" = 60)
+          session$setInputs("slope_of_means" = TRUE)
           session$flushReact()
           s_vals_cmp_month <- structure(
             list(
