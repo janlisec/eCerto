@@ -21,18 +21,46 @@ read_zenodo <- function(id) {
   # get content for zenodo record
   base_url <- "https://zenodo.org/api/records/"
   zen_record <- curl::curl_fetch_memory(paste0(base_url, id))
-  content <- jsonlite::fromJSON(rawToChar(zen_record$content))
 
-  # get and check url
-  file_urls <- content$files$links$self
-  if (length(file_urls)>=2) {
-    message("[read_zenodo] More than one file in this zenodo record, please select a unique id. Reading first file only.")
-    file_urls <- file_urls[1]
+  if (zen_record$status_code==200 && zen_record$type=="application/json") {
+
+    content <- jsonlite::fromJSON(rawToChar(zen_record$content))
+
+    # get and check url
+    #file_urls <- content$files$links$self
+    file_urls <- content$files$filename
+    if (length(file_urls)>=2) {
+      message("[read_zenodo] More than one file in this zenodo record, please select a unique id. Reading first file only.")
+      file_urls <- file_urls[1]
+    }
+
+    # download from url to temp file and load in R session
+    dest <- fs::path(tempdir(), basename(file_urls))
+
+    # paste url together
+    file_urls <- paste0(base_url, id, "/files/", file_urls, "/content")
+    #browser()
+    #paste0("https://zenodo.org/api/records/8380870/files/", content$files$filename)
+    out <- try(curl::curl_download(url = file_urls, destfile = dest, quiet = FALSE), silent = TRUE)
+    #out <- try(curl::multi_download(urls = file_urls, destfile = dest), silent = TRUE)
+    if (inherits(out, "try-error")) {
+      if (interactive()) {
+        message("Sorry, something went wrong upon download. :/")
+      } else {
+        shinyalert::shinyalert(type = "error", text = "Sorry, something went wrong upon download. :/", closeOnClickOutside = TRUE)
+      }
+    } else {
+      return(check_RData(x = dest))
+    }
+
+
+  } else {
+
+    if (interactive()) {
+      message("Sorry, could not find this Zenodo ID. :/")
+    } else {
+      shinyalert::shinyalert(type = "error", text = "Sorry, could not find this Zenodo ID. :/", closeOnClickOutside = TRUE)
+    }
+
   }
-
-  # download from url to temp file and load in R session
-  dest <- fs::path(tempdir(), basename(file_urls))
-  curl::curl_download(url = file_urls, destfile = dest, quiet = FALSE)
-  return(check_RData(x = dest))
-
 }
