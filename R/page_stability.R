@@ -79,6 +79,7 @@ page_StabilityUI <- function(id) {
             #shiny::uiOutput(outputId = ns("s_sel_dev")),
             shiny::radioButtons(inputId = ns("s_sel_dev"), label = "Deviation type", choices = list("2s"="2s", "U_abs"="U"), inline = TRUE),
             shiny::numericInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", value = 60, min = 0),
+            shiny::checkboxInput(inputId = ns("slope_of_means"), label = "Average by Day", value = FALSE),
             shiny::radioButtons(inputId = ns("plot_type"), label = "Plot type", choices = list("standard"=1, "adjusted"=3), inline = TRUE),
             shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
@@ -152,7 +153,7 @@ page_StabilityServer <- function(id, rv) {
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data(), input$s_shelf_life)
-      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life)
+      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = input$slope_of_means)
       setValue(rv, c("Stability","s_vals"), out)
       return(out)
     })
@@ -260,7 +261,8 @@ page_StabilityServer <- function(id, rv) {
           mt = getValue(rv, c("General", "materialtabelle"))
         ),
         type = as.numeric(input$plot_type),
-        t_cert = input$s_shelf_life
+        t_cert = input$s_shelf_life,
+        slope_of_means = input$slope_of_means
       )
     })
 

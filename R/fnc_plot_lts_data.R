@@ -6,6 +6,8 @@
 #' @param type type of plot (see return).
 #' @param t_cert The time of certification (in month). If provided it will be
 #'     used to calculate u_stab according to Iso Guide 35 section 8.7.3.
+#' @param slope_of_means Average replicate measurements (same Date) before
+#'     computing linear model and SE of slope.
 #'
 #' @return The plot function can be used to return only the calculated
 #'     LTS value (in month) with type=0. If type = 1 or 2 the normal or
@@ -18,15 +20,29 @@
 #' (plot_lts_data(x = x))
 #' plot_lts_data(x = x, type = 2)
 #' plot_lts_data(x = x, type = 3)
+#' plot_lts_data(x = x, type = 1, t_cert = 60)
+#' plot_lts_data(x = x, type = 1, slope_of_means = TRUE)
 #'
 #' @noRd
 #' @keywords internal
-plot_lts_data <- function(x = NULL, type = 1, t_cert = 0) {
+plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE) {
   # date estimation is approximate (based on ~30d/month or precisely on 365/12=30.42)
   days_per_month <- 30.41667
 
   # ensure that data is ordered after time
   x[["val"]] <- x[["val"]][order(x[["val"]][, "Date"]), ]
+
+  # calculate means per Date if specified in parameters
+  if (slope_of_means) {
+    com_exist <- "Comment" %in% colnames(x[["val"]])
+    x[["val"]] <- plyr::ldply(split(x[["val"]], x[["val"]][,"Date"]), function(y) {
+      data.frame(
+        "Value" = mean(y[,"Value"]),
+        "Date" = y[1,"Date"],
+        "Comment" = ifelse(com_exist && sum(nchar(y[,"Comment"]), na.rm=TRUE)>=1, paste(y[,"Comment"], collapse=", "), NA)
+      )
+    }, .id = NULL)
+  }
 
   # get specific data
   vals <- x[["val"]][, "Value"]
