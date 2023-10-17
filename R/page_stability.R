@@ -152,7 +152,7 @@ page_StabilityServer <- function(id, rv) {
 
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
-      shiny::req(s_Data(), input$s_shelf_life)
+      shiny::req(s_Data(), input$s_shelf_life, is.logical(input$slope_of_means))
       out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = input$slope_of_means)
       setValue(rv, c("Stability","s_vals"), out)
       return(out)

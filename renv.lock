@@ -350,7 +350,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "6e4bca60579c27c8c5a4daf42c770d3d20175e78",
+      "RemoteSha": "7659884b2bf7155107d15f7ebb84601e748600b8",
       "Remotes": "github::daattali/shinyalert",
       "Requirements": [
         "DT",
@@ -371,7 +371,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "b2aeb5026ab61638f6f7f5c1c4d3df93"
+      "Hash": "f0e0a72c6946edf37b992d576abf85fb"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -1022,7 +1022,7 @@
     },
     "shiny": {
       "Package": "shiny",
-      "Version": "1.7.5",
+      "Version": "1.7.5.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1052,7 +1052,7 @@
         "withr",
         "xtable"
       ],
-      "Hash": "438b99792adbe82a8329ad8697d45afe"
+      "Hash": "5ec01cc255f2138fc2f0dc74d2b1a1a1"
     },
     "shinyalert": {
       "Package": "shinyalert",
