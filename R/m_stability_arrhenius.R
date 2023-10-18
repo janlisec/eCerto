@@ -62,7 +62,7 @@ m_arrheniusUI <- function(id) {
             ),
             selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
           ),
-          shiny::actionButton(inputId = ns("s_switch_simple"), label = "Switch to linear model")
+          shiny::actionButton(inputId = ns("s_switch_simple"), label = "Show linear model", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
         )
       )
     ),

@@ -79,12 +79,12 @@ page_StabilityUI <- function(id) {
             #shiny::uiOutput(outputId = ns("s_sel_dev")),
             shiny::radioButtons(inputId = ns("s_sel_dev"), label = "Deviation type", choices = list("2s"="2s", "U_abs"="U"), inline = TRUE),
             #shiny::numericInput(inputId = ns("s_shelf_life1"), label = "Expected shelf life [Month]", value = 60, min = 0),
-            shiny::sliderInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", min = 0, max = 120, value = 60, step = 6, width = 120),
+            shiny::sliderInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", min = 0, max = 120, value = 60, step = 6, width = 160),
             shiny::checkboxInput(inputId = ns("slope_of_means"), label = "Average by Day", value = FALSE),
             shiny::radioButtons(inputId = ns("plot_type"), label = "Plot type", choices = list("standard"=1, "adjusted"=3), inline = TRUE),
             #shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
             shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
-            shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
+            shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Show Arrhenius", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
           )
         ),
       )
