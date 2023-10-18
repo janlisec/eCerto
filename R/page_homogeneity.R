@@ -60,7 +60,11 @@ page_HomogeneityUI <- function(id) {
           ),
           DT::dataTableOutput(ns("h_tab1"))
         ),
-        shiny::column(2, shiny::wellPanel(m_TransferUUI(ns("h_transfer"))))
+        shiny::column(
+          width = 2,
+          shiny::wellPanel(
+            m_TransferUUI(ns("h_transfer")))
+          )
       ),
       shiny::p(),
       shiny::fluidRow(
@@ -216,15 +220,16 @@ page_HomogeneityServer = function(id, rv) {
       h_statement(x = h_vals(), a = input$h_sel_analyt)
     })
 
-    h_transfer_U <- m_TransferUServer(
-      id = "h_transfer",
-      dat = shiny::reactive({h_vals()}),
-      mat_tab = shiny::reactive({getValue(rv, c("General","materialtabelle"))})
-    )
-    shiny::observeEvent(h_transfer_U$changed, {
-      message("Homogeneity: observeEvent(h_transfer_U)")
-      setValue(rv, c("General","materialtabelle"), h_transfer_U$value)
-    }, ignoreInit = TRUE)
+    # h_transfer_U <- m_TransferUServer(
+    #   id = "h_transfer",
+    #   dat = shiny::reactive({h_vals()}),
+    #   mat_tab = shiny::reactive({getValue(rv, c("General","materialtabelle"))})
+    # )
+    # shiny::observeEvent(h_transfer_U$changed, {
+    #   message("Homogeneity: observeEvent(h_transfer_U)")
+    #   setValue(rv, c("General","materialtabelle"), h_transfer_U$value)
+    # }, ignoreInit = TRUE)
+    m_TransferUServer(id = "h_transfer", rv = rv, type = "H")
 
     # download outputs
     output$h_Report <- shiny::downloadHandler(

@@ -299,15 +299,16 @@ page_StabilityServer <- function(id, rv) {
     })
 
     # allow transfer of U values
-    s_transfer_U <- m_TransferUServer(
-      id = "s_transfer",
-      dat = s_vals,
-      mat_tab = shiny::reactive({getValue(rv, c("General", "materialtabelle"))})
-    )
-    shiny::observeEvent(s_transfer_U$changed, {
-      message("Stability: observeEvent(s_transfer_U)")
-      setValue(rv, c("General","materialtabelle"), s_transfer_U$value)
-    }, ignoreInit = TRUE)
+    # s_transfer_U <- m_TransferUServer(
+    #   id = "s_transfer",
+    #   dat = s_vals,
+    #   mat_tab = shiny::reactive({getValue(rv, c("General", "materialtabelle"))})
+    # )
+    # shiny::observeEvent(s_transfer_U$changed, {
+    #   message("Stability: observeEvent(s_transfer_U)")
+    #   setValue(rv, c("General","materialtabelle"), s_transfer_U$value)
+    # }, ignoreInit = TRUE)
+    m_TransferUServer(id = "s_transfer", rv = rv, type = "S")
 
     # render help files
     shiny::observeEvent(input$fig1_link,{ show_help("stability_plot") })
