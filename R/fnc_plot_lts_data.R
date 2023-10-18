@@ -64,7 +64,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   main <- x[["def"]][, "KW"]
   sub <- x[["def"]][, "U_Def"]
   sub <- ifelse(sub=="U", expression(U[abs]), sub)
-  sub2 <- ifelse(is.na(x[["def"]][, "CertVal"]), "mean", expression(µ[c]))
+  sub2 <- ifelse(is.na(x[["def"]][, "CertVal"]), "mean", expression("\u03BC"[c]))
   if (is.na(x[["def"]][, "CertVal"])) x[["def"]][, "CertVal"] <- mean(x[["val"]][, "Value"])
   mn <- x[["def"]][, "CertVal"]
 
@@ -106,7 +106,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       x_end <- t_cert
       graphics::polygon(x = c(0, x_end, x_end, 0), y = c(mn,mn+SE_b*x_end,mn-SE_b*x_end,mn), col = grDevices::grey(0.9), border = NA)
       graphics::segments(x0 = t_cert, y0 = mn-SE_b*t_cert, y1 = mn+SE_b*t_cert)
-      if (show_legend) { legend(x = "topright", fill = grey(0.9), legend = expression(s(b[1])~"x"~t[cert]), bty = "n", inset = c(0.04,0)) }
+      if (show_legend) { graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(s(b[1])~"x"~t[cert]), bty = "n", inset = c(0.04,0)) }
     }
     graphics::abline(foo.lm, lty = 2, col = 4) # <-- slope
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
@@ -120,12 +120,12 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     }
     if (show_legend) {
       x <- par("usr")[2]-diff(par("usr")[1:2])*0.005
-      text(x = x, y = mn, labels = sub2, adj = 1)
-      text(x = x, y = mn + U, labels = sub, adj = 1)
-      text(x = x, y = predict(foo.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
+      graphics::text(x = x, y = mn, labels = sub2, adj = 1)
+      graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
+      graphics::text(x = x, y = stats::predict(foo.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
       if (t_cert>0) {
-        axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
-        mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
+        graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
+        graphics::mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
       }
     }
   }
@@ -147,7 +147,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       preds <- stats::predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
       graphics::polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = grDevices::grey(0.9), border = NA)
       if (show_legend) {
-        graphics::legend(x = "topright", fill = grey(0.9), legend = expression(CI[95](b[1])), bty = "n", inset = c(0.04,0))
+        graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(CI[95](b[1])), bty = "n", inset = c(0.04,0))
       }
       #lines(newx, preds[ ,3], lty = 'dashed', col = 'blue')
       #lines(newx, preds[ ,2], lty = 'dashed', col = 'blue')
@@ -165,12 +165,12 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     graphics::abline(adj.lm, lty = 2, col = 4)
     if (show_legend) {
       x <- par("usr")[2]-diff(par("usr")[1:2])*0.005
-      text(x = x, y = mn, labels = sub2, adj = 1)
-      text(x = x, y = mn + U, labels = sub, adj = 1)
-      text(x = x, y = stats::predict(adj.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
+      graphics::text(x = x, y = mn, labels = sub2, adj = 1)
+      graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
+      graphics::text(x = x, y = stats::predict(adj.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
       if (t_cert>0) {
-        axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
-        mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
+        graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
+        graphics::mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
       }
     }
     graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste("n =", foo_lts))

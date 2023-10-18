@@ -44,7 +44,6 @@
 <text transform='translate(41.76,69.09) rotate(-90)' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='20.02px' lengthAdjust='spacingAndGlyphs'>100</text>
 <polygon points='59.04,502.56 689.76,502.56 689.76,59.04 59.04,59.04 ' style='stroke-width: 0.75; fill: none;' />
 <text x='374.40' y='34.48' text-anchor='middle' style='font-size: 14.40px; font-weight: bold; font-family: sans;' textLength='54.44px' lengthAdjust='spacingAndGlyphs'>test_text</text>
-<text x='374.40' y='571.68' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='243.48px' lengthAdjust='spacingAndGlyphs'>green lines: U, blue line: slope, red line: mean</text>
 <text x='374.40' y='557.28' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='50.03px' lengthAdjust='spacingAndGlyphs'>Month [n]</text>
 <text transform='translate(12.96,280.80) rotate(-90)' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='102.72px' lengthAdjust='spacingAndGlyphs'>Mn (test_text) [unit]</text>
 <line x1='82.40' y1='59.04' x2='666.40' y2='59.04' style='stroke-width: 0.75;' />
