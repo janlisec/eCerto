@@ -78,10 +78,12 @@ page_StabilityUI <- function(id) {
           shiny::wellPanel(
             #shiny::uiOutput(outputId = ns("s_sel_dev")),
             shiny::radioButtons(inputId = ns("s_sel_dev"), label = "Deviation type", choices = list("2s"="2s", "U_abs"="U"), inline = TRUE),
-            shiny::numericInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", value = 60, min = 0),
+            #shiny::numericInput(inputId = ns("s_shelf_life1"), label = "Expected shelf life [Month]", value = 60, min = 0),
+            shiny::sliderInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", min = 0, max = 120, value = 60, step = 6, width = 120),
             shiny::checkboxInput(inputId = ns("slope_of_means"), label = "Average by Day", value = FALSE),
             shiny::radioButtons(inputId = ns("plot_type"), label = "Plot type", choices = list("standard"=1, "adjusted"=3), inline = TRUE),
-            shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
+            #shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
+            shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Switch to Arrhenius")
           )
         ),
@@ -121,9 +123,11 @@ page_StabilityServer <- function(id, rv) {
       shinyjs::toggle(id = "s_switch_arrhenius", condition = test)
       if (test) {
         lev <- levels(factor(tmp[,"Temp"]))
-        shiny::updateSelectInput(inputId = "s_sel_temp", choices = lev, selected = lev)
+        #shiny::updateSelectInput(inputId = "s_sel_temp", choices = lev, selected = lev)
+        shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = lev, selected = lev, inline = TRUE)
       } else {
-        shiny::updateSelectInput(inputId = "s_sel_temp", choices = "")
+        #shiny::updateSelectInput(inputId = "s_sel_temp", choices = "")
+        shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = "", inline = TRUE)
       }
     })
 
@@ -142,7 +146,7 @@ page_StabilityServer <- function(id, rv) {
       s_dat <- getValue(rv, c("Stability","data"))
       if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"], levels=unique(s_dat[,"analyte"]))
       if ("Temp" %in% colnames(s_dat)) {
-        shiny::validate(shiny::need(expr = input$s_sel_temp != "", message = "Please select a Temp level."))
+        shiny::validate(shiny::need(expr = length(input$s_sel_temp) >= 1, message = "Please select a Temp level."))
         s_dat <- s_dat[as.character(s_dat[,"Temp"]) %in% input$s_sel_temp,]
         shiny::validate(shiny::need(expr = diff(range(s_dat[,"time"]))>0, message = "Please select Temp levels such that independent time points exist."))
       }
