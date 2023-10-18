@@ -8,6 +8,7 @@
 #'     used to calculate u_stab according to Iso Guide 35 section 8.7.3.
 #' @param slope_of_means Average replicate measurements (same Date) before
 #'     computing linear model and SE of slope.
+#' @param show_legend annotate plot.
 #'
 #' @return The plot function can be used to return only the calculated
 #'     LTS value (in month) with type=0. If type = 1 or 2 the normal or
@@ -21,11 +22,12 @@
 #' plot_lts_data(x = x, type = 2)
 #' plot_lts_data(x = x, type = 3)
 #' plot_lts_data(x = x, type = 1, t_cert = 60)
+#' plot_lts_data(x = x, type = 1, t_cert = 60, show_legend = TRUE)
 #' plot_lts_data(x = x, type = 1, slope_of_means = TRUE)
 #'
 #' @noRd
 #' @keywords internal
-plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE) {
+plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE, show_legend = FALSE) {
   # date estimation is approximate (based on ~30d/month or precisely on 365/12=30.42)
   days_per_month <- 30.41667
 
@@ -58,14 +60,18 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
 
   # extract relevant values from definition part
   U <- x[["def"]][, "U"]
-  mn <- x[["def"]][, "CertVal"]
   ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]), "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
   main <- x[["def"]][, "KW"]
   sub <- x[["def"]][, "U_Def"]
-  sub <- paste0("green lines: ", sub, ", blue line: slope, red line: ", "mean")
-  if (t_cert>0) {
-    sub <- paste0(sub, ", u_stab(t_cert = ", t_cert, "): ", pn(round(SE_b*t_cert, 4)))
-  }
+  sub <- ifelse(sub=="U", expression(U[abs]), sub)
+  sub2 <- ifelse(is.na(x[["def"]][, "CertVal"]), "mean", expression(µ[c]))
+  if (is.na(x[["def"]][, "CertVal"])) x[["def"]][, "CertVal"] <- mean(x[["val"]][, "Value"])
+  mn <- x[["def"]][, "CertVal"]
+
+  #sub <- paste0("green lines: ", sub, ", blue line: slope, red line: ", "mean")
+  # if (t_cert>0) {
+  #   sub <- paste0(sub, ", u_stab(t_cert = ", t_cert, "): ", pn(round(SE_b*t_cert, 4)))
+  # }
 
   # correct values by coef estimate
   foo_adj <- vals - (a - mn)
@@ -78,17 +84,29 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     com <- rep(NA, nrow(x[["val"]]))
   }
 
+  # if (show_legend) {
+  #   opar <- par(no.readonly = TRUE)
+  #   on.exit(par(opar))
+  #   #layout(mat = c(1:2), widths = c(0.7,0.3))
+  #   par(mar=c(5,4,2,8)+0.1)
+  # }
+
   # generate 'real time window' plot
   if (type == 1) {
     plot(
       vals ~ mon, type = "n",
       ylim = range(c(vals, mn + c(-1, 1) * U), na.rm = T),
-      xlab = "Month [n]", ylab = ylab, sub = sub, main = main
+      xlim = range(c(mon), t_cert),
+      #sub = sub,
+      xlab = "Month [n]", ylab = ylab, main = main
     )
     graphics::axis(side = 3, at = range(mon), labels = rt[c(1, length(rt))])
     if (t_cert>0) {
-      x_end <- max(c(max(mon), t_cert, U/SE_b))
+      #x_end <- max(c(max(mon), t_cert, U/SE_b))
+      x_end <- t_cert
       graphics::polygon(x = c(0, x_end, x_end, 0), y = c(mn,mn+SE_b*x_end,mn-SE_b*x_end,mn), col = grDevices::grey(0.9), border = NA)
+      graphics::segments(x0 = t_cert, y0 = mn-SE_b*t_cert, y1 = mn+SE_b*t_cert)
+      if (show_legend) { legend(x = "topright", fill = grey(0.9), legend = expression(s(b[1])~"x"~t[cert]), bty = "n", inset = c(0.04,0)) }
     }
     graphics::abline(foo.lm, lty = 2, col = 4) # <-- slope
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
@@ -100,6 +118,16 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       # standard plot using grey points and highlighting commented values if present
       graphics::points(vals ~ mon, pch = 24, bg = c(grDevices::grey(0.6), 2)[1 + !is.na(com)])
     }
+    if (show_legend) {
+      x <- par("usr")[2]-diff(par("usr")[1:2])*0.005
+      text(x = x, y = mn, labels = sub2, adj = 1)
+      text(x = x, y = mn + U, labels = sub, adj = 1)
+      text(x = x, y = predict(foo.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
+      if (t_cert>0) {
+        axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
+        mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
+      }
+    }
   }
 
   # generate 'fake time window' plot
@@ -107,7 +135,8 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     plot(
       c(foo_adj, mn + b * foo_lts) ~ c(mon, foo_lts),
       ylim = range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U)), type = "n",
-      xlab = "Month [n]", ylab = paste(ylab, "adjusted"), sub = sub, main = ifelse(is.na(main), "", paste(main, "(adjusted)"))
+      #sub = sub,
+      xlab = "Month [n]", ylab = paste(ylab, "adjusted"), main = ifelse(is.na(main), "", paste(main, "(adjusted)"))
     )
     adj.lm <- stats::lm(foo_adj ~ mon)
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))
@@ -117,6 +146,9 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out=length(mon))
       preds <- stats::predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
       graphics::polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = grDevices::grey(0.9), border = NA)
+      if (show_legend) {
+        graphics::legend(x = "topright", fill = grey(0.9), legend = expression(CI[95](b[1])), bty = "n", inset = c(0.04,0))
+      }
       #lines(newx, preds[ ,3], lty = 'dashed', col = 'blue')
       #lines(newx, preds[ ,2], lty = 'dashed', col = 'blue')
 
@@ -131,6 +163,16 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     }
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
     graphics::abline(adj.lm, lty = 2, col = 4)
+    if (show_legend) {
+      x <- par("usr")[2]-diff(par("usr")[1:2])*0.005
+      text(x = x, y = mn, labels = sub2, adj = 1)
+      text(x = x, y = mn + U, labels = sub, adj = 1)
+      text(x = x, y = stats::predict(adj.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
+      if (t_cert>0) {
+        axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
+        mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
+      }
+    }
     graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste("n =", foo_lts))
     graphics::points(x = c(mon, foo_lts), y = c(foo_adj, mn + b * foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
 
