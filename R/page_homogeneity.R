@@ -94,7 +94,7 @@ page_HomogeneityUI <- function(id) {
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            sub_header("Save Table"),
+            sub_header("Save Report"),
             shiny::downloadButton(ns("h_Report"), label="Download"),
             shiny::p(shiny::textInput(inputId = ns("FigH1_xlab"), label = "x-label/tab-header", value = "Flasche")),
             shinyjs::hidden(shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices=""))

@@ -41,7 +41,7 @@ page_StabilityUI <- function(id) {
       shiny::fluidRow(
         shiny::column(
           width = 10,
-          shiny::strong(
+          sub_header(
             shiny::actionLink(
               inputId = ns("tab_link"),
               label = "Tab.S1 - calculation of uncertainty contribution"
@@ -52,39 +52,27 @@ page_StabilityUI <- function(id) {
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            #shiny::numericInput(inputId = ns("s_shelf_life1"), label = "Expected shelf life [Month]", value = 60, min = 0),
             shiny::sliderInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", min = 0, max = 120, value = 60, step = 6),
             m_TransferUUI(id = ns("s_transfer")),
             shinyjs::hidden(shiny::radioButtons(inputId = ns("time_fmt"), label = "Time format in lm", choices = c("mon", "day"), selected = "mon"))
           )
         )
       ),
-      shiny::p(),
       shiny::fluidRow(
-        shiny::column(width = 2, DT::dataTableOutput(ns("s_tab2"))),
         shiny::column(
-          width = 8,
-          shiny::fluidRow(
-            shiny::strong(
-              shiny::actionLink(
-                inputId = ns("fig1_link"),
-                label = "Fig.S1 - linear model plot"
-              )
-            ), shiny::p(),
+          width = 10,
+            sub_header(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot")),
             shiny::plotOutput(ns("s_plot"), height = "500px"),
-            shiny::uiOutput(ns("s_info"))
-          )
         ),
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            #shiny::uiOutput(outputId = ns("s_sel_dev")),
-            shiny::radioButtons(inputId = ns("s_sel_dev"), label = "Deviation type", choices = list("2s"="2s", "U_abs"="U"), inline = TRUE),
-            #shiny::checkboxInput(inputId = ns("slope_of_means"), label = "Average by Day", value = FALSE),
-            #shiny::checkboxInput(inputId = ns("show_legend"), label = "Show legend", value = FALSE),
-            shiny::checkboxGroupInput(inputId = ns("FigS1_options"), label = "Fig.S1 Options", choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")),
-            shiny::radioButtons(inputId = ns("plot_type"), label = "Plot type", choices = list("standard"=1, "adjusted"=3), inline = TRUE),
-            #shiny::selectInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
+            sub_header("Save Report"),
+            shiny::downloadButton(ns("s_Report"), label="Download"),
+            sub_header("Fig.S1 Options"),
+            shiny::checkboxGroupInput(inputId = ns("FigS1_options"), label = NULL, choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")),
+            shiny::div(style = "margin: 0px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s"="2s", "U_abs"="U"), inline = TRUE)),
+            shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard"=1, "adjusted"=3), inline = TRUE),
             shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Show Arrhenius", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
           )
@@ -183,18 +171,6 @@ page_StabilityServer <- function(id, rv) {
     })
 
     # Tables
-    output$s_tab2 <- DT::renderDataTable({
-      shiny::req(s_Data(), S_analyte())
-      dt <- DT::datatable(
-        data = s_Data()[s_Data()[,"analyte"]==S_analyte(), c("Date", "Value")],
-        options = list(paging = TRUE, searching = FALSE), rownames = NULL, selection = "none"
-      )
-      prec <- try(getValue(rv, c("General","apm"))[[S_analyte()]][["precision"]])
-      prec <- ifelse(!is.null(prec) && is.finite(prec), prec, 4)
-      dt <- DT::formatCurrency(table = dt, columns = 2, currency = "", digits = prec)
-      return(dt)
-    })
-
     s_tab1_current <- shiny::reactiveValues("row"=1, "redraw"=0)
     output$s_tab1 <- DT::renderDataTable({
       shiny::req(s_vals())
@@ -228,26 +204,6 @@ page_StabilityServer <- function(id, rv) {
 
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
-    output$s_info <- shiny::renderUI({
-      # text info shown below the Figure
-      shiny::req(s_Data(), S_analyte())
-      an <- S_analyte()
-      aps <- getValue(rv, c("General", "apm"))
-      U_type <- "2s"
-      U_source <- "stability"
-      U_tab <- "(Fig.S1)"
-      #if (!is.null(input$s_sel_dev) && an %in% names(aps) && aps[[an]][["confirmed"]]) {
-      if (rv$e_present()["Certification"] && an %in% names(aps) && aps[[an]][["confirmed"]]) {
-        U_type <- input$s_sel_dev
-        U_source <- "certification"
-        U_tab <- "(Tab.C3)"
-      }
-      shiny::div(
-        style = "height: 80px; padding-top: 10px",
-        shiny::HTML(paste0("Figure shows mean and ", U_type, " of uploaded ", U_source, " data ", U_tab, " for analyte ", an, "."))
-      )
-    })
-
     # Fig.S1
     output$s_plot <- shiny::renderPlot({
       shiny::req(s_Data(), S_analyte())
@@ -266,31 +222,35 @@ page_StabilityServer <- function(id, rv) {
       )
     })
 
-    # The Dropdown-Menu to select the column of materialtabelle to transfer to
-    output$s_transfer_ubb <- shiny::renderUI({
-      mt <- getValue(rv, c("General", "materialtabelle"))
-      shiny::validate(shiny::need(mt, message = "Please upload certification data to transfer Uncertainty values"))
-
-      cc <- attr(mt, "col_code")
-      test <- nrow(cc)>0 && any(substr(cc[, "ID"], 1, 1) == "U")
-      shiny::validate(shiny::need(test, message = "Please specify a U column in material table to transfer Uncertainty values"))
-
-      shiny::column(
-        width = 12,
-        shiny::fluidRow(shiny::HTML("<p style=margin-bottom:-3%;><strong>Transfer 'u_stab' to column</strong></p>"), align="right"),
-        shiny::selectInput(
-          inputId=session$ns("s_transfer_ubb"),
-          label="",
-          width='100%',
-          selectize=TRUE,
-          choices=cc[substr(cc[,"ID"],1,1)=="U","Name"]
-        ),
-        shiny::fluidRow(shiny::actionButton(inputId = session$ns("s_transfer_ubb_button"), label = "Transfer Now!"), align="right")
-      )
-    })
-
     # u transfer
     m_TransferUServer(id = "s_transfer", rv = rv, type = "S")
+
+    # download outputs
+    output$s_Report <- shiny::downloadHandler(
+      filename = function() { "Stability_report.html" },
+      content = function(file) {
+        rmdfile <- get_local_file("report_vorlage_stability.Rmd")
+        # render the markdown file
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            out <- rmarkdown::render(
+              input = rmdfile,
+              output_file = file,
+              output_format = rmarkdown::html_document(),
+              params = list(
+                "Stability" = shiny::reactiveValuesToList(getValue(rv, "Stability")),
+                "xlab" = input$FigH1_xlab,
+                "precision" = rv$a_p("precision")
+              ),
+              envir = new.env(parent = globalenv())
+            )
+          },
+          message = "Rendering Stability Report..."
+        )
+        return(out)
+      }
+    )
 
     # help modals
     shiny::observeEvent(input$fig1_link,{ show_help("stability_plot") })

@@ -1,0 +1,71 @@
+---
+title: '&nbsp;'
+title-meta: "Stability-Report"
+params:
+  Stability: NA
+  xlab: NA
+  precision: NA
+output:
+  html_document:
+    df_print: paged
+---
+
+***Note!*** 
+This is a general report template. Specific layouts can be generated on demand.
+
+---
+
+## ***eCerto*** Report
+
+**Date: `r format(Sys.time(), '%d %B, %Y')`**
+
+### Modul: Stability
+
+```{r data, echo=FALSE}
+# get a local representation of all data provided by Shiny
+testing <- length(params$Stability)==1L && (is.na(params$Stability) | params$Stability=="NA")
+if (testing) {
+  S <- eCerto::CRM001[["Stability"]]
+} else {
+  S <- params$Stability
+}
+browser()
+an <- unique(as.character(S[["data"]][,"analyte"]))
+```
+
+This is the table of uncertainties associated with Stability:
+
+```{r Tab.S1, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+eCerto:::styleTabS1(x = S[["s_vals"]], mt = data.frame("analyte"=an))
+```
+
+`r ifelse(length(unique(S[["data"]][,"analyte"])>=2), "These are the individual Stability boxplots:", "This is the Stability boxplot:")`
+
+```{r Fig.S1, echo=FALSE, comment=NA, message=FALSE}
+# make individual plots to allow separate inclusion in i.e. Word reports
+for (i in 1:length(an)) {
+  try(
+    eCerto:::plot_lts_data(
+      x = eCerto:::prepFigS1(
+        s = S[["data"]],
+        an = an[i]#,
+        # apm = getValue(rv, c("General", "apm")),
+        # U_Def = input$s_sel_dev,
+        # mt = getValue(rv, c("General", "materialtabelle"))
+      )#,
+      # type = as.numeric(input$plot_type),
+      # t_cert = input$s_shelf_life,
+      # slope_of_means = "slope_of_means" %in% input$FigS1_options,
+      # show_legend = "show_legend" %in% input$FigS1_options
+    )
+  )
+}
+```
+
+This is the table of (non rounded) input data:
+
+```{r FullData, echo=FALSE, comment=NA}
+DT::datatable(data = S[["data"]], rownames = NULL, options = list(dom = "t", paging = FALSE))
+```
+
+End of Report.
