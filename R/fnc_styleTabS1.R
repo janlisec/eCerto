@@ -26,10 +26,11 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
   colnames(x) <- gsub("_diff", "<sub>diff</sub>", colnames(x))
   colnames(x) <- gsub("_slope", "<sub>slope</sub>", colnames(x))
   colnames(x) <- gsub("_stab", "<sub>stab</sub>", colnames(x))
+  colnames(x) <- gsub("_cert", "<sub>cert</sub>", colnames(x))
   inv_cols <- grep("style_", colnames(x))-1
   # attach a blank column at the end
   x <- cbind(x, data.frame(" "=" ", check.names = FALSE))
-
+  # set up the DT object
   dt <- DT::datatable(
     data = x,
     options = list(

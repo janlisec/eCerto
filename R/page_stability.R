@@ -144,15 +144,25 @@ page_StabilityServer <- function(id, rv) {
 
     # the complete data table of stability data as a local copy
     s_Data <- shiny::reactive({
-      shiny::req(getValue(rv, c("Stability","data")))
-      s_dat <- getValue(rv, c("Stability","data"))
+      shiny::req(getValue(rv, c("Stability", "data")))
+      s_dat <- getValue(rv, c("Stability", "data"))
       if (!is.factor(s_dat[,"analyte"])) s_dat[,"analyte"] <- factor(s_dat[,"analyte"], levels=unique(s_dat[,"analyte"]))
       if ("Temp" %in% colnames(s_dat)) {
         shiny::validate(shiny::need(expr = length(input$s_sel_temp) >= 1, message = "Please select a Temp level."))
         s_dat <- s_dat[as.character(s_dat[,"Temp"]) %in% input$s_sel_temp,]
         shiny::validate(shiny::need(expr = diff(range(s_dat[,"time"]))>0, message = "Please select Temp levels such that independent time points exist."))
       }
-
+      tmp <- shiny::isolate(getValue(rv, c("Stability", "s_vals")))
+      if (!is.null(tmp)) {
+        # expected shelf life (t_cert) could be stored as an input parameter permanently in RData,
+        # but having it in Tab.S1 (s_vals) from now on allows to restore a previous setting as well
+        if ("t_cert" %in% colnames(tmp)) {
+          shiny::updateSliderInput(
+            inputId = "s_shelf_life",
+            value = ifelse(is.finite(tmp[1, "t_cert"]), tmp[1, "t_cert"], 0)
+          )
+        }
+      }
       return(s_dat)
     })
 
@@ -160,7 +170,7 @@ page_StabilityServer <- function(id, rv) {
     s_vals <- shiny::reactive({
       shiny::req(s_Data(), input$s_shelf_life)
       out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = "slope_of_means" %in% input$FigS1_options)
-      setValue(rv, c("Stability","s_vals"), out)
+      setValue(rv, c("Stability", "s_vals"), out)
       return(out)
     })
 
@@ -209,14 +219,6 @@ page_StabilityServer <- function(id, rv) {
       if (!(s_tab1_current$row == which(as.character(s_vals()[,"analyte"])==S_analyte()))) {
         s_tab1_current$row <- which(as.character(s_vals()[,"analyte"])==S_analyte())
       }
-      # show/hide the input field to select a deviation type (will effect the Figure)
-      # if (!is.null(input$s_sel_dev)) {
-      #   browser()
-      #   mt <- getValue(rv, c("General", "materialtabelle"))
-      #   a <- S_analyte()
-      #   test <- a %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==a),"mean"])
-      #   shinyjs::toggle(id="s_sel_dev", condition = test)
-      # }
       if (!is.null(input$s_sel_dev)) {
         mt <- getValue(rv, c("General", "materialtabelle"))
         a <- S_analyte()
@@ -225,15 +227,6 @@ page_StabilityServer <- function(id, rv) {
       }
 
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
-
-    # output$s_sel_dev <- shiny::renderUI({
-    #   shiny::req(s_Data(), getValue(rv, c("General", "materialtabelle")), S_analyte())
-    #   mt <- getValue(rv, c("General", "materialtabelle"))
-    #   # show element only once mat_tab is available and analyte and mean value exist
-    #   shiny::req(S_analyte() %in% mt[,"analyte"] && is.finite(mt[which(mt[,"analyte"]==S_analyte()),"mean"]))
-    #   browser()
-    #   shiny::selectInput(inputId=session$ns("s_sel_dev"), label="deviation to show", choices=c("2s","U"), selected="2s")
-    # })
 
     output$s_info <- shiny::renderUI({
       # text info shown below the Figure
@@ -268,8 +261,6 @@ page_StabilityServer <- function(id, rv) {
         ),
         type = as.numeric(input$plot_type),
         t_cert = input$s_shelf_life,
-        #slope_of_means = input$slope_of_means,
-        #show_legend = input$show_legend
         slope_of_means = "slope_of_means" %in% input$FigS1_options,
         show_legend = "show_legend" %in% input$FigS1_options
       )
@@ -298,16 +289,7 @@ page_StabilityServer <- function(id, rv) {
       )
     })
 
-    # allow transfer of U values
-    # s_transfer_U <- m_TransferUServer(
-    #   id = "s_transfer",
-    #   dat = s_vals,
-    #   mat_tab = shiny::reactive({getValue(rv, c("General", "materialtabelle"))})
-    # )
-    # shiny::observeEvent(s_transfer_U$changed, {
-    #   message("Stability: observeEvent(s_transfer_U)")
-    #   setValue(rv, c("General","materialtabelle"), s_transfer_U$value)
-    # }, ignoreInit = TRUE)
+    # u transfer
     m_TransferUServer(id = "s_transfer", rv = rv, type = "S")
 
     # help modals

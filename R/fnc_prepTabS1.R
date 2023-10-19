@@ -54,13 +54,13 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
     # b1 <- lm(y ~ x)$coef[2]
     # s <- sqrt(sum((y-b0-b1*x)^2)/(length(y)-2))
     # SE <- s / sqrt(sum((x - mean(x))^2))
-
     data.frame(
-      "mon_diff"=mon_diff,
-      "slope"=x_coef[1],
-      "SE_slope"=x_coef[2],
-      "u_stab"=abs(t_cert*x_coef[2]),
-      "P"=x_coef[4]
+      "mon_diff" = mon_diff,
+      "slope" = x_coef[1],
+      "SE_slope" = x_coef[2],
+      "t_cert" = t_cert,
+      "u_stab" = abs(t_cert*x_coef[2]),
+      "P" = x_coef[4]
     )
   }, .id="analyte")
 }
