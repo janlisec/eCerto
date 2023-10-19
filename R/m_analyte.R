@@ -37,7 +37,7 @@ m_analyteUI = function(id) {
   shiny::tagList(
     shiny::div(style = "width: 200px; float:left; margin-right:5px; margin-left:35px;",
       shiny::actionLink(inputId = ns("analyte_help_link"), label = "Parameters for Analyte", style = "font-weight: 700; margin-bottom: 10px;"),
-      shiny::p(id = ns("curr_analyte"), style = "background-color: rgb(0,175,240); font-weight: 700; text-align: center; margin-bottom: 0px; padding-top: 3px", "test-text"),
+      shiny::p(id = ns("curr_analyte"), style = "background-color: rgb(0,175,240); font-weight: 700; text-align: center; margin-bottom: 0px; padding-top: 3px", "select analyte"),
       shiny::checkboxInput(inputId = ns("pooling"), label = "pooling", value = FALSE)
     ),
     shiny::div(style="width: 200px; float:left; margin-right:5px; margin-left:15px;",
@@ -95,8 +95,13 @@ m_analyteServer = function(id, rv) {
 
     a <- shiny::reactive({
       req(rv$a_p("name"))
+      req(rv$e_present()["Certification"])
+      # [JL] it would be nice to remove apm() from this reactive but analyte parameter update fails
+      # unfortunately if apm() is not present for the case where rv$cur_an was already set by an upload
+      # of S data. It is not initated by C modul than and parameters get not updated in this case
+      apm()
       shiny::validate(shiny::need(expr = rv$cur_an %in% rv$a_p("name"), message = paste("Analyte", rv$cur_an, "is not present in C data.")))
-      rv$cur_an
+      if (rv$a_p("confirmed")[rv$cur_an]) rv$cur_an else NULL
     })
 
     # watch out if analyte did change and
@@ -134,11 +139,21 @@ m_analyteServer = function(id, rv) {
       } else {
         message("[m_analyte] Can't update parameter inputs for ", a)
       }
-    }, ignoreInit = FALSE)
+    }, ignoreInit = FALSE, ignoreNULL = TRUE)
+
+    # update DIN1333 HTML
+    update_DIN1333_HTML <- function() {
+      shiny::isolate({
+        mt <- getValue(rv, c("General", "materialtabelle"))
+        n <- digits_DIN1333(x = mt[mt[,"analyte"]==a(), "U_abs"])
+        n_col <- ifelse(n==apm()[[a()]]$precision_export, "#00FF00", "#FF0000")
+        if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong><span style = 'background-color: ", n_col, "'>(", n, ")</span>")) }
+      })
+    }
 
     shiny::observeEvent(getValue(rv, c("General", "materialtabelle")), {
       # this additional observer is required in case that the user interactively manipulates the material table
-      shiny::req(apm())
+      shiny::req(apm(), a())
       update_DIN1333_HTML()
     })
 
@@ -164,16 +179,6 @@ m_analyteServer = function(id, rv) {
         update_DIN1333_HTML()
       }
     }, ignoreNULL = FALSE, ignoreInit=TRUE)
-
-    # update DIN1333 HTML
-    update_DIN1333_HTML <- function() {
-      shiny::isolate({
-        mt <- getValue(rv, c("General", "materialtabelle"))
-        n <- digits_DIN1333(x = mt[mt[,"analyte"]==a(), "U_abs"])
-        n_col <- ifelse(n==apm()[[a()]]$precision_export, "#00FF00", "#FF0000")
-        if (is.finite(n)) { shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong><span style = 'background-color: ", n_col, "'>(", n, ")</span>")) }
-      })
-    }
 
     # update apm in case of changes in sample_filter inputs
     shiny::observeEvent(input$sample_filter, {
@@ -242,9 +247,8 @@ m_analyteServer = function(id, rv) {
       }
     }, ignoreNULL = TRUE)
 
-    shiny::observeEvent(input$analyte_help_link,{
-      show_help("certification_analyte_options")
-    })
+    # help modals
+    shiny::observeEvent(input$analyte_help_link, { show_help("certification_analyte_options") })
 
   })
 }

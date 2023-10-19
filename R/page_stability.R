@@ -310,7 +310,7 @@ page_StabilityServer <- function(id, rv) {
     # }, ignoreInit = TRUE)
     m_TransferUServer(id = "s_transfer", rv = rv, type = "S")
 
-    # render help files
+    # help modals
     shiny::observeEvent(input$fig1_link,{ show_help("stability_plot") })
     shiny::observeEvent(input$tab_link,{ show_help("stability_uncertainty") })
 
