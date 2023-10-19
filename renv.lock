@@ -343,14 +343,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.2.6",
+      "Version": "0.2.7",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "7659884b2bf7155107d15f7ebb84601e748600b8",
+      "RemoteSha": "3967a1b52ef56140f0e86137ce0caafa0fa30fef",
       "Remotes": "github::daattali/shinyalert",
       "Requirements": [
         "DT",
@@ -371,7 +371,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "f0e0a72c6946edf37b992d576abf85fb"
+      "Hash": "6fcbb0e19126bffc80fa686bfd23f11e"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -500,7 +500,7 @@
     },
     "htmltools": {
       "Package": "htmltools",
-      "Version": "0.5.6",
+      "Version": "0.5.6.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -513,7 +513,7 @@
         "rlang",
         "utils"
       ],
-      "Hash": "a2326a66919a3311f7fbb1e3bf568283"
+      "Hash": "1e12fe667316a76508898839ecfb2d00"
     },
     "htmlwidgets": {
       "Package": "htmlwidgets",
@@ -1222,13 +1222,13 @@
     },
     "tinytex": {
       "Package": "tinytex",
-      "Version": "0.47",
+      "Version": "0.48",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "xfun"
       ],
-      "Hash": "8d4ccb733843e513c1c1cdd66a759f0d"
+      "Hash": "8f96d229b7311beb32b94cf413b13f84"
     },
     "utf8": {
       "Package": "utf8",
@@ -1252,9 +1252,9 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.6.3",
+      "Version": "0.6.4",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R",
         "cli",
@@ -1262,7 +1262,7 @@
         "lifecycle",
         "rlang"
       ],
-      "Hash": "d0ef2856b83dc33ea6e255caf6229ee2"
+      "Hash": "266c1ca411266ba8f365fcc726444b87"
     },
     "vdiffr": {
       "Package": "vdiffr",
