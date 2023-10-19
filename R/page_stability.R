@@ -69,10 +69,11 @@ page_StabilityUI <- function(id) {
           shiny::wellPanel(
             sub_header("Save Report"),
             shiny::downloadButton(ns("s_Report"), label="Download"),
+            shiny::p(),
             sub_header("Fig.S1 Options"),
             shiny::checkboxGroupInput(inputId = ns("FigS1_options"), label = NULL, choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")),
-            shiny::div(style = "margin: 0px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s"="2s", "U_abs"="U"), inline = TRUE)),
-            shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard"=1, "adjusted"=3), inline = TRUE),
+            shiny::div(style = "margin-top: -10px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard"=1, "adjusted"=3), inline = TRUE)),
+            shiny::div(style = "margin-top: -10px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s"="2s", "U_abs"="U"), inline = TRUE)),
             shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
             shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Show Arrhenius", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
           )
@@ -239,9 +240,7 @@ page_StabilityServer <- function(id, rv) {
               output_file = file,
               output_format = rmarkdown::html_document(),
               params = list(
-                "Stability" = shiny::reactiveValuesToList(getValue(rv, "Stability")),
-                "xlab" = input$FigH1_xlab,
-                "precision" = rv$a_p("precision")
+                "Stability" = shiny::reactiveValuesToList(getValue(rv, "Stability"))
               ),
               envir = new.env(parent = globalenv())
             )

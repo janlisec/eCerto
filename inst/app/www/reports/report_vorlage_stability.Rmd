@@ -29,8 +29,7 @@ if (testing) {
 } else {
   S <- params$Stability
 }
-browser()
-an <- unique(as.character(S[["data"]][,"analyte"]))
+an <- as.character(S[["s_vals"]][,"analyte"])
 ```
 
 This is the table of uncertainties associated with Stability:
@@ -62,7 +61,7 @@ for (i in 1:length(an)) {
 }
 ```
 
-This is the table of (non rounded) input data:
+This is the table of (non rounded) input data from the original file ***`r S[["input_files"]]`***:
 
 ```{r FullData, echo=FALSE, comment=NA}
 DT::datatable(data = S[["data"]], rownames = NULL, options = list(dom = "t", paging = FALSE))
