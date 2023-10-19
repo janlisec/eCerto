@@ -1,6 +1,11 @@
 # Launch the ShinyApp (Do not remove this comment)
 # Or use the blue button on top of this file
 
+# To update renv:
+# renv::update()
+# renv::snapshot()
+# renv::install("janlisec/eCerto")
+
 # To deploy to shinyapps.io:
 # rsconnect::deployApp(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto", appName = c("test","eCerto")[1], forceUpdate = TRUE)
 
