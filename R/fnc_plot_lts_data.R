@@ -132,9 +132,11 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
 
   # generate 'fake time window' plot
   if (type %in% c(2,3)) {
+    ylim <- range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U))
+    if (!all(is.finite(ylim))) message("[plot_lts_data] non-finite ylim:", ylim)
     plot(
       c(foo_adj, mn + b * foo_lts) ~ c(mon, foo_lts),
-      ylim = range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U)), type = "n",
+      ylim = ylim, type = "n",
       #sub = sub,
       xlab = "Month [n]", ylab = paste(ylab, "adjusted"), main = ifelse(is.na(main), "", paste(main, "(adjusted)"))
     )
