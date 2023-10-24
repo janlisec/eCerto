@@ -2,13 +2,31 @@
 
 The Tool calculates the expected life time of a reference material in several steps:
 
-1. calculating a linear model for the measurement data $y = m \times x+n$, where $y$ represents
+1. calculating a linear model for the measurement data $y = b_1 \times x + b_2$, where $y$ represents
 measured values and $x$ represents time (expressed in month)
-2. correcting the intercept $n$ for the difference between the mean obtained from LTS data and 
-the mean reported as certified value on import $n' = n + \mu_\mathit{LTS} - \mu_c$
-3. using the corrected $n'$ and $m$ to estimate the time point when the value of the certified 
-analyte is expected to exceed the range of $\mu_c \pm U$
+2. correcting the intercept $b_2$ for the difference between the mean obtained from LTS data and 
+the mean reported as certified value on import $b_2' = b_2 + \mu_\mathit{LTS} - \mu_c$
+3. using the corrected $b_2'$ and $b_1$ to estimate the time point when the value of the certified 
+analyte is expected to exceed the interval of $\mu_c \pm U$
 
 ![**Fig.L1** LTS data as imported (top) and after adjustment for the certified value (bottom). Selecting a data point by mouse click allows to edit its comment value.](fig/L_Modul_FigL1.png)
 
 The calculation results are depicted in **Fig.L1** and can be exported as a report in PDF format.
+
+***Note!***
+The $U$ defining the interval around $\mu_c$, which we expect the property values 
+to remain in within the RM life time, is taken from the data read upon initial
+Excel import. The user should be careful regarding the value specified here to 
+avoid overestimating the life time. LTS monitoring, which is usually performed 
+within the same lab, will cover mostly the uncertainty due to stability of a 
+material property. The uncertainty defined in the original certificate will
+cover additional uncertainty contributions (i.e. from the collaborative trial).
+Hence, it might be adequate to use only a fraction of the certified $U$ value to
+define the interval.
+
+***Note!***
+The parameters of a linear model, i.e. $b_1$, can only be determined with some 
+uncertainty. While the current report layout calculates the life time based on 
+$b_1$ as described above, a more conservative estimate would be to use the 
+confidence interval, $CI_{95}(b_1)$, instead. Calculation based on $CI_{95}(b_1)$
+is shown in **Fig.L1** by default.
