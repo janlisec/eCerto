@@ -343,14 +343,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.2.7",
+      "Version": "0.2.8",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "3967a1b52ef56140f0e86137ce0caafa0fa30fef",
+      "RemoteSha": "a2a14698af5ee737daeae882e534249c1cc43280",
       "Remotes": "github::daattali/shinyalert",
       "Requirements": [
         "DT",
@@ -371,7 +371,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "6fcbb0e19126bffc80fa686bfd23f11e"
+      "Hash": "3591de76f3b359150b193f69f4151f5f"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -632,7 +632,7 @@
     },
     "magick": {
       "Package": "magick",
-      "Version": "2.8.0",
+      "Version": "2.8.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -640,7 +640,7 @@
         "curl",
         "magrittr"
       ],
-      "Hash": "88a1be45614781633df69ab666d66143"
+      "Hash": "691d5b9fd0e7ee9b56301fc8735a2e1f"
     },
     "magrittr": {
       "Package": "magrittr",
@@ -654,7 +654,7 @@
     },
     "markdown": {
       "Package": "markdown",
-      "Version": "1.10",
+      "Version": "1.11",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -663,7 +663,7 @@
         "utils",
         "xfun"
       ],
-      "Hash": "f00a677e0c006183f1232b6f1e0652d0"
+      "Hash": "82b8d62b5451f8adea7d11a99dfea633"
     },
     "memoise": {
       "Package": "memoise",
