@@ -20,6 +20,13 @@ read_lts_input <- function(file=NULL, simplify=FALSE) {
     out[[i]][["def"]] <- openxlsx::read.xlsx(xlsxFile = file, sheet = i, startRow = 1, rows = 1:2)
     out[[i]][["val"]] <- openxlsx::read.xlsx(xlsxFile = file, sheet = i, startRow = 4, detectDates=TRUE)
     if (!"Comment" %in% colnames(out[[i]][["val"]])) out[[i]][["val"]] <- cbind(out[[i]][["val"]], "Comment"=NA)
+    if ("Date" %in% colnames(out[[i]][["val"]])) {
+      if (!inherits(out[[i]][["val"]][,"Date"], "Date")) {
+        out[[i]][["val"]][,"Date"] <- plyr::ldply(out[[i]][["val"]][,"Date"], function(x) {
+          as.Date.character(x, tryFormats = c("%Y-%m-%d","%d.%m.%Y","%Y/%m/%d"))
+        })
+      }
+    }
   }
   if (simplify) {
     out <- plyr::ldply(out, function(x) {

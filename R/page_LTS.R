@@ -26,9 +26,9 @@ m_longtermstabilityUI = function(id) {
       ns = ns, # namespace of current module
       shiny::fluidRow(
         shiny::column(
-          width = 4,
-          shiny::strong(
-            shiny::actionLink(
+          width = 3,
+          sub_header(
+            txt = shiny::actionLink(
               inputId = ns("TabL1_link"),
               label = "Tab.L1 - Long Term Stability measurement data"
             )
@@ -36,16 +36,27 @@ m_longtermstabilityUI = function(id) {
           DT::dataTableOutput(ns("LTS_vals"))
         ),
         shiny::column(
-          width = 8,
-          shiny::fluidRow(
-            shiny::column(12, DT::dataTableOutput(ns("LTS_def"))),
-            style = "margin-bottom:15px;"
-          ),
+          width = 9,
+          # shiny::fluidRow(
+          #   shiny::column(
+          #     width = 12,
+              DT::dataTableOutput(ns("LTS_def")),
+          #   ), style = "margin-bottom: 15px;"
+          # ),
           shiny::wellPanel(
             shiny::fluidRow(
               shiny::column(2, shiny::uiOutput(ns("LTS_sel_KW"))),
               shiny::tags$style(type="text/css", "#lts-Report {margin-top:-1%;}"),
-              shiny::column(8, DT::dataTableOutput(ns("LTS_NewVal"))),
+              shiny::column(
+                width = 2,
+                shiny::checkboxGroupInput(
+                  inputId = ns("LTS_opt"), label = NULL,
+                  choiceNames = list("Show property values", shiny::HTML("Use CI<sub>95</sub> (slope)")),
+                  choiceValues = list("show_property_values", "show_ci"),
+                  selected = c("show_property_values", "show_ci")
+                )
+              ),
+              shiny::column(6, DT::dataTableOutput(ns("LTS_NewVal"))),
               shiny::tags$style(type="text/css", "#lts-LTS_NewVal {margin-top:-2%;}"),
               shiny::column(2, shiny::strong("New Entry"), shiny::p(), shiny::actionButton(inputId = ns("LTS_ApplyNewValue"), label = "Add data")),
               shiny::tags$style(type="text/css", "#lts-LTS_ApplyNewValue {margin-top:-1%;}")
@@ -75,13 +86,17 @@ m_longtermstabilityUI = function(id) {
                   label = "Fig.L1 - Long Term Stability calculation"
                 )
               ),
-            ),
-            shiny::div(style = "float: left; width: 25%; max-width: 160px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_ci"), label = shiny::HTML("Show CI<sub>95</sub> (slope)"), value = FALSE)),
-            shiny::div(style = "float: left; width: 30%; max-width: 210px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_plot_L3"), label = shiny::HTML("Show running predictor plot"), value = FALSE))
+            )#,
+            #shiny::div(style = "float: left; width: 25%; max-width: 160px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_ci"), label = shiny::HTML("Use CI<sub>95</sub> (slope)"), value = FALSE)),
+            #shiny::div(style = "float: left; width: 30%; max-width: 210px; padding-left: 15px;", shiny::checkboxInput(inputId = ns("show_plot_L3"), label = shiny::HTML("Show running predictor plot"), value = FALSE))
           ),
-          shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover")))),
-          shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_2"), height = "450px"))),
-          shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot2"), height = "450px")))
+          # shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover")))),
+          # shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot1_2"), height = "450px"))),
+          # shiny::fluidRow(shiny::column(12, shiny::plotOutput(ns("LTS_plot2"), height = "450px")))
+          shiny::fluidRow(
+            shiny::column(6, shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover"))),
+            shiny::column(6, shiny::plotOutput(ns("LTS_plot1_2"), height = "450px"))
+          )
         )
       )
     ) # conditionalPanel
@@ -110,7 +125,6 @@ m_longtermstabilityServer = function(id) {
             }
         } else {
           LTS_dat <- read_lts_input(file = input$LTS_input_file$datapath[1])
-          # plot(LTS_dat)
           check_validity <- TRUE; i <- 0
           while (check_validity & i < length(LTS_dat)) {
             for (i in 1:length(LTS_dat)) {
@@ -141,6 +155,12 @@ m_longtermstabilityServer = function(id) {
         return(LTS_dat)
       }
     })
+
+    shiny::observeEvent(input$LTS_opt, {
+      #browser()
+      shinyjs::toggleElement(id = "LTS_def", condition = "show_property_values" %in% input$LTS_opt)
+    }, ignoreInit = FALSE, ignoreNULL = FALSE)
+
 
     shiny::observeEvent(LTS_Data(),{
       datalist[["lts_data"]] <- LTS_Data()
@@ -187,8 +207,8 @@ m_longtermstabilityServer = function(id) {
       # trigger redraw on new value and update reactive Value to this end
       input$LTS_ApplyNewValue
       tab_LTSvals(shiny::isolate(datalist[["lts_data"]][[i()]][["val"]][,1:3]))
-      tab_LTSvals()
-    }, options = list(paging = TRUE, pageLength = 25, searching = FALSE, stateSave = TRUE), rownames=NULL, server = FALSE, selection = 'single')
+      styleTabL1(x=tab_LTSvals())
+    }, server = FALSE)
 
     # current LTS definition
     output$LTS_def <- DT::renderDataTable({
@@ -203,8 +223,17 @@ m_longtermstabilityServer = function(id) {
 
     # entry table for new datapoint
     output$LTS_NewVal <- DT::renderDataTable({
-      LTS_new_val
-    }, options = list(paging = FALSE, searching = FALSE, ordering=FALSE, dom='t'), rownames=NULL, editable=TRUE)
+      DT::datatable(
+        data = LTS_new_val,
+        options = list(
+          paging = FALSE, searching = FALSE, ordering=FALSE, dom='t',
+          columnDefs = list(
+            list("width"= "80px", "targets" = which(!(colnames(LTS_new_val) %in% c("Comment")))-1)
+          )
+        ),
+        rownames=NULL, editable=TRUE
+      )
+    })
 
     # helper data.frame containing only Month and Value information of current KW
     d <- shiny::reactive({
@@ -257,7 +286,8 @@ m_longtermstabilityServer = function(id) {
     output$LTS_plot1_2 = shiny::renderPlot({
       shiny::req(datalist[["lts_data"]], i())
       input$LTS_ApplyNewValue
-      plot_lts_data(x = datalist$lts_data[[i()]], type=ifelse(input$show_ci, 3, 2))
+      #plot_lts_data(x = datalist$lts_data[[i()]], type=ifelse(input$show_ci, 3, 2))
+      plot_lts_data(x = datalist$lts_data[[i()]], type=ifelse("show_ci" %in% input$LTS_opt, 3, 2))
     })
 
     output$LTS_plot2 <- shiny::renderPlot({

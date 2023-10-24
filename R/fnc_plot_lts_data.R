@@ -145,7 +145,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     if (type == 3) {
       #browser()
       ## the solution calculating CI for predicted (y_hat) values
-      newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out=length(mon))
+      newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out=100)
       preds <- stats::predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
       graphics::polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = grDevices::grey(0.9), border = NA)
       if (show_legend) {
@@ -175,8 +175,18 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
         graphics::mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
       }
     }
-    graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste("n =", foo_lts))
-    graphics::points(x = c(mon, foo_lts), y = c(foo_adj, mn + b * foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
+    if (type==2) {
+      graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste("n =", foo_lts))
+      graphics::points(x = c(mon, foo_lts), y = c(foo_adj, mn + b * foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
+    } else {
+      # if CI_95 of regression line was calculated use the intercept with uncertainty line for life time estimation
+      decreasing <- adj.lm$coefficients[2]<0
+      idx <- which.min(abs(preds[, ifelse(decreasing, 2, 3)]-(mn + ifelse(decreasing, -U, U))))
+      foo_lts <- round(newx[idx])
+      y_foo_lts <- preds[idx, ifelse(decreasing, 2, 3)]
+      graphics::text(x = foo_lts, y = y_foo_lts, pos = 2, labels = paste("n =", foo_lts))
+      graphics::points(x = c(mon, foo_lts), y = c(foo_adj, y_foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
+    }
 
   }
 
