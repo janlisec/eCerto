@@ -97,8 +97,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       vals ~ mon, type = "n",
       ylim = range(c(vals, mn + c(-1, 1) * U), na.rm = T),
       xlim = range(c(mon), t_cert),
-      #sub = sub,
-      xlab = "Month [n]", ylab = ylab, main = main
+      xlab = "Month", ylab = ylab, main = main
     )
     graphics::axis(side = 3, at = range(mon), labels = rt[c(1, length(rt))])
     if (t_cert>0) {
@@ -137,8 +136,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     plot(
       c(foo_adj, mn + b * foo_lts) ~ c(mon, foo_lts),
       ylim = ylim, type = "n",
-      #sub = sub,
-      xlab = "Month [n]", ylab = paste(ylab, "adjusted"), main = ifelse(is.na(main), "", paste(main, "(adjusted)"))
+      xlab = "Month", ylab = paste(ylab, "adjusted"), main = ifelse(is.na(main), "", paste(main, "(adjusted)"))
     )
     adj.lm <- stats::lm(foo_adj ~ mon)
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))
@@ -176,7 +174,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       }
     }
     if (type==2) {
-      graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste("n =", foo_lts))
+      graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste(foo_lts, "month"))
       graphics::points(x = c(mon, foo_lts), y = c(foo_adj, mn + b * foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
     } else {
       # if CI_95 of regression line was calculated use the intercept with uncertainty line for life time estimation
@@ -184,7 +182,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       idx <- which.min(abs(preds[, ifelse(decreasing, 2, 3)]-(mn + ifelse(decreasing, -U, U))))
       foo_lts <- round(newx[idx])
       y_foo_lts <- preds[idx, ifelse(decreasing, 2, 3)]
-      graphics::text(x = foo_lts, y = y_foo_lts, pos = 2, labels = paste("n =", foo_lts))
+      graphics::text(x = foo_lts, y = y_foo_lts, pos = 2, labels = paste(foo_lts, "month"))
       graphics::points(x = c(mon, foo_lts), y = c(foo_adj, y_foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
     }
 
