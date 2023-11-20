@@ -27,18 +27,18 @@ read_zenodo <- function(id) {
     content <- jsonlite::fromJSON(rawToChar(zen_record$content))
 
     # get and check url
-    #file_urls <- content$files$links$self
-    file_urls <- content$files$filename
+    file_urls <- content$files$links$self
+    #file_urls <- content$files$filename
     if (length(file_urls)>=2) {
       message("[read_zenodo] More than one file in this zenodo record, please select a unique id. Reading first file only.")
       file_urls <- file_urls[1]
     }
 
     # download from url to temp file and load in R session
-    dest <- fs::path(tempdir(), basename(file_urls))
+    dest <- fs::path(tempdir(), basename(gsub("/content$", "", file_urls)))
 
     # paste url together
-    file_urls <- paste0(base_url, id, "/files/", file_urls, "/content")
+    #file_urls <- paste0(base_url, id, "/files/", file_urls, "/content")
     #browser()
     #paste0("https://zenodo.org/api/records/8380870/files/", content$files$filename)
     out <- try(curl::curl_download(url = file_urls, destfile = dest, quiet = FALSE), silent = TRUE)
