@@ -50,7 +50,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
     options = list(
       dom = "t", paging = FALSE, scrollX = TRUE, ordering = FALSE,
       columnDefs = list(
-        list("width"= paste0(max(c(60, nchar(as.character(x[,"analyte"]))*5)), "px"), "targets" = which(colnames(x) %in% c("analyte"))-1),
+        list("width"= paste0(max(c(60, nchar(as.character(x[,"analyte"]))*9)), "px"), "targets" = which(colnames(x) %in% c("analyte"))-1),
         list("width"= "80px", "targets" = which(!(colnames(x) %in% c("analyte","n","k","unit")))-1),
         list("width"= "30px", "targets" = which(colnames(x) %in% c("n","k"))-1)
       )

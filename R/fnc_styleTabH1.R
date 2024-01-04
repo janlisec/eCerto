@@ -61,7 +61,7 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr 
       options = list(
         dom = "t", paging = FALSE, searching = FALSE, ordering = FALSE,
         columnDefs = list(
-          list("width"= paste0(max(c(60, nchar(as.character(x[,"analyte"]))*5)), "px"), "targets" = which(colnames(x) %in% c("analyte"))-1),
+          list("width"= paste0(max(c(60, nchar(as.character(x[,"analyte"]))*9)), "px"), "targets" = which(colnames(x) %in% c("analyte"))-1),
           list("width"= "60px", "targets" = which(!(colnames(x) %in% c("analyte", " ", "n", "N")))-1),
           list("width"= "30px", "targets" = which(colnames(x) %in% c("n", "N"))-1),
           list(visible = FALSE, targets = inv_cols),
