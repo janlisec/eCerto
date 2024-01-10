@@ -284,12 +284,13 @@ calc_bxp_width <- function(n, w_axes = 100, w_point = 40) {
 #' h <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
 #' eCerto:::h_statement(x = h, a = "Fe.axial")
 h_statement <- function(x, a) {
-  stopifnot(c("analyte", "H_type", "P", "s_bb", "s_bb_min") %in% colnames(x))
+  P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
+  stopifnot(c("analyte", "H_type", P_col, "s_bb", "s_bb_min") %in% colnames(x))
   idx <- interaction(x[, "analyte"], x[, "H_type"]) == a
   a_name <- ifelse(length(unique(x[, "H_type"])) == 1, as.character(x[idx, "analyte"]), a)
   a_sd <- max(x[idx, c("s_bb", "s_bb_min")])
   a_type <- ifelse(names(which.max(x[idx, c("s_bb", "s_bb_min")]))=="s_bb", "s<sub>bb</sub>", "s<sub>bb,min</sub>")
-  a_P <- x[idx, "P"]
+  a_P <- x[idx, P_col]
   if (a_P < 0.05) {
     s1 <- "<font color=\"#FF0000\"><b>significantly different</b></font>"
     s2 <- "<b>Please check your method and data!</b>"
@@ -302,7 +303,7 @@ h_statement <- function(x, a) {
       shiny::column(
         width = 12,
         shiny::HTML(
-          "The tested items are ", s1, "(ANOVA P-value =", pn(a_P, 2), "using alpha-level = 0.05).",
+          "The tested items are ", s1, "(ANOVA", ifelse(P_col=="P_adj", "P-value<sub>adj</sub>", "P-value"), "=", pn(a_P, 2), "using alpha-level = 0.05).",
           "<p>The uncertainty value for analyte<b>", a_name, "</b>was determined as<b>", a_type, "=", pn(a_sd), "</b>.</p>", s2
         )
       )

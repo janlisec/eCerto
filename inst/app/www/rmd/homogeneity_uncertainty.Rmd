@@ -8,7 +8,10 @@ bottles $s_a$ (`M_between`).
 
 ![**Tab.H1** Calculation of uncertainty contribution from homogeneity assay](fig/H_Modul_Tab1.png)
 
-A significant ANOVA P-value indicates inhomogenious specimen and is highlighted in red color in **Tab.H1**.
+A significant ANOVA P-value indicates non homogeneous specimen and is highlighted in red color 
+in **Tab.H1**. P-values are adjusted for multiple testing in case of several analytes being
+under investigation per specimen using *bonferroni* correction. Adjustment can be switched off
+in the options panel next to **Tab.H1**.
 
 ***Note!*** 
 To account for the case of different number of replicates over all $N$ bottles, $n$ is calculated 
@@ -32,4 +35,4 @@ The larger of both values, $s_{bb}$ and $s_{bb,min}$ (rendered in bold font), is
 contribution when the user decides to transfer an uncertainty value to the material table.
 
 A transfer is only possible for analytes which have been found in the table of certified values
-(**Tab.C3** in the certification modul). Analytes not present there will be rendered in red.
+(**Tab.C3** in the certification module). Analytes not present there will be rendered in red.

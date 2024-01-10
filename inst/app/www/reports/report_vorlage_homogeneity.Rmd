@@ -5,6 +5,7 @@ params:
   Homogeneity: NA
   xlab: NA
   precision: NA
+  adjust: NA
 output:
   html_document:
     df_print: paged
@@ -21,7 +22,7 @@ This is a general report template. Specific layouts can be generated on demand.
 
 ### Modul: Homogeneity
 
-```{r data, echo=FALSE}
+```{r data, echo=FALSE, message=FALSE}
 # get a local representation of all data provided by Shiny
 testing <- length(params$Homogeneity)==1L && (is.na(params$Homogeneity) | params$Homogeneity=="NA")
 if (testing) {
@@ -29,6 +30,7 @@ if (testing) {
   xlab <- "Flasche"
   an <- unique(as.character(H[["data"]][,"analyte"]))
   prec <- 5:3; names(prec) <- an
+  adjust <- TRUE
 } else {
   H <- params$Homogeneity
   xlab <- params$xlab
@@ -38,6 +40,7 @@ if (testing) {
     prec <- rep(4, length(an))
     names(prec) <- an
   }
+  adjust <- params$adjust
 }
 if (!"H_type" %in% colnames(H[["data"]])) H[["data"]] <- cbind(H[["data"]], "H_type"="hom")
 sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"], drop = TRUE)
@@ -53,13 +56,15 @@ figs_w <- figs_w/72
 # normalize to max width
 max_width <- max(960/72, figs_w)
 figs_w <- figs_w/max_width
-  
+# calculate Tab.H1
+df <- eCerto:::prepTabH1(x = H[["data"]], adjust = adjust)
+# get correct col name for P values
+P_col <- ifelse("P" %in% colnames(df), "P", "P_adj")
 ```
 
 This is the table of uncertainties associated with homogeneity:
 
 ```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
-df <- eCerto:::prepTabH1(x = H[["data"]])
 if (knitr::is_html_output()) {
   eCerto:::styleTabH1(
     x = df, 
@@ -72,7 +77,7 @@ if (knitr::is_html_output()) {
 }
 ```
 
-`r paste(ifelse(any(df[,"P"]<=0.05), "Not all", "All"), "analytes are homogenous between bottles.")`
+`r paste(ifelse(any(df[,P_col]<=0.05), "Not all", "All"), "analytes are homogenous between bottles.")`
 
 `r ifelse(length(unique(H[["data"]][,"analyte"])>=2), "These are the individual Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
 
@@ -92,6 +97,7 @@ This is the table of (non rounded) input data:
 
 ```{r, echo=FALSE, comment=NA}
 df <- H[["data"]]
+if (length(unique(df[,"H_type"]))==1) df <- df[,colnames(df) != "H_type"]
 if (knitr::is_html_output()) {
   DT::datatable(data = df, rownames = NULL, options = list(dom = "t", paging = FALSE))
 } else if (knitr::is_latex_output()) {

@@ -19,6 +19,7 @@
 #'@keywords internal
 styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr = 1) {
   message("[styleTabH1] styling Tab.H1")
+  P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
   style_x <- x
   for (i in 1:nrow(style_x)) {
     an <- as.character(style_x[i,"analyte"])
@@ -26,7 +27,7 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr 
     style_x[i,"mean"] <- pn(as.numeric(style_x[i,"mean"]), ifelse(an %in% names(prec), prec[an], 4))
   }
   # round the following columns with fixed precision of 4 digits
-  for (cn in c("M_between","M_within","P","s_bb","s_bb_min")) {
+  for (cn in c("M_between", "M_within", P_col, "s_bb", "s_bb_min")) {
     style_x[,cn] <- pn(style_x[,cn], 4)
   }
   # check if analyte is present in C module
@@ -47,10 +48,11 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr 
     # set invisible cols
     inv_cols <- grep("style_", colnames(x))-1
     if (length(unique(x[,"H_type"]))==1) inv_cols <- c(1, inv_cols)
-    # format substring column header
+    # format sub strings in column header
     colnames(x) <- gsub("_type", "<sub>type</sub>", colnames(x))
     colnames(x) <- gsub("_between", "<sub>between</sub>", colnames(x))
     colnames(x) <- gsub("_within", "<sub>within</sub>", colnames(x))
+    colnames(x) <- gsub("^P_adj$", "P<sub>adj</sub>", colnames(x))
     colnames(x) <- gsub("^s_bb$", "s<sub>bb</sub>", colnames(x))
     colnames(x) <- gsub("^s_bb_min$", "s<sub>bb,min</sub>", colnames(x))
     # attach a blank column at the end
@@ -95,7 +97,7 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr 
     )
     dt <- DT::formatStyle(
       table = dt,
-      columns = "P",
+      columns = which(colnames(style_x)==P_col),
       target = "cell",
       color = DT::styleInterval(cuts = 0.05, values = c("red","")),
       fontWeight = DT::styleInterval(cuts = 0.05, values = c("bold","normal"))

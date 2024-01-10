@@ -63,8 +63,10 @@ page_HomogeneityUI <- function(id) {
         shiny::column(
           width = 2,
           shiny::wellPanel(
-            m_TransferUUI(ns("h_transfer")))
+            m_TransferUUI(ns("h_transfer")),
+            shiny::checkboxInput(inputId = ns("h_adjust"), label = "P-value adjustment (bonferroni)", value = TRUE)
           )
+        )
       ),
       shiny::p(),
       shiny::fluidRow(
@@ -88,16 +90,20 @@ page_HomogeneityUI <- function(id) {
               )
             ), shiny::p(),
             shiny::plotOutput(ns("h_boxplot"), inline=TRUE),
+            shiny::plotOutput(ns("h_Fig.H2"), inline=TRUE),
             shiny::uiOutput(ns("h_txt"))
           )
         ),
         shiny::column(
           width = 2,
           shiny::wellPanel(
+            shinyjs::hidden(shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices="")),
             sub_header("Save Report"),
-            shiny::downloadButton(ns("h_Report"), label="Download"),
-            shiny::p(shiny::textInput(inputId = ns("FigH1_xlab"), label = "x-label/tab-header", value = "Flasche")),
-            shinyjs::hidden(shiny::selectInput(inputId=ns("h_sel_analyt"), label="Row selected in Tab.1", choices=""))
+            shiny::downloadButton(ns("h_Report"), label="Download", style = "margin-bottom:10px;"),
+            sub_header("Figure options"),
+            shiny::textInput(inputId = ns("FigH1_xlab"), label = "x-axis label", value = "Flasche"),
+            shiny::checkboxInput(inputId = ns("h_show_repID"), label = "Identify replicates in Fig.H1", value = FALSE),
+            shiny::checkboxInput(inputId = ns("h_show_H2"), label = "Show combined analyte z-scores", value = FALSE)
           )
         )
       )
@@ -138,12 +144,21 @@ page_HomogeneityServer = function(id, rv) {
     h_vals <- shiny::reactiveVal(NULL)
 
     shiny::observeEvent(h_Data(), {
-      x <- prepTabH1(x=h_Data())
+      x <- prepTabH1(x=h_Data(), adjust = input$h_adjust)
       # set rv version
       setValue(rv, c("Homogeneity","h_vals"), x)
       # set local version
       h_vals(x)
     })
+
+    # apply multiple testing correction
+    shiny::observeEvent(input$h_adjust, {
+      x <- prepTabH1(x=h_Data(), adjust = input$h_adjust)
+      # set rv version
+      setValue(rv, c("Homogeneity","h_vals"), x)
+      # set local version
+      h_vals(x)
+    }, ignoreInit = TRUE)
 
     # compute specimen means for Tab.H2
     tab_H2 <- shiny::reactive({
@@ -212,23 +227,24 @@ page_HomogeneityServer = function(id, rv) {
     })
     output$h_boxplot <- shiny::renderPlot({
       shiny::req(h_Data(), input$h_sel_analyt, precision(), input$FigH1_xlab)
-      prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab)
+      prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab, showIDs = input$h_show_repID)
+    }, height=504, width=shiny::reactive({fig_width()}))
+
+    output$h_Fig.H2 <- shiny::renderPlot({
+      shiny::req(h_Data(), precision(), input$FigH1_xlab, input$h_show_H2)
+      prepFigH1(x = h_Data(), sa = NULL, prec = precision(), xlab = input$FigH1_xlab)
     }, height=504, width=shiny::reactive({fig_width()}))
 
     output$h_txt <- shiny::renderUI({
       shiny::req(h_vals(), input$h_sel_analyt)
-      h_statement(x = h_vals(), a = input$h_sel_analyt)
+      if (input$h_show_H2) {
+
+      } else {
+        h_statement(x = h_vals(), a = input$h_sel_analyt)
+      }
     })
 
-    # h_transfer_U <- m_TransferUServer(
-    #   id = "h_transfer",
-    #   dat = shiny::reactive({h_vals()}),
-    #   mat_tab = shiny::reactive({getValue(rv, c("General","materialtabelle"))})
-    # )
-    # shiny::observeEvent(h_transfer_U$changed, {
-    #   message("Homogeneity: observeEvent(h_transfer_U)")
-    #   setValue(rv, c("General","materialtabelle"), h_transfer_U$value)
-    # }, ignoreInit = TRUE)
+    # U transfer button module
     m_TransferUServer(id = "h_transfer", rv = rv, type = "H")
 
     # download outputs
@@ -249,7 +265,8 @@ page_HomogeneityServer = function(id, rv) {
               params = list(
                 "Homogeneity" = shiny::reactiveValuesToList(getValue(rv, "Homogeneity")),
                 "xlab" = input$FigH1_xlab,
-                "precision" = rv$a_p("precision")
+                "precision" = rv$a_p("precision"),
+                "adjust" = input$h_adjust
               ),
               envir = new.env(parent = globalenv())
             )

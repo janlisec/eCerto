@@ -4,7 +4,7 @@
 \alias{prepFigH1}
 \title{fnc_prepFigH1.}
 \usage{
-prepFigH1(x, sa = NULL, prec = 4, xlab = "Flasche")
+prepFigH1(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
 }
 \arguments{
 \item{x}{The Hom data from an session R6 object.}
@@ -25,5 +25,7 @@ tbd.
 \examples{
 x <- eCerto:::test_homog()$data
 eCerto:::prepFigH1(x = x, sa = "Fe.radial")
+eCerto:::prepFigH1(x = x, sa = "Fe.radial", prec=3, xlab="Bottle", showIDs = TRUE)
+eCerto:::prepFigH1(x = x, sa = NULL)
 }
 \keyword{internal}
