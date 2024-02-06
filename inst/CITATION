@@ -1,0 +1,18 @@
+bibentry(
+  bibtype  = "Article",
+  textVersion = "Lisec, J., Recknagel, S., Prinz, C. et al. eCerto—versatile software for interlaboratory data evaluation and documentation during reference material production. Anal Bioanal Chem (2023). https://doi.org/10.1007/s00216-023-05099-3",
+  header  = "The eCerto  package implements a Shiny-App to statistically process data genarated during the production of reference materials.",
+  footer  = "This open-source software implements academic research by the authors and co-workers. If you use it, please support the project by citing the appropriate journal article.",
+  title    = "eCerto—versatile software for interlaboratory data evaluation and documentation during reference material production",
+  author   = c(
+               person("Jan", "Lisec"),
+               person("Sebastian", "Recknagel"),
+               person("Carsten", "Prinz"),
+               person("Kristin", "Vogel"),
+               person("Matthias", "Koch"),
+               person("Roland", "Becker")
+             ),
+  journal  = "Analytical and Bioanalytical Chemistry",
+  year     = 2023,
+  doi      = "10.1007/s00216-023-05099-3"
+)

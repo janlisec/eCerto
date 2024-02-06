@@ -4,7 +4,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml)
-[![codecov](https://codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg?token=NSY6DITZVH)](https://codecov.io/gh/janlisec/eCerto)
+[![codecov](https://app.codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg?token=NSY6DITZVH)](https://app.codecov.io/gh/janlisec/eCerto)
 
 <!-- badges: end -->
 
@@ -44,6 +44,8 @@ eCerto::run_app()
 
 ## Detailed documentation
 
-A publication is currently in preparation and will be basis of a Vignette.
+A description of eCerto showing a re-evaluation of previously published CRM data 
+can be found [here](https://doi.org/10.1007/s00216-023-05099-3).
+
 Most of the functionality is described in the online help which can be found
-starting the App from [www.bam.de/eCerto](https://www.bam.de/eCerto).
+starting the App from [www.bam.de/eCerto](https://apps.bam.de/shn00/eCerto/).

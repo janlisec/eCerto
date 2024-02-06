@@ -39,16 +39,16 @@ m_ExcelUpload_UI <- function(id) {
       shiny::fluidRow(
         style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
         shiny::div(
-          style = "width: 130px; float: left; margin-left: 15px;",
-          shiny::selectInput(
-            inputId = ns("moduleSelect"),
-            choices = NULL,
-            label = "Target module"
-          )
-        ),
-        shiny::div(
           style = "width: 260px; float: left; margin-left: 15px;",
           shiny::uiOutput(outputId = ns("inp_file"))
+        ),
+        shiny::div(
+          style = "width: 130px; float: left; margin-left: 15px;",
+          shiny::radioButtons(
+            inputId = ns("moduleSelect"),
+            label = NULL,
+            choices = "dummy"
+          )
         ),
         shiny::div(
           style = "width: 260px; float: left; margin-left: 15px;",
@@ -84,7 +84,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
 
     # Certification, Homogeneity, Stability -----------------------------------
-    shiny::updateSelectInput(inputId = "moduleSelect", session = session, choices = getValue(rv, "modules"))
+    shiny::updateRadioButtons(session = session, inputId = "moduleSelect", choices = getValue(rv, "modules"))
 
     # rename input into a reactive
     exl_fmt <- shiny::reactive({ input$moduleSelect })
@@ -101,16 +101,11 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       shinyjs::hideElement(id = "sheet_number")
       shinyjs::hideElement(id = "file_name")
       shinyjs::hideElement(id = "btn_load")
-      # if (rv$e_present()[exl_fmt()]) {
-      #   shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
-      # } else {
-      #   shinyjs::html(id = "info_msg", html = "")
-      # }
       shiny::tagList(
         shiny::fileInput(
           inputId = session$ns("excel_file"),
           multiple = exl_fmt()=="Certification",
-          label = shiny::tagList("Select Excel, ", shiny::actionLink(inputId = session$ns("moduleUploadHelp"), label = "example")),
+          label = shiny::tagList("Select Excel with ", shiny::actionLink(inputId = session$ns("moduleUploadHelp"), label = paste(exl_fmt(), "data"))),
           accept = "xlsx"
         )
       )

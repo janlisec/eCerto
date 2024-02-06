@@ -163,7 +163,6 @@ update_reactivecell = function(r, colname, analyterow = NULL, value) {
 #' @noRd
 to_startPage = function(session, value="Certification") {
   # this function will break if shiny input IDs get changed
-  # ToDo: implement in testthat that 'Start' and 'Start-moduleSelect' are present
   shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "Start")
   shiny::updateSelectInput(session = session, inputId = "Start-excelfile-moduleSelect", selected = value)
 }

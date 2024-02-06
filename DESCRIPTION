@@ -1,3 +1,4 @@
+Type: Package
 Package: eCerto
 Title: Statistical Tests for the Production of Reference Materials
 Version: 0.2.12
@@ -7,14 +8,17 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-1220-2286")),
     person("Frederik", "Kre\u00df", role = "ctb")
   )
+Maintainer: Jan Lisec <jan.lisec@bam.de>
 Description: The production of certified reference materials (CRMs) is a core 
-    task of the Bundesanstalt f\u00fcr Materialforschung und -pr\u00fcfung (BAM). 
+    task of the Bundesanstalt für Materialforschung und -prüfung (BAM). 
     Various statistical tests are required and applied depending on the task 
     and recorded data to ensure that reported values of CRMs are appropriate. 
     Many of them are calculated according to the procedures described in 
     `ISO GUIDE 35:2017`. The eCerto package contains a `Shiny` app which 
     provides functionality to load, process and backup data for the statistical 
     evaluation of analyses conducted during CRM production.
+URL: https://github.com/janlisec/eCerto
+BugReports: https://github.com/janlisec/eCerto/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-US
@@ -22,6 +26,7 @@ LazyData: true
 LazyDataCompression: bzip2
 Depends:
     R (>= 3.5.0)
+Remotes: github::daattali/shinyalert
 Imports: 
     config,
     DT,
@@ -46,7 +51,6 @@ Suggests:
     shinytest2,
     testthat (>= 3.0.0),
     vdiffr
-Remotes: github::daattali/shinyalert
 biocViews:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
