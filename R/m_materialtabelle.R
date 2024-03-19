@@ -44,6 +44,14 @@ m_materialtabelleUI <- function(id) {
       width = 2,
       shiny::wellPanel(
         shiny::fluidRow(
+          # shinyWidgets::dropdown(
+          #   inputId = ns("dropdown_modifyFUcols"),
+          #   label = "Modify F/U cols",
+          #   shiny::tagList(
+          #     shiny::uiOutput(outputId = ns("FUcols"))
+          #   ),
+          #   circle = FALSE
+          # ),
           shiny::div(
             style="width=100%; margin-bottom: 5px; margin-left: 15px;",
             shiny::strong(shiny::actionLink(inputId = ns("tabC3opt"), label = "Modify Tab.C3"))
@@ -69,7 +77,7 @@ m_materialtabelleUI <- function(id) {
           shiny::p(),
           shiny::div(
             style="margin-top: 15px; margin-left: 15px; margin-right: 15px;",
-            check_stability_UI(id = ns("post_cert_stab"))
+            check_stability2_UI(id = ns("post_cert_stab"))
           )
         )
       )
@@ -208,6 +216,12 @@ m_materialtabelleServer <- function(id, rv) {
       }
       invisible(mt)
     }
+
+    # output$FUcols <- shiny::renderUI({
+    #   req(mater_table())
+    #   cc <- attr(mater_table(), "col_code")
+    #   shiny::renderPrint(cc)
+    # })
 
     shiny::observeEvent(input$c_addF, {
       cc <- attr(mater_table(), "col_code")
@@ -522,7 +536,7 @@ m_materialtabelleServer <- function(id, rv) {
       mater_table(mt)
     })
 
-    check_stability_Server(id = "post_cert_stab", rv = rv)
+    check_stability2_Server(id = "post_cert_stab", rv = rv)
 
     # Help section -------------------------------------------------------------
 

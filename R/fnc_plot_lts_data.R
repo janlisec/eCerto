@@ -141,7 +141,6 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     adj.lm <- stats::lm(foo_adj ~ mon)
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))
     if (type == 3) {
-      #browser()
       ## the solution calculating CI for predicted (y_hat) values
       newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out=100)
       preds <- stats::predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
@@ -167,6 +166,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       x <- par("usr")[2]-diff(par("usr")[1:2])*0.005
       graphics::text(x = x, y = mn, labels = sub2, adj = 1)
       graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
+      #browser()
       graphics::text(x = x, y = stats::predict(adj.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
       if (t_cert>0) {
         graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
