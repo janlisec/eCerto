@@ -3,11 +3,11 @@
 #'     uncertainty data in the correct format to the 'materialtabelle'.
 #'     After Certification data (initiating the material table) and
 #'     Homogeneity or Stability data has been uploaded, it shows the
-#'     possible columns of materialtabelle to transfer to.
+#'     possible columns of 'materialtabelle' to transfer to.
 #' @details not yet
 #' @param id Name when called as a module in a shiny app.
 #' @param rv eCerto object.
-#' @param type Modul can be used in 'H' or 'S' modul as specified by type paramter.
+#' @param type Modul can be used in 'H' or 'S' modul as specified by type parameter.
 #' @return The materialtabelle within the eCerto object is modified in place.
 #' @examples
 #' if (interactive()) {
@@ -26,11 +26,17 @@
 #' )
 #' }
 #'
+#' @importFrom shinyWidgets dropdownButton show_alert
 #' @noRd
 #' @keywords internal
 m_TransferUUI = function(id) {
+  ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::actionButton(inputId = shiny::NS(id, "btn"), label = "Transfer uncertainty")
+    shinyWidgets::dropdown(
+      inputId = ns("dropdown_transferU"),
+      label = "Transfer uncertainty",
+      shiny::uiOutput(outputId = ns("content"))
+    )
   )
 }
 
@@ -63,7 +69,7 @@ m_TransferUServer = function(id, rv, type = c("H", "S")) {
       return(out)
     }
 
-    # source type 'st' (is it homogeneity or stability data we want to transfer?)
+    # source type 'st' (homogeneity data can be simple or with different sub-types)
     st <- shiny::reactive({
       shiny::req(dat())
       st <- type
@@ -78,51 +84,53 @@ m_TransferUServer = function(id, rv, type = c("H", "S")) {
         cc <- attr(mat_tab(), "col_code")
         h_choices <- switch(st(), "H"=levels(dat()[,"H_type"]), "H_simple"="hom", "S"="u_stab")
         u_choices <- cc[substr(cc[,"ID"],1,1)=="U","Name"]
-        if (length(h_choices)>=2) {
-          shiny::tagList(
-            sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'"))),
-            shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = '100%', selectize = TRUE, choices = h_choices),
-            shiny::selectInput(inputId = session$ns("U_cols"), label = "to Tab.C3 column", width = '100%', selectize = TRUE, selected = u_choices[length(u_choices)], choices = u_choices),
-          )
-        } else {
-          shiny::tagList(
-            sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'"))),
-            shinyjs::hidden(shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = '100%', selectize = TRUE, choices = h_choices)),
-            shiny::selectInput(inputId = session$ns("U_cols"), label = "to Tab.C3 column", width = '100%', selectize = TRUE, selected = u_choices[length(u_choices)], choices = u_choices),
-          )
-        }
+        shiny::tagList(
+          sub_header(txt=paste("Transfer ", switch(st(), "H"="max(s_bb, s_bb_min) of H_type", "H_simple"="max(s_bb, s_bb_min)", "S"="values from column 'u_stab'"))),
+          if (length(h_choices)>=2) {
+            shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = '100%', selectize = TRUE, choices = h_choices)
+          } else {
+            shinyjs::hidden(shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = '100%', selectize = TRUE, choices = h_choices))
+          },
+          shiny::selectizeInput(
+            inputId = session$ns("U_cols"), label = "to Tab.C3 column", width = '100%', selected = u_choices[length(u_choices)], choices = u_choices,
+            options = list(render = I('{
+              item: function(item, escape) {
+                return "<div>" + item.value + "</div>";
+              },
+              option: function(item, escape) {
+                return "<div>" + item.value + "</div>";
+              }
+            }'))
+          ),
+          shiny::actionButton(inputId = session$ns("btn"), label = "Transfer")
+        )
       } else {
         test
       }
     }
 
+    output$content <- shiny::renderUI({
+      modal_content()
+    })
+
     shiny::observeEvent(input$btn, {
-      test <- check_mt(mt = mat_tab())==""
-      shinyalert::shinyalert(
-        title = "Transfer uncertainty", html = TRUE, size = "s",
-        showCancelButton = TRUE, showConfirmButton = test, confirmButtonText = "Transfer", cancelButtonText = "Cancel", closeOnClickOutside = !test,
-        text = shiny::tagList(
-          modal_content()
-        ),
-        callbackR = function(value) {
-          if (value) {
-            mt <- mat_tab()
-            cc <- attr(mt, "col_code")
-            U_col <- cc[cc[, "Name"] == input$U_cols,"ID"]
-            T_col <- switch(st(),"H"=c("s_bb","s_bb_min"), "H_simple"=c("s_bb","s_bb_min"), "S"="u_stab")
-            T_row <- switch(st(),"H"=which(dat()[,"H_type"]==input$H_Type), "H_simple"=1:nrow(dat()), "S"=1:nrow(dat()))
-            for (i in T_row) {
-              j <- which(as.character(mt[,"analyte"])==as.character(dat()[i,"analyte"]))
-              if (length(j)==1 & is.finite(max(dat()[i, T_col], na.rm=TRUE))) {
-                mt[j, U_col] <- max(dat()[i, T_col], na.rm=TRUE)
-              }
-            }
-            if (!identical(mat_tab()[, U_col], mt[, U_col])) {
-              setValue(rv, c("General", "materialtabelle"), mt)
-            }
-          }
-        })
-    }, ignoreInit = TRUE)
+      mt <- mat_tab()
+      cc <- attr(mt, "col_code")
+      U_col <- cc[cc[, "Name"] == input$U_cols,"ID"]
+      T_col <- switch(st(),"H"=c("s_bb","s_bb_min"), "H_simple"=c("s_bb","s_bb_min"), "S"="u_stab")
+      T_row <- switch(st(),"H"=which(dat()[,"H_type"]==input$H_Type), "H_simple"=1:nrow(dat()), "S"=1:nrow(dat()))
+      for (i in T_row) {
+        j <- which(as.character(mt[,"analyte"])==as.character(dat()[i,"analyte"]))
+        if (length(j)==1 & is.finite(max(dat()[i, T_col], na.rm=TRUE))) {
+          mt[j, U_col] <- max(dat()[i, T_col], na.rm=TRUE)
+        }
+      }
+      if (!identical(mat_tab()[, U_col], mt[, U_col])) {
+        setValue(rv, c("General", "materialtabelle"), mt)
+      } else {
+        shinyWidgets::show_alert(title = NULL, text = "Sorry, this transfer did not change Tab.C3 (column already contains similar values).")
+      }
+    })
 
   })
 }
