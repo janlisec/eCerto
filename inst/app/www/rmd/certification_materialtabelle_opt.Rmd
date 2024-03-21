@@ -1,20 +1,21 @@
 ### Editing options
 
-`F` and `U` columns in **Tab.C3** can be added, removed or renamed using the respective parameter 
-panel next to the table.
+`F` and `U` columns in **Tab.C3** can be added, removed or renamed using the drop down menu
+next to the table. To add a new `U` column select option `<new U>`, to rename an existing 
+column, modify the column in the text box. To delete a column, simply delete it's column
+name. All modifications take place only after the user confirms by pushing the respective
+button within the drop down menu.
 
 ***Note!***
 *eCerto* will respect HTML formatting, *i.e.* if you want to use subscript in your column name 
 you can use `u<sub>hom</sub>` as input to create a column with displayed name $u_{hom}$.
 
-![**User Options** Modify F and U columns in **Tab.C3** to adjust $\mu_c$ and $U_{abs}$](fig/C_Modul_Tab3_pars.png)
-
 Default values are 1 and 0 for `F` and `U` columns respectively, as these are neutral with respect 
 to the result. In `F` and `U` columns all values can be edited manually by double clicking the 
 respective cell, entering a new value and clicking outside the cell to confirm the modification. 
 
-`U` columns can also be filled automatically with data from the homogeneity and stability modules 
-of *eCerto*. 
+More conveniently, `U` columns can also be filled automatically with data from the homogeneity 
+and stability modules of *eCerto*. 
 
 ***Note!***
 Manual modifications will be overwritten by any automatic transfer into the same column.

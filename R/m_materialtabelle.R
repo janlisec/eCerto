@@ -38,48 +38,14 @@ m_materialtabelleUI <- function(id) {
     shiny::column(
       width = 10,
       shiny::strong(shiny::actionLink(inputId = ns("tabC3head"), label = "Tab.C3 - Certified values within material")),
-      DT::DTOutput(shiny::NS(id, "matreport"))
+      DT::DTOutput(ns("matreport"))
     ),
     shiny::column(
       width = 2,
       shiny::wellPanel(
-        shiny::fluidRow(
-          # shinyWidgets::dropdown(
-          #   inputId = ns("dropdown_modifyFUcols"),
-          #   label = "Modify F/U cols",
-          #   shiny::tagList(
-          #     shiny::uiOutput(outputId = ns("FUcols"))
-          #   ),
-          #   circle = FALSE
-          # ),
-          shiny::div(
-            style="width=100%; margin-bottom: 5px; margin-left: 15px;",
-            shiny::strong(shiny::actionLink(inputId = ns("tabC3opt"), label = "Modify Tab.C3"))
-          ),
-          shiny::p(
-            style = "margin-left: 15px;",
-            shiny::actionButton(inputId = ns("c_addF"), label = "Add", width = wb),
-            shiny::actionButton(inputId = ns("c_remF"), label = "Del", width = wb),
-            shiny::actionButton(inputId = ns("c_renF"), label = "Ren", width = wb),
-            shiny::strong("F cols")
-          ),
-          shiny::p(
-            style = "margin-left: 15px;",
-            shiny::actionButton(inputId = ns("c_addU"), label = "Add", width = wb),
-            shiny::actionButton(inputId = ns("c_remU"), label = "Del", width = wb),
-            shiny::actionButton(inputId = ns("c_renU"), label = "Ren", width = wb),
-            shiny::strong("U cols")
-          ),
-          shiny::div(
-            style="margin-top: 15px; margin-left: 15px; margin-right: 15px;",
-            shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect", width = "100%")
-          ),
-          shiny::p(),
-          shiny::div(
-            style="margin-top: 15px; margin-left: 15px; margin-right: 15px;",
-            check_stability2_UI(id = ns("post_cert_stab"))
-          )
-        )
+        modify_FUcols_UI(id = ns("FUcols")),
+        shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect"),
+        check_stability2_UI(id = ns("post_cert_stab"))
       )
     )
   )
@@ -93,6 +59,8 @@ m_materialtabelleServer <- function(id, rv) {
 
     silent <- get_golem_config("silent")
     ns <- shiny::NS(id)
+
+    modify_FUcols_Server(id = "FUcols", mt = mater_table)
 
     # use err_txt to provide error messages to the user
     err_txt <- shiny::reactiveVal(NULL)
@@ -216,156 +184,6 @@ m_materialtabelleServer <- function(id, rv) {
       }
       invisible(mt)
     }
-
-    # output$FUcols <- shiny::renderUI({
-    #   req(mater_table())
-    #   cc <- attr(mater_table(), "col_code")
-    #   shiny::renderPrint(cc)
-    # })
-
-    shiny::observeEvent(input$c_addF, {
-      cc <- attr(mater_table(), "col_code")
-      # get smallest index number available
-      n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[,"ID"],1,1)=="F","ID"],2,2)))))
-      shinyalert::shinyalert(
-        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = session$ns("tmp"), label = "Type name to add", value = paste0("F",n))),
-        cancelButtonText = "Cancel", confirmButtonText = "Add", showCancelButton = TRUE, size = "xs",
-        callbackR = function(value) {
-          if (value) {
-            mt <- mater_table()
-            if (input$tmp %in% c(colnames(mt), cc[,"Name"])) {
-              err_txt("Sorry, I can't add this column. Please specify a unique column name.")
-            } else {
-              cc <- rbind(cc, data.frame("ID"=paste0("F",n), "Name"=input$tmp))
-              nc <- matrix(rep(1,nrow(mt)), ncol=1, dimnames=list(rownames(mt), paste0("F",n)))
-              cp <- which(colnames(mt)=="cert_val")
-              mt <- cbind(mt[,1:(cp-1)], nc, mt[,cp:ncol(mt)])
-              attr(mt, "col_code") <- cc
-              mater_table(mt)
-            }
-          }
-        }
-      )
-    })
-    # remove a correction factor column
-    shiny::observeEvent(input$c_remF, {
-      cc <- attr(mater_table(), "col_code")
-      if (any(substr(cc[,"ID"],1,1)=="F")) {
-        choices <- cc[substr(cc[,"ID"],1,1)=="F","Name"]
-        shinyalert::shinyalert(
-          html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = session$ns("tmp"), label = "Select to remove", choices = choices)),
-          cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "s",
-          callbackR = function(value) {
-            if (value) {
-              mt <- mater_table()
-              mt <- mt[,!(colnames(mt)==cc[input$tmp==cc[,"Name"],"ID"])]
-              cc <- cc[!(substr(cc[,"ID"],1,1)=="F" & cc[,"Name"]==input$tmp),,drop=FALSE]
-              attr(mt, "col_code") <- cc
-              mater_table(mt)
-            }
-          }
-        )
-      } else {
-        shinyalert::shinyalert(text = "No Correction Factor defined. You have to add one before you can remove it.", type = "info")
-      }
-    })
-    # rename a correction factor column
-    shiny::observeEvent(input$c_renF, {
-      cc <- attr(mater_table(), "col_code")
-      if (any(substr(cc[,"ID"],1,1)=="F")) {
-        choices <- cc[substr(cc[,"ID"],1,1)=="F","Name"]
-        # $$ToDo JL$$ shinyalert causes an error due to an deprecated if statement which is not yet fixed in CRAN version 3.0 (2023.06.07)
-        shinyalert::shinyalert(
-          html = TRUE, text = shiny::tagList(
-            shiny::selectInput(inputId = session$ns("tmp"), label = "Select F column", choices = choices),
-            shiny::textInput(inputId = session$ns("tmp2"), label = "New Column Name")
-          ),
-          cancelButtonText = "Cancel", confirmButtonText = "Rename", showCancelButton = TRUE, size = "s",
-          callbackR = function(value) {
-            if (value) {
-              mt <- mater_table()
-              cc[substr(cc[,"ID"],1,1)=="F" & cc[,"Name"]==input$tmp,"Name"] <- input$tmp2
-              attr(mt, "col_code") <- cc
-              mater_table(mt)
-            }
-          }
-        )
-      } else {
-        shinyalert::shinyalert(text = "No Correction Factor defined. You have to add one before you can rename it.", type = "info")
-      }
-    })
-    # add a uncertainty factor column
-    shiny::observeEvent(input$c_addU, {
-      cc <- attr(mater_table(), "col_code")
-      # get smallest index number available
-      n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[,"ID"],1,1)=="U","ID"],2,2)))))
-      shinyalert::shinyalert(
-        html = TRUE, text = shiny::tagList(shiny::textInput(inputId = session$ns("tmp"), label = "Type name to add", value = paste0("u_",n))),
-        cancelButtonText = "Cancel", confirmButtonText = "Add", showCancelButton = TRUE, size = "s",
-        callbackR = function(value) {
-          if (value) {
-            mt <- mater_table()
-            if (input$tmp %in% c(colnames(mt), cc[,"Name"])) {
-              err_txt("Sorry, I can't add this column. Please specify a unique column name.")
-            } else {
-              cc <- rbind(cc, data.frame("ID"=paste0("U",n), "Name"=input$tmp))
-              nc <- matrix(rep(0,nrow(mt)), ncol=1, dimnames=list(rownames(mt), paste0("U",n))) # new data column
-              cp <- which(colnames(mt)=="u_com") # column position where to include the new data
-              mt <- cbind(mt[,1:(cp-1)], nc, mt[,cp:ncol(mt)])
-              attr(mt, "col_code") <- cc
-              mater_table(mt)
-            }
-          }
-        }
-      )
-    })
-    # remove a uncertainty factor column
-    shiny::observeEvent(input$c_remU, {
-      if (!silent) message("materialtabelle: remove a uncertainty factor column")
-      cc <- attr(mater_table(), "col_code")
-      if (any(substr(cc[,"ID"],1,1)=="U")) {
-        choices <- cc[substr(cc[,"ID"],1,1)=="U","Name"]
-        shinyalert::shinyalert(
-          html = TRUE, text = shiny::tagList(shiny::selectInput(inputId = session$ns("tmp"), label = "Select to remove", choices = choices)),
-          cancelButtonText = "Cancel", confirmButtonText = "Rem", showCancelButton = TRUE, size = "s",
-          callbackR = function(value) {
-            if (value) {
-              mt <- mater_table()
-              mt <- mt[,!(colnames(mt)==cc[input$tmp==cc[,"Name"],"ID"])]
-              cc <- cc[!(substr(cc[,"ID"],1,1)=="U" & cc[,"Name"]==input$tmp),,drop=FALSE]
-              attr(mt, "col_code") <- cc
-              mater_table(mt)
-            }
-          }
-        )
-      } else {
-        shinyalert::shinyalert(text = "No Uncertainty Term defined. You have to add one before you can remove it.", type = "info")
-      }
-    })
-    # rename a uncertainty factor column
-    shiny::observeEvent(input$c_renU, {
-      cc <- attr(mater_table(), "col_code")
-      if (any(substr(cc[,"ID"],1,1)=="U")) {
-        choices <- cc[substr(cc[,"ID"],1,1)=="U","Name"]
-        shinyalert::shinyalert(
-          html = TRUE, text = shiny::tagList(
-            shiny::selectInput(inputId = session$ns("tmp"), label = "Select U column", choices = choices),
-            shiny::textInput(inputId = session$ns("tmp2"), label = "New Column Name")
-          ),
-          cancelButtonText = "Cancel", confirmButtonText = "Rename", showCancelButton = TRUE, size = "s",
-          callbackR = function(value) {
-            if (value) {
-              mt <- mater_table()
-              cc[substr(cc[,"ID"],1,1)=="U" & cc[,"Name"]==input$tmp,"Name"] <- input$tmp2
-              attr(mt, "col_code") <- cc
-              mater_table(mt)
-            }
-          }
-        )
-      } else {
-        shinyalert::shinyalert(text = "No Uncertainty Factor defined. You have to add one before you can rename it.", type = "info")
-      }
-    })
 
     # data frame of selected analyte
     c_fltData <- shiny::reactive({
@@ -539,9 +357,7 @@ m_materialtabelleServer <- function(id, rv) {
     check_stability2_Server(id = "post_cert_stab", rv = rv)
 
     # Help section -------------------------------------------------------------
-
     shiny::observeEvent(input$tabC3head, { show_help("certification_materialtabelle") })
-    shiny::observeEvent(input$tabC3opt, { show_help("certification_materialtabelle_opt") })
 
   })
 }

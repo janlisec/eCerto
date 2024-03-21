@@ -1870,7 +1870,7 @@ The critical value is calculated internally using formula
 ##   c &lt;- 1/(1 + (k - 1) * f)
 ##   return(c)
 ## }
-## &lt;bytecode: 0x00000122578df3a0&gt;
+## &lt;bytecode: 0x00000175f63613e8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 where parameters <em>p</em>, <em>n</em> and <em>k</em> define the
@@ -1890,7 +1890,7 @@ to compute the Cochran P-value via function
 ##   p[p &gt; 1] &lt;- 1
 ##   return(p)
 ## }
-## &lt;bytecode: 0x0000012257ac9540&gt;
+## &lt;bytecode: 0x00000175f65414e8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2016,7 +2016,7 @@ The Dixon test statistic is calculated depending on the number of labs
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x0000012258e4d0e8&gt;
+## &lt;bytecode: 0x00000175fd0736c0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> In <strong><em>eCerto</em></strong> the one-sided version of the
@@ -2099,7 +2099,7 @@ are derived by interpolation using function
 ##   }
 ##   return(res)
 ## }
-## &lt;bytecode: 0x000001225dee4f88&gt;
+## &lt;bytecode: 0x00000175fb2f83a8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p><br> The test is originally based on:<br />
@@ -2163,7 +2163,7 @@ outlier at both ends of the distribution consecutively using
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x000001225e9cf320&gt;
+## &lt;bytecode: 0x00000175fbdb52d8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> Critical values for the single Grubbs test are calculated
@@ -2198,7 +2198,7 @@ internally using
 ##     return(unname(res))
 ##   }
 ## }
-## &lt;bytecode: 0x000001225eb8dd68&gt;
+## &lt;bytecode: 0x00000175fbf71d10&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2362,7 +2362,7 @@ is calculated on the result of <code>stats::lm()</code>.
 ##   class(output) &lt;- &quot;group&quot;
 ##   return(output)
 ## }
-## &lt;bytecode: 0x00000122579caca8&gt;
+## &lt;bytecode: 0x00000175f6442c10&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p>The test is originally based on:<br />
@@ -2783,24 +2783,24 @@ download section on top of the page.</p>
 <div id="editing-options" class="section level3">
 <h3>Editing options</h3>
 <p><code>F</code> and <code>U</code> columns in <strong>Tab.C3</strong>
-can be added, removed or renamed using the respective parameter panel
-next to the table.</p>
+can be added, removed or renamed using the drop down menu next to the
+table. To add a new <code>U</code> column select option
+<code>&lt;new U&gt;</code>, to rename an existing column, modify the
+column in the text box. To delete a column, simply delete it’s column
+name. All modifications take place only after the user confirms by
+pushing the respective button within the drop down menu.</p>
 <p><strong><em>Note!</em></strong> <em>eCerto</em> will respect HTML
 formatting, <em>i.e.</em> if you want to use subscript in your column
 name you can use <code>u&lt;sub&gt;hom&lt;/sub&gt;</code> as input to
 create a column with displayed name <span class="math inline">\(u_{hom}\)</span>.</p>
-<div class="float">
-<img src="data:image/png;base64,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" alt="User Options Modify F and U columns in Tab.C3 to adjust \mu_c and U_{abs}" />
-<div class="figcaption"><strong>User Options</strong> Modify F and U
-columns in <strong>Tab.C3</strong> to adjust <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(U_{abs}\)</span></div>
-</div>
 <p>Default values are 1 and 0 for <code>F</code> and <code>U</code>
 columns respectively, as these are neutral with respect to the result.
 In <code>F</code> and <code>U</code> columns all values can be edited
 manually by double clicking the respective cell, entering a new value
 and clicking outside the cell to confirm the modification.</p>
-<p><code>U</code> columns can also be filled automatically with data
-from the homogeneity and stability modules of <em>eCerto</em>.</p>
+<p>More conveniently, <code>U</code> columns can also be filled
+automatically with data from the homogeneity and stability modules of
+<em>eCerto</em>.</p>
 <p><strong><em>Note!</em></strong> Manual modifications will be
 overwritten by any automatic transfer into the same column.</p>
 <p>The only other column which can be manually edited is <code>k</code>,

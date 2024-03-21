@@ -43,6 +43,7 @@ Imports:
     shiny,
     shinyalert (>= 3.0.0.9000),
     shinyjs,
+    shinyWidgets,
     tidyxl
 Suggests: 
     curl,
