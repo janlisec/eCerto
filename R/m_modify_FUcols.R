@@ -3,10 +3,11 @@
 #'     functionality to modify column names of Tab.C3.
 #' @details tbd.
 #' @param id id.
-#' @param rv rv.
-#' @return A data.frame containing the converted string from the textAreaInput.
+#' @param rv mt.
+#' @return Nothing. Module will modify the reactiveVal 'mt' provided by the user.
 #' @examples
 #' \dontrun{
+#' if (interactive()) {
 #' shinyApp(
 #'   ui = shiny::fluidPage(
 #'     shinyjs::useShinyjs(),
@@ -18,12 +19,12 @@
 #'     mt <- shiny::reactiveVal()
 #'     shiny::isolate(mt(eCerto::getValue(rv, c("General", "materialtabelle"))))
 #'     modify_FUcols_Server(id = "test", mt = mt)
-#'     observeEvent(mt, { print(mt) })
+#'     observeEvent(mt(), { print(mt) })
 #'   }
 #' )
 #' }
 #' @importFrom stats sd
-#' @importFrom shinyWidgets dropdownButton
+#' @importFrom shinyWidgets dropdownButton show_alert
 #' @keywords internal
 #' @noRd
 modify_FUcols_UI <- function(id) {
