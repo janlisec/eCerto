@@ -17,7 +17,7 @@
 #'str(assert_col(df = x, name = "Analyte", pos = 3, type = "character"))
 #'str(assert_col(df = x, name = " Analyte", pos = 2, type = "factor"))
 #'str(assert_col(df = x, name = "Analyte", pos = 2, type = "factor", fuzzy_name = FALSE))
-#'str(assert_col(df = x, name = "Analyte", type = "factor", fuzzy_name = FALSE, default_value = "test"))
+#'str(assert_col(df = x, name = "test", type = "factor", default_value = "test"))
 #'str(assert_col(df = x, name = "unit", type = "numeric", default_value = "test"))
 #'str(assert_col(df = x, name = "unit", type = "numeric", default_value = 10))
 #'str(assert_col(df = x, name = "unit", type = "Date"))

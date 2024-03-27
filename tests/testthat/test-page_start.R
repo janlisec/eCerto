@@ -1,3 +1,4 @@
+# testthat::test_file(path = "tests/testthat/test-page_start.R")
 testthat::test_that(
   desc = "page_start works",
   code = {

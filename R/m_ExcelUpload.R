@@ -212,12 +212,12 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
           } else {
             # (3) as a dataframe giving Temp info additionally to compute Arrhenius estimate of uncertainty
             s_dat <- tab_flt[[as.numeric(input$sheet_number)]]
-            assert_col(df = s_dat, name = "Temp", type = "numeric")
+            s_dat <- assert_col(df = s_dat, name = "Temp", type = "numeric")
           }
         }
-        assert_col(df = s_dat, name = "analyte", type = "factor")
-        assert_col(df = s_dat, name = "Value", type = "numeric")
-        assert_col(df = s_dat, name = "Date", type = "Date")
+        s_dat <- assert_col(df = s_dat, name = "analyte", type = "factor")
+        s_dat <- assert_col(df = s_dat, name = "Value", type = "numeric")
+        s_dat <- assert_col(df = s_dat, name = "Date", type = "Date")
         s_dat[,"time"] <- as.numeric(s_dat[,"Date"]-min(s_dat[,"Date"]))
         load_result <- s_dat
       }

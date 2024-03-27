@@ -1,4 +1,5 @@
 testthat::local_edition(3)
+# testthat::test_file(path = "tests/testthat/test-ExcelUpload.R")
 
 # Certification Test ------------------------------------------------------
 testthat::test_that(
@@ -98,10 +99,11 @@ testthat::test_that(
           session$setInputs(moduleSelect = "Stability", excel_file = xlsx_test, sheet_number = 1, file_number = 1, file_name = "Stability_Testdata.xlsx")
           session$flushReact()
           session$setInputs(btn_load = "click")
-          # $$JL$$ upload module was changed to respect analyte order from Excel file
+          # $$JL$$ upload module was changed to respect analyte order from Excel file and to incorporate column time
           # original test data have to be modified to reflect this change
           comp <- eCerto:::test_Stability_Excel()
           comp[,"analyte"] <- factor(comp[,"analyte"], levels=c("Si","Mn"))
+          comp[,"time"] <- as.numeric(comp[,"Date"]-min(comp[,"Date"]))
           testthat::expect_equal(out$data, comp)
         }
       )
