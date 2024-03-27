@@ -1,4 +1,4 @@
-#' @title modify_FUcols
+#' @title modify_FUcols.
 #' @description \code{modify_FUcols} is a Shiny module which provides
 #'     functionality to modify column names of Tab.C3.
 #' @details tbd.
@@ -11,17 +11,18 @@
 #' shinyApp(
 #'   ui = shiny::fluidPage(
 #'     shinyjs::useShinyjs(),
-#'     modify_FUcols_UI(id = "test")
+#'     shiny:::modify_FUcols_UI(id = "test")
 #'   ),
 #'   server = function(input, output, session) {
 #'     #rv <- eCerto:::test_rv()
 #'     rv <- eCerto:::test_rv("SR3")
 #'     mt <- shiny::reactiveVal()
 #'     shiny::isolate(mt(eCerto::getValue(rv, c("General", "materialtabelle"))))
-#'     modify_FUcols_Server(id = "test", mt = mt)
-#'     observeEvent(mt(), { print(mt) })
+#'     shiny:::modify_FUcols_Server(id = "test", mt = mt)
+#'     shiny::observeEvent(mt(), { print(mt) })
 #'   }
 #' )
+#' }
 #' }
 #' @importFrom stats sd
 #' @importFrom shinyWidgets dropdownButton show_alert
