@@ -9,23 +9,17 @@
 #'@return A data frame with at least columns 'analyte', 'H_type', 'Flasche' and 'value'.
 #'@keywords internal
 checkHdata <- function(x) {
-  message("[checkHdata] perform statistics on imported homogeneity data")
-  # rename if first column is not named 'analyte' and convert to factor but keep order of elements
-  colnames(x)[1] <- "analyte"
-  x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
+  message("[checkHdata] ensure integrity of imported homogeneity data")
+  # ensure that x is a data frame
+  if (!is.data.frame(x)) x <- as.data.frame(x)
+  # ensure that column 'analyte' exists, is unique, first column of df and converted to factor keeping order of elements
+  x <- assert_col(df = x, name = "analyte", pos = 1, type = "factor", default_value = "analyte")
   # ensure that there is a second column 'H_type' and convert to factor with at least one level
-  if (colnames(x)[2]!="H_type" && colnames(x)[3]=="value") {
-    x <- cbind(x[,"analyte",drop=FALSE], data.frame("H_type"=gl(n = 1, k = nrow(x), labels = "hom")), x[,2:ncol(x)])
-  } else {
-    x[,"H_type"] <- factor(x[,"H_type"])
-    # ensure that H_type has at least one level (because downstream functions fail otherwise)
-    if (length(levels(x[,"H_type"]))==0) {
-      x[,"H_type"] <- gl(n = 1, k = nrow(x), labels = "hom")
-    }
-  }
+  x <- assert_col(df = x, name = "H_type", pos = 2, type = "factor", default_value = "hom")
   # ensure that there is a third column 'Flasche' and convert to factor
-  colnames(x)[3] <- "Flasche"
-  x[,"Flasche"] <- factor(x[,"Flasche"])
+  x <- assert_col(df = x, name = "Flasche", pos = 3, type = "factor", default_value = "F")
+  # ensure that there is a fourth column 'value' and convert to numeric
+  x <- assert_col(df = x, name = "value", pos = 4, type = "numeric", default_value = 0)
   # return checked data
   return(x)
 }
