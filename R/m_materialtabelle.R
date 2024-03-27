@@ -26,7 +26,7 @@
 #')
 #'}
 #'
-#'@importFrom shinyalert shinyalert
+#'@importFrom shinyWidgets show_alert
 #'
 #' @noRd
 #' @keywords internal
@@ -115,7 +115,7 @@ m_materialtabelleServer <- function(id, rv) {
         if ("char" %in% colnames(mt)) colnames(mt)[colnames(mt)=="char"] <- "u_char"
         if ("com" %in% colnames(mt)) colnames(mt)[colnames(mt)=="com"] <- "u_com"
         # notify user
-        shinyalert::shinyalert(text = "Columns 'char' and 'com' in the material table have been renamed to 'u_char' and 'u_com'.", type = "info")
+        shinyWidgets::show_alert(title = NULL, text = "Columns 'char' and 'com' in the material table have been renamed to 'u_char' and 'u_com'.", type = "info")
       }
       # add a column for absolute uncertainty if not yet present
       if (!("U_abs" %in% colnames(mt))) {

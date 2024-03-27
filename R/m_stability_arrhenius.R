@@ -127,7 +127,7 @@ m_arrheniusServer <- function(id, rv) {
     # use err_txt to provide error messages to the user
     err_txt <- shiny::reactiveVal(NULL)
     shiny::observeEvent(err_txt(), {
-      shinyalert::shinyalert(text = err_txt(), type = "info")
+      shinyWidgets::show_alert(title = "Error", text = err_txt(), type = "error")
       err_txt(NULL)
     }, ignoreNULL = TRUE)
 

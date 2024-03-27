@@ -86,10 +86,7 @@ m_analyteServer = function(id, rv) {
     # set up error message system to inform user
     err_msg <- shiny::reactiveVal(NULL)
     shiny::observeEvent(err_msg(), {
-      shinyalert::shinyalert(
-        title = "Error",
-        text = err_msg()
-      )
+      shinyWidgets::show_alert(title = "Error", text = err_msg(), type = "error")
       err_msg(NULL)
     }, ignoreNULL = TRUE)
 
