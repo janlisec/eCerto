@@ -67,7 +67,7 @@
     },
     "DT": {
       "Package": "DT",
-      "Version": "0.31",
+      "Version": "0.32",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -80,7 +80,7 @@
         "magrittr",
         "promises"
       ],
-      "Hash": "77b5189f5272ae2b21e3ac2175ad107c"
+      "Hash": "0d3ab8abbb0c3e3daa47d4dc8e17bbae"
     },
     "R6": {
       "Package": "R6",
@@ -312,13 +312,13 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "5.2.0",
+      "Version": "5.2.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "R"
       ],
-      "Hash": "ce88d13c0b10fe88a37d9c59dba2d7f9"
+      "Hash": "411ca2c03b1ce5f548345d2fc2685f7a"
     },
     "desc": {
       "Package": "desc",
@@ -362,14 +362,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.2.12",
+      "Version": "0.2.13",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "8af1147f63f54d1cda5bb7c2b062c21360dab482",
+      "RemoteSha": "badc6b947f5e65248997e92c3f6e3197f7f06c88",
       "Remotes": "github::daattali/shinyalert",
       "Requirements": [
         "DT",
@@ -386,11 +386,12 @@
         "purrr",
         "rmarkdown",
         "shiny",
+        "shinyWidgets",
         "shinyalert",
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "49b7979834426a5ac674192ee48b480b"
+      "Hash": "4dfbeb03eac4596d810a71e378636a30"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -651,7 +652,7 @@
     },
     "magick": {
       "Package": "magick",
-      "Version": "2.8.2",
+      "Version": "2.8.3",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -659,7 +660,7 @@
         "curl",
         "magrittr"
       ],
-      "Hash": "87da0066dd0d7b1a95c461abfbf10411"
+      "Hash": "3f6bcbb8a0c1c9365b2f02d5d04ad7bc"
     },
     "magrittr": {
       "Package": "magrittr",
@@ -964,7 +965,7 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.25",
+      "Version": "2.26",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -977,14 +978,13 @@
         "jsonlite",
         "knitr",
         "methods",
-        "stringr",
         "tinytex",
         "tools",
         "utils",
         "xfun",
         "yaml"
       ],
-      "Hash": "d65e35823c817f09f4de424fcdfa812a"
+      "Hash": "9b148e7f95d33aac01f31282d49e4f44"
     },
     "rprojroot": {
       "Package": "rprojroot",
@@ -1041,7 +1041,7 @@
     },
     "shiny": {
       "Package": "shiny",
-      "Version": "1.8.0",
+      "Version": "1.8.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1051,7 +1051,6 @@
         "cachem",
         "commonmark",
         "crayon",
-        "ellipsis",
         "fastmap",
         "fontawesome",
         "glue",
@@ -1071,11 +1070,11 @@
         "withr",
         "xtable"
       ],
-      "Hash": "3a1f41807d648a908e3c7f0334bf85e6"
+      "Hash": "a49e145ac3d0d1299e19ab215504f88e"
     },
     "shinyWidgets": {
       "Package": "shinyWidgets",
-      "Version": "0.8.2",
+      "Version": "0.8.3",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1089,7 +1088,7 @@
         "sass",
         "shiny"
       ],
-      "Hash": "88289640c8206dc810ea9cb87bd58ffc"
+      "Hash": "a515a78460d21328d2b8765fd5506964"
     },
     "shinyalert": {
       "Package": "shinyalert",
@@ -1171,23 +1170,6 @@
         "utils"
       ],
       "Hash": "ca8bd84263c77310739d2cf64d84d7c9"
-    },
-    "stringr": {
-      "Package": "stringr",
-      "Version": "1.5.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "cli",
-        "glue",
-        "lifecycle",
-        "magrittr",
-        "rlang",
-        "stringi",
-        "vctrs"
-      ],
-      "Hash": "671a4d384ae9d32fc47a14e98bfa3dc8"
     },
     "sys": {
       "Package": "sys",
