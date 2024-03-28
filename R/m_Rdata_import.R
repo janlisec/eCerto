@@ -82,28 +82,28 @@ m_RDataImport_Server = function(id, rv) {
       if (all(!rv$e_present())) {
         load_test_data()
       } else {
-        shinyalert::shinyalert(
-          title = "Test Data", confirmButtonText = "Load", showCancelButton = TRUE, size = "xs", html = TRUE,
-          text = shiny::tagList(div_check_present()),
-          callbackR = function(value) {
-            if (value) { load_test_data() }
-          }
+        shinyWidgets::ask_confirmation(
+          inputId = "confirm_load_test_data",
+          title = "Test Data", btn_labels = c("Cancel", "Load"), size = "xs", html = TRUE,
+          text = shiny::tagList(div_check_present())
         )
       }
+    })
+    shiny::observeEvent(input$confirm_load_test_data, {
+      if (input$confirm_load_test_data) { load_test_data() }
     })
 
     # Load Zenodo Data ---------------------------------------------------------
     shiny::observeEvent(input$load_zenodo_data, {
-      shinyalert::shinyalert(
-        title = "Zenodo Import", confirmButtonText = "Load", showCancelButton = TRUE, size = "xs", html = TRUE,
+
+      shinyWidgets::ask_confirmation(
+        inputId = "confirm_load_zenodo_data",
+        title = "Zenodo Import", btn_labels = c("Cancel", "Load"), size = "xs", html = TRUE,
         text = shiny::tagList(div_check_present(), shiny::textInput(inputId = session$ns("z_id"), label = "Enter Zonodo Record ID", value = "8380870")),
-        callbackR = function(value) {
-          if (value) {
-            x <- read_zenodo(input$z_id)
-            load_test_data(x = x)
-          }
-        }
       )
+    })
+    shiny::observeEvent(input$confirm_load_zenodo_data, {
+      if (input$confirm_load_zenodo_data) { load_test_data(x = read_zenodo(input$z_id)) }
     })
 
     # Load Backup Data ---------------------------------------------------------
@@ -115,14 +115,15 @@ m_RDataImport_Server = function(id, rv) {
       if (all(!rv$e_present())) {
         load_test_data(x = rdata())
       } else {
-        shinyalert::shinyalert(
-          title = "RData Import", confirmButtonText = "Load", showCancelButton = TRUE, size = "xs", html = TRUE,
+        shinyWidgets::ask_confirmation(
+          inputId = "confirm_load_rdata",
+          title = "RData Import", btn_labels = c("Cancel", "Load"), size = "xs", html = TRUE,
           text = shiny::tagList(div_check_present()),
-          callbackR = function(value) {
-            if (value) { load_test_data(x = rdata()) }
-          }
         )
       }
+    })
+    shiny::observeEvent(input$confirm_load_rdata, {
+      if (input$confirm_load_zenodo_data) { load_test_data(x = rdata()) }
     })
 
   })

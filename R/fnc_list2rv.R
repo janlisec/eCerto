@@ -57,11 +57,7 @@ list2rv <- function(x = NULL) {
             paste(err, collapse=", ")
           )
           if (!is.null(shiny::getDefaultReactiveDomain())) {
-            shinyalert::shinyalert(
-              title = "m_RDataImport_Server",
-              text = err_msg,
-              type = "warning"
-            )
+            shinyWidgets::show_alert(title="m_RDataImport_Server", text = err_msg, type = "warning")
           } else {
             warning(err_msg)
           }
@@ -123,7 +119,8 @@ list2rv <- function(x = NULL) {
       }
       setValue(rv, c("General","time_stamp"), Sys.time())
       if (!is.null(shiny::getDefaultReactiveDomain())) {
-        shinyalert::shinyalert(
+        shinyWidgets::show_alert(
+          title=NULL,
           text = paste("This is an import from a previous data format.",
           "Please note that some additional parameters are available",
           "in the current version of eCerto which could not be restored",

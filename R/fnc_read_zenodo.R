@@ -47,19 +47,18 @@ read_zenodo <- function(id) {
       if (interactive()) {
         message("Sorry, something went wrong upon download. :/")
       } else {
-        shinyalert::shinyalert(type = "error", text = "Sorry, something went wrong upon download. :/", closeOnClickOutside = TRUE)
+        shinyWidgets::show_alert(title=NULL, type = "error", text = "Sorry, something went wrong upon download. :/", closeOnClickOutside = TRUE)
       }
     } else {
       return(check_RData(x = dest))
     }
-
 
   } else {
 
     if (interactive()) {
       message("Sorry, could not find this Zenodo ID. :/")
     } else {
-      shinyalert::shinyalert(type = "error", text = "Sorry, could not find this Zenodo ID. :/", closeOnClickOutside = TRUE)
+      shinyWidgets::show_alert(title=NULL, type = "error", text = "Sorry, could not find this Zenodo ID. :/", closeOnClickOutside = TRUE)
     }
 
   }

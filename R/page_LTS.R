@@ -114,7 +114,7 @@ m_longtermstabilityServer = function(id) {
       if (!is.null(input$LTS_input_file)) {
         file.type <- tools::file_ext(input$LTS_input_file$datapath)
         if (!tolower(file.type) %in% c("rdata","xls","xlsx")) {
-          shinyalert::shinyalert(title = "Wrong Filetype?", text = "Please select an RData file or an Excel file.", type = "warning")
+          shinyWidgets::show_alert(title = "Wrong Filetype?", text = "Please select an RData file or an Excel file.", type = "warning")
           return(NULL)
         }
         if (tolower(file.type)=="rdata") {
@@ -134,12 +134,12 @@ m_longtermstabilityServer = function(id) {
               check_val_cols <- val_cols %in% colnames(LTS_dat[[i]][["val"]])
               if (!all(check_def_cols)) {
                 warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(def_cols[!check_def_cols], collapse=", "))
-                shinyalert::shinyalert(title = "Warning", text = warn_txt, type = "warning")
+                shinyWidgets::show_alert(title = "Warning", text = warn_txt, type = "warning")
                 LTS_dat[[i]][["def"]] <- cbind(LTS_dat[[i]][["def"]], as.data.frame(matrix(NA, ncol=sum(!check_def_cols), nrow=1, dimnames=list(NULL,def_cols[!check_def_cols]))))
               }
               if (!all(check_val_cols)) {
                 warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(val_cols[!check_val_cols], collapse=", "))
-                shinyalert::shinyalert(title = "Warning", text = warn_txt, type = "warning")
+                shinyWidgets::show_alert(title = "Warning", text = warn_txt, type = "warning")
               }
               if (!"Comment" %in% colnames(LTS_dat[[i]][["val"]])) LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Comment"=as.character(rep(NA, nrow(LTS_dat[[i]][["val"]]))))
               if (!inherits(LTS_dat[[i]][["val"]][,"Date"], "Date")) {
@@ -321,7 +321,7 @@ m_longtermstabilityServer = function(id) {
       a <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10)
       # 2/3 index in table
       if (nrow(a)>=2) {
-        shinyalert::shinyalert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
+        shinyWidgets::show_alert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
         a <- a[which.min(a[,"dist_"])[1],]
       }
       idx <- which(d()$mon==a$mon & d()$vals==a$vals)
@@ -347,7 +347,7 @@ m_longtermstabilityServer = function(id) {
         tmp <- datalist$lts_data[[i()]][["val"]]
         nval <- LTS_tmp_val()
         if (nval$Date < max(tmp$Date)) {
-          shinyalert::shinyalert(title = "Warning", text = "You added a data point for an earlier date. Resorting the table accordingly.", type = "warning")
+          shinyWidgets::show_alert(title = "Warning", text = "You added a data point for an earlier date. Resorting the table accordingly.", type = "warning")
           ord <- order(c(tmp$Date, nval$Date))
         } else {
           ord <- 1:(nrow(tmp)+1)

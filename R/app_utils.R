@@ -51,7 +51,6 @@ getValue <- function(df, key = NULL) {
 #' @param filepath the path to a single or multiple excel file(s)
 #' @return the names of sheets
 #' @importFrom openxlsx getSheetNames
-#' @importFrom shinyalert shinyalert
 #' @importFrom tools file_ext
 #' @noRd
 #' @keywords internal
