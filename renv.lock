@@ -362,15 +362,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.2.13",
+      "Version": "0.2.15",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "badc6b947f5e65248997e92c3f6e3197f7f06c88",
-      "Remotes": "github::daattali/shinyalert",
+      "RemoteSha": "bd342c3f5cdff4fcf0845d97bad788d3214c486e",
       "Requirements": [
         "DT",
         "R",
@@ -387,11 +386,10 @@
         "rmarkdown",
         "shiny",
         "shinyWidgets",
-        "shinyalert",
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "4dfbeb03eac4596d810a71e378636a30"
+      "Hash": "2d7be07a113f550c333f627129303709"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -1090,25 +1088,6 @@
       ],
       "Hash": "a515a78460d21328d2b8765fd5506964"
     },
-    "shinyalert": {
-      "Package": "shinyalert",
-      "Version": "3.0.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "daattali",
-      "RemoteRepo": "shinyalert",
-      "RemoteRef": "master",
-      "RemoteSha": "452b946f3ba9144cf45fa2f85f5857a815609db1",
-      "Requirements": [
-        "R",
-        "htmltools",
-        "shiny",
-        "stats",
-        "uuid"
-      ],
-      "Hash": "aea198633ab53480155065d83e554165"
-    },
     "shinyjs": {
       "Package": "shinyjs",
       "Version": "2.1.0",
@@ -1258,16 +1237,6 @@
         "R"
       ],
       "Hash": "1fe17157424bb09c48a8b3b550c753bc"
-    },
-    "uuid": {
-      "Package": "uuid",
-      "Version": "1.1-1",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R"
-      ],
-      "Hash": "3d78edfb977a69fc7a0341bee25e163f"
     },
     "vctrs": {
       "Package": "vctrs",
