@@ -4,7 +4,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml)
-[![codecov](https://codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg?token=NSY6DITZVH)](https://codecov.io/gh/janlisec/eCerto)
+[![codecov](https://codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg)](https://app.codecov.io/gh/janlisec/eCerto?branch=main)
 <!-- badges: end -->
 
 <img src="inst/app/www/hex-eCerto.png" width="170" align="right"/>
