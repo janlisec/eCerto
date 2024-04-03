@@ -17,6 +17,11 @@ prepTabC2 <- function(dat=NULL, excl_labs=FALSE) {
     dat[,"Lab"] <- factor(dat[,"Lab"])
   }
   x <- sapply(split(dat$value, dat$Lab), mean)
+  if (shiny::isRunning()) {
+    shiny::validate(shiny::need(expr = length(x)>1, message = "No statistics for single Lab possible."))
+  } else {
+    stopifnot(length(x)>1)
+  }
   out <- data.frame(
     "Mean" = mean(x),
     "Median" = stats::median(x),
