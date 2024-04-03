@@ -32,6 +32,8 @@ testthat::test_that(
     # check if module did start by comparing with previously recorded snapshot
     app$expect_values()
 
+    # covr does not work with shinytest2 currently according to this reported issue:
+    # https://github.com/rstudio/shinytest2/issues/268
     # terminate Shiny to allow covr to calculate the code coverage
     # p <- app$.__enclos_env__$private$shinyProcess
     # p$interrupt()
