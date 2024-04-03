@@ -369,7 +369,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "bd342c3f5cdff4fcf0845d97bad788d3214c486e",
+      "RemoteSha": "fabf179e98d876620e7bf9802d9df491a53ae886",
       "Requirements": [
         "DT",
         "R",
@@ -389,7 +389,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "2d7be07a113f550c333f627129303709"
+      "Hash": "ecdb40f5e4a1e6b78e50e8eadf1faf28"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -1039,7 +1039,7 @@
     },
     "shiny": {
       "Package": "shiny",
-      "Version": "1.8.1",
+      "Version": "1.8.1.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1068,7 +1068,7 @@
         "withr",
         "xtable"
       ],
-      "Hash": "a49e145ac3d0d1299e19ab215504f88e"
+      "Hash": "54b26646816af9960a4c64d8ceec75d6"
     },
     "shinyWidgets": {
       "Package": "shinyWidgets",

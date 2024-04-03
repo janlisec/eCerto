@@ -1,0 +1,40 @@
+{
+  "input": {
+    "test-Rdataex-study_id": "CRM001",
+    "test-Rdataex-user": "Jan Lisec",
+    "test-Rdatain-in_file_ecerto_backup": null,
+    "test-Rdatain-load_test_data": 0,
+    "test-Rdatain-load_zenodo_data": 0,
+    "test-excelfile-btn_load": 0,
+    "test-excelfile-file_name": "",
+    "test-excelfile-getHelp": 0,
+    "test-excelfile-moduleSelect": "dummy",
+    "test-excelfile-sheet_number": "1",
+    "test-excelfile-showHelp": 0,
+    "test-session_restart": 0
+  },
+  "output": {
+    "test-excelfile-inp_file": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"test-excelfile-excel_file-label\" for=\"test-excelfile-excel_file\">\n    Select \n    <a id=\"test-excelfile-moduleUploadHelp\" href=\"#\" class=\"action-button\">dummy data<\/a>\n    Excel\n    File\n  <\/label>\n  <div class=\"input-group\">\n    <label class=\"input-group-btn input-group-prepend\">\n      <span class=\"btn btn-default btn-file\">\n        Browse...\n        <input id=\"test-excelfile-excel_file\" class=\"shiny-input-file\" name=\"test-excelfile-excel_file\" type=\"file\" style=\"position: absolute !important; top: -99999px !important; left: -99999px !important;\" accept=\"xlsx\"/>\n      <\/span>\n    <\/label>\n    <input type=\"text\" class=\"form-control\" placeholder=\"No file selected\" readonly=\"readonly\"/>\n  <\/div>\n  <div id=\"test-excelfile-excel_file_progress\" class=\"progress active shiny-file-input-progress\">\n    <div class=\"progress-bar\"><\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "test-excelfile-rng_select-uitab": [
+      "",
+      "NULL",
+      "c(\"shiny.silent.error\", \"validation\")"
+    ],
+    "test-excelfile-rng_select-uitxt": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    }
+  },
+  "export": {
+
+  }
+}
