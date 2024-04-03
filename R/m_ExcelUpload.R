@@ -105,21 +105,22 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         shiny::fileInput(
           inputId = session$ns("excel_file"),
           multiple = exl_fmt()=="Certification",
-          label = shiny::tagList("Select Excel with ", shiny::actionLink(inputId = session$ns("moduleUploadHelp"), label = paste(exl_fmt(), "data"))),
+          label = shiny::tagList("Select ", shiny::actionLink(inputId = session$ns("moduleUploadHelp"), label = paste(exl_fmt(), "data")), "Excel", ifelse(exl_fmt()=="Certification","Files","File")),
           accept = "xlsx"
         )
       )
     })
 
     shiny::observe({
-      req(rv$e_present(), exl_fmt())
+      req(exl_fmt() %in% names(rv$e_present()))
+      #browser()
       if (rv$e_present()[exl_fmt()]) {
         shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
       } else {
         shinyjs::html(id = "info_msg", html = "")
       }
       # hide welcome screen when some data was loaded already
-      shinyjs::toggleElement(id = "welcome_screen", condition = !any(rv$e_present()))
+      shinyjs::toggleElement(id = "welcome_screen", condition = !any(rv$e_present()) & is.null(current_file_input()))
     })
 
     # Excel Sheet-number selector
