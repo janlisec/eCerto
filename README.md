@@ -18,13 +18,13 @@ tests are required and applied depending on the task and recorded data to ensure
 that reported values of CRMs are appropriate. Many of them are calculated 
 according to the procedures described in `ISO GUIDE 35:2017`. 
 
-The eCerto package contains a `Shiny`-App which provides functionality to load, 
-process and backup data for the statistical evaluation of analyses conducted 
-during CRM production.
+The **eCerto** package contains a `Shiny`-App which provides functionality to 
+load, process, report and backup data for the statistical evaluation of analyses 
+conducted during CRM production.
 
 ## Installation
 
-You can install the development version of **eCerto** from 
+To run **eCerto** locally You can install the development version from 
 [GitHub](https://github.com/janlisec/eCerto) with:
 
 ``` r
@@ -43,8 +43,7 @@ eCerto::run_app()
 
 ## Detailed documentation
 
-A description of eCerto showing a re-evaluation of previously published CRM data 
+A description of **eCerto** showing a re-evaluation of previously published CRM data 
 can be found in this [scientific article](https://doi.org/10.1007/s00216-023-05099-3).
-
 Most of the functionality is described in the online help which can be found
 starting the App from [www.bam.de/eCerto](https://apps.bam.de/shn00/eCerto/).

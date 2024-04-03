@@ -17,7 +17,7 @@ testthat::test_that(
      server = function(input, output, session) {
        eCerto:::page_startServer(id = "test", rv = rv)
      },
-     options = list("test.mode" = FALSE)
+     options = list("test.mode" = TRUE)
     )
 
     # run this test app in a headless browser using shinytest2
