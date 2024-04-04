@@ -22,7 +22,6 @@
 #'   }
 #' )
 #' }
-#' @importFrom stats sd
 #' @keywords internal
 #' @noRd
 check_stability_UI <- function(id) {

@@ -22,7 +22,6 @@
 #'   }
 #' )
 #' }
-#' @importFrom stats sd
 #' @importFrom shinyWidgets dropdownButton
 #' @keywords internal
 #' @noRd

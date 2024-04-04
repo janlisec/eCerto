@@ -16,7 +16,6 @@
 #' eCerto:::prepFigS3(tab = x)
 #' }
 #' @return A data frame.
-#' @importFrom graphics par
 #' @keywords internal
 #' @noRd
 prepFigS3 <- function(tab) {
@@ -31,7 +30,7 @@ prepFigS3 <- function(tab) {
   xlim <- range(tab[, "1/K"], na.rm = TRUE)
   ylim <- range(c(tab[, "log(-k_eff)"], tab[, "CI_upper"], tab[, "CI_lower"]), na.rm = TRUE)
   opar <- graphics::par(no.readonly = TRUE)
-  on.exit(par(opar))
+  on.exit(graphics::par(opar))
   graphics::par(mar = c(4, 4.5, 4, 0.5))
   plot(xlim, ylim, xlab = NA, ylab = expression(ln(-k[eff])), type = "n", main = "")
   graphics::mtext(side = 1, line = 2.5, adj = 0.5, text = "Inverse Temp [1/K]")

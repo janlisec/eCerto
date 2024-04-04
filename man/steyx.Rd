@@ -2,7 +2,7 @@
 % Please edit documentation in R/fnc_steyx.R
 \name{steyx}
 \alias{steyx}
-\title{steyx.}
+\title{Implementaion of the STEYX function from Excel.}
 \usage{
 steyx(x, y)
 }

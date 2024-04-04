@@ -1,14 +1,12 @@
-#' @title fnc_calc_time_diff.
-#'
+#' @name calc_time_diff
+#' @title Calculate time differences for suitable vectors.
 #' @description Calculation of a time difference between time points in a vector `x` and
 #'     a specific start date `d_start` in month (days or years).
-#'
 #' @param x A vector of dates or character in format 'yyyy-mm-dd'.
 #' @param d_start A specific start date (if unspecified the minimum of x will be used to ensure positive values).
 #' @param type You may specify 'year' or 'day' instead of month here.
 #' @param origin The origin used.
 #' @param exact Function will return exact values instead of full month and year if this is set to TRUE.
-#'
 #' @examples
 #' x <- c("2022-02-01", "2022-02-03", "2022-03-01", "2024-02-01")
 #' calc_time_diff(x = x)
@@ -17,7 +15,6 @@
 #' calc_time_diff(x = x, type = "year")
 #' calc_time_diff(x = x, type = "year", d_start = "2021-12-31")
 #' calc_time_diff(x = 1:3, type = "day", origin = Sys.Date())
-#'
 #' @return A numeric vector of length `x` containing calculated time differences
 #'     in the unit specified by `type`. Not a difftime object.
 #' @export

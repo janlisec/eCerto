@@ -1,4 +1,5 @@
-#' @title fnc_assert_col.
+#' @name assert_col
+#' @title Assert a specific column (type and position) in a data frame.
 #' @description \code{assert_col} will check in a data.frame for name, position,
 #'    type of a specific column and ensure that the return value (data frame)
 #'    contains a respective column.

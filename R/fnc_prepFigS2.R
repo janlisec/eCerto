@@ -18,7 +18,6 @@
 #' eCerto:::prepFigS2(tmp = x, plot_ln_relative = FALSE)
 #' eCerto:::prepFigS2(tmp = x, round_time = TRUE, show_ids = TRUE)
 #' @return A data frame.
-#' @importFrom graphics par
 #' @noRd
 #' @keywords internal
 prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE, round_time = FALSE, show_ids = FALSE) {
@@ -50,7 +49,7 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
   ylim <- ifelse(plot_ln_relative, 0, 1) + c(-1, 1) * max(abs(ylim - ifelse(plot_ln_relative, 0, 1)))
   cex_plot <- 1.5
   opar <- graphics::par(no.readonly = TRUE)
-  on.exit(par(opar))
+  on.exit(graphics::par(opar))
   graphics::par(mar = c(5.5, 4.5, 1, 1))
   graphics::par(mfrow = c(1, length(levels(tf)) - 1))
   graphics::par(cex.lab = cex_plot * 1.1, cex.axis = cex_plot * 1.1)

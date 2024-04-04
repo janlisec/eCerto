@@ -3,7 +3,6 @@
 #' @param filepath the path to a single or multiple excel file(s)
 #' @return the names of sheets
 #' @importFrom openxlsx getSheetNames
-#' @importFrom tools file_ext
 #' @noRd
 #' @keywords internal
 xlsxSheetNames <- function(filepath) {

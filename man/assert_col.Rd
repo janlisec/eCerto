@@ -2,7 +2,7 @@
 % Please edit documentation in R/fnc_assert_col.R
 \name{assert_col}
 \alias{assert_col}
-\title{fnc_assert_col.}
+\title{Assert a specific column (type and position) in a data frame.}
 \usage{
 assert_col(
   df,

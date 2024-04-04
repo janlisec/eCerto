@@ -17,7 +17,8 @@ Description: The production of certified reference materials (CRMs) requires
     provides functionality to load, process, report and backup data recorded 
     during CRM production to facilitate following the recommended procedures.
     It is described in Lisec et al (2023) <doi:10.1007/s00216-023-05099-3> and
-    can also be accessed online at <https://www.bam.de/eCerto>.
+    can also be accessed online <https://www.bam.de/eCerto> without package
+    installation.
 URL: https://github.com/janlisec/eCerto
 BugReports: https://github.com/janlisec/eCerto/issues
 License: MIT + file LICENSE
@@ -53,5 +54,5 @@ Suggests:
     vdiffr
 biocViews:
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Config/testthat/edition: 3

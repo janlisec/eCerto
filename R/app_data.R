@@ -28,7 +28,6 @@
 
 #' @title test_Stability_Arrhenius.
 #' @keywords internal
-#' @importFrom stats rnorm
 #' @noRd
 test_Stability_Arrhenius <- function(seed = 4) {
   set.seed(seed)

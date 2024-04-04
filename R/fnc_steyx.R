@@ -1,4 +1,5 @@
-#' @title steyx.
+#' @name steyx
+#' @title Implementaion of the STEYX function from Excel.
 #' @description Translation of `STEYX` function from Excel to R. It is implemented
 #'    according to the formula described in
 #'    <http://office.microsoft.com/en-au/excel-help/steyx-function-HP010062545.aspx>.

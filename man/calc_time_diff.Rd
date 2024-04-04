@@ -2,7 +2,7 @@
 % Please edit documentation in R/fnc_calc_time_diff.R
 \name{calc_time_diff}
 \alias{calc_time_diff}
-\title{fnc_calc_time_diff.}
+\title{Calculate time differences for suitable vectors.}
 \usage{
 calc_time_diff(
   x = NULL,
@@ -39,5 +39,4 @@ calc_time_diff(x = x, type = "day")
 calc_time_diff(x = x, type = "year")
 calc_time_diff(x = x, type = "year", d_start = "2021-12-31")
 calc_time_diff(x = 1:3, type = "day", origin = Sys.Date())
-
 }
