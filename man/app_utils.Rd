@@ -33,9 +33,9 @@ Preferable way for calling \code{getValue(df, key)}, see example
 # Only run examples in interactive R sessions
 if (interactive()) {
   rv <- eCerto$new(init_rv())
-  setValue(rv, c("Certification","data"), 5)
-  getValue(rv, c("Certification","data")) # is 5?
-  setValue(rv, c("General","user"),"Franz")
-  getValue(rv, c("General","user"))
+  setValue(rv, c("Certification", "data"), 5)
+  getValue(rv, c("Certification", "data")) # is 5?
+  setValue(rv, c("General", "user"), "Franz")
+  getValue(rv, c("General", "user"))
 }
 }

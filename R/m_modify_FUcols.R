@@ -8,20 +8,22 @@
 #' @examples
 #' \dontrun{
 #' if (interactive()) {
-#' shinyApp(
-#'   ui = shiny::fluidPage(
-#'     shinyjs::useShinyjs(),
-#'     shiny:::modify_FUcols_UI(id = "test")
-#'   ),
-#'   server = function(input, output, session) {
-#'     #rv <- eCerto:::test_rv()
-#'     rv <- eCerto:::test_rv("SR3")
-#'     mt <- shiny::reactiveVal()
-#'     shiny::isolate(mt(eCerto::getValue(rv, c("General", "materialtabelle"))))
-#'     shiny:::modify_FUcols_Server(id = "test", mt = mt)
-#'     shiny::observeEvent(mt(), { print(mt) })
-#'   }
-#' )
+#'   shinyApp(
+#'     ui = shiny::fluidPage(
+#'       shinyjs::useShinyjs(),
+#'       shiny:::modify_FUcols_UI(id = "test")
+#'     ),
+#'     server = function(input, output, session) {
+#'       # rv <- eCerto:::test_rv()
+#'       rv <- eCerto:::test_rv("SR3")
+#'       mt <- shiny::reactiveVal()
+#'       shiny::isolate(mt(eCerto::getValue(rv, c("General", "materialtabelle"))))
+#'       shiny:::modify_FUcols_Server(id = "test", mt = mt)
+#'       shiny::observeEvent(mt(), {
+#'         print(mt)
+#'       })
+#'     }
+#'   )
 #' }
 #' }
 #' @importFrom stats sd
@@ -36,7 +38,7 @@ modify_FUcols_UI <- function(id) {
       label = "Modify F/U cols",
       shiny::tagList(
         shiny::selectInput(inputId = ns("selinp"), label = "Create/modify user column", choices = c("<new F>", "<new U>")),
-        shiny::textInput(inputId = ns("txtinp"), label = "Edit user column name", value = "") ,
+        shiny::textInput(inputId = ns("txtinp"), label = "Edit user column name", value = ""),
         shiny::fluidRow(
           shiny::column(width = 6, shiny::actionButton(inputId = ns("btn"), label = "Apply")),
           shiny::column(width = 6, shiny::actionLink(inputId = ns("tabC3opt"), label = "Show Help"))
@@ -53,23 +55,21 @@ modify_FUcols_UI <- function(id) {
 #' @noRd
 modify_FUcols_Server <- function(id, mt = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-
     new_cols <- c("<new U>", "<new F>")
 
     observeEvent(mt(), {
       cc <- attr(mt(), "col_code")
-      choices <- c(cc[,"Name"], new_cols)
+      choices <- c(cc[, "Name"], new_cols)
       shiny::updateSelectInput(inputId = "selinp", choices = choices)
     })
 
     col_type <- shiny::reactiveVal()
     observeEvent(input$selinp, {
       cc <- attr(mt(), "col_code")
-      type <- switch(
-        input$selinp,
+      type <- switch(input$selinp,
         "<new F>" = "F",
         "<new U>" = "U",
-        substr(cc[cc[,"Name"]==input$selinp,"ID"],1,1)
+        substr(cc[cc[, "Name"] == input$selinp, "ID"], 1, 1)
       )
       col_type(type)
       shinyjs::html(id = "msg_type", html = shiny::HTML("[Info] col-type is: <strong>", type, "</strong>"))
@@ -98,25 +98,25 @@ modify_FUcols_Server <- function(id, mt = NULL) {
       cc <- attr(x, "col_code")
       ct <- col_type()
       cn <- input$txtinp
-      if (cn %in% c(colnames(x), cc[,"Name"])) {
+      if (cn %in% c(colnames(x), cc[, "Name"])) {
         shinyWidgets::show_alert(
           title = NULL,
           text = paste("Sorry, I can't", tolower(btn_action()), "this column. Please specify a unique column name.")
         )
       } else {
-        if (btn_action()=="Add") {
-          n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[,"ID"],1,1)==ct,"ID"],2,2))))) # get smallest index number available
-          cc <- rbind(cc, data.frame("ID"=paste0(ct, n), "Name"=cn))
-          nc <- matrix(rep(ifelse(ct=="U", 0, 1), nrow(x)), ncol=1, dimnames=list(rownames(x), paste0(ct, n))) # new data column
-          cp <- which(colnames(x)==ifelse(ct=="U", "u_com", "cert_val")) # column position where to include the new data
-          x <- cbind(x[,1:(cp-1)], nc, x[,cp:ncol(x)])
+        if (btn_action() == "Add") {
+          n <- min(which(!(1:9 %in% as.numeric(substr(cc[substr(cc[, "ID"], 1, 1) == ct, "ID"], 2, 2))))) # get smallest index number available
+          cc <- rbind(cc, data.frame("ID" = paste0(ct, n), "Name" = cn))
+          nc <- matrix(rep(ifelse(ct == "U", 0, 1), nrow(x)), ncol = 1, dimnames = list(rownames(x), paste0(ct, n))) # new data column
+          cp <- which(colnames(x) == ifelse(ct == "U", "u_com", "cert_val")) # column position where to include the new data
+          x <- cbind(x[, 1:(cp - 1)], nc, x[, cp:ncol(x)])
         }
-        if (btn_action()=="Delete") {
-          x <- x[,!(colnames(x)==cc[input$selinp==cc[,"Name"],"ID"])]
-          cc <- cc[!(substr(cc[,"ID"],1,1)==ct & cc[,"Name"]==input$selinp),,drop=FALSE]
+        if (btn_action() == "Delete") {
+          x <- x[, !(colnames(x) == cc[input$selinp == cc[, "Name"], "ID"])]
+          cc <- cc[!(substr(cc[, "ID"], 1, 1) == ct & cc[, "Name"] == input$selinp), , drop = FALSE]
         }
-        if (btn_action()=="Rename") {
-          cc[substr(cc[,"ID"],1,1)==ct & cc[,"Name"]==input$selinp,"Name"] <- cn
+        if (btn_action() == "Rename") {
+          cc[substr(cc[, "ID"], 1, 1) == ct & cc[, "Name"] == input$selinp, "Name"] <- cn
         }
         attr(x, "col_code") <- cc
         mt(x)
@@ -125,7 +125,8 @@ modify_FUcols_Server <- function(id, mt = NULL) {
     })
 
     # Help section -------------------------------------------------------------
-    shiny::observeEvent(input$tabC3opt, { show_help("certification_materialtabelle_opt") })
-
+    shiny::observeEvent(input$tabC3opt, {
+      show_help("certification_materialtabelle_opt")
+    })
   })
 }

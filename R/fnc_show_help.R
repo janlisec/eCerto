@@ -21,11 +21,11 @@ show_help <- function(filename, show_modal = TRUE) {
     file_in <- filename
   }
   help_text <- NULL
-  if (length(file_in)==1 && file.exists(file_in)) {
+  if (length(file_in) == 1 && file.exists(file_in)) {
     message("[show_help] Rendering Rmd file: ", file_in)
     help_text <- shiny::withMathJax(
       shiny::HTML(
-        #markdown::mark_html(file = file_in, options = "+tables+autolink+latex_math-standalone")
+        # markdown::mark_html(file = file_in, options = "+tables+autolink+latex_math-standalone")
         markdown::markdownToHTML(file = file_in, fragment.only = TRUE)
       )
     )

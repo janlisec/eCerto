@@ -17,7 +17,7 @@ styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cva
   if (fmt %in% c("pval", "cval", "cval05", "cval01")) {
     cns <- c("Dixon", "Grubbs1", "Grubbs2", "Cochran")
     cns <- cns[cns %in% colnames(x)]
-    if (length(cns)>=1) x[,cns] <- round(x[,cns], 6)
+    if (length(cns) >= 1) x[, cns] <- round(x[, cns], 6)
   }
   nc <- ncol(x)
   colnames(x) <- gsub("_01", "<sub>.01</sub>", colnames(x))
@@ -26,20 +26,20 @@ styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cva
   colnames(x) <- gsub("2$", "<sub>2</sub>", colnames(x))
   dt <- DT::datatable(
     # add a fake column to the table to allow horizontal fill
-    data = cbind(x, data.frame(" "=" ", check.names = FALSE)),
+    data = cbind(x, data.frame(" " = " ", check.names = FALSE)),
     options = list(
-      dom = "t", pageLength=-1, scrollX = TRUE, ordering = FALSE,
+      dom = "t", pageLength = -1, scrollX = TRUE, ordering = FALSE,
       columnDefs = list(
-        list("width"= "80px", targets=c(1:2,4:(nc-1))),
-        list("width"= "30px", targets=c(0,3)),
-        list("orderable"= "true", targets=0:2),
-        list(className = 'dt-right', targets = "_all")
+        list("width" = "80px", targets = c(1:2, 4:(nc - 1))),
+        list("width" = "30px", targets = c(0, 3)),
+        list("orderable" = "true", targets = 0:2),
+        list(className = "dt-right", targets = "_all")
       )
     ),
-    selection='none', rownames = NULL, escape = FALSE
+    selection = "none", rownames = NULL, escape = FALSE
   )
   dt <- DT::formatCurrency(
-    table = dt, columns = c(2,3), currency = "", digits = n
+    table = dt, columns = c(2, 3), currency = "", digits = n
   )
   return(dt)
 }

@@ -14,14 +14,14 @@ here directly.
 }
 \examples{
 if (interactive()) {
-test <- eCerto$new(eCerto:::init_rv())
-shiny::isolate(eCerto::getValue(test, c("Certification","data")))
-shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
-  message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
-})
-shiny::isolate(eCerto::setValue(test, c("Certification","data"), 5))
-shiny::isolate(eCerto::getValue(test, c("Certification","data")))
-shiny:::flushReact()
+  test <- eCerto$new(eCerto:::init_rv())
+  shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
+  shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
+    message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
+  })
+  shiny::isolate(eCerto::setValue(test, c("Certification", "data"), 5))
+  shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
+  shiny:::flushReact()
 }
 tmp <- eCerto$new()
 shiny::isolate(tmp$c_plot())
@@ -37,9 +37,9 @@ tmp$c_fltData()
 shiny::isolate(tmp$cur_an <- "Fe")
 shiny::isolate(tmp$cur_an)
 tmp$c_fltData()
-x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
+x <- shiny::isolate(eCerto::getValue(tmp, c("General", "apm")))
 x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L2"
-shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
+shiny::isolate(eCerto::setValue(tmp, c("General", "apm"), x))
 tmp$c_fltData()
 tmp$c_fltData(recalc = TRUE)
 }

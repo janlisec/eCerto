@@ -8,22 +8,21 @@
 #'
 #' @examples
 #' if (interactive()) {
-#' shiny::shinyApp(
-#'  ui = shiny::fluidPage(
-#'    eCerto:::page_startUI(id = "test")
-#'  ),
-#'  server = function(input, output, session) {
-#'    rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
-#'    eCerto:::page_startServer(id = "test", rv = rv)
-#'  }
-#' )
+#'   shiny::shinyApp(
+#'     ui = shiny::fluidPage(
+#'       eCerto:::page_startUI(id = "test")
+#'     ),
+#'     server = function(input, output, session) {
+#'       rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
+#'       eCerto:::page_startServer(id = "test", rv = rv)
+#'     }
+#'   )
 #' }
 #'
 #' @return Nothing
 #' @noRd
 
 page_startUI <- function(id) {
-
   ns <- shiny::NS(id)
 
   shiny::fluidRow(
@@ -38,18 +37,15 @@ page_startUI <- function(id) {
         hr(),
         m_RDataExport_UI(ns("Rdataex")),
         hr(),
-        shiny::actionButton(inputId = ns("session_restart"), label = "Restart eCerto App", width="100%", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(210,0,30)")
-
+        shiny::actionButton(inputId = ns("session_restart"), label = "Restart eCerto App", width = "100%", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(210,0,30)")
       )
     )
   )
 }
 
 #' @noRd
-page_startServer = function(id, rv, msession = NULL) {
-
+page_startServer <- function(id, rv, msession = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-
     ns <- shiny::NS(id)
 
     silent <- get_golem_config("silent")
@@ -66,7 +62,7 @@ page_startServer = function(id, rv, msession = NULL) {
     shiny::observeEvent(input$session_restart, {
       shiny::showModal(shiny::modalDialog(
         easyClose = FALSE,
-        title="Sure you want to restart the session?",
+        title = "Sure you want to restart the session?",
         "This will erase all non-saved inputs!",
         footer = shiny::tagList(
           shiny::actionButton(session$ns("confirmRestart"), "Restart"),
@@ -80,9 +76,8 @@ page_startServer = function(id, rv, msession = NULL) {
     })
 
     # Help section -------------------------------------------------------------
-    shiny::observeEvent(input$getHelp, { show_help("start_gethelp") })
-
+    shiny::observeEvent(input$getHelp, {
+      show_help("start_gethelp")
+    })
   })
-
 }
-

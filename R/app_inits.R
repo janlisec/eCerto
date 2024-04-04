@@ -4,10 +4,10 @@
 #' @return a data frame
 #' @keywords internal
 #' @noRd
-#' @examples matTab <- eCerto:::init_materialtabelle(analytes = c("Si","Ar"))
+#' @examples matTab <- eCerto:::init_materialtabelle(analytes = c("Si", "Ar"))
 init_materialtabelle <- function(analytes) {
   mt <- data.frame(
-    "analyte" =  analytes,
+    "analyte" = analytes,
     "mean" = NA,
     "cert_val" = NA,
     "sd" = NA,
@@ -39,7 +39,7 @@ init_materialtabelle <- function(analytes) {
 #' @example rv <- eCerto:::init_rv()
 init_rv <- function() {
   list(
-    #"modules" = c("Certification", "Homogeneity", "Stability"), # names of the modules
+    # "modules" = c("Certification", "Homogeneity", "Stability"), # names of the modules
     "modules" = c("Homogeneity", "Stability", "Certification"), # names of the modules
     "General" = shiny::reactiveValues(
       # save
@@ -106,9 +106,9 @@ init_apm <- function(x) {
   if (missing(x)) {
     # default example data
     x <- data.frame(
-      "ID"=1:20,
-      "analyte"=gl(n = 2, k = 10, labels = c("A1","A2")),
-      "Lab"=rep(rep(c("L1","L2"),each=5),2)
+      "ID" = 1:20,
+      "analyte" = gl(n = 2, k = 10, labels = c("A1", "A2")),
+      "Lab" = rep(rep(c("L1", "L2"), each = 5), 2)
     )
   } else {
     # check x
@@ -117,7 +117,7 @@ init_apm <- function(x) {
     stopifnot("'init_apm(x)' is missing column 'analyte' in data.frame 'x'" = "analyte" %in% colnames(x))
     stopifnot("'init_apm(x)' is missing column 'Lab' in data.frame 'x'" = "Lab" %in% colnames(x))
     if (!is.factor(x[, "analyte"])) {
-      x[,"analyte"] <- factor(x[,"analyte"], levels=unique(x[,"analyte"]))
+      x[, "analyte"] <- factor(x[, "analyte"], levels = unique(x[, "analyte"]))
     }
   }
   # the output template used for every analyte
@@ -137,17 +137,17 @@ init_apm <- function(x) {
   apm <- sapply(levels(x[, "analyte"]), function(an) {
     out <- templ
     out$name <- an
-    out$sample_ids <- x[as.character(x[,"analyte"])==an,"ID"]
-    y <- x[as.character(x[,"analyte"])==an,,drop=FALSE]
-    out$lab_ids <- unique(as.character(y[,"Lab"]))
-    if ("S_flt" %in% colnames(y) && any(y[,"S_flt"])) out$sample_filter <- y[which(y[,"S_flt"]),"ID"]
-    if ("L_flt" %in% colnames(y) && any(y[,"L_flt"])) out$lab_filter <- unique(as.character(y[which(y[,"L_flt"]),"Lab"]))
-    if ("unit" %in% colnames(y)) out[["unit"]] <- as.character(unique(y[,"unit"])[1])
+    out$sample_ids <- x[as.character(x[, "analyte"]) == an, "ID"]
+    y <- x[as.character(x[, "analyte"]) == an, , drop = FALSE]
+    out$lab_ids <- unique(as.character(y[, "Lab"]))
+    if ("S_flt" %in% colnames(y) && any(y[, "S_flt"])) out$sample_filter <- y[which(y[, "S_flt"]), "ID"]
+    if ("L_flt" %in% colnames(y) && any(y[, "L_flt"])) out$lab_filter <- unique(as.character(y[which(y[, "L_flt"]), "Lab"]))
+    if ("unit" %in% colnames(y)) out[["unit"]] <- as.character(unique(y[, "unit"])[1])
     # try to make an initial guess regarding the desired rounding according to DIN1333
-    n <- try(digits_DIN1333(2*sd(sapply(split(y[,"value"], y[,"Lab"]), mean))/sqrt(length(unique(y[,"Lab"])))), silent = TRUE)
+    n <- try(digits_DIN1333(2 * sd(sapply(split(y[, "value"], y[, "Lab"]), mean)) / sqrt(length(unique(y[, "Lab"])))), silent = TRUE)
     if (!inherits(n, "try-error") && is.finite(n)) {
       out$precision_export <- n
-      out$precision <- n+1
+      out$precision <- n + 1
     }
     return(out)
   }, simplify = FALSE)

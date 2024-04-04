@@ -4,8 +4,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
-app_server <- function( input, output, session ) {
-
+app_server <- function(input, output, session) {
   # set up new R6 object upon app start
   rv <- eCerto$new(init_rv()) # initiate persistent variables
 
@@ -16,7 +15,7 @@ app_server <- function( input, output, session ) {
 
   # Panels --------------------------------------------------------------------
   # start page
-  page_startServer(id="Start", rv=rv, msession = session)
+  page_startServer(id = "Start", rv = rv, msession = session)
 
   # Certification Modul
   page_CertificationServer(id = "certification", rv = rv)
@@ -39,10 +38,18 @@ app_server <- function( input, output, session ) {
   })
 
   # when a tab for an empty data set is selected --> jump to upload page
-  shiny::observeEvent(input$navbarpage, {
-    tP <- switch(input$navbarpage, "tP_certification"="Certification", "tP_homogeneity"="Homogeneity", "tP_stability"="Stability", NA)
-    if (tP %in% getValue(rv, c("modules")) && !rv$e_present()[tP]) to_startPage(session, value=tP)
-  }, ignoreInit = TRUE)
+  shiny::observeEvent(input$navbarpage,
+    {
+      tP <- switch(input$navbarpage,
+        "tP_certification" = "Certification",
+        "tP_homogeneity" = "Homogeneity",
+        "tP_stability" = "Stability",
+        NA
+      )
+      if (tP %in% getValue(rv, c("modules")) && !rv$e_present()[tP]) to_startPage(session, value = tP)
+    },
+    ignoreInit = TRUE
+  )
 
   # when the user uploaded excel data for a module --> set focus on this page
   shiny::observeEvent(getValue(rv, c("Certification", "input_files")), {
@@ -54,5 +61,4 @@ app_server <- function( input, output, session ) {
   shiny::observeEvent(getValue(rv, c("Homogeneity", "input_files")), {
     shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "tP_homogeneity")
   })
-
 }

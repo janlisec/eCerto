@@ -10,13 +10,13 @@
 #' @param show_ids Overlay sample IDs to identify outlier samples.
 #' @examples
 #' x <- eCerto:::test_Stability_Arrhenius(3)
-#' x$Value <- x$Value/mean(x$Value[x$time==0])
+#' x$Value <- x$Value / mean(x$Value[x$time == 0])
 #' eCerto:::prepFigS2(tmp = x)
 #' eCerto:::prepFigS2(tmp = x, show_reference_point = FALSE)
 #' eCerto:::prepFigS2(tmp = x, plot_nominal_scale = FALSE)
 #' eCerto:::prepFigS2(tmp = x, plot_in_month = FALSE)
 #' eCerto:::prepFigS2(tmp = x, plot_ln_relative = FALSE)
-#' eCerto:::prepFigS2(tmp = x, round_time = TRUE, show_ids =TRUE)
+#' eCerto:::prepFigS2(tmp = x, round_time = TRUE, show_ids = TRUE)
 #' @return A data frame.
 #' @importFrom graphics par
 #' @noRd
@@ -26,18 +26,18 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
   stopifnot(all(c("time", "Value", "Temp") %in% colnames(tmp)))
   stopifnot(is.numeric(tmp[, "time"]))
   stopifnot(is.numeric(tmp[, "Value"]))
-  if (min(tmp[, "time"])!=0) warning("Variable 'time' should be in days and start with day 0.")
-  if (mean(tmp[tmp[, "time"]==0, "Value"])!=1) warning("Variable 'Value' should be standardized to mean of t=0.")
+  if (min(tmp[, "time"]) != 0) warning("Variable 'time' should be in days and start with day 0.")
+  if (mean(tmp[tmp[, "time"] == 0, "Value"]) != 1) warning("Variable 'Value' should be standardized to mean of t=0.")
   time <- tmp[, "time"]
   val <- tmp[, "Value"]
   if (plot_in_month) {
     time <- round(time * 12 / 365, 2)
-    if (round_time) time <- round(round(4*time)/4,2)
+    if (round_time) time <- round(round(4 * time) / 4, 2)
   }
   if (plot_nominal_scale) time <- factor(time)
   if (plot_ln_relative) val <- log(val)
   tf <- factor(tmp[, "Temp"])
-  if (length(levels(tf))>8) message("Nore than 8 Temp levels are not well supported in plotting.")
+  if (length(levels(tf)) > 8) message("Nore than 8 Temp levels are not well supported in plotting.")
   # pchs <- c(21:25, 21:23)[as.numeric(tf)]
   # cols <- c(1:8)[as.numeric(tf)]
   ctls <- color_temperature_levels(x = tmp[, "Temp"])
@@ -78,7 +78,7 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
     flt <- tmp[, "Temp"] == k
     graphics::points(y = val[flt], x = time[flt], pch = pchs[flt], bg = cols[flt], cex = 2)
     if (show_ids) {
-      graphics::text(y = val[flt], x = jitter(as.numeric(time[flt]), amount = 0.25), labels = rownames(tmp)[flt], cex=2)
+      graphics::text(y = val[flt], x = jitter(as.numeric(time[flt]), amount = 0.25), labels = rownames(tmp)[flt], cex = 2)
     }
     if (!plot_ln_relative) {
       graphics::mtext(text = paste0("recovery = ", round(100 * mean(val[flt], na.rm = T), 1), "%"), side = 3, line = -1.8, adj = 0.02, cex = cex_plot)

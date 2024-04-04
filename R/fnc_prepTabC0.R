@@ -6,18 +6,18 @@
 #' @examples
 #' x <- list(
 #'   data.frame(
-#'     "A"=paste0("A",1:4),
-#'     "U"=rep("U",4),
-#'     "R1"=1:4,
-#'     "R2"=rnorm(4),
-#'     "File"=rep("F1",4)
+#'     "A" = paste0("A", 1:4),
+#'     "U" = rep("U", 4),
+#'     "R1" = 1:4,
+#'     "R2" = rnorm(4),
+#'     "File" = rep("F1", 4)
 #'   ),
 #'   data.frame(
-#'     "A"=paste0("A",1:4),
-#'     "U"=rep("U",4),
-#'     "R1"=5:8,
-#'     "R2"=rep(NA,4),
-#'     "File"=rep("F2",4)
+#'     "A" = paste0("A", 1:4),
+#'     "U" = rep("U", 4),
+#'     "R1" = 5:8,
+#'     "R2" = rep(NA, 4),
+#'     "File" = rep("F2", 4)
 #'   )
 #' )
 #' prepTabC0(x)

@@ -6,11 +6,11 @@
 #' @param c_apm The parameters of the current analyte from an session R6 object.
 #' @examples
 #' x <- shiny::isolate(eCerto::getValue(eCerto:::test_rv(), c("Certification", "data")))
-#' c_apm <- list("name"="Si", "sample_filter"=NULL, "lab_filter"=NULL, "precision"=2)
+#' c_apm <- list("name" = "Si", "sample_filter" = NULL, "lab_filter" = NULL, "precision" = 2)
 #' eCerto:::c_filter_data(x = x, c_apm = c_apm)
 #' c_apm[["lab_filter"]] <- "L1"
 #' eCerto:::c_filter_data(x = x, c_apm = c_apm)
-#' c_apm[["sample_filter"]] <- c(4,19)
+#' c_apm[["sample_filter"]] <- c(4, 19)
 #' eCerto:::c_filter_data(x = x, c_apm = c_apm)
 #' @return A data frame.
 #' @keywords internal
@@ -29,7 +29,8 @@ c_filter_data <- function(x, c_apm) {
         all(sapply(split(x[, "value"], x[, "Lab"]), length) >= 2),
         message = paste(names(which(
           sapply(split(x[, "value"], x[, "Lab"]), length) < 2
-        ))[1], "has less than 2 replicates left. Please remove an Sample-ID filter.")),
+        ))[1], "has less than 2 replicates left. Please remove an Sample-ID filter.")
+      ),
       shiny::need(
         is.numeric(c_apm[["precision"]]) && c_apm[["precision"]] >= 0 && c_apm[["precision"]] <= 6,
         message = "please check precision value: should be numeric and between 0 and 6"

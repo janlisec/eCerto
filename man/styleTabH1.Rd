@@ -30,9 +30,9 @@ tbd.
 x <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
 x
 eCerto:::styleTabH1(x = x)
-mt <- data.frame("analyte"="Fe")
+mt <- data.frame("analyte" = "Fe")
 eCerto:::styleTabH1(x = x, mt = mt)
-prec <- unlist(list("Fe"=2))
+prec <- unlist(list("Fe" = 2))
 eCerto:::styleTabH1(x = x, prec = prec)
 eCerto:::styleTabH1(x = x, output = "dt", prec = prec)
 }

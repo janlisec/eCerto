@@ -37,11 +37,11 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   # calculate means per Date if specified in parameters
   if (slope_of_means) {
     com_exist <- "Comment" %in% colnames(x[["val"]])
-    x[["val"]] <- plyr::ldply(split(x[["val"]], x[["val"]][,"Date"]), function(y) {
+    x[["val"]] <- plyr::ldply(split(x[["val"]], x[["val"]][, "Date"]), function(y) {
       data.frame(
-        "Value" = mean(y[,"Value"]),
-        "Date" = y[1,"Date"],
-        "Comment" = ifelse(com_exist && sum(nchar(y[,"Comment"]), na.rm=TRUE)>=1, paste(y[,"Comment"], collapse=", "), NA)
+        "Value" = mean(y[, "Value"]),
+        "Date" = y[1, "Date"],
+        "Comment" = ifelse(com_exist && sum(nchar(y[, "Comment"]), na.rm = TRUE) >= 1, paste(y[, "Comment"], collapse = ", "), NA)
       )
     }, .id = NULL)
   }
@@ -56,19 +56,19 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   a <- stats::coef(foo.lm)[1]
   b <- stats::coef(foo.lm)[2]
   SE_b <- summary(foo.lm)$coefficients["mon", 2]
-  #b.ci <- confint(object = foo.lm, parm = 'mon', level = 0.95)
+  # b.ci <- confint(object = foo.lm, parm = 'mon', level = 0.95)
 
   # extract relevant values from definition part
   U <- x[["def"]][, "U"]
   ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]), "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
   main <- x[["def"]][, "KW"]
   sub <- x[["def"]][, "U_Def"]
-  sub <- ifelse(sub=="U", expression(U[abs]), sub)
+  sub <- ifelse(sub == "U", expression(U[abs]), sub)
   sub2 <- ifelse(is.na(x[["def"]][, "CertVal"]), "mean", expression("\u03BC"[c]))
   if (is.na(x[["def"]][, "CertVal"])) x[["def"]][, "CertVal"] <- mean(x[["val"]][, "Value"])
   mn <- x[["def"]][, "CertVal"]
 
-  #sub <- paste0("green lines: ", sub, ", blue line: slope, red line: ", "mean")
+  # sub <- paste0("green lines: ", sub, ", blue line: slope, red line: ", "mean")
   # if (t_cert>0) {
   #   sub <- paste0(sub, ", u_stab(t_cert = ", t_cert, "): ", pn(round(SE_b*t_cert, 4)))
   # }
@@ -94,18 +94,21 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   # generate 'real time window' plot
   if (type == 1) {
     plot(
-      vals ~ mon, type = "n",
+      vals ~ mon,
+      type = "n",
       ylim = range(c(vals, mn + c(-1, 1) * U), na.rm = T),
       xlim = range(c(mon), t_cert),
       xlab = "Month", ylab = ylab, main = main
     )
     graphics::axis(side = 3, at = range(mon), labels = rt[c(1, length(rt))])
-    if (t_cert>0) {
-      #x_end <- max(c(max(mon), t_cert, U/SE_b))
+    if (t_cert > 0) {
+      # x_end <- max(c(max(mon), t_cert, U/SE_b))
       x_end <- t_cert
-      graphics::polygon(x = c(0, x_end, x_end, 0), y = c(mn,mn+SE_b*x_end,mn-SE_b*x_end,mn), col = grDevices::grey(0.9), border = NA)
-      graphics::segments(x0 = t_cert, y0 = mn-SE_b*t_cert, y1 = mn+SE_b*t_cert)
-      if (show_legend) { graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(s(b[1])~"x"~t[cert]), bty = "n", inset = c(0.04,0)) }
+      graphics::polygon(x = c(0, x_end, x_end, 0), y = c(mn, mn + SE_b * x_end, mn - SE_b * x_end, mn), col = grDevices::grey(0.9), border = NA)
+      graphics::segments(x0 = t_cert, y0 = mn - SE_b * t_cert, y1 = mn + SE_b * t_cert)
+      if (show_legend) {
+        graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(s(b[1]) ~ "x" ~ t[cert]), bty = "n", inset = c(0.04, 0))
+      }
     }
     graphics::abline(foo.lm, lty = 2, col = 4) # <-- slope
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
@@ -118,11 +121,11 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       graphics::points(vals ~ mon, pch = 24, bg = c(grDevices::grey(0.6), 2)[1 + !is.na(com)])
     }
     if (show_legend) {
-      x <- par("usr")[2]-diff(par("usr")[1:2])*0.005
+      x <- par("usr")[2] - diff(par("usr")[1:2]) * 0.005
       graphics::text(x = x, y = mn, labels = sub2, adj = 1)
       graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
-      graphics::text(x = x, y = stats::predict(foo.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
-      if (t_cert>0) {
+      graphics::text(x = x, y = stats::predict(foo.lm, newdata = data.frame("mon" = x)), labels = expression(b[1]), adj = 1)
+      if (t_cert > 0) {
         graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
         graphics::mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
       }
@@ -130,7 +133,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   }
 
   # generate 'fake time window' plot
-  if (type %in% c(2,3)) {
+  if (type %in% c(2, 3)) {
     ylim <- range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U))
     if (!all(is.finite(ylim))) message("[plot_lts_data] non-finite ylim:", ylim)
     plot(
@@ -142,14 +145,14 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))
     if (type == 3) {
       ## the solution calculating CI for predicted (y_hat) values
-      newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out=100)
-      preds <- stats::predict(adj.lm, newdata = data.frame(mon=newx), interval = 'confidence')
-      graphics::polygon(c(rev(newx), newx), c(rev(preds[ ,3]), preds[ ,2]), col = grDevices::grey(0.9), border = NA)
+      newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out = 100)
+      preds <- stats::predict(adj.lm, newdata = data.frame(mon = newx), interval = "confidence")
+      graphics::polygon(c(rev(newx), newx), c(rev(preds[, 3]), preds[, 2]), col = grDevices::grey(0.9), border = NA)
       if (show_legend) {
-        graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(CI[95](b[1])), bty = "n", inset = c(0.04,0))
+        graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(CI[95](b[1])), bty = "n", inset = c(0.04, 0))
       }
-      #lines(newx, preds[ ,3], lty = 'dashed', col = 'blue')
-      #lines(newx, preds[ ,2], lty = 'dashed', col = 'blue')
+      # lines(newx, preds[ ,3], lty = 'dashed', col = 'blue')
+      # lines(newx, preds[ ,2], lty = 'dashed', col = 'blue')
 
       ## ISO Guide (B.21) solution
       # ...
@@ -163,29 +166,28 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
     graphics::abline(adj.lm, lty = 2, col = 4)
     if (show_legend) {
-      x <- par("usr")[2]-diff(par("usr")[1:2])*0.005
+      x <- par("usr")[2] - diff(par("usr")[1:2]) * 0.005
       graphics::text(x = x, y = mn, labels = sub2, adj = 1)
       graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
-      #browser()
-      graphics::text(x = x, y = stats::predict(adj.lm, newdata = data.frame("mon"=x)), labels = expression(b[1]), adj = 1)
-      if (t_cert>0) {
+      # browser()
+      graphics::text(x = x, y = stats::predict(adj.lm, newdata = data.frame("mon" = x)), labels = expression(b[1]), adj = 1)
+      if (t_cert > 0) {
         graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
         graphics::mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
       }
     }
-    if (type==2) {
+    if (type == 2) {
       graphics::text(x = foo_lts, y = mn + b * foo_lts, pos = 2, labels = paste(foo_lts, "month"))
       graphics::points(x = c(mon, foo_lts), y = c(foo_adj, mn + b * foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
     } else {
       # if CI_95 of regression line was calculated use the intercept with uncertainty line for life time estimation
-      decreasing <- adj.lm$coefficients[2]<0
-      idx <- which.min(abs(preds[, ifelse(decreasing, 2, 3)]-(mn + ifelse(decreasing, -U, U))))
+      decreasing <- adj.lm$coefficients[2] < 0
+      idx <- which.min(abs(preds[, ifelse(decreasing, 2, 3)] - (mn + ifelse(decreasing, -U, U))))
       foo_lts <- round(newx[idx])
       y_foo_lts <- preds[idx, ifelse(decreasing, 2, 3)]
       graphics::text(x = foo_lts, y = y_foo_lts, pos = 2, labels = paste(foo_lts, "month"))
       graphics::points(x = c(mon, foo_lts), y = c(foo_adj, y_foo_lts), pch = 21, bg = c(c(grDevices::grey(0.6), 2)[1 + !is.na(com)], 4))
     }
-
   }
 
   names(foo_lts) <- as.character(as.POSIXlt(as.Date(rt[1] + foo_lts * days_per_month, origin = "1900-01-01")))

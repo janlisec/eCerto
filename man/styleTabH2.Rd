@@ -21,7 +21,7 @@ A datatable object.
 tbd.
 }
 \examples{
-x <- data.frame("Item"=LETTERS[1:3], "mean"=1:3, "sd" = rnorm(3), "n" = 4:6)
+x <- data.frame("Item" = LETTERS[1:3], "mean" = 1:3, "sd" = rnorm(3), "n" = 4:6)
 eCerto:::styleTabH2(x = x)
 eCerto:::styleTabH2(x = x, precision = 2)
 }

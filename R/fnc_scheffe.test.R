@@ -6,7 +6,7 @@
 #' @param alpha alpha level for grouping.
 #' @examples
 #' test <- eCerto:::test_rv("SR3")$c_fltData()
-#' eCerto:::scheffe.test(y = stats::lm(value~Lab, data=test), trt="Lab", alpha = 0.05)$group
+#' eCerto:::scheffe.test(y = stats::lm(value ~ Lab, data = test), trt = "Lab", alpha = 0.05)$group
 #' @noRd
 #' @keywords internal
 scheffe.test <- function(y, trt, alpha = 0.05) {
@@ -68,7 +68,7 @@ scheffe.test <- function(y, trt, alpha = 0.05) {
     i <- comb[1, k]
     j <- comb[2, k]
     dif[k] <- means[i, 2] - means[j, 2]
-    sdtdif <- sqrt(MSerror * (1 / means[i, 4] + 1 / means[j,4]))
+    sdtdif <- sqrt(MSerror * (1 / means[i, 4] + 1 / means[j, 4]))
     pval[k] <- round(1 - stats::pf(abs(dif[k])^2 / ((ntr - 1) * sdtdif^2), ntr - 1, DFerror), 4)
     LCL[k] <- dif[k] - Tprob * sdtdif
     UCL[k] <- dif[k] + Tprob * sdtdif

@@ -27,21 +27,21 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
   colnames(x) <- gsub("_slope", "<sub>slope</sub>", colnames(x))
   colnames(x) <- gsub("_stab", "<sub>stab</sub>", colnames(x))
   colnames(x) <- gsub("_cert", "<sub>cert</sub>", colnames(x))
-  inv_cols <- grep("style_", colnames(x))-1
+  inv_cols <- grep("style_", colnames(x)) - 1
   # attach a blank column at the end
-  x <- cbind(x, data.frame(" "=" ", check.names = FALSE))
+  x <- cbind(x, data.frame(" " = " ", check.names = FALSE))
   # set up the DT object
   dt <- DT::datatable(
     data = x,
     options = list(
       dom = "t", paging = FALSE, searching = FALSE, ordering = FALSE,
       columnDefs = list(
-        list("width"= paste0(max(c(60, nchar(as.character(x[,"analyte"]))*9)), "px"), "targets" = which(colnames(x) %in% c("analyte"))-1),
-        list("width"= "60px", "targets" = which(!(colnames(x) %in% c("analyte", " ")))-1),
-        #list("width"= "30px", "targets" = which(colnames(x) %in% c("n", "N"))-1),
+        list("width" = paste0(max(c(60, nchar(as.character(x[, "analyte"])) * 9)), "px"), "targets" = which(colnames(x) %in% c("analyte")) - 1),
+        list("width" = "60px", "targets" = which(!(colnames(x) %in% c("analyte", " "))) - 1),
+        # list("width"= "30px", "targets" = which(colnames(x) %in% c("n", "N"))-1),
         list(visible = FALSE, targets = inv_cols),
-        list(className = 'dt-right', targets = which(!(colnames(x) %in% c("analyte")))-1),
-        list(className = 'dt-left', targets = which(colnames(x) %in% c("analyte"))-1)
+        list(className = "dt-right", targets = which(!(colnames(x) %in% c("analyte"))) - 1),
+        list(className = "dt-left", targets = which(colnames(x) %in% c("analyte")) - 1)
       )
     ),
     selection = list(mode = "single", target = "row", selected = sr),

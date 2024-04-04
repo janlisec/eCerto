@@ -14,15 +14,18 @@ check_RData <- function(x = NULL) {
   file.type <- tools::file_ext(x)
   shiny::validate(
     shiny::need(length(file.type) == 1, "Multiple files provided. Please select a single RData file containing an object 'res'."),
-    shiny::need(tolower(file.type) %in% c("rdata","rda"),"File extension different from RData. Please select a single RData file containing an object 'res'.")
+    shiny::need(tolower(file.type) %in% c("rdata", "rda"), "File extension different from RData. Please select a single RData file containing an object 'res'.")
   )
   file.type <- "RData"
   load_envir <- new.env()
-  tryCatch({
-    load(x[1], envir = load_envir)
-  }, error = function(e) {
-    stop(shiny::safeError(e))
-  })
+  tryCatch(
+    {
+      load(x[1], envir = load_envir)
+    },
+    error = function(e) {
+      stop(shiny::safeError(e))
+    }
+  )
   # check if 'res' is contained in loaded workspace
   out <- base::get0(x = "res", envir = load_envir, inherits = FALSE, ifnotfound = NULL)
   shiny::validate(

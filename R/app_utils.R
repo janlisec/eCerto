@@ -15,13 +15,13 @@
 #' # Only run examples in interactive R sessions
 #' if (interactive()) {
 #'   rv <- eCerto$new(init_rv())
-#'   setValue(rv, c("Certification","data"), 5)
-#'   getValue(rv, c("Certification","data")) # is 5?
-#'   setValue(rv, c("General","user"),"Franz")
-#'   getValue(rv, c("General","user"))
+#'   setValue(rv, c("Certification", "data"), 5)
+#'   getValue(rv, c("Certification", "data")) # is 5?
+#'   setValue(rv, c("General", "user"), "Franz")
+#'   getValue(rv, c("General", "user"))
 #' }
-setValue <- function(df, key, value){
-  if(R6::is.R6(df)){
+setValue <- function(df, key, value) {
+  if (R6::is.R6(df)) {
     df$set(key, value) # in eCerto.R
   } else {
     stop("Object of class ", class(df), " can't set value currently.")
@@ -90,19 +90,19 @@ xlsxSheetNames <- function(filepath) {
 #' @param p requested precision after the decimal sign
 #' @return numbers formatted
 #' @examples
-#' pn(n=c(1.23456, NA, 0, 0.00001, -0.00001), p=8)
+#' pn(n = c(1.23456, NA, 0, 0.00001, -0.00001), p = 8)
 #' @noRd
 #' @keywords internal
-pn <- function(n=NULL, p=4L) {
+pn <- function(n = NULL, p = 4L) {
   # n : numeric vector
   # p : precision after the decimal sign
   # output : numbers formatted in identical width as character using scientific notation for numbers < p and rounding to p otherwise
   if (any(is.finite(n))) {
-    w <- max(nchar(round(n)), na.rm=TRUE)+p+1 # determine maximum width required
-    o <- rep(paste(rep(" ", w), collapse=""), length(n))
+    w <- max(nchar(round(n)), na.rm = TRUE) + p + 1 # determine maximum width required
+    o <- rep(paste(rep(" ", w), collapse = ""), length(n))
     o[is.finite(n)] <- sprintf(paste0("%*.", p, "f"), w, n[is.finite(n)])
-    s <- is.finite(n) & round(n,p)==0 & abs(n)>0 # requires scientific notation
-    if (any(s)) o[which(s)] <- sprintf(paste0("%*.", max(c(p-4,1)), "E"), w, n[which(s)])
+    s <- is.finite(n) & round(n, p) == 0 & abs(n) > 0 # requires scientific notation
+    if (any(s)) o[which(s)] <- sprintf(paste0("%*.", max(c(p - 4, 1)), "E"), w, n[which(s)])
     return(o)
   } else {
     return(n)
@@ -118,37 +118,41 @@ pn <- function(n=NULL, p=4L) {
 #' @return Nothing. Will update the data frame in the reactive `r`.
 #' @noRd
 #' @keywords internal
-update_reactivecell = function(r, colname, analyterow = NULL, value) {
-  if(!is.data.frame(r()))
+update_reactivecell <- function(r, colname, analyterow = NULL, value) {
+  if (!is.data.frame(r())) {
     stop("r is not a data frame")
-  if(!colname %in% colnames(r()))
+  }
+  if (!colname %in% colnames(r())) {
     stop("reactive data frame does not contain column ", colname)
-  if(!is.null(analyterow) && nrow(merge(analyterow,r()))==0)
+  }
+  if (!is.null(analyterow) && nrow(merge(analyterow, r())) == 0) {
     stop("reactive data frame does not contain row ", analyterow)
-  if(is.data.frame(value))
+  }
+  if (is.data.frame(value)) {
     stop("value is a dataframe, but should be a scalar")
-  if(!is.null(analyterow) && length(value)>1) {
+  }
+  if (!is.null(analyterow) && length(value) > 1) {
     warning("value to be inserted is not scalar, i.e. more than one. Take only first!")
-    value = value[1]
+    value <- value[1]
   }
 
   # message("reactivecell: Update ",  deparse(substitute(r())), "; column: ", colname)
   # extract original row to be edit into variable (1/3)
-  df = r()
-  if(is.null(analyterow)){
-    newRow = df
+  df <- r()
+  if (is.null(analyterow)) {
+    newRow <- df
   } else {
-    newRow = df[df[["analyte"]]==analyterow,]
+    newRow <- df[df[["analyte"]] == analyterow, ]
   }
 
   # edit cell (2/3)
-  newRow[[colname]] = value
+  newRow[[colname]] <- value
 
   # update (3/3)
-  if(is.null(analyterow)){
-    df = newRow
+  if (is.null(analyterow)) {
+    df <- newRow
   } else {
-    df[df[["analyte"]]==analyterow,] = newRow
+    df[df[["analyte"]] == analyterow, ] <- newRow
   }
 
   r(df)
@@ -160,7 +164,7 @@ update_reactivecell = function(r, colname, analyterow = NULL, value) {
 #' @param  value value.
 #' @keywords internal
 #' @noRd
-to_startPage = function(session, value="Certification") {
+to_startPage <- function(session, value = "Certification") {
   # this function will break if shiny input IDs get changed
   shiny::updateNavbarPage(session = session, inputId = "navbarpage", selected = "Start")
   shiny::updateSelectInput(session = session, inputId = "Start-excelfile-moduleSelect", selected = value)
@@ -180,7 +184,7 @@ to_startPage = function(session, value="Certification") {
 #'   "b" = list(
 #'     "df1" = data.frame(col = c(1, 2)),
 #'     "e" = list(z = NULL)
-#'    ),
+#'   ),
 #'   "c" = NULL,
 #'   "df2" = data.frame(c12 = c(1, 2), c34 = c(3, 4))
 #' )
@@ -188,23 +192,24 @@ to_startPage = function(session, value="Certification") {
 #' listNames(test, 3)
 #' listNames(test, 3, TRUE)
 listNames <- function(l, maxDepth = 2, split = FALSE) {
-  if(R6::is.R6(l) | shiny::is.reactivevalues(l)){
+  if (R6::is.R6(l) | shiny::is.reactivevalues(l)) {
     # decompose first if it is a R6 object
-    l = sapply(l$get(), function(x) {
-        if(shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
-      })
+    l <- sapply(l$get(), function(x) {
+      if (shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
+    })
   }
-  depth = 0
-  listNames_rec = function(l, depth) {
-    if(!is.list(l) | is.data.frame(l) | depth >= maxDepth) TRUE
-    else {
-      depth = depth + 1
+  depth <- 0
+  listNames_rec <- function(l, depth) {
+    if (!is.list(l) | is.data.frame(l) | depth >= maxDepth) {
+      TRUE
+    } else {
+      depth <- depth + 1
       lapply(l, listNames_rec, depth)
     }
   }
-  nms = names(unlist(listNames_rec(l, depth)))
-  if(split==TRUE){
-    nms = strsplit(nms,split = ".", fixed = TRUE)
+  nms <- names(unlist(listNames_rec(l, depth)))
+  if (split == TRUE) {
+    nms <- strsplit(nms, split = ".", fixed = TRUE)
   }
   return(nms)
 }
@@ -220,17 +225,21 @@ listNames <- function(l, maxDepth = 2, split = FALSE) {
 #' @noRd
 #' @examples
 #' rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
-#' shiny::isolate({setValue(rv, c("Certification_processing","CertValPlot","show"),TRUE) })
+#' shiny::isolate({
+#'   setValue(rv, c("Certification_processing", "CertValPlot", "show"), TRUE)
+#' })
 #' print(eCerto:::show_view(rv))
-#' shiny::isolate({setValue(rv, c("Certification_processing","mstats","show"),TRUE) })
+#' shiny::isolate({
+#'   setValue(rv, c("Certification_processing", "mstats", "show"), TRUE)
+#' })
 #' print(eCerto:::show_view(rv))
-show_view <- function(rv){
+show_view <- function(rv) {
   nms <- shiny::isolate(listNames(rv, maxDepth = 3, split = TRUE))
-  visible = c()
+  visible <- c()
   for (n in nms) {
-    i = any(n %in% "show")
-    if(i && !is.null(shiny::isolate(getValue(rv, n))) && shiny::isolate(getValue(rv, n))) {
-      visible = c(visible,n[2])
+    i <- any(n %in% "show")
+    if (i && !is.null(shiny::isolate(getValue(rv, n))) && shiny::isolate(getValue(rv, n))) {
+      visible <- c(visible, n[2])
     }
   }
   return(visible)
@@ -246,8 +255,8 @@ show_view <- function(rv){
 #' @noRd
 #' @examples
 #' eCerto:::sub_header("test")
-#' eCerto:::sub_header("test", l=5, b=0)
-sub_header <- function(txt="test", l=0, b=5, unit=c("px", "%")) {
+#' eCerto:::sub_header("test", l = 5, b = 0)
+sub_header <- function(txt = "test", l = 0, b = 5, unit = c("px", "%")) {
   u <- match.arg(unit)
   shiny::div(
     style = paste0("margin-left: ", l, u, "; margin-bottom: ", b, u, "; font-weight: 700"),
@@ -287,7 +296,7 @@ h_statement <- function(x, a) {
   idx <- interaction(x[, "analyte"], x[, "H_type"]) == a
   a_name <- ifelse(length(unique(x[, "H_type"])) == 1, as.character(x[idx, "analyte"]), a)
   a_sd <- max(x[idx, c("s_bb", "s_bb_min")])
-  a_type <- ifelse(names(which.max(x[idx, c("s_bb", "s_bb_min")]))=="s_bb", "s<sub>bb</sub>", "s<sub>bb,min</sub>")
+  a_type <- ifelse(names(which.max(x[idx, c("s_bb", "s_bb_min")])) == "s_bb", "s<sub>bb</sub>", "s<sub>bb,min</sub>")
   a_P <- x[idx, P_col]
   if (a_P < 0.05) {
     s1 <- "<font color=\"#FF0000\"><b>significantly different</b></font>"
@@ -301,7 +310,7 @@ h_statement <- function(x, a) {
       shiny::column(
         width = 12,
         shiny::HTML(
-          "The tested items are ", s1, "(ANOVA", ifelse(P_col=="P_adj", "P-value<sub>adj</sub>", "P-value"), "=", pn(a_P, 2), "using alpha-level = 0.05).",
+          "The tested items are ", s1, "(ANOVA", ifelse(P_col == "P_adj", "P-value<sub>adj</sub>", "P-value"), "=", pn(a_P, 2), "using alpha-level = 0.05).",
           "<p>The uncertainty value for analyte<b>", a_name, "</b>was determined as<b>", a_type, "=", pn(a_sd), "</b>.</p>", s2
         )
       )
@@ -320,35 +329,40 @@ h_statement <- function(x, a) {
 #' mt <- eCerto:::init_materialtabelle(LETTERS[1:3])
 #' eCerto:::get_UF_cols(mt = mt, type = "F")
 #' eCerto:::get_UF_cols(mt = mt, type = "U_round")
-get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
+get_UF_cols <- function(mt = NULL, type = c("U", "F", "U_round")[1]) {
   u_calc_cols <- "u_char"
   f_calc_cols <- "mean"
   u_round_cols <- c("u_char", "u_com", "U")
   if (!is.null(attr(mt, "col_code"))) {
     cc <- attr(mt, "col_code")
     # if user defined U cols are present
-    if (any(grep("U", cc[,"ID"]))) {
-      idx <- grep("U", cc[,"ID"])
+    if (any(grep("U", cc[, "ID"]))) {
+      idx <- grep("U", cc[, "ID"])
       add_cols <- NULL
-      if (any(cc[idx,"ID"] %in% colnames(mt))) add_cols <- cc[idx,"ID"]
-      if (any(cc[idx,"Name"] %in% colnames(mt))) add_cols <- cc[idx,"Name"]
+      if (any(cc[idx, "ID"] %in% colnames(mt))) add_cols <- cc[idx, "ID"]
+      if (any(cc[idx, "Name"] %in% colnames(mt))) add_cols <- cc[idx, "Name"]
       u_calc_cols <- c(u_calc_cols, add_cols)
       u_round_cols <- c(u_round_cols, add_cols)
     }
     # if user defined F cols are present
-    if (any(grep("F", cc[,"ID"]))) {
-      idx <- grep("F", cc[,"ID"])
+    if (any(grep("F", cc[, "ID"]))) {
+      idx <- grep("F", cc[, "ID"])
       add_cols <- NULL
-      if (any(cc[idx,"ID"] %in% colnames(mt))) add_cols <- cc[idx,"ID"]
-      if (any(cc[idx,"Name"] %in% colnames(mt))) add_cols <- cc[idx,"Name"]
+      if (any(cc[idx, "ID"] %in% colnames(mt))) add_cols <- cc[idx, "ID"]
+      if (any(cc[idx, "Name"] %in% colnames(mt))) add_cols <- cc[idx, "Name"]
       f_calc_cols <- c(f_calc_cols, add_cols)
     }
   }
-  switch(
-    type,
-    "U" = unlist(sapply(u_calc_cols, function(x) { which(colnames(mt)==x) })),
-    "U_round" = unlist(sapply(u_round_cols, function(x) { which(colnames(mt)==x) })),
-    "F" = unlist(sapply(f_calc_cols, function(x) { which(colnames(mt)==x) }))
+  switch(type,
+    "U" = unlist(sapply(u_calc_cols, function(x) {
+      which(colnames(mt) == x)
+    })),
+    "U_round" = unlist(sapply(u_round_cols, function(x) {
+      which(colnames(mt) == x)
+    })),
+    "F" = unlist(sapply(f_calc_cols, function(x) {
+      which(colnames(mt) == x)
+    }))
   )
 }
 
@@ -363,18 +377,18 @@ get_UF_cols <- function(mt=NULL, type=c("U","F","U_round")[1]) {
 #' @examples
 #' rv <- eCerto:::test_rv(type = "SR3")
 #' isolate(get_input_data(rv = rv))
-#' isolate(get_input_data(rv = rv, excl_file=TRUE))
-#' isolate(get_input_data(rv = rv, type="s"))
-#' isolate(get_input_data(rv = rv, type="s", excl_file=TRUE))
+#' isolate(get_input_data(rv = rv, excl_file = TRUE))
+#' isolate(get_input_data(rv = rv, type = "s"))
+#' isolate(get_input_data(rv = rv, type = "s", excl_file = TRUE))
 get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALSE) {
   type <- match.arg(type)
-  df <- getValue(rv, c("Certification","data"))
+  df <- getValue(rv, c("Certification", "data"))
   an <- rv$cur_an
-  df <- df[df[,"analyte"]==an,]
-  if (!"File" %in% colnames(df)) df <- cbind(df, "File"="")
+  df <- df[df[, "analyte"] == an, ]
+  if (!"File" %in% colnames(df)) df <- cbind(df, "File" = "")
   if (type == "kompakt") {
     # ensure that "Lab" is a factor
-    if (!is.factor(df[,"Lab"])) df[,"Lab"] <- factor(df[,"Lab"], levels = unique(df[,"Lab"]))
+    if (!is.factor(df[, "Lab"])) df[, "Lab"] <- factor(df[, "Lab"], levels = unique(df[, "Lab"]))
     fn <- rv$c_lab_codes()
     p <- rv$a_p("precision")[an]
     n_reps <- sort(unique(df$replicate))
@@ -396,14 +410,14 @@ get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALS
       "File" = unname(fn[levels(df$Lab)])
     )
     if (excl_file) {
-      out <- out[,-which(colnames(out)=="File")]
+      out <- out[, -which(colnames(out) == "File")]
     }
     attr(out, "id_idx") <- id_idx
     return(out)
   } else {
     df <- df[, c("ID", "Lab", "value", "unit", "replicate", "File")]
     if (excl_file) {
-      df <- df[,-which(colnames(df)=="File")]
+      df <- df[, -which(colnames(df) == "File")]
     }
     return(df)
   }
@@ -422,9 +436,9 @@ color_temperature_levels <- function(x) {
     x <- try(as.numeric(x), silent = TRUE)
     if (inherits(x, "try-error")) stop("[color_temperature_levels] Can not convert data to numeric.")
   }
-  temps <- cut(x, breaks=c(-274, -80, -20, 4, 23, 40, 60, 1000))
+  temps <- cut(x, breaks = c(-274, -80, -20, 4, 23, 40, 60, 1000))
   temp_cols <- c("darkblue", "#1b98e0", "lightblue", "yellow", "orange", "red", "darkred")
-  temp_pchs <- c(24,21:23,22,21,25)
+  temp_pchs <- c(24, 21:23, 22, 21, 25)
   return(data.frame("Temp" = x, "pchs" = temp_pchs[temps], "cols" = temp_cols[temps]))
 }
 
@@ -439,12 +453,12 @@ color_temperature_levels <- function(x) {
 #' @examples
 #' rv <- eCerto:::test_rv(type = "SR3")
 #' isolate(get_input_data(rv = rv))
-#' isolate(get_input_data(rv = rv, excl_file=TRUE))
-#' isolate(get_input_data(rv = rv, type="s"))
-#' isolate(get_input_data(rv = rv, type="s", excl_file=TRUE))
+#' isolate(get_input_data(rv = rv, excl_file = TRUE))
+#' isolate(get_input_data(rv = rv, type = "s"))
+#' isolate(get_input_data(rv = rv, type = "s", excl_file = TRUE))
 orderPvalue <- function(means, alpha, pmat) {
   # helper functions
-  last_char <- function(x)  {
+  last_char <- function(x) {
     x <- sub(" +$", "", x)
     return(substr(x, nchar(x), nchar(x)))
   }
@@ -462,7 +476,9 @@ orderPvalue <- function(means, alpha, pmat) {
   M[1] <- symb[k]
   while (j < n) {
     chk <- chk + 1
-    if (chk > n) { break }
+    if (chk > n) {
+      break
+    }
     for (i in j:n) {
       if (pmat[idx[i], idx[j]] > alpha) {
         if (last_char(M[i]) != symb[k]) {
@@ -485,10 +501,14 @@ orderPvalue <- function(means, alpha, pmat) {
         break
       }
     }
-    if (cambio1 == 0) { j <- j + 1 }
+    if (cambio1 == 0) {
+      j <- j + 1
+    }
   }
-  output <- data.frame("mean" = as.numeric(w[,2]), groups = M, row.names = as.character(w[,1]))
-  if (k > 52) { message("\nThe number of estimated groups (", k, ") exceeded the maximum number of available labels (52).\n") }
+  output <- data.frame("mean" = as.numeric(w[, 2]), groups = M, row.names = as.character(w[, 1]))
+  if (k > 52) {
+    message("\nThe number of estimated groups (", k, ") exceeded the maximum number of available labels (52).\n")
+  }
   invisible(output)
 }
 
@@ -499,8 +519,7 @@ orderPvalue <- function(means, alpha, pmat) {
 #' @keywords internal
 #' @noRd
 encode_fmt <- function(x) {
-  switch(
-    x,
+  switch(x,
     "Significance level" = "alpha",
     "P-value" = "pval",
     "Test statistic" = "cval",
@@ -519,15 +538,15 @@ welcome_screen <- function(id = id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::div(
-    style = "height: 70vh;",
+      style = "height: 70vh;",
       shiny::div(
         style = "height: 100%; background-color: rgb(210,0,30); text-align: center; border-radius: 4px; padding: 15px;",
-        #style = "position: absolute; bottom: 50px; top: 50px; height: 100%; background-color: rgb(210,0,30); text-align: center;",
+        # style = "position: absolute; bottom: 50px; top: 50px; height: 100%; background-color: rgb(210,0,30); text-align: center;",
         shiny::div(
           style = "background-color: rgb(0,175,240); color: white; margin: 15px; border-radius: 4px; text-shadow: 2px 2px 0px #D2001E; font-weight: 700; padding: 15px;",
           p(style = "font-size: 28px", "Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
           p(style = "font-size: 42px", "Welcome to eCerto!"),
-          shiny::img(src = "www/hex-eCerto.png", width = "120px", margin = "auto", alt="eCerto Hex-Logo")
+          shiny::img(src = "www/hex-eCerto.png", width = "120px", margin = "auto", alt = "eCerto Hex-Logo")
         ),
         shiny::fluidRow(
           shiny::column(
@@ -569,8 +588,8 @@ verify_suggested <- function(pkg) {
   check_pkg <- sapply(pkg, requireNamespace, quietly = TRUE)
   if (!all(check_pkg)) {
     msg <- paste0(
-      "The use of this function requires package", ifelse(sum(!check_pkg)>1, "s", ""),
-      paste(names(check_pkg)[!check_pkg], collapse=", "),
+      "The use of this function requires package", ifelse(sum(!check_pkg) > 1, "s", ""),
+      paste(names(check_pkg)[!check_pkg], collapse = ", "),
       ". Please install."
     )
     stop(msg)

@@ -30,14 +30,14 @@
 #' @keywords internal
 #' @importFrom stats rnorm
 #' @noRd
-test_Stability_Arrhenius = function(seed=4) {
+test_Stability_Arrhenius <- function(seed = 4) {
   set.seed(seed)
   x <- data.frame(
     "analyte" = rep("a1", 39),
-    "Date" = as.Date(rep(c("2022-01-01", "2022-01-15", "2022-02-01", "2022-04-01", "2023-01-01"), times = c(3,9,9,9,9))),
-    "time" = c(0, 0, 0, rep(c(14, 30.42, 90, 365), each=9)),
-    "Value" = stats::rnorm(39, mean=2),
-    "Temp" = c(-20, -20, -20, rep(rep(c(4,23,60), each=3), times=4))
+    "Date" = as.Date(rep(c("2022-01-01", "2022-01-15", "2022-02-01", "2022-04-01", "2023-01-01"), times = c(3, 9, 9, 9, 9))),
+    "time" = c(0, 0, 0, rep(c(14, 30.42, 90, 365), each = 9)),
+    "Value" = stats::rnorm(39, mean = 2),
+    "Temp" = c(-20, -20, -20, rep(rep(c(4, 23, 60), each = 3), times = 4))
   )
   return(x)
 }
@@ -49,22 +49,23 @@ test_Stability_Arrhenius = function(seed=4) {
 test_rv <- function(type = c("generic", "SR3")) {
   type <- match.arg(type)
   rv <- eCerto$new(init_rv()) # initiate persistent variables
-  testdata <- switch(
-    type,
+  testdata <- switch(type,
     "generic" = test_Certification_Excel(),
     "SR3" = {
       sr3 <- new.env()
-      load(file = system.file(package = "eCerto","extdata","SR3_Fe_v26chs.RData"), envir = sr3)
+      load(file = system.file(package = "eCerto", "extdata", "SR3_Fe_v26chs.RData"), envir = sr3)
       get0(x = "res", envir = sr3)$Certification$data_input
     }
   )
   apm <- init_apm(testdata)
-  an <- sapply(apm, function(x) { x[["name"]] })
+  an <- sapply(apm, function(x) {
+    x[["name"]]
+  })
   mt <- init_materialtabelle(analytes = an)
   shiny::isolate({
-    setValue(rv, c("Certification","data"), testdata)
-    setValue(rv, c("General","apm"), apm)
-    setValue(rv, c("General","materialtabelle"), mt)
+    setValue(rv, c("Certification", "data"), testdata)
+    setValue(rv, c("General", "apm"), apm)
+    setValue(rv, c("General", "materialtabelle"), mt)
     rv$cur_an <- "Si"
     # ToDo: Example in m_report fails (analyte report acn not be exported to HTML)
     # this can be either solved in here by filling slots but should be better resolved
@@ -85,14 +86,16 @@ test_rv <- function(type = c("generic", "SR3")) {
 #' @keywords internal
 #' @noRd
 test_mod_xlsx_range <- function() {
-  fn <- paste0("Ergebnisblatt_BAM-M321_", c("Aleris_Koblenz","Aleris_Duffel","AMAG_Nasschemie"), "_m.xlsx")
+  fn <- paste0("Ergebnisblatt_BAM-M321_", c("Aleris_Koblenz", "Aleris_Duffel", "AMAG_Nasschemie"), "_m.xlsx")
   shiny::reactiveVal(
     structure(list(
       name = fn,
       size = c(27926L, 27617L, 27527L),
       type = rep("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 3),
-      datapath = sapply(fn, function(x) { system.file("extdata", x, package = "eCerto") }, USE.NAMES = FALSE)
-    ), row.names = c(NA,-3L), class = "data.frame")
+      datapath = sapply(fn, function(x) {
+        system.file("extdata", x, package = "eCerto")
+      }, USE.NAMES = FALSE)
+    ), row.names = c(NA, -3L), class = "data.frame")
   )
 }
 
@@ -106,43 +109,45 @@ test_mod_xlsx_range <- function() {
 test_homog <- function() {
   list(
     data = structure(list(
-      analyte = c(rep("Fe",45), rep("Mg",45)),
-      H_type = rep(rep(c("radial", "axial"), times=c(7,8)), 6),
+      analyte = c(rep("Fe", 45), rep("Mg", 45)),
+      H_type = rep(rep(c("radial", "axial"), times = c(7, 8)), 6),
       Flasche = rep(c(3, 36, 62, 78, 109, 144, 162, 200, 225, 239, 256, 295, 325, 351, 397), 6),
-      value = c(0.289769302010799, 0.296775267744762,
-                0.307595169154081, 0.300664250302984, 0.29811301754119, 0.301859235605158,
-                0.305164626561129, 0.293492422937789, 0.236992793889049, 0.299077096041326,
-                0.29164790303274, 0.298173200433747, 0.303313470041546, 0.308457017250942,
-                0.298846106640478, 0.293802481871515, 0.291392362971851, 0.291094800663056,
-                0.283585735787096, 0.298514721954372, 0.288477795851408, 0.294097538322355,
-                0.286553380479238, 0.294097538322355, 0.29656807690673, 0.290716021312024,
-                0.291126983269754, 0.288429945088968, 0.283975057155655, 0.296777621789265,
-                0.277709047077942, 0.288665439616136, 0.294864773778629, 0.292476575796996,
-                0.279400384647449, 0.291891197400404, 0.287502624747949, 0.289597686099481,
-                0.287421387249232, 0.29007503820822, 0.299880243325049, 0.283940874023323,
-                0.286604696487606, 0.290288015380048, 0.285404025002208, 0.289769302010799,
-                0.296775267744762, 0.307595169154081, 0.300664250302984, 0.29811301754119,
-                0.301859235605158, 0.305164626561129, 0.293492422937789, 0.236992793889049,
-                0.299077096041326, 0.29164790303274, 0.298173200433747, 0.303313470041546,
-                0.308457017250942, 0.298846106640478, 0.293802481871515, 0.291392362971851,
-                0.291094800663056, 0.283585735787096, 0.298514721954372, 0.288477795851408,
-                0.304019400022322, 0.286553380479238, 0.294097538322355, 0.29656807690673,
-                0.290716021312024, 0.291126983269754, 0.288429945088968, 0.283975057155655,
-                0.296777621789265, 0.277709047077942, 0.288665439616136, 0.294864773778629,
-                0.292476575796996, 0.279400384647449, 0.291891197400404, 0.287502624747949,
-                0.289597686099481, 0.287421387249232, 0.29007503820822, 0.299880243325049,
-                0.283940874023323, 0.286604696487606, 0.290288015380048, 0.285404025002208
+      value = c(
+        0.289769302010799, 0.296775267744762,
+        0.307595169154081, 0.300664250302984, 0.29811301754119, 0.301859235605158,
+        0.305164626561129, 0.293492422937789, 0.236992793889049, 0.299077096041326,
+        0.29164790303274, 0.298173200433747, 0.303313470041546, 0.308457017250942,
+        0.298846106640478, 0.293802481871515, 0.291392362971851, 0.291094800663056,
+        0.283585735787096, 0.298514721954372, 0.288477795851408, 0.294097538322355,
+        0.286553380479238, 0.294097538322355, 0.29656807690673, 0.290716021312024,
+        0.291126983269754, 0.288429945088968, 0.283975057155655, 0.296777621789265,
+        0.277709047077942, 0.288665439616136, 0.294864773778629, 0.292476575796996,
+        0.279400384647449, 0.291891197400404, 0.287502624747949, 0.289597686099481,
+        0.287421387249232, 0.29007503820822, 0.299880243325049, 0.283940874023323,
+        0.286604696487606, 0.290288015380048, 0.285404025002208, 0.289769302010799,
+        0.296775267744762, 0.307595169154081, 0.300664250302984, 0.29811301754119,
+        0.301859235605158, 0.305164626561129, 0.293492422937789, 0.236992793889049,
+        0.299077096041326, 0.29164790303274, 0.298173200433747, 0.303313470041546,
+        0.308457017250942, 0.298846106640478, 0.293802481871515, 0.291392362971851,
+        0.291094800663056, 0.283585735787096, 0.298514721954372, 0.288477795851408,
+        0.304019400022322, 0.286553380479238, 0.294097538322355, 0.29656807690673,
+        0.290716021312024, 0.291126983269754, 0.288429945088968, 0.283975057155655,
+        0.296777621789265, 0.277709047077942, 0.288665439616136, 0.294864773778629,
+        0.292476575796996, 0.279400384647449, 0.291891197400404, 0.287502624747949,
+        0.289597686099481, 0.287421387249232, 0.29007503820822, 0.299880243325049,
+        0.283940874023323, 0.286604696487606, 0.290288015380048, 0.285404025002208
       ),
       unit = rep(c("mM/L", "mg/mL"), each = 45),
       File = rep("Homog_test.xlsx", times = 90)
     ), row.names = c(NA, 90L), class = "data.frame"),
-    h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_Fig_width = NULL)
+    h_file = NULL, h_vals = NULL, h_sel_analyt = NULL, h_Fig_width = NULL
+  )
 }
 
 #' @title test_Certification_Excel.
 #' @keywords internal
 #' @noRd
-test_Certification_Excel = function() {
+test_Certification_Excel <- function() {
   # After Upload of two Excel Files, what is saved in c(Certification,data) and Input to Certifications
   structure(
     list(
@@ -167,8 +172,8 @@ test_Certification_Excel = function() {
 #' @title test_Stability_Excel.
 #' @keywords internal
 #' @noRd
-test_Stability_Excel = function() {
-  #s_dat, after Upload and Output of the Uploading process
+test_Stability_Excel <- function() {
+  # s_dat, after Upload and Output of the Uploading process
   structure(
     list(
       analyte = structure(

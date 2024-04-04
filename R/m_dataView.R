@@ -24,7 +24,6 @@
 #'   )
 #' }
 #'
-
 m_DataViewUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
@@ -49,17 +48,14 @@ m_DataViewUI <- function(id) {
   )
 }
 
-#'@noRd
-#'@keywords internal
+#' @noRd
+#' @keywords internal
 m_DataViewServer <- function(id, rv) {
-
   shiny::moduleServer(id, function(input, output, session) {
-
     # Generate an HTML table view of filtered single analyte data
     output$tab1 <- DT::renderDataTable({
       x <- get_input_data(rv = rv, type = input$data_view_select, excl_file = !input$data_view_file)
-      styleTabC0(x = x, ap = getValue(rv, c("General","apm"))[[rv$cur_an]], type = input$data_view_select)
+      styleTabC0(x = x, ap = getValue(rv, c("General", "apm"))[[rv$cur_an]], type = input$data_view_select)
     })
-
   })
 }

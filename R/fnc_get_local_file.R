@@ -18,16 +18,16 @@
 #' @noRd
 get_local_file <- function(x = NULL) {
   x <- as.character(x)
-  stopifnot(length(x)==1)
+  stopifnot(length(x) == 1)
   if (is.na(shiny::resourcePaths()["www"])) {
     warning("[get_local_file] No shiny resourcePaths 'www' defined.")
     return(NA)
   } else {
     out <- list.files(path = shiny::resourcePaths()["www"], pattern = x, recursive = TRUE, full.names = TRUE)
-    if (length(out)==1) {
+    if (length(out) == 1) {
       return(out)
     } else {
-      if (length(out)>=2) {
+      if (length(out) >= 2) {
         warning(paste0("[get_local_file] Several files match search string '", x, "', return first only."))
         return(out[1])
       } else {

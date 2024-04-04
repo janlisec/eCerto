@@ -21,6 +21,6 @@ tbd.
 \examples{
 x <- eCerto:::test_homog()$data
 eCerto:::checkHdata(x = x)
-eCerto:::checkHdata(x = x[,-2])
+eCerto:::checkHdata(x = x[, -2])
 }
 \keyword{internal}

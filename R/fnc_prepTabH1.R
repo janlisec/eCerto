@@ -13,7 +13,7 @@
 prepTabH1 <- function(x, adjust = FALSE) {
   message("[prepTabH1] perform statistics on imported homogeneity data")
   stopifnot(all(c("analyte", "H_type", "Flasche", "value") %in% colnames(x)))
-  if (!is.factor(x[,"Flasche"])) x[,"Flasche"] <- factor(x[,"Flasche"])
+  if (!is.factor(x[, "Flasche"])) x[, "Flasche"] <- factor(x[, "Flasche"])
   out <- plyr::ldply(split(x, x[, "analyte"]), function(y) {
     plyr::ldply(split(y, y[, "H_type"]), function(z) {
       if (nrow(z) >= 2) {
@@ -35,7 +35,7 @@ prepTabH1 <- function(x, adjust = FALSE) {
     }, .id = "H_type")
   }, .id = "analyte")
   if (!is.null(adjust) && adjust) {
-    out[,"P"] <- stats::p.adjust(p = out[,"P"], method = "bonferroni")
+    out[, "P"] <- stats::p.adjust(p = out[, "P"], method = "bonferroni")
     colnames(out) <- gsub("^P$", "P_adj", colnames(out))
   }
   return(out)

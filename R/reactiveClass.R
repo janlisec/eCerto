@@ -7,15 +7,16 @@
 #'    here directly.
 #' @name eCerto_R6Class
 #' @examples
+#' \donttest{
 #' if (interactive()) {
-#' test <- eCerto$new(eCerto:::init_rv())
-#' shiny::isolate(eCerto::getValue(test, c("Certification","data")))
-#' shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
-#'   message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
-#' })
-#' shiny::isolate(eCerto::setValue(test, c("Certification","data"), 5))
-#' shiny::isolate(eCerto::getValue(test, c("Certification","data")))
-#' shiny:::flushReact()
+#'   test <- eCerto$new(eCerto:::init_rv())
+#'   shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
+#'   shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
+#'     message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
+#'   })
+#'   shiny::isolate(eCerto::setValue(test, c("Certification", "data"), 5))
+#'   shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
+#'   shiny:::flushReact()
 #' }
 #' tmp <- eCerto$new()
 #' shiny::isolate(tmp$c_plot())
@@ -31,11 +32,12 @@
 #' shiny::isolate(tmp$cur_an <- "Fe")
 #' shiny::isolate(tmp$cur_an)
 #' tmp$c_fltData()
-#' x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
+#' x <- shiny::isolate(eCerto::getValue(tmp, c("General", "apm")))
 #' x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L2"
-#' shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
+#' shiny::isolate(eCerto::setValue(tmp, c("General", "apm"), x))
 #' tmp$c_fltData()
 #' tmp$c_fltData(recalc = TRUE)
+#' }
 #' @importFrom purrr chuck pluck
 #' @export
 eCerto <- R6::R6Class(
@@ -60,15 +62,17 @@ eCerto <- R6::R6Class(
         testdata <- test_Certification_Excel()
         rv[["Certification"]][["data"]] <- testdata
         rv[["General"]][["apm"]] <- init_apm(testdata)
-        rv[["General"]][["materialtabelle"]] <- init_materialtabelle(sapply(init_apm(testdata),function(x){x[["name"]]}))
-        an <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
+        rv[["General"]][["materialtabelle"]] <- init_materialtabelle(sapply(init_apm(testdata), function(x) {
+          x[["name"]]
+        }))
+        an <- shiny::isolate(rv[["General"]][["apm"]][[1]][["name"]])
         private$..cAnalyte <- shiny::reactiveVal(an)
-        private$..cFltData <- shiny::isolate( eCerto:::c_filter_data(x = rv[["Certification"]][["data"]], c_apm = rv[["General"]][["apm"]][[an]]) )
+        private$..cFltData <- shiny::isolate(c_filter_data(x = rv[["Certification"]][["data"]], c_apm = rv[["General"]][["apm"]][[an]]))
         private$..eData <- rv
       } else {
         # [ToDo] implement testing (copy from RData upload module)
         private$..eData <- rv
-        an <- shiny::isolate( rv[["General"]][["apm"]][[1]][["name"]] )
+        an <- shiny::isolate(rv[["General"]][["apm"]][[1]][["name"]])
         if (!is.null(an)) {
           private$..cAnalyte <- shiny::reactiveVal(shiny::isolate(rv[["General"]][["apm"]][[1]][["name"]]))
         } else {
@@ -84,15 +88,15 @@ eCerto <- R6::R6Class(
     #' @description Read the value of field element of R6 object.
     #' @param keys Name of list element.
     #' @return Current value of field.
-    get = function(keys=NULL) {
+    get = function(keys = NULL) {
       purrr::chuck(private$..eData, !!!keys)
     },
     #' @description Set element of R6 object defined by 'keys' to new value.
     #' @param keys Name(s) of list element.
     #' @param value New value.
     #' @return New value of element (invisible).
-    set = function(keys=NULL, value){
-      if(!is.null(value)) {
+    set = function(keys = NULL, value) {
+      if (!is.null(value)) {
         purrr::pluck(private$..eData, !!!keys) <- value
       } else {
         # assigning NULL to a normal list element will delete it (and not replace its content by NULL)
@@ -100,13 +104,13 @@ eCerto <- R6::R6Class(
         # the behavior is different: one can assign NULL to an reactiveValue-Item BUT (!!!)
         # assigning NULL to the reactiveValue-List itself would delete it
         # this case needs to be taken care of here
-        if (length(keys)>=2 && is.reactivevalues(purrr::pluck(private$..eData, !!!keys[-length(keys)]))) {
+        if (length(keys) >= 2 && is.reactivevalues(purrr::pluck(private$..eData, !!!keys[-length(keys)]))) {
           # [JL20230118_the out commented version stopped working after purrr update and...]
-          #purrr::pluck(private$..eData, !!!keys) <- NULL
+          # purrr::pluck(private$..eData, !!!keys) <- NULL
           # [...was replaced by this version]
           purrr::pluck(private$..eData, !!!keys[-length(keys)])[[keys[length(keys)]]] <- NULL
         } else {
-          warning(paste("Can't assign NULL to a standard list element: ", paste(keys, collapse=", ")))
+          warning(paste("Can't assign NULL to a standard list element: ", paste(keys, collapse = ", ")))
         }
       }
       invisible(purrr::chuck(private$..eData, !!!keys))
@@ -119,15 +123,17 @@ eCerto <- R6::R6Class(
     c_plot = function(data, annotate_id = FALSE, filename_labels = FALSE) {
       if (missing(data)) {
         data <- private$..eData[["Certification"]][["data"]]
-        data <- data[data[,"analyte"]==private$..cAnalyte(),,drop=FALSE]
+        data <- data[data[, "analyte"] == private$..cAnalyte(), , drop = FALSE]
       }
-      eCerto:::CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
+      CertValPlot(data = data, annotate_id = annotate_id, filename_labels = filename_labels)
     },
     #' @description Compute the analyte means for a data set filtered for a specific analyte.
     #' @param data data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.
     #' @return A data.frame of lab means.
     c_lab_means = function(data) {
-      if (missing(data)) { data <- private$..cFltData }
+      if (missing(data)) {
+        data <- private$..cFltData
+      }
       out <- plyr::ldply(split(data$value, data$Lab), function(x) {
         data.frame(
           "mean" = mean(x, na.rm = T),
@@ -142,14 +148,17 @@ eCerto <- R6::R6Class(
     #' @description Return analyte names currently in apm.
     #' @return A named character vector.
     c_analytes = function() {
-      shiny::isolate(sapply(private$..eData[["General"]][["apm"]], function(x) {x[["name"]]}))
+      shiny::isolate(sapply(private$..eData[["General"]][["apm"]], function(x) {
+        x[["name"]]
+      }))
     },
     #' @description Return lab codes currently in C data.
     #' @return A named character vector.
     c_lab_codes = function() {
       fn <- shiny::isolate(private$..eData[["Certification"]][["data"]])
-      fn <- fn[!duplicated(fn[,"Lab"]),c("Lab","File")]
-      out <- as.character(fn[,"File"]); names(out) <- fn[,"Lab"]
+      fn <- fn[!duplicated(fn[, "Lab"]), c("Lab", "File")]
+      out <- as.character(fn[, "File"])
+      names(out) <- fn[, "Lab"]
       return(out)
     },
     #' @description Return currently specified values of a type for all analytes.
@@ -158,20 +167,24 @@ eCerto <- R6::R6Class(
     a_p = function(val = c("precision", "precision_export", "pooling", "confirmed", "unit", "name")) {
       val <- match.arg(val)
       as <- shiny::isolate(private$..eData[["General"]][["apm"]])
-      out <- sapply(names(as), function(x) { as[[x]][[val]] })
+      out <- sapply(names(as), function(x) {
+        as[[x]][[val]]
+      })
       return(out)
     },
     #' @description Return modules with existing data.
     #' @return A named logical vector.
     e_present = function() {
-      sapply(private$..eData[["modules"]], function(x) { !is.null(private$..eData[[x]][["data"]]) })
+      sapply(private$..eData[["modules"]], function(x) {
+        !is.null(private$..eData[[x]][["data"]])
+      })
     },
     #' @description Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
     #' @param recalc If TRUE triggers a recalculation and returns current object if FALSE..
     #' @return A data.frame with filtered data of a single analyte.
     c_fltData = function(recalc = FALSE) {
       if (recalc) {
-        private$..cFltData <- shiny::isolate(eCerto:::c_filter_data(
+        private$..cFltData <- shiny::isolate(c_filter_data(
           x = private$..eData[["Certification"]][["data"]],
           c_apm = private$..eData[["General"]][["apm"]][[private$..cAnalyte()]]
         ))
@@ -194,7 +207,7 @@ eCerto <- R6::R6Class(
         if (!identical(a, private$..cAnalyte())) {
           if (self$e_present()["Certification"] & a %in% self$a_p("name")) {
             # set current analyte on focus in C Module and recalculate dependent reactive variables if C data are present and a is valid
-            private$..cFltData <- eCerto:::c_filter_data(
+            private$..cFltData <- c_filter_data(
               x = private$..eData[["Certification"]][["data"]],
               c_apm = private$..eData[["General"]][["apm"]][[a]]
             )

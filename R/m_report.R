@@ -11,21 +11,23 @@
 #' @return nothing
 #'
 #' @examples
-#'if (interactive()) {
-#' shiny::shinyApp(
-#'  ui = shiny::fluidPage(
-#'    eCerto:::m_reportUI(id = "test")
-#'  ),
-#'  server = function(input, output, session) {
-#'    rv <- eCerto:::test_rv(type = "SR3") # initiate persistent variables
-#'    shiny::isolate({setValue(rv, c("General","study_id"), "Jan") })
-#'    shiny::addResourcePath("www", system.file("app", "www", package = "eCerto"))
-#'    eCerto:::m_reportServer(
-#'      id = "test",
-#'      rv = rv
-#'    )
-#'  }
-#' )
+#' if (interactive()) {
+#'   shiny::shinyApp(
+#'     ui = shiny::fluidPage(
+#'       eCerto:::m_reportUI(id = "test")
+#'     ),
+#'     server = function(input, output, session) {
+#'       rv <- eCerto:::test_rv(type = "SR3") # initiate persistent variables
+#'       shiny::isolate({
+#'         setValue(rv, c("General", "study_id"), "Jan")
+#'       })
+#'       shiny::addResourcePath("www", system.file("app", "www", package = "eCerto"))
+#'       eCerto:::m_reportServer(
+#'         id = "test",
+#'         rv = rv
+#'       )
+#'     }
+#'   )
 #' }
 #'
 #' @importFrom knitr is_html_output kable
@@ -40,9 +42,9 @@ m_reportUI <- function(id) {
       shiny::div(
         style = "float: left; margin-right: 5px; margin-left:35px;",
         sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download HTML Report")),
-        shiny::downloadButton(outputId = ns('AnalyteReport'), label = "Analyte"),
-        shiny::downloadButton(outputId = ns('MaterialReport'), label = "CRM")
-      )#,
+        shiny::downloadButton(outputId = ns("AnalyteReport"), label = "Analyte"),
+        shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM")
+      ) # ,
       # shiny::div(
       #   style="float:left; margin-right:5px; margin-left:15px; width: 70px",
       #   shiny::radioButtons(inputId = ns("output_file_format"), label = NULL, choices = c('PDF', 'HTML', 'Word'), inline = FALSE)
@@ -54,12 +56,11 @@ m_reportUI <- function(id) {
 #' @noRd
 #' @keywords internal
 m_reportServer <- function(id, rv) {
-
   shiny::moduleServer(id, function(input, output, session) {
-
     output$AnalyteReport <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", rv$cur_an, '.', 'html'
+        paste0(
+          getValue(rv, c("General", "study_id")), "_", rv$cur_an, ".", "html"
           # switch(
           #   input$output_file_format,
           #   PDF = 'pdf',
@@ -86,9 +87,9 @@ m_reportServer <- function(id, rv) {
               #   Word = rmarkdown::word_document()
               # ),
               params = list(
-                "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
-                "Certification" = shiny::reactiveValuesToList(getValue(rv,"Certification")),
-                "Certification_processing" = shiny::reactiveValuesToList(getValue(rv,"Certification_processing")),
+                "General" = shiny::reactiveValuesToList(getValue(rv, "General")),
+                "Certification" = shiny::reactiveValuesToList(getValue(rv, "Certification")),
+                "Certification_processing" = shiny::reactiveValuesToList(getValue(rv, "Certification_processing")),
                 "selected_tab" = rv$cur_an,
                 "logo_file" = logofile
               ),
@@ -103,7 +104,8 @@ m_reportServer <- function(id, rv) {
 
     output$MaterialReport <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General","study_id")), "_", "Material", '.', 'html'
+        paste0(
+          getValue(rv, c("General", "study_id")), "_", "Material", ".", "html"
           # switch(
           #   input$output_file_format,
           #   PDF = 'pdf',
@@ -124,15 +126,15 @@ m_reportServer <- function(id, rv) {
               input = rmdfile,
               output_file = file,
               output_format = switch(
-                #input$output_file_format,
+                # input$output_file_format,
                 "HTML",
                 PDF = rmarkdown::pdf_document(),
                 HTML = rmarkdown::html_document(),
                 Word = rmarkdown::word_document()
               ),
               params = list(
-                "materialtabelle" = shiny::isolate(getValue(rv, c("General","materialtabelle"))),
-                "General" = shiny::reactiveValuesToList(getValue(rv,"General")),
+                "materialtabelle" = shiny::isolate(getValue(rv, c("General", "materialtabelle"))),
+                "General" = shiny::reactiveValuesToList(getValue(rv, "General")),
                 "logo_file" = logofile
               ),
               envir = new.env(parent = globalenv())
@@ -143,10 +145,8 @@ m_reportServer <- function(id, rv) {
       }
     )
 
-    shiny::observeEvent(input$help_link,{
+    shiny::observeEvent(input$help_link, {
       show_help("certification_report")
     })
-
   })
-
 }

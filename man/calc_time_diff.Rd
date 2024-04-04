@@ -33,11 +33,11 @@ a specific start date \code{d_start} in month (days or years).
 }
 \examples{
 x <- c("2022-02-01", "2022-02-03", "2022-03-01", "2024-02-01")
-calc_time_diff(x=x)
-calc_time_diff(x=x, exact = TRUE)
-calc_time_diff(x=x, type="day")
-calc_time_diff(x=x, type="year")
-calc_time_diff(x=x, type="year", d_start="2021-12-31")
-calc_time_diff(x=1:3, type="day", origin=Sys.Date())
+calc_time_diff(x = x)
+calc_time_diff(x = x, exact = TRUE)
+calc_time_diff(x = x, type = "day")
+calc_time_diff(x = x, type = "year")
+calc_time_diff(x = x, type = "year", d_start = "2021-12-31")
+calc_time_diff(x = 1:3, type = "day", origin = Sys.Date())
 
 }

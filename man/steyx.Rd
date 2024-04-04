@@ -21,6 +21,6 @@ according to the formula described in
 At least 3 finite pairs of data points are required for the calculation.
 }
 \examples{
-steyx(x=1:3, y=2:4)
-steyx(x=1:3, y=c(2,3.1,3.9))
+steyx(x = 1:3, y = 2:4)
+steyx(x = 1:3, y = c(2, 3.1, 3.9))
 }

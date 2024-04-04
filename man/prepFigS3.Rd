@@ -21,7 +21,7 @@ tbd.
 \examples{
 x <- data.frame(
   "dummy_name" = c("0", "2", "4"),
-  "1/K" = 1/(c(0, 2, 4) + 273.15),
+  "1/K" = 1 / (c(0, 2, 4) + 273.15),
   "log(-k_eff)" = 1:3,
   "CI_upper" = 2:4,
   "CI_lower" = 0:2,

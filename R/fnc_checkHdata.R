@@ -1,13 +1,16 @@
-#'@title fnc_checkHdata.
-#'@description \code{checkHdata} will check imported homogeneity data.
-#'@details tbd.
-#'@param x The Hom data from an session R6 object.
-#'@examples
-#'x <- eCerto:::test_homog()$data
-#'eCerto:::checkHdata(x = x)
-#'eCerto:::checkHdata(x = x[,-2])
-#'@return A data frame with at least columns 'analyte', 'H_type', 'Flasche' and 'value'.
-#'@keywords internal
+#' @title fnc_checkHdata.
+#' @description \code{checkHdata} will check imported homogeneity data.
+#' @details tbd.
+#' @param x The Hom data from an session R6 object.
+#' @examples
+#' \donttest{
+#' x <- eCerto:::test_homog()$data
+#' eCerto:::checkHdata(x = x)
+#' eCerto:::checkHdata(x = x[, -2])
+#' }
+#' @return A data frame with at least columns 'analyte', 'H_type', 'Flasche' and 'value'.
+#' @keywords internal
+#' @noRd
 checkHdata <- function(x) {
   message("[checkHdata] ensure integrity of imported homogeneity data")
   # ensure that x is a data frame

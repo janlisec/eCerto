@@ -8,10 +8,10 @@
 #' eCerto:::round_DIN1333(x)
 #' @keywords internal
 #' @noRd
-round_DIN1333 <- function(x, n=0) {
-  z <- abs(x)*10^n
+round_DIN1333 <- function(x, n = 0) {
+  z <- abs(x) * 10^n
   z <- z + 0.5 + sqrt(.Machine$double.eps)
   z <- trunc(z)
-  z <- z/10^n
-  return(sign(x)*z)
+  z <- z / 10^n
+  return(sign(x) * z)
 }

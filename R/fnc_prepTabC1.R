@@ -10,7 +10,7 @@
 #' shiny::isolate(lab_means <- rv$c_lab_means(data = dat))
 #' eCerto:::prepTabC1(dat = dat, lab_means = lab_means)
 #' eCerto:::prepTabC1(dat = dat, lab_means = lab_means, fmt = "cval")
-#' dat[dat[,"Lab"]=="L13","L_flt"] <- TRUE
+#' dat[dat[, "Lab"] == "L13", "L_flt"] <- TRUE
 #' shiny::isolate(lab_means <- rv$c_lab_means(data = dat))
 #' eCerto:::prepTabC1(dat = dat, lab_means = lab_means, excl_labs = TRUE)
 #' @return A data frame.
@@ -21,10 +21,10 @@ prepTabC1 <- function(dat, lab_means, excl_labs = FALSE, fmt = c("alpha", "pval"
   fmt <- match.arg(fmt)
   if (excl_labs) {
     # remove filtered labs and re-factor column 'Lab'
-    L_flt <- unique(as.character(dat[dat[,"L_flt"],"Lab"]))
-    dat <- dat[!dat[,"L_flt"],]
-    dat[,"Lab"] <- factor(dat[,"Lab"])
-    lab_means <- lab_means[!(rownames(lab_means) %in% L_flt),]
+    L_flt <- unique(as.character(dat[dat[, "L_flt"], "Lab"]))
+    dat <- dat[!dat[, "L_flt"], ]
+    dat[, "Lab"] <- factor(dat[, "Lab"])
+    lab_means <- lab_means[!(rownames(lab_means) %in% L_flt), ]
   }
   out <- data.frame(
     lab_means,
