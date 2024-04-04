@@ -24,26 +24,21 @@ conducted during CRM production.
 
 ## Installation
 
-To run **eCerto** locally You can install the development version from 
-[GitHub](https://github.com/janlisec/eCerto) with:
+To run **eCerto** locally you can install the development version from 
+[GitHub](https://github.com/janlisec/eCerto) and start the app with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("janlisec/eCerto")
-```
-
-## Quick Example
-
-**eCerto** currently has only few exported functions as its use is intended
-in form of a `Shiny`-App. You can start this app using:
-
-``` r
 eCerto::run_app()
 ```
+
+Other than that, **eCerto** currently has only few exported functions. Before 
+installation you can test the app version hosted at [www.bam.de/eCerto](https://apps.bam.de/shn00/eCerto/)
+using your own or the provided example data.
 
 ## Detailed documentation
 
 A description of **eCerto** showing a re-evaluation of previously published CRM data 
 can be found in this [scientific article](https://doi.org/10.1007/s00216-023-05099-3).
-Most of the functionality is described in the online help which can be found
-starting the App from [www.bam.de/eCerto](https://apps.bam.de/shn00/eCerto/).
+Most of the functionality is also described in the online help.
