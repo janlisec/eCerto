@@ -76,7 +76,7 @@ assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "n
   } else {
     default_value <- convert_type(x = default_value[1], type = type)
   }
-browser()
+
   # find column position
   if (fuzzy_name) {
     cp <- which(gsub(" ", "", tolower(colnames(df))) == gsub(" ", "", tolower(name)))
