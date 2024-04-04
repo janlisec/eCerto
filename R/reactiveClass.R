@@ -13,7 +13,7 @@
 #' @examples
 #' \donttest{
 #' if (interactive()) {
-#'   test <- eCerto$new(eCerto:::init_rv())
+#'   test <- eCerto$new()
 #'   shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
 #'   shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
 #'     message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)

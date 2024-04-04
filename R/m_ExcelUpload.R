@@ -21,7 +21,7 @@
 #'       eCerto:::m_ExcelUpload_UI(id = "test")
 #'     ),
 #'     server = function(input, output, session) {
-#'       rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
+#'       rv <- eCerto::eCerto$new()
 #'       eCerto:::m_ExcelUpload_Server(id = "test", rv = rv)
 #'       shiny::observeEvent(rv$e_present(), {
 #'         print(rv$e_present())
