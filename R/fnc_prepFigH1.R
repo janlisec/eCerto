@@ -42,6 +42,8 @@ prepFigH1 <- function(x, sa=NULL, prec=4, xlab="Flasche", showIDs = FALSE) {
     expr = any(is.finite(h_dat[,"value"])),
     message = "Not enough finite values to generate a plot."
   ))
+  opar <- graphics::par(no.readonly = TRUE)
+  on.exit(par(opar))
   graphics::par(mar=c(5,4,2.5,0)+0.1)
   graphics::plot(
     x = c(0.6,0.4+length(levels(h_dat[,"Flasche"]))),
