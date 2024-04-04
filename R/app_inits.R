@@ -144,7 +144,7 @@ init_apm <- function(x) {
     if ("L_flt" %in% colnames(y) && any(y[, "L_flt"])) out$lab_filter <- unique(as.character(y[which(y[, "L_flt"]), "Lab"]))
     if ("unit" %in% colnames(y)) out[["unit"]] <- as.character(unique(y[, "unit"])[1])
     # try to make an initial guess regarding the desired rounding according to DIN1333
-    n <- try(digits_DIN1333(2 * sd(sapply(split(y[, "value"], y[, "Lab"]), mean)) / sqrt(length(unique(y[, "Lab"])))), silent = TRUE)
+    n <- try(digits_DIN1333(2 * stats::sd(sapply(split(y[, "value"], y[, "Lab"]), mean)) / sqrt(length(unique(y[, "Lab"])))), silent = TRUE)
     if (!inherits(n, "try-error") && is.finite(n)) {
       out$precision_export <- n
       out$precision <- n + 1

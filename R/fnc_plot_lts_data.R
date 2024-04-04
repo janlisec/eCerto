@@ -85,10 +85,10 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   }
 
   # if (show_legend) {
-  #   opar <- par(no.readonly = TRUE)
-  #   on.exit(par(opar))
+  #   opar <- graphics::par(no.readonly = TRUE)
+  #   on.exit(graphics::par(opar))
   #   #layout(mat = c(1:2), widths = c(0.7,0.3))
-  #   par(mar=c(5,4,2,8)+0.1)
+  #   graphics::par(mar=c(5,4,2,8)+0.1)
   # }
 
   # generate 'real time window' plot
@@ -121,7 +121,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
       graphics::points(vals ~ mon, pch = 24, bg = c(grDevices::grey(0.6), 2)[1 + !is.na(com)])
     }
     if (show_legend) {
-      x <- par("usr")[2] - diff(par("usr")[1:2]) * 0.005
+      x <- graphics::par("usr")[2] - diff(graphics::par("usr")[1:2]) * 0.005
       graphics::text(x = x, y = mn, labels = sub2, adj = 1)
       graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
       graphics::text(x = x, y = stats::predict(foo.lm, newdata = data.frame("mon" = x)), labels = expression(b[1]), adj = 1)
@@ -166,7 +166,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
     graphics::abline(adj.lm, lty = 2, col = 4)
     if (show_legend) {
-      x <- par("usr")[2] - diff(par("usr")[1:2]) * 0.005
+      x <- graphics::par("usr")[2] - diff(graphics::par("usr")[1:2]) * 0.005
       graphics::text(x = x, y = mn, labels = sub2, adj = 1)
       graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
       # browser()

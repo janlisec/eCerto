@@ -82,7 +82,7 @@ Grubbs <- function(lab_means = NULL, fmt = c("alpha", "pval", "cval", "cval05", 
     test_Grubbs1_max <- out$Grubbs1[which.max(x)] > 0.05
     if (fmt == "alpha") out$Grubbs1 <- pval2level(p = out$Grubbs1)
     if (fmt == "cval") {
-      out$Grubbs1[!is.na(out$Grubbs1)] <- abs(lab_means[!is.na(out$Grubbs1), "mean"] - mean(x)) / sd(x)
+      out$Grubbs1[!is.na(out$Grubbs1)] <- abs(lab_means[!is.na(out$Grubbs1), "mean"] - mean(x)) / stats::sd(x)
     }
     if (fmt == "cval05") {
       out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(1 - 0.05 / 2, n)
@@ -314,7 +314,7 @@ grubbs.test <- function(x, type = 10, tail = c("lower", "upper")) {
       o <- x[n]
       d <- x[1:(n - 1)]
     }
-    g <- abs(o - mean(x)) / sd(x)
+    g <- abs(o - mean(x)) / stats::sd(x)
     u <- stats::var(d) / stats::var(x) * (n - 2) / (n - 1)
     pval <- 1 - pgrubbs(g, n, type = 10)
     method <- "Grubbs test for one outlier"

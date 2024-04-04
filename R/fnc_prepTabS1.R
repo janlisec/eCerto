@@ -43,7 +43,7 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
     # browser()
     # according to B.3.2 [B16] and [B17] from ISO Guide 35 which is similar to summary(lm))coef[2]
     # d_in <- read.table("clipboard", sep="\t", dec=",")
-    # d_means <- apply(d_in, 2, function(x) {c(mean(x), sd(x))})
+    # d_means <- apply(d_in, 2, function(x) {c(mean(x), stats::sd(x))})
     # x <- rep(1:3, each=1)
     # x <- c(1, 3, 6, 12)
     # summary(lm(d_means[1,] ~ x))$coef

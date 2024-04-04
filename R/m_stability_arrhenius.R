@@ -312,7 +312,7 @@ m_arrheniusServer <- function(id, rv) {
         if ("Temp" %in% colnames(x)) {
           x <- x[x[, "Temp"] == min(x[, "Temp"], na.rm = TRUE), ]
         }
-        coef <- log((mean(x[, "Value"]) - 2 * sd(x[, "Value"])) / mean(x[, "Value"]))
+        coef <- log((mean(x[, "Value"]) - 2 * stats::sd(x[, "Value"])) / mean(x[, "Value"]))
         shiny::updateNumericInput(inputId = "num_coef", value = coef)
         shinyjs::disable(id = "num_coef")
       }

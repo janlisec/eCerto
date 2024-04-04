@@ -24,7 +24,7 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
     # normalize all analytes and modify df internally to work for boxplot
     tmp <- plyr::ldply(split(h_dat, interaction(h_dat[, "analyte"], h_dat[, "H_type"])), function(df) {
       # df[,"value"] <- log2(df[,"value"]/median(df[,"value"], na.rm=TRUE))
-      df[, "value"] <- (df[, "value"] - mean(df[, "value"], na.rm = TRUE)) / sd(df[, "value"], na.rm = TRUE)
+      df[, "value"] <- (df[, "value"] - mean(df[, "value"], na.rm = TRUE)) / stats::sd(df[, "value"], na.rm = TRUE)
       return(df)
     }, .id = NULL)
     tmp[, "analyte"] <- "dummy"
@@ -46,7 +46,7 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
     message = "Not enough finite values to generate a plot."
   ))
   opar <- graphics::par(no.readonly = TRUE)
-  on.exit(par(opar))
+  on.exit(graphics::par(opar))
   graphics::par(mar = c(5, 4, 2.5, 0) + 0.1)
   graphics::plot(
     x = c(0.6, 0.4 + length(levels(h_dat[, "Flasche"]))),

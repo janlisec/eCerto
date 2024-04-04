@@ -53,7 +53,7 @@ if (testing) {
 # show BAM Logo topright
 if (!(is.null(l) | is.na(l))) {
     logo_raster <- as.raster(magick::image_read(path = l))
-    par(mar=c(1,0,0,0))
+    graphics::par(mar=c(1,0,0,0))
     layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
     plot(1,1,axes=F,ann=F, type="n")
     mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)
@@ -66,19 +66,19 @@ if (!(is.null(l) | is.na(l))) {
 
 ```{r plots, echo=FALSE, results='asis', dev.args = list(pointsize = 9), fig.height = 3.5}
   # 2 plots as in App version
-  par(mar=c(5,4,4,2)+0.1)
-  par(mfrow=c(1,2))
+  graphics::par(mar=c(5,4,4,2)+0.1)
+  graphics::par(mfrow=c(1,2))
     x <- list("val"=v, "def"=d)
     plot_lts_data(x = x, type=1)
     lts <- plot_lts_data(x = x, type=2)
-  par(mfrow=c(1,1))
+  graphics::par(mfrow=c(1,1))
 ```
 
 ```{r stats}
-U_lts_rel <- sd(v[,"Value"])/median(v[,"Value"])
-s_x <- sd(v[,"Value"])/sqrt(nrow(v))
+U_lts_rel <- stats::sd(v[,"Value"])/median(v[,"Value"])
+s_x <- stats::sd(v[,"Value"])/sqrt(nrow(v))
 s_xrel <- s_x/median(v[,"Value"])
-CI <- sd(v[,"Value"])*qt(0.975, nrow(v)-1)/sqrt(nrow(v)-1)
+CI <- stats::sd(v[,"Value"])*qt(0.975, nrow(v)-1)/sqrt(nrow(v)-1)
 U_ilc <- round(100*d[,"U"]/d[,"CertVal"],2)
 U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI/median(v[,"Value"]), "1sx"=s_xrel, "2sx"=2*s_xrel), 2)
 n_digits <- nchar(strsplit(as.character(d[,"CertVal"]), "[.]")[[1]][2])
