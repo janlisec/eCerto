@@ -132,7 +132,17 @@ page_HomogeneityServer <- function(id, rv) {
     shiny::observeEvent(rv$cur_an, {
       req(h_vals())
       shiny::validate(shiny::need(expr = rv$cur_an %in% as.character(h_vals()[, "analyte"]), message = paste("Analyte", rv$cur_an, "is not present in H data.")))
-      rv$cur_an
+      # was a different analyte selected in one of the other modules
+      i <- input$h_tab1_rows_selected
+      if (is.null(i) || rv$cur_an != as.character(h_vals()[i, "analyte"])) {
+        cr <- which(as.character(h_vals()[, "analyte"])==rv$cur_an)
+        if (length(cr)>1) {
+          # try to match the previously selected H_type
+          flt <- h_vals()[cr, "H_type"] == h_vals()[i, "H_type"]
+          if (any(flt)) cr <- cr[which(flt)[1]] else cr <- cr[1]
+        }
+        h_tab1_current$row <- cr
+      }
     })
 
     # local version of statistical values (Tab.H1)
@@ -202,13 +212,15 @@ page_HomogeneityServer <- function(id, rv) {
     })
     shiny::observeEvent(input$h_tab1_rows_selected,
       {
-        if (is.null(input$h_tab1_rows_selected)) {
+        i <- input$h_tab1_rows_selected
+        if (is.null(i)) {
           # trigger a redraw of h_tab1 if the user deselects the current row
           h_tab1_current$redraw <- h_tab1_current$redraw + 1
         } else {
-          h_tab1_current$row <- input$h_tab1_rows_selected
-          sel <- as.character(interaction(h_vals()[input$h_tab1_rows_selected, 1:2]))
+          h_tab1_current$row <- i
+          sel <- as.character(interaction(h_vals()[i, 1:2]))
           shiny::updateSelectInput(session = session, inputId = "h_sel_analyt", selected = sel)
+          rv$cur_an <- as.character(h_vals()[i, "analyte"])
         }
         # shinyjs::disable(id = "h_sel_analyt")
       },

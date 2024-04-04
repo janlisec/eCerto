@@ -362,14 +362,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.2.15",
+      "Version": "0.3.1",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "fabf179e98d876620e7bf9802d9df491a53ae886",
+      "RemoteSha": "68d8c94f4d32a35a96f07fa04aeccb75af186cc0",
       "Requirements": [
         "DT",
         "R",
@@ -389,7 +389,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "ecdb40f5e4a1e6b78e50e8eadf1faf28"
+      "Hash": "088ad4ed8d181de28dac1062b2fd7b8d"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -1159,7 +1159,7 @@
     },
     "testthat": {
       "Package": "testthat",
-      "Version": "3.2.0",
+      "Version": "3.2.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1170,7 +1170,6 @@
         "cli",
         "desc",
         "digest",
-        "ellipsis",
         "evaluate",
         "jsonlite",
         "lifecycle",
@@ -1185,7 +1184,7 @@
         "waldo",
         "withr"
       ],
-      "Hash": "877508719fcb8c9525eccdadf07a5102"
+      "Hash": "4767a686ebe986e6cb01d075b3f09729"
     },
     "tibble": {
       "Package": "tibble",
