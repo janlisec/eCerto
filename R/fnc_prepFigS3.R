@@ -3,6 +3,7 @@
 #' @details tbd.
 #' @param tab The table containing data as basis for plot generation.
 #' @examples
+#' \donttest{
 #' x <- data.frame(
 #'   "dummy_name" = c("0", "2", "4"),
 #'   "1/K" = 1 / (c(0, 2, 4) + 273.15),
@@ -13,9 +14,11 @@
 #'   check.names = FALSE
 #' )
 #' eCerto:::prepFigS3(tab = x)
+#' }
 #' @return A data frame.
 #' @importFrom graphics par
 #' @keywords internal
+#' @noRd
 prepFigS3 <- function(tab) {
   stopifnot(is.data.frame(tab))
   stopifnot(all(c("1/K", "log(-k_eff)", "CI_upper", "CI_lower", "log(k)_calc") %in% colnames(tab)))

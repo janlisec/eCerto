@@ -4,11 +4,14 @@
 #' @param x data.frame.
 #' @param precision Rounding precision.
 #' @examples
+#' \donttest{
 #' x <- data.frame("Item" = LETTERS[1:3], "mean" = 1:3, "sd" = rnorm(3), "n" = 4:6)
 #' eCerto:::styleTabH2(x = x)
 #' eCerto:::styleTabH2(x = x, precision = 2)
+#' }
 #' @return A datatable object.
 #' @keywords internal
+#' @noRd
 styleTabH2 <- function(x, precision = 4) {
   message("[styleTabH2] styling Tab.H2")
   cols <- which(colnames(x) %in% c("mean", "sd"))

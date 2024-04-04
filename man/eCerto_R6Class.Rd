@@ -3,7 +3,26 @@
 \name{eCerto_R6Class}
 \alias{eCerto_R6Class}
 \alias{eCerto}
+\alias{setValue}
+\alias{getValue}
 \title{A reactive class based on an R6 object.}
+\usage{
+setValue(df, key, value)
+
+getValue(df, key = NULL)
+}
+\arguments{
+\item{df}{An object of class R6.}
+
+\item{key}{Key value within R6 object 'df'.}
+
+\item{value}{Value to set.}
+}
+\value{
+Nothing. The R6 object is updated automatically.
+
+Value of 'key' from 'df'.
+}
 \description{
 Builds a class, which allows only restricted access to the
 contained 'reactiveValues'. Elements should be accessed via \code{\link[=getValue]{getValue()}}.
@@ -11,8 +30,15 @@ Possible advantages are that (1) structure of 'reactiveValues' is clear
 from the beginning (no function like "addVariable" should exist!) and that
 (2) functions to calculate the mean or plot current data can be implemented
 here directly.
+
+General access to data object (so data object can maybe get
+changed without that much code edit)
+
+Returns element. If 'key' is used, reactivity not working correctly.
+Preferable way for calling \code{getValue(df, key)}, see example
 }
 \examples{
+\donttest{
 if (interactive()) {
   test <- eCerto$new(eCerto:::init_rv())
   shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
@@ -42,6 +68,15 @@ x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L2"
 shiny::isolate(eCerto::setValue(tmp, c("General", "apm"), x))
 tmp$c_fltData()
 tmp$c_fltData(recalc = TRUE)
+}
+# Only run examples in interactive R sessions
+if (interactive()) {
+  rv <- eCerto$new(init_rv())
+  setValue(rv, c("Certification", "data"), 5)
+  getValue(rv, c("Certification", "data")) # is 5?
+  setValue(rv, c("General", "user"), "Franz")
+  getValue(rv, c("General", "user"))
+}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}

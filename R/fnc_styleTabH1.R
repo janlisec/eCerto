@@ -7,6 +7,7 @@
 #' @param output Return either the dataframe with styling information in columns or the corresponding datatable object.
 #' @param cr Current row selected (relevant if output = 'dt').
 #' @examples
+#' \donttest{
 #' x <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
 #' x
 #' eCerto:::styleTabH1(x = x)
@@ -15,8 +16,10 @@
 #' prec <- unlist(list("Fe" = 2))
 #' eCerto:::styleTabH1(x = x, prec = prec)
 #' eCerto:::styleTabH1(x = x, output = "dt", prec = prec)
+#' }
 #' @return A data frame or a datatable object depending on parameter 'output'.
 #' @keywords internal
+#' @noRd
 styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr = 1) {
   message("[styleTabH1] styling Tab.H1")
   P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")

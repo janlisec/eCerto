@@ -10,18 +10,26 @@
 #' @param fuzzy_name Allow fuzzy matching (additional blanks and case insensitive search allowed).
 #' @param default_value Default value if column needs to be created or can not be converted to specified type. Keep NULL to use pre defined
 #' @examples
-#' \donttest{
-#' x <- eCerto:::test_homog()$data
-#' assert_col <- eCerto:::assert_col
-#' str(assert_col(df = x, name = "analyte", pos = 1, type = "factor"))
-#' str(assert_col(df = x, name = "Analyte", pos = 3, type = "character"))
-#' str(assert_col(df = x, name = " Analyte", pos = 2, type = "factor"))
-#' str(assert_col(df = x, name = "Analyte", pos = 2, type = "factor", fuzzy_name = FALSE))
-#' str(assert_col(df = x, name = "test", type = "factor", default_value = "test"))
-#' str(assert_col(df = x, name = "unit", type = "numeric", default_value = "test"))
-#' str(assert_col(df = x, name = "unit", type = "numeric", default_value = 10))
-#' str(assert_col(df = x, name = "unit", type = "Date"))
-#' str(assert_col(df = data.frame("test" = "2022-03-31"), name = "test", type = "Date"))
+#' x <- data.frame(
+#'   "analyte" = c("A", "B"),
+#'   "tmp" = rep(0L, 2),
+#'   "unit" = c("x", "y")
+#' )
+#' str(x)
+#' ac <- eCerto::assert_col
+#' str(ac(df = x, name = "analyte", pos = 1, type = "factor"))
+#' str(ac(df = x, name = "Analyte", pos = 3, type = "character"))
+#' str(ac(df = x, name = " Analyte", pos = 2, type = "factor"))
+#' str(ac(df = x, name = "Analyte", pos = 2, type = "factor", fuzzy_name = FALSE))
+#' str(ac(df = x, name = "test", type = "factor", default_value = "test"))
+#' # this will lead to NAs in column unit because the conversion does not lead to an error
+#' # hence the default value is not used
+#' str(ac(df = x, name = "unit", type = "numeric", default_value = 10))
+#' # this will lead to the specified default data in column unit because the
+#' # conversion attempt does lead to an error
+#' str(ac(df = x, name = "unit", type = "Date"))
+#' str(ac(df = data.frame("test" = "2022-03-31"), name = "test", type = "Date"))
+#'
 #' # show type and class of internal default values
 #' x <- data.frame(
 #'   "character" = "", "integer" = 0L, "numeric" = 0, "factor" = factor(NA),
@@ -33,10 +41,8 @@
 #' sapply(1:ncol(x), function(i) {
 #'   class(x[, i])
 #' })
-#' }
 #' @return A data frame with a column of the specified name and type at the specified position.
-#' @keywords internal
-#' @noRd
+#' @export
 assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "numeric", "factor", "logical", "Date"), fuzzy_name = TRUE, default_value = NULL) {
   type <- match.arg(type)
 
@@ -70,7 +76,7 @@ assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "n
   } else {
     default_value <- convert_type(x = default_value[1], type = type)
   }
-
+browser()
   # find column position
   if (fuzzy_name) {
     cp <- which(gsub(" ", "", tolower(colnames(df))) == gsub(" ", "", tolower(name)))
@@ -102,7 +108,7 @@ assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "n
     new_vals <- rep(default_value, nrow(df))
   } else {
     if (class(df[, cp]) != type) {
-      new_vals <- try(convert_type(x = df[, cp], type = type))
+      new_vals <- try(convert_type(x = df[, cp], type = type), silent = TRUE)
       if (inherits(new_vals, "try-error")) {
         msg <- c(msg, paste0("Could not convert column '", name, "' to specified type."))
         new_vals <- rep(default_value, nrow(df))

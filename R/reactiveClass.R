@@ -1,3 +1,7 @@
+#' @name eCerto_R6Class
+#' @aliases eCerto
+#' @aliases setValue
+#' @aliases getValue
 #' @title A reactive class based on an R6 object.
 #' @description Builds a class, which allows only restricted access to the
 #'    contained 'reactiveValues'. Elements should be accessed via [getValue()].
@@ -5,7 +9,7 @@
 #'    from the beginning (no function like "addVariable" should exist!) and that
 #'    (2) functions to calculate the mean or plot current data can be implemented
 #'    here directly.
-#' @name eCerto_R6Class
+#' @rdname eCerto_R6Class
 #' @examples
 #' \donttest{
 #' if (interactive()) {
@@ -218,3 +222,47 @@ eCerto <- R6::R6Class(
     }
   )
 )
+
+#' @title setValue.
+#' @description General access to data object (so data object can maybe get
+#'     changed without that much code edit)
+#' @rdname eCerto_R6Class
+#' @param df The data frame (an R6 object).
+#' @param key A character vector specifying the key-chain to put the value in (see examples).
+#' @param value Value to set.
+#' @return Nothing. The R6 object is updated automatically.
+#' @examples
+#' # Only run examples in interactive R sessions
+#' if (interactive()) {
+#'   rv <- eCerto$new(init_rv())
+#'   setValue(rv, c("Certification", "data"), 5)
+#'   getValue(rv, c("Certification", "data")) # is 5?
+#'   setValue(rv, c("General", "user"), "Franz")
+#'   getValue(rv, c("General", "user"))
+#' }
+#' @export
+setValue <- function(df, key, value) {
+  if (R6::is.R6(df)) {
+    df$set(key, value) # in eCerto.R
+  } else {
+    stop("Object of class ", class(df), " can't set value currently.")
+  }
+}
+
+#' @title getValue.
+#' @description Returns element. If 'key' is used, reactivity not working correctly.
+#' Preferable way for calling `getValue(df, key)`, see example
+#' @rdname eCerto_R6Class
+#' @param df An object of class R6.
+#' @param key Key value within R6 object 'df'.
+#' @return Value of 'key' from 'df'.
+#' @export
+getValue <- function(df, key = NULL) {
+  if (R6::is.R6(df)) {
+    return(df$get(key))
+  } else if (is.list(df)) {
+    return(df[[key]])
+  } else {
+    stop("Object of class ", class(df), " can't get value currently.")
+  }
+}

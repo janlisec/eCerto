@@ -1,16 +1,8 @@
-#' @name page_Homogeneity
-#' @aliases page_HomogeneityUI
-#' @aliases page_HomogeneityServer
-#'
 #' @title Homogeneity page
-#'
 #' @description \code{page_Homogeneity} is the module for handling Homogeneity Data
-#'
 #' @details not yet
-#'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv The session R6 object.
-#'
 #' @examples
 #' if (interactive()) {
 #'   shiny::shinyApp(
@@ -33,7 +25,6 @@
 #' }
 #' @keywords internal
 #' @noRd
-
 page_HomogeneityUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tabsetPanel(
