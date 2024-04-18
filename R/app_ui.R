@@ -19,34 +19,25 @@ app_ui <- function(request) {
     # message("UI, app_sys: ", app_sys('app/www')),
     # message("UI, tempdir: ", tempdir()),
 
-    # shiny::navbarPage(
     bslib::page_navbar(
-    #
-    #   # use an alternative theme
-    #   # currently difficult, as 'hidden' feature of tabPanel is not supported by bslib
-    #   theme = bslib::bs_theme(
-    #     version = 5,
-    #     bootswatch = c("sandstone","readable","zephyr")[3],
-    #     base_font = bslib::font_google(c("Assistant", "Anonymous Pro")[1])
-    #   ),
+      ## use an alternative theme
+      # theme = bslib::bs_theme(
+      #   version = 5,
+      #   bootswatch = c("sandstone","zephyr")[1],
+      #   base_font = bslib::font_google(c("Assistant", "Anonymous Pro")[2])
+      # ),
 
       id = "navbarpage",
-      #title = shiny::div(
-        #style = "position: relative;",
-        #class = "verticalhorizontal",
-        #shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo"),
       title = list(
         shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo", style="background-color: black;"),
         shiny::strong("BAM", style = "color: rgb(210,0,30);"),
         shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
       selected = "Start",
-      # windowTitle = paste("BAM", get_golem_config("golem_name")),
       window_title = paste("BAM", get_golem_config("golem_name")),
       position = "fixed-top",
       footer = shiny::div(
         style = "position: fixed; bottom: 0px; left: 0px; width: 100%; padding-left: 15px; padding-top: 2px; padding-bottom: 2px; background-color: #f8f8f8; font-family: Lucida Console, monospace;",
-        # shiny::pre(
         shiny::HTML(
           get_golem_config("golem_name"), "|",
           get_golem_config("app_version"), "|",
@@ -54,7 +45,6 @@ app_ui <- function(request) {
           '<a href="mailto:jan.lisec@bam.de">jan.lisec@bam.de</a>',
           ifelse(get_golem_config("bam_server"), '| <a href="https://www.bam.de/Navigation/EN/Services/Privacy-Policy/privacy-policy.html" target="_blank" rel="noopener noreferrer">BAM Privacy Policy</a>', "")
         )
-        # )
       ),
       bslib::nav_panel(
         id = "start",
@@ -90,15 +80,22 @@ app_ui <- function(request) {
         value = "tP_LTS",
         shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), m_longtermstabilityUI("lts"))
       ),
-      #shiny::tabPanel(
+      # bslib::nav_panel(
+      #   title = "Help",
+      #   icon = shiny::icon("angle-right"),
+      #   value = "tP_help",
+      #   shiny::div(
+      #     style = paste0("padding-top: ", navbar_padding, "px; float: left"),
+      #     shiny::withMathJax(shiny::includeCSS(path = get_local_file("help_start.html")))
+      #   )
+      # ),
       bslib::nav_panel(
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
         shiny::div(
-          style = paste0("padding-top: ", navbar_padding, "px; float: left"),
-          shiny::withMathJax(shiny::includeCSS(path = get_local_file("help_start.html")))
-          #uiOutput('help_page')
+          style = paste0("padding-top: ", navbar_padding, "px;"),
+          shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[1])))
         )
       )
     )
