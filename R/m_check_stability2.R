@@ -32,6 +32,7 @@ check_stability2_UI <- function(id) {
       inputId = ns("dropdown_postcert"),
       width = "320px", right = TRUE,
       label = "Post Certification Test",
+      options = list(container = "body"),
       shiny::tagList(
         shiny::fluidRow(
           shiny::column(

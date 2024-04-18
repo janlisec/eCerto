@@ -119,37 +119,44 @@ page_CertificationUI <- function(id) {
     )
   )
 
-  top_panel <- shiny::wellPanel(
+  select_panel_div <- shiny::div(
+    sub_header("Select to show panel"),
     shiny::div(
-      style = "float:left;",
-      sub_header("Select to show panel"),
-      shiny::div(
-        style = "float: left;",
-        shiny::checkboxGroupInput(
-          inputId = ns("certification_view"), label = NULL,
-          choices = c(
-            "Tab.C0" = "dataview",
-            "Tab.C1" = "stats"
-          ),
-          selected = "stats"
-        )
-      ),
-      shiny::div(
-        style = "float:left; margin-left: 10px",
-        shiny::checkboxGroupInput(
-          inputId = ns("certification_view2"), label = NULL,
-          choices = c(
-            "Tab.C2" = "mstats",
-            "Fig.C1" = "CertValPlot"
-          ),
-          selected = c("mstats", "CertValPlot")
-        )
+      style = "float: left;",
+      shiny::checkboxGroupInput(
+        inputId = ns("certification_view"), label = NULL, width = "85px",
+        choices = c(
+          "Tab.C0" = "dataview",
+          "Tab.C1" = "stats"
+        ),
+        selected = "stats"
       )
     ),
-    # Analyte Modul
-    m_analyteUI(ns("analyteModule")),
-    # Report-Section
-    m_reportUI(ns("report"))
+    shiny::div(
+      #style = "float:left; padding-left: 10px",
+      style = "float:left;",
+      shiny::checkboxGroupInput(
+        inputId = ns("certification_view2"), label = NULL, width = "85px",
+        choices = c(
+          "Tab.C2" = "mstats",
+          "Fig.C1" = "CertValPlot"
+        ),
+        selected = c("mstats", "CertValPlot")
+      )
+    )
+  )
+
+  top_panel <- bslib::card(
+    fill = FALSE,
+    style = "background-color: rgba(0,0,0,0.03);",
+    shiny::div(
+      class = "d-flex justify-content-between",
+      select_panel_div,
+      # Analyte Modul
+      m_analyteUI(ns("analyteModule")),
+      # Report-Section
+      m_reportUI(ns("report"))
+    )
   )
 
   shiny::tabsetPanel(
