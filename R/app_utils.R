@@ -262,7 +262,7 @@ h_statement <- function(x, a) {
         width = 12,
         shiny::HTML(
           "The tested items are ", s1, "(ANOVA", ifelse(P_col == "P_adj", "P-value<sub>adj</sub>", "P-value"), "=", pn(a_P, 2), "using alpha-level = 0.05).",
-          "<p>The uncertainty value for analyte<b>", a_name, "</b>was determined as<b>", a_type, "=", pn(a_sd), "</b>.</p>", s2
+          "<br>The uncertainty value for analyte<b>", a_name, "</b>was determined as<b>", a_type, "=", pn(a_sd), "</b>.", s2
         )
       )
     )
@@ -342,7 +342,8 @@ get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALS
     if (!is.factor(df[, "Lab"])) df[, "Lab"] <- factor(df[, "Lab"], levels = unique(df[, "Lab"]))
     fn <- rv$c_lab_codes()
     p <- rv$a_p("precision")[an]
-    n_reps <- sort(unique(df$replicate))
+    n_reps <- as.character(sort(unique(df$replicate)))
+    if (min(as.numeric(n_reps))!=1) warning("No replicate with ID=1 found. Please check import data format (probably an additional column is present).")
     data <- plyr::ldply(split(df, df$Lab), function(x) {
       out <- rep(NA, length(n_reps))
       out[x$replicate] <- x$value
@@ -488,41 +489,43 @@ encode_fmt <- function(x) {
 welcome_screen <- function(id = id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::div(
-      style = "height: 70vh;",
-      shiny::div(
-        style = "height: 100%; background-color: rgb(210,0,30); text-align: center; border-radius: 4px; padding: 15px;",
-        # style = "position: absolute; bottom: 50px; top: 50px; height: 100%; background-color: rgb(210,0,30); text-align: center;",
-        shiny::div(
-          style = "background-color: rgb(0,175,240); color: white; margin: 15px; border-radius: 4px; text-shadow: 2px 2px 0px #D2001E; font-weight: 700; padding: 15px;",
-          p(style = "font-size: 28px", "Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
-          p(style = "font-size: 42px", "Welcome to eCerto!"),
-          shiny::img(src = "www/hex-eCerto.png", width = "120px", margin = "auto", alt = "eCerto Hex-Logo")
-        ),
-        shiny::fluidRow(
-          shiny::column(
-            width = 6,
+    bslib::layout_columns(
+      shiny::tagList(
+        bslib::card(
+          style = "background-color: rgb(0,175,240); color: white; text-shadow: 2px 2px 0px #D2001E; display: inline-block;",
+          shiny::span(
+            shiny::img(src = "www/hex-eCerto.png", alt = "eCerto Hex-Logo", width = "120px"),
             shiny::div(
-              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
-              "Click on", shiny::actionLink(inputId = ns("getHelp"), label = shiny::HTML("<strong>this Link</strong>")), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!")
-            ),
-            shiny::div(
-              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
-              "Read the extensive", shiny::actionLink(inputId = ns("showHelp"), label = shiny::HTML("<strong>Online Help</strong>")), shiny::HTML("(see top menue) if you want to know everything!"),
-            )
-          ),
-          shiny::column(
-            width = 6,
-            shiny::div(
-              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
-              shiny::HTML("Open some <strong>Test Data</strong> using the 'Load' button in the top right corner!")
-            ),
-            shiny::div(
-              style = "background-color: #f5f5f5; margin: 15px; padding: 15px; border-radius: 4px;",
-              shiny::HTML("Import your own data from <strong>Excel files</strong> using the 'Browse' button at the top!")
+              style = "display: inline-block;",
+              shiny::h3("Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
+              shiny::h1("Welcome to eCerto!")
             )
           )
         )
+      ),
+      shiny::tagList(
+        bslib::layout_columns(col_widths = 6,
+          bslib::card(
+            style = "background-color: #f5f5f5;",
+            shiny::div("Click on", shiny::actionLink(inputId = ns("getHelp"), label = shiny::HTML("<strong>this Link</strong>")), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!"))
+          ),
+          bslib::card(
+            style = "background-color: #f5f5f5;",
+            shiny::div("Read the extensive", shiny::actionLink(inputId = ns("showHelp"), label = shiny::HTML("<strong>Online Help</strong>")), shiny::HTML("(see top menue) if you want to know everything!"))
+          ),
+          bslib::card(
+            style = "background-color: #f5f5f5;",
+            shiny::div(shiny::HTML("Open some <strong>Test Data</strong> using the 'Load Test Data' button in the menu! You also can import a real life data set from Zenodo"))
+          ),
+          bslib::card(
+            style = "background-color: #f5f5f5;",
+            shiny::div(shiny::HTML("Import your own data from <strong>Excel files</strong> slecting the 'File format' and using the 'Browse' button at the top!"))
+          )
+        )
+      ),
+      col_widths =  bslib::breakpoints(
+        sm = c(12, 12),
+        xl = c(6, 6)
       )
     )
   )

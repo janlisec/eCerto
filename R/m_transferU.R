@@ -37,6 +37,7 @@ m_TransferUUI <- function(id) {
   shiny::tagList(
     shinyWidgets::dropdown(
       inputId = ns("dropdown_transferU"),
+      width = 240, right = TRUE,
       label = "Transfer uncertainty",
       shiny::uiOutput(outputId = ns("content"))
     )
@@ -96,11 +97,11 @@ m_TransferUServer <- function(id, rv, type = c("H", "S")) {
         )
         u_choices <- cc[substr(cc[, "ID"], 1, 1) == "U", "Name"]
         shiny::tagList(
-          sub_header(txt = paste("Transfer ", switch(st(),
-            "H" = "max(s_bb, s_bb_min) of H_type",
-            "H_simple" = "max(s_bb, s_bb_min)",
-            "S" = "values from column 'u_stab'"
-          ))),
+          sub_header(txt = shiny::HTML(paste("Transfer ", switch(st(),
+            "H" = "max(s<sub>bb</sub>, s<sub>bb,min</sub>) of H<sub>type</sub>",
+            "H_simple" = "max(s<sub>bb</sub>, s<sub>bb,min</sub>)",
+            "S" = "values from column 'u<sub>stab</sub>'"
+          ))), b=0),
           if (length(h_choices) >= 2) {
             shiny::selectInput(inputId = session$ns("H_Type"), label = NULL, width = "100%", selectize = TRUE, choices = h_choices)
           } else {
@@ -117,6 +118,7 @@ m_TransferUServer <- function(id, rv, type = c("H", "S")) {
               }
             }'))
           ),
+          shiny::p(),
           shiny::actionButton(inputId = session$ns("btn"), label = "Transfer")
         )
       } else {

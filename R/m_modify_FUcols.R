@@ -35,9 +35,11 @@ modify_FUcols_UI <- function(id) {
     shinyWidgets::dropdown(
       inputId = ns("dropdown_modifyFUcols"),
       label = "Modify F/U cols",
+      width = "280px",
       shiny::tagList(
-        shiny::selectInput(inputId = ns("selinp"), label = "Create/modify user column", choices = c("<new F>", "<new U>")),
-        shiny::textInput(inputId = ns("txtinp"), label = "Edit user column name", value = ""),
+        shiny::selectInput(inputId = ns("selinp"), label = "Create/modify column", choices = c("<new F>", "<new U>")),
+        shiny::textInput(inputId = ns("txtinp"), label = "Edit column name", value = ""),
+        shiny::p(),
         shiny::fluidRow(
           shiny::column(width = 6, shiny::actionButton(inputId = ns("btn"), label = "Apply")),
           shiny::column(width = 6, shiny::actionLink(inputId = ns("tabC3opt"), label = "Show Help"))
@@ -78,7 +80,7 @@ modify_FUcols_Server <- function(id, mt = NULL) {
 
     btn_action <- shiny::reactiveVal()
     observeEvent(input$txtinp, {
-      shinyjs::html(id = "msg_name", html = shiny::HTML("[Info] col-name displayed as: <strong>", input$txtinp, "</strong>"))
+      shinyjs::html(id = "msg_name", html = shiny::HTML("[Info] displayed as: <strong>", input$txtinp, "</strong>"))
       cc <- attr(mt(), "col_code")
       shinyjs::show("btn")
       if (input$selinp %in% new_cols) {

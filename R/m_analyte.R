@@ -37,35 +37,35 @@ m_analyteUI <- function(id) {
   # parameter panel for an analyte
   shiny::tagList(
     shiny::div(
-      style = "width: 200px; float:left; margin-right:5px; margin-left:35px;",
+      style = "width: 200px; float: left; margin-left: 16px;",
       shiny::actionLink(inputId = ns("analyte_help_link"), label = "Parameters for Analyte", style = "font-weight: 700; margin-bottom: 10px;"),
-      shiny::p(id = ns("curr_analyte"), style = "background-color: rgb(0,175,240); font-weight: 700; text-align: center; margin-bottom: 0px; padding-top: 3px", "select analyte"),
+      shiny::p(id = ns("curr_analyte"), style = "color: #ffffff; background-color: #0d6efd; font-weight: 700; text-align: center; margin-bottom: 0px; padding: 2px", "select analyte"),
       shiny::checkboxInput(inputId = ns("pooling"), label = "pooling", value = FALSE)
     ),
     shiny::div(
-      style = "width: 200px; float:left; margin-right:5px; margin-left:15px;",
-      shiny::div("Filter IDs", style = "background: grey; text-align: center; padding-top: 2px"),
+      style = "width: 200px; float:left; margin-left: 16px;",
+      shiny::div("Filter IDs", style = "background: grey; text-align: center; padding: 1px; font-size: 80%; color: white;"),
       shiny::div(
-        style = "float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
         sub_header("Samples", b = 0),
         shiny::selectizeInput(inputId = ns("sample_filter"), label = NULL, choices = "", multiple = TRUE)
       ),
       shiny::div(
-        style = "float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
         sub_header("Labs", b = 0),
         shiny::selectizeInput(inputId = ns("lab_filter"), label = NULL, choices = "", multiple = TRUE)
       ),
     ),
     shiny::div(
-      style = "width: 200px; float:left; margin-right:5px; margin-left:15px;",
-      shiny::div("Precision (acc. to DIN1333)", style = "background: grey; text-align: center; padding-top: 2px"),
+      style = "width: 200px; float: left; margin-left: 16px;",
+      shiny::div("Precision (acc. to DIN1333)", style = "background: grey; text-align: center; padding: 1px; font-size: 80%; color: white;"),
       shiny::div(
-        style = "float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
         sub_header("Tables", b = 0),
         shiny::numericInput(inputId = ns("precision"), label = NULL, value = 4, min = 0, max = 10, step = 1)
       ),
       shiny::div(
-        style = "float: left; width: 50%; min-width: 80px; margin-bottom: 0px;",
+        style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
         shiny::div(id = ns("DIN1333_info"), sub_header("Certified Values", b = 0)),
         shiny::numericInput(inputId = ns("precision_export"), label = NULL, value = 4, min = -2, max = 6, step = 1)
       ),
@@ -123,9 +123,13 @@ m_analyteServer <- function(id, rv) {
             inputId = "pooling",
             value = apm()[[a]]$pooling
           )
+          # [JL] 20240418 alternatively use the list structure of the select input to group sample IDs by lab in the widget
+          x <- getValue(rv, c("Certification","data"))
           shiny::updateSelectizeInput(
+          #shinyWidgets::updatePickerInput(
             inputId = "sample_filter",
-            choices = apm()[[a]]$sample_ids,
+            #choices = apm()[[a]]$sample_ids,
+            choices = split(x[x[,"analyte"]==a(),"ID"], x[x[,"analyte"]==a(),"Lab"]),
             selected = apm()[[a]]$sample_filter
           )
           shiny::updateSelectizeInput(
@@ -216,6 +220,7 @@ m_analyteServer <- function(id, rv) {
             apm(tmp)
           } else {
             err_msg("Sorry. Please keep at least 2 replicates for non-filtered labs.")
+            #shinyWidgets::updatePickerInput(
             shiny::updateSelectizeInput(
               inputId = "sample_filter",
               choices = apm()[[a()]]$sample_ids,

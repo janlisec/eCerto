@@ -14,6 +14,7 @@
 #' @param sheet Number of the sheet to preview.
 #' @param file Number of the file to preview.
 #' @param excelformat Selected sub format as reactive string.
+#' @param check TRUE/FALSE indicating if already data of this type are present.
 #'
 #' @return A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt}
 #'
@@ -54,32 +55,33 @@
 m_xlsx_range_select_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::uiOutput(outputId = ns("uitxt")),
-    DT::DTOutput(outputId = ns("uitab"))
+    shinyjs::useShinyjs(),
+    shinyjs::hidden(
+      bslib::card(
+        id = ns("range_select_card"),
+        #height = "100%",
+        bslib::card_header(shiny::uiOutput(outputId = ns("uitxt"))),
+        shiny::div(
+          style = "width: 420px; float: left; color: red; background: rgba(0,0,0,0.04); border: 4px; padding: 16px;",
+          id = ns("info_msg")
+        ),
+        shiny::div(DT::DTOutput(outputId = ns("uitab")))
+      )
+    )
   )
 }
 
 #' @noRd
 #' @keywords internal
-m_xlsx_range_select_Server <- function(
-    id,
-    current_file_input = shiny::reactive({
-      NULL
-    }),
-    sheet = shiny::reactive({
-      1
-    }),
-    file = shiny::reactive({
-      1
-    }),
-    excelformat = shiny::reactive({
-      "Certification"
-    })) {
+m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive({NULL}), sheet = shiny::reactive({1}), file = shiny::reactive({1}), excelformat = shiny::reactive({"Certification"}), check = shiny::reactive({FALSE})) {
+
   stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))
   stopifnot(shiny::is.reactive(file))
+  stopifnot(shiny::is.reactive(check))
 
   ns <- shiny::NS(id)
+
   shiny::moduleServer(id, function(input, output, session) {
     silent <- get_golem_config("silent")
 
@@ -91,9 +93,12 @@ m_xlsx_range_select_Server <- function(
       ifelse(excelformat() == "Stability", sheet(), file())
     })
 
+    shiny::observeEvent(current_file_input(), {
+      shinyjs::toggle(id = "range_select_card", condition = !is.null(current_file_input()))
+    }, ignoreNULL = FALSE)
+
     tab <- shiny::reactive({
       shiny::req(current_file_input(), sheet(), file(), excelformat())
-      # xl_fmt <- shiny::isolate(excelformat())
       xl_fmt <- excelformat()
       # use different modes of fnc_load_xlsx to import data depending on file type
       if (!silent) message("[m_xlsx_range_select_Server] reactive(tab): load ", nrow(current_file_input()), " files")
@@ -151,19 +156,95 @@ m_xlsx_range_select_Server <- function(
     uitab_proxy <- DT::dataTableProxy("uitab")
 
     # if rows and columns in the DT() have been selected
-    shiny::observeEvent(input$uitab_cells_selected, {
-      if (!silent) message("m_xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
-      cs <- input$uitab_cells_selected
+    # shiny::observeEvent(input$uitab_cells_selected, {
+    #   if (!silent) message("m_xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
+    #   cs <- input$uitab_cells_selected
+    #   if (nrow(cs) >= 2) {
+    #     check_cs <- function(x, exc_fmt = "Certification") {
+    #       min_rows <- switch(exc_fmt, "Certification" = 0, 1)
+    #       min_cols <- switch(exc_fmt, "Certification" = 2, 1)
+    #       diff(range(x[, 1])) >= min_rows &&
+    #         diff(range(x[, 2])) >= min_cols &&
+    #         any(tab_param$start_col != min(x[, 2]), tab_param$end_col != max(x[, 2]), tab_param$start_row != min(cs[, 1]), tab_param$end_row != max(cs[, 1]))
+    #     }
+    #     check_new_point <- function(x) {
+    #       x[3, 1] >= min(x[-3, 1]) & x[3, 1] <= max(x[-3, 1]) & x[3, 2] >= min(x[-3, 2]) & x[3, 2] <= max(x[-3, 2])
+    #     }
+    #     update_cs <- function() {
+    #       tab_param$start_col <- min(cs[, 2])
+    #       tab_param$end_col <- max(cs[, 2])
+    #       tab_param$start_row <- min(cs[, 1])
+    #       tab_param$end_row <- max(cs[, 1])
+    #       if (is.list(tab())) {
+    #         tab_param$tab <- lapply(tab(), function(x) {
+    #           x[min(cs[, 1]):max(cs[, 1]), min(cs[, 2]):max(cs[, 2]), drop = FALSE]
+    #         })
+    #       } else {
+    #         tab_param$tab <- tab()[min(cs[, 1]):max(cs[, 1]), min(cs[, 2]):max(cs[, 2]), drop = FALSE]
+    #       }
+    #       tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
+    #       DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
+    #     }
+    #     # the final row is the cell selected last by the user
+    #     if (nrow(cs) == 2 && check_cs(x = cs, exc_fmt = excelformat())) {
+    #       update_cs()
+    #     }
+    #     # did the user select a third point ?
+    #     if (nrow(cs) > 2) {
+    #       # is this third point outside or inside the current range
+    #       if (check_new_point(x = cs)) {
+    #         # when inside --> open a modal to inform the user that he needs to deselect another cell first
+    #         shiny::showModal(shiny::modalDialog(
+    #           shiny::HTML("You selected a cell within the current range.<br>Please deselect one of the two outer cells first.")
+    #         ))
+    #         DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
+    #       } else {
+    #         # when outside --> increase selected range automatically
+    #         if (check_cs(x = cs)) {
+    #           update_cs()
+    #         }
+    #       }
+    #       DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
+    #     }
+    #   }
+    # })
+
+    shiny::observeEvent(check(), {
+      if (check()) {
+        shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", excelformat(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
+      } else {
+        shinyjs::html(id = "info_msg", html = "")
+      }
+    })
+
+    uitab_proxy <- DT::dataTableProxy("uitab")
+    output$uitab <- DT::renderDT(
+      {
+        shiny::req(tab())
+        out <- tab()[[fmt_idx()]]
+        if (prod(dim(out)) > 1) {
+          # limit preview to 10 characters per cell
+          # JL: keep the [] to keep the dimensions even for a single row entry
+          out[] <- apply(out, 2, substr, start = 1, stop = 10)
+        }
+        dt <- DT::datatable(
+          data = out,
+          extensions = 'AutoFill',
+          options = list("dom" = "t", autoFill = TRUE, "pageLength" = -1, ordering = FALSE),
+          callback = DT::JS(readLines(get_local_file("dt-callback-color-range.js"))),
+          selection = "none"
+        )
+        return(dt)
+      }, server = FALSE
+    )
+
+    shiny::observeEvent(input$uitab_range_selected, {
+      if (!silent) message("m_xlsx_range_select_Server: observeEvent(input$uitab_range_selected)")
+      cs <- input$uitab_range_selected
       if (nrow(cs) >= 2) {
         check_cs <- function(x, exc_fmt = "Certification") {
-          min_rows <- switch(exc_fmt,
-            "Certification" = 0,
-            1
-          )
-          min_cols <- switch(exc_fmt,
-            "Certification" = 2,
-            1
-          )
+          min_rows <- switch(exc_fmt, "Certification" = 0, 1)
+          min_cols <- switch(exc_fmt, "Certification" = 2, 1)
           diff(range(x[, 1])) >= min_rows &&
             diff(range(x[, 2])) >= min_cols &&
             any(tab_param$start_col != min(x[, 2]), tab_param$end_col != max(x[, 2]), tab_param$start_row != min(cs[, 1]), tab_param$end_row != max(cs[, 1]))
@@ -184,56 +265,15 @@ m_xlsx_range_select_Server <- function(
             tab_param$tab <- tab()[min(cs[, 1]):max(cs[, 1]), min(cs[, 2]):max(cs[, 2]), drop = FALSE]
           }
           tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
-          DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
         }
-        # the final row is the cell selected last by the user
-        if (nrow(cs) == 2 && check_cs(x = cs, exc_fmt = excelformat())) {
-          update_cs()
-        }
-        # did the user select a third point ?
-        if (nrow(cs) > 2) {
-          # is this third point outside or inside the current range
-          if (check_new_point(x = cs)) {
-            # when inside --> open a modal to inform the user that he needs to deselect another cell first
-            shiny::showModal(shiny::modalDialog(
-              shiny::HTML("You selected a cell within the current range.<br>Please deselect one of the two outer cells first.")
-            ))
-            DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
-          } else {
-            # when outside --> increase selected range automatically
-            if (check_cs(x = cs)) {
-              update_cs()
-            }
-          }
-          DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
-        }
+        update_cs()
       }
     })
-
-    uitab_proxy <- DT::dataTableProxy("uitab")
-    output$uitab <- DT::renderDT(
-      {
-        shiny::req(tab())
-        out <- tab()[[fmt_idx()]]
-        if (prod(dim(out)) > 1) {
-          # limit preview to 10 characters per cell
-          # JL: keep the [] to keep the dimensions even for a single row entry
-          out[] <- apply(out, 2, substr, start = 1, stop = 10)
-        }
-        return(out)
-      },
-      options = list("dom" = "t", "pageLength" = nrow(tab()[[fmt_idx()]]), ordering = FALSE),
-      selection = if (excelformat() == "Stability") {
-        "none"
-      } else {
-        list(target = "cell", selectable = matrix(-1 * c(1:nrow(tab()[[fmt_idx()]]), rep(0, nrow(tab()[[fmt_idx()]]))), ncol = 2))
-      }
-    )
 
     output$uitxt <- shiny::renderUI({
       shiny::req(tab())
       str1 <- ifelse(is.null(current_file_input()), "", paste0("Preview of file <strong>'", current_file_input()$name[file()], "'</strong>"))
-      str2 <- ifelse(excelformat() == "Stability", "No modification possible of", "You may select 2 cells (top left and bottom right) by mouse click to alter the")
+      str2 <- ifelse(excelformat() == "Stability", "No modification possible of", "You may select a range dragging the blue handle by mouse to alter the")
       str3 <- paste0("currently selected range: <strong>", tab_param$rng, "</strong>")
       shiny::HTML(str1, str2, str3)
     })

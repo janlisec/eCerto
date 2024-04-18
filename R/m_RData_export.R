@@ -28,12 +28,15 @@
 m_RDataExport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::div(
+    shinyWidgets::dropdown(
+      up = TRUE,
       id = ns("savepanel"),
-      sub_header("Save Current Analysis"),
-      shiny::textInput(inputId = ns("user"), label = "User", value = "Jan Lisec"),
-      shiny::textInput(inputId = ns("study_id"), label = "Study ID", value = "CRM001"),
-      shiny::downloadButton(outputId = ns("ecerto_backup"), label = "Backup")
+      label = "Save Current Analysis",
+      shiny::tagList(
+        shiny::textInput(inputId = ns("user"), label = "User", value = "Jan Lisec"),
+        shiny::textInput(inputId = ns("study_id"), label = "Study ID", value = "CRM001"),
+        shiny::downloadButton(outputId = ns("ecerto_backup"), label = "Backup", style = "background-color: rgb(140, 180, 15);")
+      )
     )
   )
 }

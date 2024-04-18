@@ -30,86 +30,103 @@
 #' @keywords internal
 m_arrheniusUI <- function(id) {
   ns <- shiny::NS(id)
-  shiny::tagList(
-    shiny::fluidRow(
-      shiny::column(
-        width = 10,
-        shiny::div(
-          style = "width=100%; margin-bottom: 5px;",
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("ArrheniusPlot1_link"),
-              label = "Fig.S2 - determining temperature-dependent reaction rates"
-            )
+
+  fig_S2_panel <- bslib::card(
+    style = "resize:vertical;",
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::strong(shiny::actionLink(inputId = ns("ArrheniusPlot1_link"), label = "Fig.S2 - determining temperature-dependent reaction rates")),
+      shiny::div(
+        shiny::div(style = "float: left; margin-left: 15px;", shinyjs::hidden(shiny::selectInput(inputId = ns("analyte"), label = NULL, choices = "")))
+      )
+    ),
+    bslib::card_body(
+      bslib::layout_sidebar(
+        padding = 0,
+        sidebar = bslib::sidebar(
+          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = 260,
+          shiny::wellPanel(
+            shiny::selectInput(inputId = ns("flt_ids"), label = "exclude ids", choices = "", multiple = TRUE),
+            sub_header("Options Fig.S2", b = 12),
+            shiny::checkboxGroupInput(
+              inputId = ns("s_opt_FigS2"),
+              label = NULL,
+              choices = list(
+                "Show Ref Data" = "show_reference_point",
+                "Use ordinal time" = "plot_nominal_scale",
+                "Time in month" = "plot_in_month",
+                "log-tansform values" = "plot_ln_relative",
+                "Round Month Time" = "round_time",
+                "Show sample IDs" = "show_ids"
+              ),
+              selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
+            )#,
+            #shiny::actionButton(inputId = ns("s_switch_simple"), label = "Show linear model", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
           )
         ),
         shiny::plotOutput(outputId = ns("FigS2"))
-      ),
-      shiny::column(
-        width = 2,
-        shiny::wellPanel(
-          shiny::selectInput(inputId = ns("analyte"), label = "analyte", choices = ""),
-          shiny::selectInput(inputId = ns("flt_ids"), label = "exclude ids", choices = "", multiple = TRUE),
-          sub_header("Options Fig.S2", b = 12),
-          shiny::checkboxGroupInput(
-            inputId = ns("s_opt_FigS2"),
-            label = NULL,
-            choices = list(
-              "Show Ref Data" = "show_reference_point",
-              "Use ordinal time" = "plot_nominal_scale",
-              "Time in month" = "plot_in_month",
-              "log-tansform values" = "plot_ln_relative",
-              "Round Month Time" = "round_time",
-              "Show sample IDs" = "show_ids"
-            ),
-            selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
-          ),
-          shiny::actionButton(inputId = ns("s_switch_simple"), label = "Show linear model", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
+      )
+    )
+  )
+
+  tab_S2_panel <- bslib::card(
+    #fill = FALSE,
+    bslib::card_header(
+      shiny::strong(shiny::actionLink(inputId = ns("ArrheniusTab_link"), label = "Tab.S2 - calculation of possible storage time")),
+    ),
+    bslib::card_body(
+      bslib::layout_sidebar(
+        padding = 0,
+        sidebar = bslib::sidebar(
+          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = 260,
+          shiny::wellPanel(
+            sub_header(shiny::actionLink(inputId = ns("ArrheniusStorrageTemp_link"), label = "Potential Storage Temp")),
+            shiny::numericInput(inputId = ns("user_temp"), label = NULL, value = -20, min = -80, max = 23, step = 1),
+            shiny::radioButtons(inputId = ns("rbtn_storage"), label = "Use values from...", choices = list("Tab.C3" = "mt", "Reference Temp" = "rt", "input-box below" = "inp"), selected = "rt"),
+            shiny::numericInput(inputId = ns("num_coef"), label = NULL, value = NULL)
+          )
+        ),
+        bslib::layout_columns(
+          col_widths = c(6, 4, 2, 10),
+          #row_heights = list("auto", "120px"),
+          shiny::div(DT::DTOutput(outputId = ns("Tab1"))),
+          shiny::div(DT::DTOutput(outputId = ns("Tab1exp"))),
+          shiny::div(style = "padding-right: 16px; min-width: 200px;", DT::DTOutput(outputId = ns("outTab"))),
+          shiny::div(DT::DTOutput(outputId = ns("Tab2")))
         )
+
+
+        # shiny::div(style = "width = 90%",
+        #   shiny::fluidRow(
+        #     shiny::column(width = 6, DT::DTOutput(outputId = ns("Tab1"))),
+        #     shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
+        #     shiny::column(width = 2, DT::DTOutput(outputId = ns("outTab")))
+        #   ),
+        #   shiny::fluidRow(
+        #     shiny::column(width = 10, DT::DTOutput(outputId = ns("Tab2")))
+        #   )
+        # )
       )
     ),
-    shiny::fluidRow(
-      shiny::column(
-        width = 8,
-        shiny::div(
-          style = "width=100%; margin-bottom: 5px;",
-          sub_header(shiny::actionLink(inputId = ns("ArrheniusTab_link"), label = "Tab.S2 - calculation of possible storage time"))
-        ),
-        shiny::fluidRow(
-          shiny::column(width = 6, DT::DTOutput(outputId = ns("Tab1"))),
-          shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
-          shiny::column(width = 2, DT::DTOutput(outputId = ns("outTab")))
-        ),
-        shiny::fluidRow(
-          shiny::column(width = 10, DT::DTOutput(outputId = ns("Tab2"))),
-          shiny::column(width = 2, shiny::uiOutput(outputId = ns("user_month")))
-        )
-      ),
-      shiny::column(
-        width = 2,
-        shiny::div(
-          style = "width=100%; margin-bottom: 5px;",
-          sub_header(shiny::actionLink(inputId = ns("ArrheniusPlot2_link"), label = "Fig.S3 - Arrhenius model"))
-        ),
-        shiny::plotOutput(outputId = ns("Fig2"))
-      ),
-      shiny::column(
-        width = 2,
-        shiny::wellPanel(
-          shiny::fluidRow(
-            shiny::column(
-              width = 6,
-              sub_header(shiny::actionLink(inputId = ns("ArrheniusStorrageTemp_link"), label = "Potential Storage Temp")),
-              shiny::numericInput(inputId = ns("user_temp"), label = NULL, value = -20, min = -80, max = 23, step = 1)
-            ),
-            shiny::column(
-              width = 6,
-              shiny::radioButtons(inputId = ns("rbtn_storage"), label = "Use values from...", choices = list("Tab.C3" = "mt", "Reference Temp" = "rt", "input-box below" = "inp"), selected = "rt"),
-              shiny::numericInput(inputId = ns("num_coef"), label = NULL, value = NULL)
-            )
-          )
-        )
-      )
+    bslib::card_footer(
+      shiny::uiOutput(outputId = ns("user_month"))
+    )
+  )
+
+  fig_S3_panel <- bslib::card(
+    style = "resize:vertical;",
+    bslib::card_header(
+      shiny::strong(shiny::actionLink(inputId = ns("ArrheniusPlot2_link"), label = "Fig.S3 - Arrhenius model"))
+    ),
+    shiny::plotOutput(outputId = ns("FigS3"))
+  )
+
+  shiny::tagList(
+    fig_S2_panel,
+    bslib::layout_columns(
+      col_widths = c(3, 9),
+      fig_S3_panel,
+      tab_S2_panel
     )
   )
 }
@@ -348,10 +365,10 @@ m_arrheniusServer <- function(id, rv) {
       m <- as.numeric(round(input$num_coef / (-1 * exp(ce[2] * ut_K + ce[1]))))
       m_CIup <- sqrt(tab2()[, "u(i)"]^2 + tab2()[, "u(s)"]^2 * ut_K^2 + 2 * tab2()[, "cov"] * ut_K) + (ce[2] * ut_K + ce[1])
       m_CIup <- as.numeric(round(input$num_coef / (-1 * exp(m_CIup))))
-      shiny::HTML("At the specified temperature of", input$user_temp, " the analyte ", input$analyte, " is expected to be stable for", m, "month (mean) or", m_CIup, "month (CI_upper) respectively.")
+      shiny::HTML("At the specified temperature of", input$user_temp, " the analyte <strong>", input$analyte, "</strong> is expected to be stable for", m, "month (mean) or <strong>", m_CIup, " month</strong> (CI<sub>upper</sub>) respectively.")
     })
 
-    output$Fig2 <- shiny::renderPlot({
+    output$FigS3 <- shiny::renderPlot({
       shiny::req(tab1exp())
       prepFigS3(tab = tab1exp())
     })

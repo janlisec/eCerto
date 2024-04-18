@@ -26,24 +26,17 @@
 #'
 m_DataViewUI <- function(id) {
   ns <- shiny::NS(id)
-  shiny::tagList(
-    shiny::fluidRow(
-      shiny::column(
-        width = 10,
-        DT::dataTableOutput(ns("tab1"))
-      ),
-      shiny::column(
-        width = 2,
-        shiny::wellPanel(
-          shiny::selectInput(
-            width = "200px",
-            inputId = ns("data_view_select"), # previously opt_show_files
-            label = "Data view",
-            choices = c("kompakt", "standard")
-          ),
-          shiny::checkboxInput(inputId = ns("data_view_file"), label = "Show Filenames", value = TRUE)
-        )
+  bslib::card(
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::strong("Tab.C0 - Imported data from collaborative trial"),
+      shiny::div(
+        shiny::div(style = "float: right; margin-left: 15px; text-align: right;", shiny::checkboxInput(width = 140, inputId = ns("data_view_file"), label = "Show Filenames", value = TRUE)),
+        shiny::div(style = "float: right; margin-left: 15px;", shiny::selectInput(width = 140, inputId = ns("data_view_select"), label = NULL, choices = c("kompakt", "standard")))
       )
+    ),
+    bslib::card_body(
+      shiny::div(DT::dataTableOutput(ns("tab1")))
     )
   )
 }

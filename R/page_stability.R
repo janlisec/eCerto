@@ -25,6 +25,72 @@
 #' }
 page_StabilityUI <- function(id) {
   ns <- shiny::NS(id)
+
+  tab_S1_panel <- bslib::card(
+    #min_height = 500
+    #fill = FALSE,
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::strong(shiny::actionLink(inputId = ns("tab_link"), label = "Tab.S1 - calculation of uncertainty contribution")),
+      shiny::div(
+        shiny::div(style = "float: left; margin-left: 15px;", m_TransferUUI(id = ns("s_transfer")))
+      )
+    ),
+    bslib::card_body(
+      shiny::div(DT::DTOutput(ns("s_tab1"))),
+      shinyjs::hidden(shiny::radioButtons(inputId = ns("time_fmt"), label = "Time format in lm", choices = c("mon", "day"), selected = "mon"))
+    )
+  )
+
+  fig_S1_panel <- bslib::card(
+    id = ns("fig_H1_panel"),
+    style = "resize:vertical;",
+    bslib::card_header(
+      shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot"))
+    ),
+    bslib::card_body(
+      #min_height = 300,
+      #fill = TRUE,
+      bslib::layout_sidebar(
+        padding = 0,
+        sidebar = bslib::sidebar(
+          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = 260,
+          shiny::wellPanel(
+            sub_header("Save Report"),
+            shiny::downloadButton(ns("s_Report"), label = "Download"),
+            shiny::p(),
+            shiny::checkboxGroupInput(inputId = ns("FigS1_options"), label = "Fig.S1 options", choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")),
+            shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard" = 1, "adjusted" = 3), inline = TRUE)),
+            shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s" = "2s", "U_abs" = "U"), inline = TRUE)),
+            shiny::sliderInput(inputId = ns("s_shelf_life"), label = shiny::HTML("Exp. shelf life t<sub>cert</sub> [Month]"), min = 0, max = 120, value = 60, step = 6),
+            shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE)
+            #shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Show Arrhenius", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
+          )
+        ),
+        # $JL$ the surrounding div is required to include the empty HTML as a way to allow shinking and prevent the figure to be resized horizontally otherwise
+        shiny::plotOutput(ns("s_plot"), height = "500px")
+        # shiny::div(
+        #   shiny::div(style = "display: inline-block;", shiny::plotOutput(ns("s_plot"), height = "500px", inline = TRUE)),
+        #   shiny::div(style = "display: inline-block;", shiny::HTML(""))
+        # )
+      )
+    )
+  )
+
+  # bslib::navset_card_pill(
+  #   ...,
+  #   id = NULL,
+  #   selected = NULL,
+  #   title = NULL,
+  #   sidebar = NULL,
+  #   header = NULL,
+  #   footer = NULL,
+  #   height = NULL,
+  #   placement = c("above", "below"),
+  #   full_screen = FALSE,
+  #   wrapper = card_body
+  # )
+
   shiny::tabsetPanel(
     id = ns("StabilityPanel"),
     type = "hidden",
@@ -38,53 +104,26 @@ page_StabilityUI <- function(id) {
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      shiny::fluidRow(
-        shiny::column(
-          width = 10,
-          sub_header(
-            shiny::actionLink(
-              inputId = ns("tab_link"),
-              label = "Tab.S1 - calculation of uncertainty contribution"
-            )
-          ),
-          DT::dataTableOutput(ns("s_tab1"))
+      bslib::layout_columns(
+        shiny::tagList(
+          tab_S1_panel
         ),
-        shiny::column(
-          width = 2,
-          shiny::wellPanel(
-            shiny::sliderInput(inputId = ns("s_shelf_life"), label = "Expected shelf life [Month]", min = 0, max = 120, value = 60, step = 6),
-            m_TransferUUI(id = ns("s_transfer")),
-            shinyjs::hidden(shiny::radioButtons(inputId = ns("time_fmt"), label = "Time format in lm", choices = c("mon", "day"), selected = "mon"))
-          )
+        shiny::tagList(
+          fig_S1_panel
+        ),
+        col_widths =  bslib::breakpoints(
+          sm = c(12, 12),
+          xl = c(4, 8)
         )
       ),
-      shiny::fluidRow(
-        shiny::column(
-          width = 10,
-          sub_header(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot")),
-          shiny::plotOutput(ns("s_plot"), height = "500px"),
-        ),
-        shiny::column(
-          width = 2,
-          shiny::wellPanel(
-            sub_header("Save Report"),
-            shiny::downloadButton(ns("s_Report"), label = "Download"),
-            shiny::p(),
-            sub_header("Fig.S1 Options"),
-            shiny::checkboxGroupInput(inputId = ns("FigS1_options"), label = NULL, choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")),
-            shiny::div(style = "margin-top: -10px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard" = 1, "adjusted" = 3), inline = TRUE)),
-            shiny::div(style = "margin-top: -10px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s" = "2s", "U_abs" = "U"), inline = TRUE)),
-            shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
-            shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Show Arrhenius", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
-          )
-        ),
-      )
-    ),
-    shiny::tabPanel(
-      title = "altern-Panel",
-      value = "tP_arrhenius",
-      m_arrheniusUI(id = ns("arrhenius"))
+      shiny::div(id = ns("arrhenius_panel"), m_arrheniusUI(id = ns("arrhenius")))
     )
+
+    # shiny::tabPanel(
+    #   title = "altern-Panel",
+    #   value = "tP_arrhenius",
+    #   m_arrheniusUI(id = ns("arrhenius"))
+    # )
   )
 }
 
@@ -102,20 +141,21 @@ page_StabilityServer <- function(id, rv) {
       ignoreInit = TRUE
     )
 
-    # switch back and forth between stability 'main' and 'arrhenius' panels
-    shiny::observeEvent(input$s_switch_arrhenius,
-      {
-        shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "tP_arrhenius")
-      },
-      ignoreInit = TRUE
-    )
+    # # switch back and forth between stability 'main' and 'arrhenius' panels
+    # shiny::observeEvent(input$s_switch_arrhenius,
+    #   {
+    #     shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "tP_arrhenius")
+    #   },
+    #   ignoreInit = TRUE
+    # )
 
     shiny::observeEvent(getValue(rv, c("Stability", "data")), {
       tmp <- getValue(rv, c("Stability", "data"))
       # does the data contain Temp information (arrhenius model)
       test <- "Temp" %in% colnames(tmp)
       shinyjs::toggle(id = "s_sel_temp", condition = test)
-      shinyjs::toggle(id = "s_switch_arrhenius", condition = test)
+      #shinyjs::toggle(id = "s_switch_arrhenius", condition = test)
+      shinyjs::toggle(id = "arrhenius_panel", condition = test)
       if (test) {
         lev <- levels(factor(tmp[, "Temp"]))
         # shiny::updateSelectInput(inputId = "s_sel_temp", choices = lev, selected = lev)

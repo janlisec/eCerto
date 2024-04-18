@@ -34,8 +34,10 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
     ylab <- expression(plain(Normalized ~ analyte ~ values) ~ ~ (x["a,i"] - bar(x[a])) / sigma[a])
   } else {
     unique_H_type <- length(unique(h_dat[, "H_type"])) == 1
-    an <- as.character(h_dat[interaction(h_dat[, "analyte"], h_dat[, "H_type"]) == sa, "analyte"])
-    ylab <- paste(ifelse(unique_H_type, an, sa), " [", unique(h_dat["unit"]), "]")
+    idx <- which(interaction(h_dat[, "analyte"], h_dat[, "H_type"]) == sa)[1]
+    an <- as.character(h_dat[idx, "analyte"])
+    au <- as.character(h_dat[idx, "unit"])
+    ylab <- paste(ifelse(unique_H_type, an, sa), " [", au, "]")
   }
   h_dat <- h_dat[interaction(h_dat[, "analyte"], h_dat[, "H_type"]) == sa, ]
   h_dat[, "Flasche"] <- factor(h_dat[, "Flasche"])

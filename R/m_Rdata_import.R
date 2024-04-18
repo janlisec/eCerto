@@ -28,11 +28,13 @@
 m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::actionButton(inputId = ns("load_test_data"), label = "Load Test Data", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;"),
-    shiny::actionButton(inputId = ns("load_zenodo_data"), label = "Load from Zenodo", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;"),
+    shiny::div(
+      shiny::actionButton(inputId = ns("load_test_data"), label = shiny::HTML("Load<br>Test Data"), style = "display: inline-block; width: 120px; font-weight: 700; background-color: rgb(0,175,240);"),
+      shiny::actionButton(inputId = ns("load_zenodo_data"), label = shiny::HTML("Load from<br>Zenodo"), style = "display: inline-block; width: 120px; font-weight: 700; background-color: rgb(0,175,240);")
+    ),
     shiny::fileInput(
       inputId = ns("in_file_ecerto_backup"),
-      label = "Load Previous Analysis",
+      label = "Load Previous Analysis (RData file)",
       multiple = FALSE,
       accept = c("RData")
     )

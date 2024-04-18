@@ -38,34 +38,35 @@ m_ExcelUpload_UI <- function(id) {
     # [JL] calling useShinyjs() here is required because ???
     shinyjs::useShinyjs(),
     shiny::tagList(
-      shiny::fluidRow(
-        style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
+      #shiny::fluidRow(
+      bslib::card(
+        #style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
+        style = "background-color: #f5f5f5;",
         shiny::div(
-          style = "width: 130px; float: left; margin-left: 15px;",
-          shiny::radioButtons(
-            inputId = ns("moduleSelect"),
-            label = "File format",
-            choices = "dummy"
+          shiny::div(
+            style = "width: 120px; float: left; margin-bottom: -12px;",
+            shiny::radioButtons(
+              inputId = ns("moduleSelect"),
+              label = "File format",
+              choices = "dummy"
+            )
+          ),
+          shiny::div(
+            style = "width: 300px; float: left; margin-left: 16px;",
+            shiny::uiOutput(outputId = ns("inp_file"))
+          ),
+          shiny::div(
+            style = "width: 280px; float: left; margin-left: 16px;",
+            shinyjs::hidden(shiny::selectInput(inputId = ns("file_name"), label = "File", choices = ""))
+          ),
+          shiny::div(
+            style = "width: 90px; float: left; margin-left: 16px;",
+            shinyjs::hidden(shiny::selectInput(inputId = ns("sheet_number"), label = "Sheet #", choices = "1"))
+          ),
+          shiny::div(
+            style = "width:130px; float: left; margin-left: 16px; margin-top: 32px;",
+            shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range", style = "background-color: rgb(140,180,15)"))
           )
-        ),
-        shiny::div(
-          style = "width: 260px; float: left; margin-left: 15px;",
-          shiny::uiOutput(outputId = ns("inp_file"))
-        ),
-        shiny::div(
-          style = "width: 260px; float: left; margin-left: 15px;",
-          shinyjs::hidden(shiny::selectInput(inputId = ns("file_name"), label = "File", choices = ""))
-        ),
-        shiny::div(
-          style = "width: 70px; float: left; margin-left: 15px;",
-          shinyjs::hidden(shiny::selectInput(inputId = ns("sheet_number"), label = "Sheet #", choices = "1"))
-        ),
-        shiny::div(
-          style = "width:270px; float: left; margin-left: 15px; color: red", id = ns("info_msg")
-        ),
-        shiny::div(
-          style = "float: right; margin-right: 15px; margin-top: 15px;",
-          shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range", style = "background-color: rgb(140,180,15)"))
         )
       )
     ),
@@ -114,13 +115,6 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     })
 
     shiny::observe({
-      req(exl_fmt() %in% names(rv$e_present()))
-      # browser()
-      if (rv$e_present()[exl_fmt()]) {
-        shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
-      } else {
-        shinyjs::html(id = "info_msg", html = "")
-      }
       # hide welcome screen when some data was loaded already
       shinyjs::toggleElement(id = "welcome_screen", condition = !any(rv$e_present()) & is.null(current_file_input()))
     })
@@ -152,6 +146,11 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       which(input$excel_file$name %in% input$file_name)
     })
 
+    check <- shiny::reactive({
+      req(any(rv$e_present()), exl_fmt() %in% names(rv$e_present()))
+      rv$e_present()[exl_fmt()]
+    })
+
     # Show file preview to select rows and columns
     rv_xlsx_range_select <- m_xlsx_range_select_Server(
       id = "rng_select",
@@ -160,7 +159,8 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         as.numeric(input$sheet_number)
       }),
       file = file_number,
-      excelformat = exl_fmt
+      excelformat = exl_fmt,
+      check = check
     )
 
     # initialize return object 'out'

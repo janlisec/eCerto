@@ -30,6 +30,7 @@ check_stability2_UI <- function(id) {
   shiny::tagList(
     shinyWidgets::dropdown(
       inputId = ns("dropdown_postcert"),
+      width = "320px", right = TRUE,
       label = "Post Certification Test",
       shiny::tagList(
         shiny::fluidRow(
@@ -39,7 +40,8 @@ check_stability2_UI <- function(id) {
               inputId = ns("txt_textAreaInput"), label = NULL, rows = 6,
               placeholder = paste("copy/paste or enter numeric values (one per row) and press calculate afterwards")
             ),
-            shiny::actionButton(inputId = ns("btn_textAreaInput"), label = "Calculate", width = "80px")
+            shiny::p(),
+            shiny::actionButton(inputId = ns("btn_textAreaInput"), label = "Calculate", width = "100%")
           ),
           shiny::column(
             width = 6,

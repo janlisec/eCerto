@@ -27,6 +27,85 @@
 #' @noRd
 page_HomogeneityUI <- function(id) {
   ns <- shiny::NS(id)
+
+  tab_H1_panel <- bslib::card(
+    #min_height = 500
+    fill = FALSE,
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::strong(shiny::actionLink(inputId = ns("tab1_link"), label = "Tab.H1 - calculation of uncertainty contribution")),
+      shiny::div(
+        shiny::div(
+          style = "float: right; margin-left: 15px;",
+          m_TransferUUI(ns("h_transfer"))
+        ),
+        shiny::div(
+          style = "float: left; margin-left: 15px;",
+          shiny::checkboxInput(inputId = ns("h_adjust"), width = 130, label = shiny::HTML("P-value adjust-<br>ment (bonferroni)"), value = TRUE)
+        )
+      )
+    ),
+    bslib::card_body(
+      shiny::div(DT::DTOutput(ns("h_tab1")))
+    )
+  )
+
+  tab_H2_panel <- bslib::card(
+    #min_height = 500
+    #fill = FALSE,
+    bslib::card_header(
+      shiny::strong(shiny::actionLink(inputId = ns("tab2_link"), label = "Tab.H2 - specimen stats")),
+    ),
+    bslib::card_body(
+      shiny::div(DT::DTOutput(ns("h_tab2")))
+    )
+  )
+
+  fig_H1_panel <- bslib::card(
+    id = ns("fig_H1_panel"),
+    #style = "resize:vertical;",
+    bslib::card_header(
+      shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.H1 - boxplot of specimen values"))
+    ),
+    bslib::card_body(
+      #min_height = 300,
+      fill = TRUE,
+      bslib::layout_sidebar(
+        padding = 0,
+        sidebar = bslib::sidebar(
+          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = 320,
+          shiny::wellPanel(
+            shinyjs::hidden(shiny::selectInput(inputId = ns("h_sel_analyt"), label = "Row selected in Tab.1", choices = "")),
+            sub_header("Save Report"),
+            shiny::downloadButton(ns("h_Report"), label = "Download", style = "margin-bottom:10px;"),
+            shiny::checkboxGroupInput(
+              inputId = ns("FigH1_opt"), label = "Fig.H1 options",
+              choices = list(
+                "Identify replicates in Fig.H1" = "show_repID",
+                "Show combined analyte z-scores" = "show_H2"
+              )
+            ),
+            shiny::textInput(inputId = ns("FigH1_xlab"), label = "Edit x-axis label", value = "Flasche")
+          )
+        ),
+        # $JL$ the surrounding div is required to include the empty HTML as a way to allow shinking and prevent the figure to be resized horizontally otherwise
+        shiny::div(
+          shiny::div(style = "display: inline-block; padding-right: 16px", shiny::plotOutput(ns("h_boxplot"), inline = TRUE)),
+          shiny::div(style = "display: inline-block;", shiny::plotOutput(ns("h_Fig.H2"), inline = TRUE)),
+          shiny::div(style = "display: inline-block;", shiny::HTML(""))
+        )
+        # nice alternative without fixed plot height but...
+        #bslib::layout_columns(
+          # shiny::plotOutput(ns("h_boxplot")),
+          # shiny::plotOutput(ns("h_Fig.H2"))
+        #)
+      )
+    ),
+    bslib::card_footer(
+      shiny::uiOutput(ns("h_txt"))
+    )
+  )
+
   shiny::tabsetPanel(
     id = ns("HomogeneityPanel"),
     type = "hidden", # when nothing is loaded
@@ -39,62 +118,17 @@ page_HomogeneityUI <- function(id) {
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      shiny::fluidRow(
-        shiny::column(
-          width = 10,
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("tab1_link"),
-              label = "Tab.H1 - calculation of uncertainty contribution"
-            )
-          ),
-          DT::dataTableOutput(ns("h_tab1"))
+      bslib::layout_columns(
+        shiny::tagList(
+          tab_H1_panel,
+          tab_H2_panel
         ),
-        shiny::column(
-          width = 2,
-          shiny::wellPanel(
-            m_TransferUUI(ns("h_transfer")),
-            shiny::checkboxInput(inputId = ns("h_adjust"), label = "P-value adjustment (bonferroni)", value = TRUE)
-          )
-        )
-      ),
-      shiny::p(),
-      shiny::fluidRow(
-        shiny::column(
-          width = 3,
-          shiny::strong(
-            shiny::actionLink(
-              inputId = ns("tab2_link"),
-              label = "Tab.H2 - specimen stats"
-            )
-          ),
-          DT::dataTableOutput(ns("h_tab2"))
+        shiny::tagList(
+          fig_H1_panel
         ),
-        shiny::column(
-          width = 7,
-          shiny::fluidRow(
-            shiny::strong(
-              shiny::actionLink(
-                inputId = ns("fig1_link"),
-                label = "Fig.H1 - boxplot of specimen values"
-              )
-            ), shiny::p(),
-            shiny::plotOutput(ns("h_boxplot"), inline = TRUE),
-            shiny::plotOutput(ns("h_Fig.H2"), inline = TRUE),
-            shiny::uiOutput(ns("h_txt"))
-          )
-        ),
-        shiny::column(
-          width = 2,
-          shiny::wellPanel(
-            shinyjs::hidden(shiny::selectInput(inputId = ns("h_sel_analyt"), label = "Row selected in Tab.1", choices = "")),
-            sub_header("Save Report"),
-            shiny::downloadButton(ns("h_Report"), label = "Download", style = "margin-bottom:10px;"),
-            sub_header("Figure options"),
-            shiny::textInput(inputId = ns("FigH1_xlab"), label = "x-axis label", value = "Flasche"),
-            shiny::checkboxInput(inputId = ns("h_show_repID"), label = "Identify replicates in Fig.H1", value = FALSE),
-            shiny::checkboxInput(inputId = ns("h_show_H2"), label = "Show combined analyte z-scores", value = FALSE)
-          )
+        col_widths =  bslib::breakpoints(
+          sm = c(12, 12),
+          xl = c(4, 8)
         )
       )
     )
@@ -241,29 +275,26 @@ page_HomogeneityServer <- function(id, rv) {
     output$h_boxplot <- shiny::renderPlot(
       {
         shiny::req(h_Data(), input$h_sel_analyt, precision(), input$FigH1_xlab)
-        prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab, showIDs = input$h_show_repID)
+        prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab, showIDs = "show_repID" %in% input$FigH1_opt)
       },
-      height = 504,
-      width = shiny::reactive({
-        fig_width()
-      })
+      # [JL] height and width needs to be fixed as long as we render the figure as inline
+      height = 500,
+      width = shiny::reactive({ fig_width() })
     )
 
     output$h_Fig.H2 <- shiny::renderPlot(
       {
-        shiny::req(h_Data(), precision(), input$FigH1_xlab, input$h_show_H2)
+        shiny::req(h_Data(), precision(), input$FigH1_xlab, "show_H2" %in% input$FigH1_opt)
         prepFigH1(x = h_Data(), sa = NULL, prec = precision(), xlab = input$FigH1_xlab)
       },
-      height = 504,
-      width = shiny::reactive({
-        fig_width()
-      })
+      height = 500,
+      width = shiny::reactive({ fig_width() })
     )
 
     output$h_txt <- shiny::renderUI({
       shiny::req(h_vals(), input$h_sel_analyt)
-      if (input$h_show_H2) {
-
+      if ("show_H2" %in% input$FigH1_opt) {
+        shiny::HTML("Combined analyte z-scores allow to identify a systematic outlier item more robustly.")
       } else {
         h_statement(x = h_vals(), a = input$h_sel_analyt)
       }

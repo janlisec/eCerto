@@ -8,6 +8,7 @@
 #'
 #' @param id Name when called as a module in a shiny app.
 #' @param rv eCerto R6 object, which includes a 'materialtabelle'.
+#' @param sidebar_width sidebar_width.
 #'
 #' @return Nothing. Will update 'materialtabelle' in eCerto R6 object and trigger
 #'    other modules via setting rv$cur_an.
@@ -31,22 +32,29 @@
 #' @noRd
 #' @keywords internal
 #'
-m_materialtabelleUI <- function(id) {
+m_materialtabelleUI <- function(id, sidebar_width = 320) {
   ns <- shiny::NS(id)
-  wb <- "50px"
-  shiny::fluidRow(
-    shiny::column(
-      width = 10,
+  #wb <- "50px"
+  bslib::card(
+    #min_height = 500, max_height = 600,
+    fill = FALSE,
+    bslib::card_header(
+      class = "d-flex justify-content-between",
       shiny::strong(shiny::actionLink(inputId = ns("tabC3head"), label = "Tab.C3 - Certified values within material")),
-      DT::DTOutput(ns("matreport"))
-    ),
-    shiny::column(
-      width = 2,
-      shiny::wellPanel(
-        modify_FUcols_UI(id = ns("FUcols")),
-        shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect"),
-        check_stability2_UI(id = ns("post_cert_stab"))
+      shiny::div(
+        shiny::div(
+          style = "float: right; margin-left: 15px;",
+          check_stability2_UI(id = ns("post_cert_stab"))
+        ),
+        shiny::div(
+          style = "float: right; margin-left: 15px;",
+          modify_FUcols_UI(id = ns("FUcols")),
+          shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect")
+        )
       )
+    ),
+    bslib::card_body(
+      shiny::div(DT::DTOutput(ns("matreport")))
     )
   )
 }

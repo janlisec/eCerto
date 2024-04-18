@@ -5,7 +5,7 @@ testthat::test_that(
     testthat::local_edition(3)
     fn1 = eCerto:::test_mod_xlsx_range()
     sheetNo <- shiny::reactiveVal(1)
-    cells_selected <- matrix(c(7,1,16,6), ncol = 2, byrow = TRUE)
+    range_selected <- matrix(c(1,1,1,2), ncol = 2, byrow = FALSE, dimnames = list(NULL, c("row", "col")))
     suppressMessages(
       shiny::testServer(
         app = eCerto:::m_xlsx_range_select_Server,
@@ -13,10 +13,13 @@ testthat::test_that(
         {
           suppressMessages(session$flushReact())
           # set rows and columns selection
-          suppressMessages(session$setInputs(uitab_cells_selected = cells_selected))
-          session$flushReact()
+          #suppressMessages(session$setInputs(uitab_cells_selected = cells_selected))
+          session$setInputs(uitab_range_selected = range_selected)
+          testthat::expect_equal(tab_param$rng, "A1:B1")
           testthat::expect_equal(length(tab_param$tab), 3)  # contains three lists
-          testthat::expect_equal(tab_param$end_col,6)
+          # [JL] this test needed to be rewritten because range selection was changed
+          # to use the AutoFill pluin of DataTables instead of cell selection
+          testthat::expect_equal(tab_param$end_col,2)
         }
       )
     )
@@ -109,18 +112,18 @@ testthat::test_that(
 
 # Test 5: no reaction expected after only one cell is selected -----------------
 testthat::test_that(
-  desc = "no reaction after only one DataTable element is selected",
+  desc = "Range is correctly calculated for AutoFill selection",
   code = {
     fn1 <- eCerto:::test_mod_xlsx_range()
     sheetNo <- shiny::reactiveVal(1)
-    cells_selected <- matrix(c(7,1), ncol = 2, byrow = TRUE)
+    range_selected <- matrix(c(1,1,1,2), ncol = 2, byrow = FALSE, dimnames = list(NULL, c("row", "col")))
     suppressMessages(
       shiny::testServer(
         app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn1, sheet = sheetNo), {
           suppressMessages(session$flushReact())
-          session$setInputs(uitab_cells_selected = cells_selected)
-          testthat::expect_equal(input$uitab_cells_selected, cells_selected)
+          session$setInputs(uitab_range_selected = range_selected)
+          testthat::expect_equal(tab_param$rng, "A1:B1")
         }
       )
     )

@@ -5,36 +5,47 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
+  navbar_padding <- 56
   shiny::tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
+
+    tags$head(
+      tags$style(HTML(".control-label{ font-weight: bold; }"))
+    ),
 
     # the following lines can be used to check for problems with the 'www' folder on different App places
     # message("UI, 'www': ", shiny::resourcePaths()["www"]),
     # message("UI, app_sys: ", app_sys('app/www')),
     # message("UI, tempdir: ", tempdir()),
 
-    shiny::navbarPage(
-      # use an alternative theme
-      # currently difficult, as 'hidden' feature of tabPanel is not supported by bslib
-      # theme = bslib::bs_theme(
-      #   version = 3,
-      #   bootswatch = "readable",
-      #   base_font = bslib::font_google(c("Assistant", "Anonymous Pro")[1])
-      # ),
+    # shiny::navbarPage(
+    bslib::page_navbar(
+    #
+    #   # use an alternative theme
+    #   # currently difficult, as 'hidden' feature of tabPanel is not supported by bslib
+    #   theme = bslib::bs_theme(
+    #     version = 5,
+    #     bootswatch = c("sandstone","readable","zephyr")[3],
+    #     base_font = bslib::font_google(c("Assistant", "Anonymous Pro")[1])
+    #   ),
+
       id = "navbarpage",
-      title = shiny::div(
-        style = "position: relative;",
-        class = "verticalhorizontal",
-        shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo"),
-        shiny::strong("BAM"),
-        shiny::em(get_golem_config("golem_name"))
+      #title = shiny::div(
+        #style = "position: relative;",
+        #class = "verticalhorizontal",
+        #shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo"),
+      title = list(
+        shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo", style="background-color: black;"),
+        shiny::strong("BAM", style = "color: rgb(210,0,30);"),
+        shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
       selected = "Start",
-      windowTitle = paste("BAM", get_golem_config("golem_name")),
+      # windowTitle = paste("BAM", get_golem_config("golem_name")),
+      window_title = paste("BAM", get_golem_config("golem_name")),
       position = "fixed-top",
       footer = shiny::div(
-        style = "position: fixed; bottom: 0px; left: 0px; width: 100%; padding-left: 15px; padding-top: 5px; padding-bottom: 5px; background-color: #f8f8f8; font-family: Lucida Console, monospace;",
+        style = "position: fixed; bottom: 0px; left: 0px; width: 100%; padding-left: 15px; padding-top: 2px; padding-bottom: 2px; background-color: #f8f8f8; font-family: Lucida Console, monospace;",
         # shiny::pre(
         shiny::HTML(
           get_golem_config("golem_name"), "|",
@@ -45,45 +56,50 @@ app_ui <- function(request) {
         )
         # )
       ),
-      shiny::tabPanel(
+      bslib::nav_panel(
         id = "start",
         title = "Start",
         icon = shiny::icon("angle-right"),
-        shiny::div(style = "padding-top: 60px;", page_startUI("Start"))
+        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_startUI("Start"))
       ),
-      shiny::tabPanel(
+      bslib::nav_panel(
         id = "homog_tab",
         title = "Homogeneity",
         icon = shiny::icon("angle-right"),
         value = "tP_homogeneity",
-        shiny::div(style = "padding-top: 60px;", page_HomogeneityUI("Homogeneity"))
+        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_HomogeneityUI("Homogeneity"))
       ),
-      shiny::tabPanel(
+      bslib::nav_panel(
         id = "stab_tab",
         title = "Stability",
         icon = shiny::icon("angle-right"),
         value = "tP_stability",
-        shiny::div(style = "padding-top: 60px;", page_StabilityUI("Stability"))
+        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_StabilityUI("Stability"))
       ),
-      shiny::tabPanel(
+      bslib::nav_panel(
         id = "certif_tab",
         title = "Certification",
         value = "tP_certification",
         icon = shiny::icon("angle-right"),
-        shiny::div(style = "padding-top: 60px;", page_CertificationUI("certification"))
+        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_CertificationUI("certification"))
       ),
       # Long term stability
-      shiny::tabPanel(
+      bslib::nav_panel(
         title = "LTS",
         icon = shiny::icon("angle-right"),
         value = "tP_LTS",
-        shiny::div(style = "padding-top: 60px;", m_longtermstabilityUI("lts"))
+        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), m_longtermstabilityUI("lts"))
       ),
-      shiny::tabPanel(
+      #shiny::tabPanel(
+      bslib::nav_panel(
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        shiny::div(style = "padding-top: 60px; float: left", shiny::withMathJax(shiny::includeCSS(path = get_local_file("help_start.html"))))
+        shiny::div(
+          style = paste0("padding-top: ", navbar_padding, "px; float: left"),
+          shiny::withMathJax(shiny::includeCSS(path = get_local_file("help_start.html")))
+          #uiOutput('help_page')
+        )
       )
     )
   )

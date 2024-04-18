@@ -36,7 +36,7 @@ styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cva
         list(className = "dt-right", targets = "_all")
       )
     ),
-    selection = "none", rownames = NULL, escape = FALSE
+    selection = "none", rownames = NULL, escape = FALSE,
   )
   dt <- DT::formatCurrency(
     table = dt, columns = c(2, 3), currency = "", digits = n

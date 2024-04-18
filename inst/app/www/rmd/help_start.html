@@ -1865,12 +1865,12 @@ The critical value is calculated internally using formula
 <summary>
 <code>eCerto:::qcochran</code>
 </summary>
-<pre><code>## function (p, n, k) {
-##   f &lt;- stats::qf(p/k, (n - 1) * (k - 1), n - 1)
-##   c &lt;- 1/(1 + (k - 1) * f)
+<pre><code>## function(p, n, k) {
+##   f &lt;- stats::qf(p / k, (n - 1) * (k - 1), n - 1)
+##   c &lt;- 1 / (1 + (k - 1) * f)
 ##   return(c)
 ## }
-## &lt;bytecode: 0x00000175f63613e8&gt;
+## &lt;bytecode: 0x0000028d1f5c7290&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 where parameters <em>p</em>, <em>n</em> and <em>k</em> define the
@@ -1883,14 +1883,14 @@ to compute the Cochran P-value via function
 <summary>
 <code>eCerto:::pcochran</code>
 </summary>
-<pre><code>## function (q, n, k) {
-##   f &lt;- (1/q - 1)/(k - 1)
+<pre><code>## function(q, n, k) {
+##   f &lt;- (1 / q - 1) / (k - 1)
 ##   p &lt;- 1 - stats::pf(f, (n - 1) * (k - 1), n - 1) * k
 ##   p[p &lt; 0] &lt;- 0
 ##   p[p &gt; 1] &lt;- 1
 ##   return(p)
 ## }
-## &lt;bytecode: 0x00000175f65414e8&gt;
+## &lt;bytecode: 0x0000028d24f65058&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -1972,7 +1972,7 @@ The Dixon test statistic is calculated depending on the number of labs
 <summary>
 <code>eCerto:::dixon.test</code>
 </summary>
-<pre><code>## function (x, opposite = FALSE, two.sided = FALSE) {
+<pre><code>## function(x, opposite = FALSE, two.sided = FALSE) {
 ##   x &lt;- sort(x[stats::complete.cases(x)])
 ##   n &lt;- length(x)
 ##   if (n &lt;= 7) {
@@ -1981,24 +1981,24 @@ The Dixon test statistic is calculated depending on the number of labs
 ##     type &lt;- &quot;11&quot;
 ##   } else if (n &gt; 10 &amp; n &lt;= 13) {
 ##     type &lt;- &quot;21&quot;
-##   } else type &lt;- &quot;22&quot;
+##   } else {
+##     type &lt;- &quot;22&quot;
+##   }
 ##   if (xor(((x[n] - mean(x)) &lt; (mean(x) - x[1])), opposite)) {
-##     alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
-##     q &lt;- switch(
-##       type,
-##       &quot;10&quot; = (x[2] - x[1])/(x[n] - x[1]),
-##       &quot;11&quot; = (x[2] - x[1])/(x[n - 1] - x[1]),
-##       &quot;21&quot; = (x[3] - x[1])/(x[n - 1] - x[1]),
-##       (x[3] - x[1])/(x[n - 2] - x[1])
+##     alt &lt;- paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
+##     q &lt;- switch(type,
+##       &quot;10&quot; = (x[2] - x[1]) / (x[n] - x[1]),
+##       &quot;11&quot; = (x[2] - x[1]) / (x[n - 1] - x[1]),
+##       &quot;21&quot; = (x[3] - x[1]) / (x[n - 1] - x[1]),
+##       (x[3] - x[1]) / (x[n - 2] - x[1])
 ##     )
 ##   } else {
-##     alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
-##     q &lt;- switch(
-##       type,
-##       &quot;10&quot; = (x[n] - x[n - 1])/(x[n] - x[1]),
-##       &quot;11&quot; = (x[n] - x[n - 1])/(x[n] - x[2]),
-##       &quot;21&quot; = (x[n] - x[n - 2])/(x[n] - x[2]),
-##       (x[n] - x[n - 2])/(x[n] - x[3])
+##     alt &lt;- paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
+##     q &lt;- switch(type,
+##       &quot;10&quot; = (x[n] - x[n - 1]) / (x[n] - x[1]),
+##       &quot;11&quot; = (x[n] - x[n - 1]) / (x[n] - x[2]),
+##       &quot;21&quot; = (x[n] - x[n - 2]) / (x[n] - x[2]),
+##       (x[n] - x[n - 2]) / (x[n] - x[3])
 ##     )
 ##   }
 ##   pval &lt;- pdixon(q, n)
@@ -2016,7 +2016,7 @@ The Dixon test statistic is calculated depending on the number of labs
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x00000175fd0736c0&gt;
+## &lt;bytecode: 0x0000028d24b02760&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> In <strong><em>eCerto</em></strong> the one-sided version of the
@@ -2066,7 +2066,7 @@ are derived by interpolation using function
 <summary>
 <code>eCerto:::qtable</code>
 </summary>
-<pre><code>## function (p, probs, quants) {
+<pre><code>## function(p, probs, quants) {
 ##   quants &lt;- quants[order(probs)]
 ##   probs &lt;- sort(probs)
 ##   res &lt;- vector()
@@ -2076,20 +2076,20 @@ are derived by interpolation using function
 ##       q0 &lt;- quants[c(1, 2)]
 ##       p0 &lt;- probs[c(1, 2)]
 ##       fit &lt;- stats::lm(q0 ~ p0)
-##     }
-##     else if (pp &gt;= probs[length(probs)]) {
+##     } else if (pp &gt;= probs[length(probs)]) {
 ##       q0 &lt;- quants[c(length(quants) - 1, length(quants))]
 ##       p0 &lt;- probs[c(length(probs) - 1, length(probs))]
 ##       fit &lt;- stats::lm(q0 ~ p0)
-##     }
-##     else {
+##     } else {
 ##       x0 &lt;- which(abs(pp - probs) == min(abs(pp - probs)))
 ##       x1 &lt;- which(abs(pp - probs) == sort(abs(pp - probs))[2])
 ##       x &lt;- min(c(x0, x1))
-##       if (x == 1)
+##       if (x == 1) {
 ##         x &lt;- 2
-##       if (x &gt; length(probs) - 2)
+##       }
+##       if (x &gt; length(probs) - 2) {
 ##         x &lt;- length(probs) - 2
+##       }
 ##       i &lt;- c(x - 1, x, x + 1, x + 2)
 ##       q0 &lt;- quants[i]
 ##       p0 &lt;- probs[i]
@@ -2099,7 +2099,7 @@ are derived by interpolation using function
 ##   }
 ##   return(res)
 ## }
-## &lt;bytecode: 0x00000175fb2f83a8&gt;
+## &lt;bytecode: 0x0000028d24f1f958&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p><br> The test is originally based on:<br />
@@ -2118,36 +2118,36 @@ outlier at both ends of the distribution consecutively using
 <summary>
 <code>eCerto:::grubbs.test</code>
 </summary>
-<pre><code>## function (x, type = 10, tail = c(&quot;lower&quot;, &quot;upper&quot;)) {
+<pre><code>## function(x, type = 10, tail = c(&quot;lower&quot;, &quot;upper&quot;)) {
 ##   tail &lt;- match.arg(tail)
-##   if (!any(type==c(10, 20))) {
+##   if (!any(type == c(10, 20))) {
 ##     message(&quot;&#39;grubbs.test&#39; is only implemented for type = 10 or 20. Using type = 20 (double Grubbs).&quot;)
 ##   }
 ##   x &lt;- sort(x[stats::complete.cases(x)])
 ##   n &lt;- length(x)
 ##   if (type == 10) {
 ##     # single Grubbs
-##     if (tail==&quot;lower&quot;) {
-##       alt = paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
+##     if (tail == &quot;lower&quot;) {
+##       alt &lt;- paste(&quot;lowest value&quot;, x[1], &quot;is an outlier&quot;)
 ##       o &lt;- x[1]
 ##       d &lt;- x[2:n]
 ##     } else {
-##       alt = paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
+##       alt &lt;- paste(&quot;highest value&quot;, x[n], &quot;is an outlier&quot;)
 ##       o &lt;- x[n]
 ##       d &lt;- x[1:(n - 1)]
 ##     }
-##     g &lt;- abs(o - mean(x))/sd(x)
-##     u &lt;- stats::var(d)/stats::var(x) * (n - 2)/(n - 1)
+##     g &lt;- abs(o - mean(x)) / stats::sd(x)
+##     u &lt;- stats::var(d) / stats::var(x) * (n - 2) / (n - 1)
 ##     pval &lt;- 1 - pgrubbs(g, n, type = 10)
 ##     method &lt;- &quot;Grubbs test for one outlier&quot;
 ##   } else {
 ##     # double Grubbs
-##     if (tail==&quot;lower&quot;) {
-##       alt = paste(&quot;lowest values&quot;, x[1], &quot;and&quot;, x[2], &quot;are outliers&quot;)
-##       u &lt;- stats::var(x[3:n])/stats::var(x) * (n - 3)/(n - 1)
+##     if (tail == &quot;lower&quot;) {
+##       alt &lt;- paste(&quot;lowest values&quot;, x[1], &quot;and&quot;, x[2], &quot;are outliers&quot;)
+##       u &lt;- stats::var(x[3:n]) / stats::var(x) * (n - 3) / (n - 1)
 ##     } else {
-##       alt = paste(&quot;highest values&quot;, x[n - 1], &quot;and&quot;, x[n], &quot;are outliers&quot;)
-##       u &lt;- stats::var(x[1:(n - 2)])/stats::var(x) * (n - 3)/(n - 1)
+##       alt &lt;- paste(&quot;highest values&quot;, x[n - 1], &quot;and&quot;, x[n], &quot;are outliers&quot;)
+##       u &lt;- stats::var(x[1:(n - 2)]) / stats::var(x) * (n - 3) / (n - 1)
 ##     }
 ##     g &lt;- NULL
 ##     pval &lt;- pgrubbs(u, n, type = 20)
@@ -2163,7 +2163,7 @@ outlier at both ends of the distribution consecutively using
 ##   class(out) &lt;- &quot;htest&quot;
 ##   return(out)
 ## }
-## &lt;bytecode: 0x00000175fbdb52d8&gt;
+## &lt;bytecode: 0x0000028d1e94cce8&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> Critical values for the single Grubbs test are calculated
@@ -2172,13 +2172,13 @@ internally using
 <summary>
 <code>eCerto:::qgrubbs</code>
 </summary>
-<pre><code>## function (p, n, type = 10, rev = FALSE) {
+<pre><code>## function(p, n, type = 10, rev = FALSE) {
 ##   if (type == 10) {
 ##     if (!rev) {
-##       t2 &lt;- stats::qt((1 - p)/n, n - 2)^2
-##       return(((n - 1)/sqrt(n)) * sqrt(t2/(n - 2 + t2)))
+##       t2 &lt;- stats::qt((1 - p) / n, n - 2)^2
+##       return(((n - 1) / sqrt(n)) * sqrt(t2 / (n - 2 + t2)))
 ##     } else {
-##       s &lt;- (p^2 * n * (2 - n))/(p^2 * n - (n - 1)^2)
+##       s &lt;- (p^2 * n * (2 - n)) / (p^2 * n - (n - 1)^2)
 ##       t &lt;- sqrt(s)
 ##       if (is.nan(t)) {
 ##         res &lt;- 0
@@ -2192,13 +2192,13 @@ internally using
 ##     if (n &gt; 30) warning(&quot;[qgrubbs] critical value is estimated for n&gt;30&quot;)
 ##     gtwo &lt;- eCerto::cvals_Grubbs2
 ##     pp &lt;- as.numeric(colnames(gtwo))
-##     if (!rev) res &lt;- qtable(p, pp, gtwo[n-3,]) else res &lt;- qtable(p, gtwo[n-3,], pp)
+##     if (!rev) res &lt;- qtable(p, pp, gtwo[n - 3, ]) else res &lt;- qtable(p, gtwo[n - 3, ], pp)
 ##     res[res &lt; 0] &lt;- 0
 ##     res[res &gt; 1] &lt;- 1
 ##     return(unname(res))
 ##   }
 ## }
-## &lt;bytecode: 0x00000175fbf71d10&gt;
+## &lt;bytecode: 0x0000028d1eaeb6a0&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <br> For comparison with critical values tabulated elsewhere you can
@@ -2331,7 +2331,7 @@ is calculated on the result of <code>stats::lm()</code>.
 ##     i &lt;- comb[1, k]
 ##     j &lt;- comb[2, k]
 ##     dif[k] &lt;- means[i, 2] - means[j, 2]
-##     sdtdif &lt;- sqrt(MSerror * (1 / means[i, 4] + 1 / means[j,4]))
+##     sdtdif &lt;- sqrt(MSerror * (1 / means[i, 4] + 1 / means[j, 4]))
 ##     pval[k] &lt;- round(1 - stats::pf(abs(dif[k])^2 / ((ntr - 1) * sdtdif^2), ntr - 1, DFerror), 4)
 ##     LCL[k] &lt;- dif[k] - Tprob * sdtdif
 ##     UCL[k] &lt;- dif[k] + Tprob * sdtdif
@@ -2362,7 +2362,7 @@ is calculated on the result of <code>stats::lm()</code>.
 ##   class(output) &lt;- &quot;group&quot;
 ##   return(output)
 ## }
-## &lt;bytecode: 0x00000175f6442c10&gt;
+## &lt;bytecode: 0x0000028d1f6b7828&gt;
 ## &lt;environment: namespace:eCerto&gt;</code></pre>
 </details>
 <p>The test is originally based on:<br />

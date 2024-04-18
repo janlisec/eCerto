@@ -33,163 +33,150 @@
 #' @keywords internal
 page_CertificationUI <- function(id) {
   ns <- shiny::NS(id)
+  sidebar_width <- 280
+
+  # Data View
+  # tab_C0_panel <- shiny::conditionalPanel(
+  #   condition = "input.certification_view.indexOf('dataview') > -1",
+  #   ns = ns,
+  #   m_DataViewUI(ns("dv"), sidebar_width = sidebar_width)
+  # )
+
+  # Stats (on Lab distributions)
+  tab_C1_panel <- bslib::card(
+    id = ns("tab_C1_panel"),
+    min_height = 200, max_height = 700, fill = FALSE,
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::strong(shiny::actionLink(inputId = ns("tabC1_link"), label = "Tab.C1 - Statistics regarding lab variances and outlier detection")),
+      shiny::div(
+        shiny::div(style = "float: right; margin-left: 15px; text-align: right;", shiny::checkboxInput(width = 170, inputId = ns("tabC1_opt"), label = "Exclude filtered Labs", value = FALSE)),
+        shiny::div(style = "float: right; margin-left: 15px;", shiny::selectInput(width = 200, inputId = ns("tabC1_opt2"), label = NULL, choices = c("Significance level", "P-value", "Test statistic", "Critical value a=0.05", "Critical value a=0.01"), selected = "Significance level"))
+      )
+    ),
+    bslib::card_body(
+      shiny::div(DT::dataTableOutput(ns("overview_stats")))
+    )
+  )
+
+  # mstats (on Lab means)
+  tab_C2_panel <- bslib::card(
+    min_height = 160, max_height = 240, fill = FALSE,
+    id = ns("tab_C2_panel"),
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::strong(shiny::actionLink(inputId = ns("stat2_link"), label = "Tab.C2 - Statistics regarding lab mean distribution")),
+      shiny::div(style = "float: right; margin-left: 15px; text-align: right;", shiny::checkboxInput(width = 170, inputId = ns("tabC2_opt"), label = "Exclude filtered Labs", value = FALSE))
+    ),
+    bslib::card_body(
+      shiny::div(DT::dataTableOutput(ns("TabC2")))
+    ),
+    bslib::card_footer(
+      shiny::uiOutput(outputId = ns("tab2_statement"))
+    )
+  )
+
+  # CertValPlot
+  fig_C1_panel <- bslib::card(
+    id = ns("fig_C1_panel"),
+    #height = 450,
+    style = "resize:vertical;",
+    bslib::card_header(
+      shiny::strong(shiny::actionLink(inputId = ns("certifiedValuePlot_link"), label = "Fig.C1 - Certified Value Plot"))
+    ),
+    bslib::card_body(
+      min_height = 300,
+      fill = TRUE,
+      bslib::layout_sidebar(
+        padding = 0,
+        sidebar = bslib::sidebar(
+          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = sidebar_width,
+          shiny::wellPanel(
+            style = "padding-top: 10px; padding-bottom: 0px;",
+            shiny::checkboxGroupInput(
+              inputId = ns("C1_opt"), label = "Fig.C1 options",
+              choices = list(
+                "Show sample IDs" = "annotate_id",
+                "Filenames as axis labels" = "filename_labels",
+                "Automatic width" = "auto_width",
+                "Show legend" = "show_legend"
+              ),
+              selected = c("auto_width", "show_legend")
+            ),
+            shiny::fluidRow(
+              shiny::div(style = "float: left; max-width: 95px; padding-left: 15px;", shinyjs::disabled(shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400))),
+              shiny::div(style = "float: left; max-width: 95px;", shiny::numericInput(inputId = ns("Fig01_height"), label = "height", value = 400))
+            ),
+            shiny::div(style = "padding-bottom: 15px;", sub_header("Download"), shiny::downloadButton(outputId = ns("Fig01"), label = "Figure"))
+          )
+        ),
+        # $JL$ the surrounding div is required to include the empty HTML as a way to allow shinking and prevent the figure to be resized horizontally otherwise
+        shiny::div(
+          shiny::div(style = "display: inline-block;", shiny::plotOutput(ns("overview_CertValPlot"))),
+          shiny::div(style = "display: inline-block;", shiny::HTML(""))
+        )
+      )
+    )
+  )
+
+  top_panel <- shiny::wellPanel(
+    shiny::div(
+      style = "float:left;",
+      sub_header("Select to show panel"),
+      shiny::div(
+        style = "float: left;",
+        shiny::checkboxGroupInput(
+          inputId = ns("certification_view"), label = NULL,
+          choices = c(
+            "Tab.C0" = "dataview",
+            "Tab.C1" = "stats"
+          ),
+          selected = "stats"
+        )
+      ),
+      shiny::div(
+        style = "float:left; margin-left: 10px",
+        shiny::checkboxGroupInput(
+          inputId = ns("certification_view2"), label = NULL,
+          choices = c(
+            "Tab.C2" = "mstats",
+            "Fig.C1" = "CertValPlot"
+          ),
+          selected = c("mstats", "CertValPlot")
+        )
+      )
+    ),
+    # Analyte Modul
+    m_analyteUI(ns("analyteModule")),
+    # Report-Section
+    m_reportUI(ns("report"))
+  )
+
   shiny::tabsetPanel(
     id = ns("certificationPanel"),
     type = "hidden",
     # when nothing is loaded
-    shiny::tabPanel(
-      title = "standby-Panel",
-      value = "standby",
-      "empty panel content" # Platzhalter, falls aus Versehen leere Seite aufgerufen wird
-    ),
+    shiny::tabPanel(title = "standby-Panel", value = "standby", "empty panel content"),
     # when something is loaded
     shiny::tabPanel(
       title = "active-Panel",
       value = "loaded",
-      shiny::wellPanel(
-        style = "height: 88px; padding-top: 6px; padding-bottom: 6px; ",
-        shiny::div(
-          style = "float:left; width: 280px;",
-          sub_header("Select to show panel"),
-          shiny::div(
-            style = "float:left;",
-            shiny::checkboxGroupInput(
-              inputId = ns("certification_view"), label = NULL,
-              choices = c(
-                "Imported Data" = "dataview",
-                "Outlier Tests" = "stats"
-              ),
-              selected = "stats"
-            )
-          ),
-          shiny::div(
-            style = "float:left; margin-left: 10px",
-            shiny::checkboxGroupInput(
-              inputId = ns("certification_view2"), label = NULL,
-              choices = c(
-                "Lab-Means Tests" = "mstats",
-                "Certified Values Plot" = "CertValPlot"
-              ),
-              selected = c("mstats", "CertValPlot")
-            )
-          )
+      bslib::layout_columns(
+        shiny::tagList(
+          top_panel,
+          shiny::div(id=ns("tab_C0_panel"), m_DataViewUI(ns("dv"))),
+          tab_C1_panel,
+          tab_C2_panel
         ),
-        # Analyte Modul
-        m_analyteUI(ns("analyteModule")),
-        # Report-Section
-        m_reportUI(ns("report"))
-      ),
-      # Data View
-      shiny::conditionalPanel(
-        condition = "input.certification_view.indexOf('dataview') > -1",
-        ns = ns,
-        m_DataViewUI(ns("dv"))
-      ),
-      # collapsible_box(m_DataViewUI(ns("dv")), title = "Imported data"),
-      # Stats (on Lab distributions)
-      shiny::conditionalPanel(
-        condition = "input.certification_view.indexOf('stats') > -1",
-        ns = ns, # namespace of current module
-        shiny::fluidRow(
-          shiny::column(
-            width = 10,
-            shiny::strong(
-              shiny::actionLink(
-                inputId = ns("tabC1_link"),
-                label = "Tab.C1 - Statistics regarding lab variances and outlier detection"
-              )
-            ),
-            DT::dataTableOutput(ns("overview_stats"))
-          ),
-          shiny::column(
-            width = 2,
-            shiny::wellPanel(
-              sub_header(shiny::actionLink(inputId = ns("tabC1opt_link"), label = "Tab.C1 options"), b = 0),
-              shiny::checkboxInput(inputId = ns("tabC1_opt"), label = "Exclude filtered Labs", value = FALSE),
-              shiny::selectInput(inputId = ns("tabC1_opt2"), label = "Select values to show", choices = c("Significance level", "P-value", "Test statistic", "Critical value a=0.05", "Critical value a=0.01"), selected = "Significance level")
-            )
-          )
+        shiny::tagList(
+          fig_C1_panel,
+          m_materialtabelleUI(id = ns("mat_cert"), sidebar_width = sidebar_width)
+        ),
+        col_widths =  bslib::breakpoints(
+          sm = c(12, 12),
+          xl = c(6, 6)
         )
-      ),
-      # collapsible_box(
-      #   title = shiny::strong(
-      #     shiny::actionLink(
-      #       inputId = ns("tabC1_link"),
-      #       label = "Tab.C1 - Statistics regarding lab variances and outlier detection"
-      #     )
-      #   ),
-      #   DT::dataTableOutput(ns("overview_stats"))
-      # ),
-      # mstats (on Lab means)
-      shiny::conditionalPanel(
-        condition = "input.certification_view2.indexOf('mstats') > -1",
-        ns = shiny::NS(id),
-        shiny::fluidRow(
-          shiny::column(
-            width = 10,
-            shiny::strong(
-              shiny::actionLink(
-                inputId = ns("stat2_link"),
-                label = "Tab.C2 - Statistics regarding lab mean distribution"
-              )
-            ),
-            DT::dataTableOutput(ns("TabC2"))
-          ),
-          shiny::column(
-            width = 2,
-            shiny::wellPanel(
-              shiny::uiOutput(outputId = ns("tab2_statement")),
-              shiny::checkboxInput(inputId = ns("tabC2_opt"), label = "Exclude filtered Labs", value = FALSE)
-            )
-          )
-        )
-      ),
-      # CertValPlot
-      shiny::conditionalPanel(
-        condition = "input.certification_view2.indexOf('CertValPlot') > -1",
-        ns = shiny::NS(id),
-        shiny::fluidRow(
-          shiny::column(
-            width = 10,
-            shiny::div(
-              style = "width=100%; margin-bottom: 5px;",
-              shiny::strong(
-                shiny::actionLink(
-                  inputId = ns("certifiedValuePlot_link"),
-                  label = "Fig.C1 - Certified Value Plot"
-                )
-              )
-            ),
-            shiny::plotOutput(ns("overview_CertValPlot"), inline = TRUE)
-          ),
-          shiny::column(
-            width = 2,
-            shiny::wellPanel(
-              shiny::checkboxGroupInput(
-                inputId = ns("C1_opt"), label = "Fig.C1 options",
-                choices = list(
-                  "Show sample IDs" = "annotate_id",
-                  "Filenames as axis labels" = "filename_labels",
-                  "Automatic width" = "auto_width",
-                  "Show legend" = "show_legend"
-                ),
-                selected = c("auto_width", "show_legend")
-              ),
-              shiny::fluidRow(
-                shiny::div(style = "float: left; width: 30%; max-width: 95px; padding-left: 15px;", shinyjs::disabled(shiny::numericInput(inputId = ns("Fig01_width"), label = "width", value = 400))),
-                shiny::div(style = "float: left; width: 30%; max-width: 80px;", shiny::numericInput(inputId = ns("Fig01_height"), label = "height", value = 300)),
-                shiny::div(
-                  style = "float: left; width: 40%; padding-right: 15px;",
-                  sub_header("Download"),
-                  shiny::downloadButton(outputId = ns("Fig01"), label = "Figure")
-                )
-              )
-            )
-          )
-        )
-      ),
-      # materialtabelle (mandatory)
-      m_materialtabelleUI(ns("mat_cert"))
+      )
     )
   )
 }
@@ -198,6 +185,20 @@ page_CertificationUI <- function(id) {
 #' @keywords internal
 page_CertificationServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
+
+    observeEvent(input$certification_view, {
+      shinyjs::toggle(id = "tab_C0_panel", condition = "dataview" %in% input$certification_view)
+    }, ignoreInit = FALSE, ignoreNULL = FALSE)
+    observeEvent(input$certification_view, {
+      shinyjs::toggle(id = "tab_C1_panel", condition = "stats" %in% input$certification_view)
+    }, ignoreInit = FALSE, ignoreNULL = FALSE)
+    observeEvent(input$certification_view2, {
+      shinyjs::toggle(id = "tab_C2_panel", condition = "mstats" %in% input$certification_view2)
+    }, ignoreInit = FALSE, ignoreNULL = FALSE)
+    observeEvent(input$certification_view2, {
+      shinyjs::toggle(id = "fig_C1_panel", condition = "CertValPlot" %in% input$certification_view2)
+    }, ignoreInit = FALSE, ignoreNULL = FALSE)
+
     # Materialtabelle is embedded in Certification-UI, that's why it is here
     m_materialtabelleServer(id = "mat_cert", rv = rv)
 
@@ -313,6 +314,8 @@ page_CertificationServer <- function(id, rv) {
     )
 
     # CertVal Plot
+    output$test <- shiny::renderPlot({plot(1:10)})
+
     output$overview_CertValPlot <- shiny::renderPlot(
       {
         shiny::req(dat())
@@ -406,9 +409,10 @@ page_CertificationServer <- function(id, rv) {
     output$tab2_statement <- shiny::renderUI({
       KS_p <- as.numeric(TabC2_pre()[, "KS_p"]) < 0.05
       shiny::fluidRow(
+        #style = "padding-bottom: 10px;",
         shiny::column(
           width = 12,
-          shiny::HTML(paste0("The data is", ifelse(KS_p, " not ", " "), "normally distributed (KS<sub>p</sub>", ifelse(KS_p, "<", "&ge;"), "0.05).")),
+          shiny::HTML(paste0("The data ", ifelse(KS_p, "<font color=\"#FF0000\">", "<font color=\"#00FF00\">"), "is", ifelse(KS_p, " not ", " "), "normally distributed</font> (KS<sub>p</sub>", ifelse(KS_p, "<", "&ge;"), "0.05).")),
           shiny::HTML("Show "), shiny::actionLink(inputId = session$ns("qqplot_link"), label = "QQ-Plot"), shiny::HTML(" of Lab means.")
         )
       )
