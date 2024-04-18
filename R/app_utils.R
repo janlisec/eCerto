@@ -322,7 +322,7 @@ get_UF_cols <- function(mt = NULL, type = c("U", "F", "U_round")[1]) {
 #' @param rv rv.
 #' @param type type.
 #' @param excl_file excl_file.
-#' @return Input data frame in either full or kompakt version.
+#' @return Input data frame in either full or compact version.
 #' @keywords internal
 #' @noRd
 #' @examples
@@ -331,13 +331,13 @@ get_UF_cols <- function(mt = NULL, type = c("U", "F", "U_round")[1]) {
 #' isolate(get_input_data(rv = rv, excl_file = TRUE))
 #' isolate(get_input_data(rv = rv, type = "s"))
 #' isolate(get_input_data(rv = rv, type = "s", excl_file = TRUE))
-get_input_data <- function(rv, type = c("kompakt", "standard"), excl_file = FALSE) {
+get_input_data <- function(rv, type = c("compact", "standard"), excl_file = FALSE) {
   type <- match.arg(type)
   df <- getValue(rv, c("Certification", "data"))
   an <- rv$cur_an
   df <- df[df[, "analyte"] == an, ]
   if (!"File" %in% colnames(df)) df <- cbind(df, "File" = "")
-  if (type == "kompakt") {
+  if (type == "compact") {
     # ensure that "Lab" is a factor
     if (!is.factor(df[, "Lab"])) df[, "Lab"] <- factor(df[, "Lab"], levels = unique(df[, "Lab"]))
     fn <- rv$c_lab_codes()
@@ -399,7 +399,7 @@ color_temperature_levels <- function(x) {
 #' @param means means.
 #' @param alpha alpha.
 #' @param pmat pmat.
-#' @return Input data frame in either full or kompakt version.
+#' @return Input data frame in either full or compact version.
 #' @keywords internal
 #' @noRd
 #' @examples

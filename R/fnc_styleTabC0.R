@@ -2,18 +2,18 @@
 #' @description Prepare Tab C0 for HTML.
 #' @param x Object `overview_stats_pre()`.
 #' @param ap Analyte specific parameter list.
-#' @param type Either 'kompakt' or 'standard'.
+#' @param type Either 'compact' or 'standard'.
 #' @examples
 #' rv <- eCerto:::test_rv(type = "SR3")
 #' fd <- rv$c_fltData()
 #' ap <- shiny::isolate(eCerto::getValue(rv, c("General", "apm"))[[fd[1, "analyte"]]])
-#' eCerto:::styleTabC0(x = fd, ap = ap, type = c("kompakt", "standard")[1])
+#' eCerto:::styleTabC0(x = fd, ap = ap, type = c("compact", "standard")[1])
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
-styleTabC0 <- function(x, ap, type = c("kompakt", "standard")) {
+styleTabC0 <- function(x, ap, type = c("compact", "standard")) {
   type <- match.arg(type)
-  if (type == "kompakt") {
+  if (type == "compact") {
     idx <- attr(x, "id_idx")
     if (!("File" %in% colnames(x))) x <- cbind(x, data.frame(" " = " ", check.names = FALSE))
     dt <- DT::datatable(

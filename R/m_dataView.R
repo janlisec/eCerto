@@ -32,7 +32,7 @@ m_DataViewUI <- function(id) {
       shiny::strong("Tab.C0 - Imported data from collaborative trial"),
       shiny::div(
         shiny::div(style = "float: right; margin-left: 15px; text-align: right;", shiny::checkboxInput(width = 140, inputId = ns("data_view_file"), label = "Show Filenames", value = TRUE)),
-        shiny::div(style = "float: right; margin-left: 15px;", shiny::selectInput(width = 140, inputId = ns("data_view_select"), label = NULL, choices = c("kompakt", "standard")))
+        shiny::div(style = "float: right; margin-left: 15px;", shiny::selectInput(width = 140, inputId = ns("data_view_select"), label = NULL, choices = c("compact", "standard")))
       )
     ),
     bslib::card_body(
