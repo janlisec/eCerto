@@ -34,7 +34,7 @@ eCerto::run_app()
 ```
 
 Other than that, **eCerto** currently has only few exported functions. Before 
-installation you can test the app version hosted at [www.bam.de/eCerto](https://apps.bam.de/shn00/eCerto/)
+installation you can test the app version hosted at [BAM](https://apps.bam.de/shn00/eCerto/ "www.bam.de/eCerto")
 using your own or the provided example data.
 
 ## Detailed documentation
