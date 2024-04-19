@@ -29,8 +29,8 @@ m_RDataImport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::div(
-      shiny::actionButton(inputId = ns("load_test_data"), label = shiny::HTML("Load<br>Test Data"), style = "display: inline-block; width: 120px; font-weight: 700; background-color: rgb(0,175,240);"),
-      shiny::actionButton(inputId = ns("load_zenodo_data"), label = shiny::HTML("Load from<br>Zenodo"), style = "display: inline-block; width: 120px; font-weight: 700; background-color: rgb(0,175,240);")
+      shiny::actionButton(inputId = ns("load_test_data"), label = shiny::HTML("Load<br>Test Data"), style = "display: inline-block; width: 150px; font-weight: 700; background-color: rgb(0,175,240);"),
+      shiny::actionButton(inputId = ns("load_zenodo_data"), label = shiny::HTML("Load from<br>Zenodo"), style = "display: inline-block; width: 150px; font-weight: 700; background-color: rgb(0,175,240);")
     ),
     shiny::fileInput(
       inputId = ns("in_file_ecerto_backup"),
@@ -104,7 +104,13 @@ m_RDataImport_Server <- function(id, rv) {
       shinyWidgets::ask_confirmation(
         inputId = "confirm_load_zenodo_data",
         title = "Zenodo Import", btn_labels = c("Cancel", "Load"), size = "xs", html = TRUE,
-        text = shiny::tagList(div_check_present(), shiny::textInput(inputId = session$ns("z_id"), label = "Enter Zonodo Record ID", value = "8380870")),
+        text = shiny::tagList(
+          div_check_present(),
+          shiny::div(
+            style = "display: block; margin-left: auto; margin-right: auto; width: 220px;",
+            shiny::textInput(inputId = session$ns("z_id"), label = "Enter Zenodo Record ID", value = "8380870")
+          )
+        ),
       )
     })
     shiny::observeEvent(input$confirm_load_zenodo_data, {
