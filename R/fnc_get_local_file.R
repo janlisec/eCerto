@@ -28,7 +28,7 @@ get_local_file <- function(x = NULL) {
       return(out)
     } else {
       if (length(out) >= 2) {
-        message(paste0("[get_local_file] Several files match search string '", x, "', return first only."))
+        warning(paste0("[get_local_file] Several files match search string '", x, "', return first only."))
         return(out[1])
       } else {
         warning(paste("[get_local_file] Search string", x, "not found."))

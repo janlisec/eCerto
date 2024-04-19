@@ -7,7 +7,7 @@ output:
     toc_float: 
       collapsed: false
       smooth_scroll: true
-    self_contained: yes
+    self_contained: true
 ---
 
 
