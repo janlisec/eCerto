@@ -143,14 +143,18 @@ m_analyteServer <- function(id, rv) {
               selected = apm()[[a]]$lab_filter
             )
           }
-          shiny::updateNumericInput(
-            inputId = "precision",
-            value = apm()[[a]]$precision
-          )
-          shiny::updateNumericInput(
-            inputId = "precision_export",
-            value = apm()[[a]]$precision_export
-          )
+          if (input$precision != apm()[[a]]$precision) {
+            shiny::updateNumericInput(
+              inputId = "precision",
+              value = apm()[[a]]$precision
+            )
+          }
+          if (input$precision_export != apm()[[a]]$precision_export) {
+            shiny::updateNumericInput(
+              inputId = "precision_export",
+              value = apm()[[a]]$precision_export
+            )
+          }
           # check if color of suggested rounding is already correct for this analyte
           update_DIN1333_HTML()
         } else {
