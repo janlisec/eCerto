@@ -127,18 +127,22 @@ m_analyteServer <- function(id, rv) {
           )
           # [JL] 20240418 alternatively use the list structure of the select input to group sample IDs by lab in the widget
           x <- getValue(rv, c("Certification","data"))
-          #shiny::updateSelectizeInput(
-          shinyWidgets::updatePickerInput(
-            inputId = "sample_filter",
-            #choices = apm()[[a]]$sample_ids,
-            choices = split(x[x[,"analyte"]==a(),"ID"], x[x[,"analyte"]==a(),"Lab"]),
-            selected = apm()[[a]]$sample_filter
-          )
-          shinyWidgets::updatePickerInput(
-            inputId = "lab_filter",
-            choices = apm()[[a]]$lab_ids,
-            selected = apm()[[a]]$lab_filter
-          )
+          #browser()
+          if (is.null(input$sample_filter_open) || !input$sample_filter_open) {
+            shinyWidgets::updatePickerInput(
+              inputId = "sample_filter",
+              #choices = apm()[[a]]$sample_ids,
+              choices = split(x[x[,"analyte"]==a(),"ID"], x[x[,"analyte"]==a(),"Lab"]),
+              selected = apm()[[a]]$sample_filter
+            )
+          }
+          if (is.null(input$lab_filter_open) || !input$lab_filter_open) {
+            shinyWidgets::updatePickerInput(
+              inputId = "lab_filter",
+              choices = apm()[[a]]$lab_ids,
+              selected = apm()[[a]]$lab_filter
+            )
+          }
           shiny::updateNumericInput(
             inputId = "precision",
             value = apm()[[a]]$precision
