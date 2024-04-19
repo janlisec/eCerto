@@ -67,7 +67,7 @@
     },
     "DT": {
       "Package": "DT",
-      "Version": "0.32",
+      "Version": "0.33",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -80,7 +80,7 @@
         "magrittr",
         "promises"
       ],
-      "Hash": "0d3ab8abbb0c3e3daa47d4dc8e17bbae"
+      "Hash": "64ff3427f559ce3f2597a4fe13255cb6"
     },
     "R6": {
       "Package": "R6",
@@ -164,23 +164,25 @@
     },
     "bslib": {
       "Package": "bslib",
-      "Version": "0.5.1",
+      "Version": "0.7.0",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "R",
         "base64enc",
         "cachem",
+        "fastmap",
         "grDevices",
         "htmltools",
         "jquerylib",
         "jsonlite",
+        "lifecycle",
         "memoise",
         "mime",
         "rlang",
         "sass"
       ],
-      "Hash": "283015ddfbb9d7bf15ea9f0b5698f0d9"
+      "Hash": "8644cc53f43828f19133548195d7e59e"
     },
     "cachem": {
       "Package": "cachem",
@@ -362,18 +364,19 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.3.1",
+      "Version": "0.4",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "02586f6c8efadab547bb13fb2061c0905aa0cc6c",
+      "RemoteSha": "54f5cc96b285c3ec40482921a11a0436e9751409",
       "Requirements": [
         "DT",
         "R",
         "R6",
+        "bslib",
         "config",
         "golem",
         "knitr",
@@ -389,7 +392,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "53de0df62465cf63490a9e9aef55fd0c"
+      "Hash": "cd5e669a89e119c30f2fef76366792cf"
     },
     "ellipsis": {
       "Package": "ellipsis",
@@ -518,20 +521,19 @@
     },
     "htmltools": {
       "Package": "htmltools",
-      "Version": "0.5.6.1",
+      "Version": "0.5.8.1",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "R",
         "base64enc",
         "digest",
-        "ellipsis",
         "fastmap",
         "grDevices",
         "rlang",
         "utils"
       ],
-      "Hash": "1e12fe667316a76508898839ecfb2d00"
+      "Hash": "81d371a9cc60640e74e4ab6ac46dcedc"
     },
     "htmlwidgets": {
       "Package": "htmlwidgets",
@@ -600,7 +602,7 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.45",
+      "Version": "1.46",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -612,7 +614,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "1ec462871063897135c1bcbe0fc8f07d"
+      "Hash": "6e008ab1d696a5283c79765fa7b56b47"
     },
     "later": {
       "Package": "later",
@@ -1025,9 +1027,9 @@
     },
     "sass": {
       "Package": "sass",
-      "Version": "0.4.7",
+      "Version": "0.4.9",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "R6",
         "fs",
@@ -1035,7 +1037,7 @@
         "rappdirs",
         "rlang"
       ],
-      "Hash": "6bd4d33b50ff927191ec9acbf52fd056"
+      "Hash": "d53dbfddf695303ea4ad66f86e99b95d"
     },
     "shiny": {
       "Package": "shiny",
@@ -1072,7 +1074,7 @@
     },
     "shinyWidgets": {
       "Package": "shinyWidgets",
-      "Version": "0.8.3",
+      "Version": "0.8.5",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
@@ -1086,7 +1088,7 @@
         "sass",
         "shiny"
       ],
-      "Hash": "a515a78460d21328d2b8765fd5506964"
+      "Hash": "fcfd331c780da8d4b62fa4bfb6c8785e"
     },
     "shinyjs": {
       "Package": "shinyjs",
@@ -1315,14 +1317,15 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.40",
+      "Version": "0.43",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
+        "grDevices",
         "stats",
         "tools"
       ],
-      "Hash": "be07d23211245fc7d4209f54c4e4ffc8"
+      "Hash": "ab6371d8653ce5f2f9290f4ec7b42a8e"
     },
     "xml2": {
       "Package": "xml2",
