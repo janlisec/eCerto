@@ -1,7 +1,7 @@
 #' @title get_local_file.
 #'
 #' @description \code{get_local_file} will provide a full file path using the
-#'    currently specified 'www' folder specified as a recourcePaths. This path
+#'    currently specified 'www' folder specified as a 'resourcePaths'. This path
 #'    can be different depending on whether the app is run as development
 #'    version, using the library function or serving via shinyapps.io.
 #'
@@ -28,7 +28,7 @@ get_local_file <- function(x = NULL) {
       return(out)
     } else {
       if (length(out) >= 2) {
-        warning(paste0("[get_local_file] Several files match search string '", x, "', return first only."))
+        message(paste0("[get_local_file] Several files match search string '", x, "', return first only."))
         return(out[1])
       } else {
         warning(paste("[get_local_file] Search string", x, "not found."))

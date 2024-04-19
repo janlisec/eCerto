@@ -1,3 +1,5 @@
+if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
+
 # Test 1: changed output of dput()
 testthat::test_that(
   desc = "Successful Certifications Upload test",
@@ -11,7 +13,7 @@ testthat::test_that(
         app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn1, sheet = sheetNo),
         {
-          suppressMessages(session$flushReact())
+          suppressWarnings(suppressMessages(session$flushReact()))
           # set rows and columns selection
           #suppressMessages(session$setInputs(uitab_cells_selected = cells_selected))
           session$setInputs(uitab_range_selected = range_selected)
@@ -121,7 +123,7 @@ testthat::test_that(
       shiny::testServer(
         app = eCerto:::m_xlsx_range_select_Server,
         args = list(current_file_input = fn1, sheet = sheetNo), {
-          suppressMessages(session$flushReact())
+          suppressWarnings(suppressMessages(session$flushReact()))
           session$setInputs(uitab_range_selected = range_selected)
           testthat::expect_equal(tab_param$rng, "A1:B1")
         }

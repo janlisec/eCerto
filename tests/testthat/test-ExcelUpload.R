@@ -23,13 +23,15 @@ testthat::test_that(
         app = eCerto:::m_ExcelUpload_Server,
         args = list(rv = rv),
         expr = {
-          session$setInputs(
-            moduleSelect = "Certification",
-            excel_file = xlsx_test,
-            sheet_number = 1,
-            file_number = 1,
-            file_name = "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"
-          )
+          suppressWarnings({
+            session$setInputs(
+              moduleSelect = "Certification",
+              excel_file = xlsx_test,
+              sheet_number = 1,
+              file_number = 1,
+              file_name = "Ergebnisblatt_BAM-M321_Aleris_Koblenz_m.xlsx"
+            )
+          })
           # without testing row and column selection unfortunately
           rv_xlsx_range_select$tab <- lapply(rv_xlsx_range_select$tab, function(x) {
             x[8:16, 1:5, drop = FALSE]
@@ -58,20 +60,22 @@ testthat::test_that(
           inp <- system.file(package = "eCerto", "extdata", "Homog_test.xlsx")
           # in GitHub actions the file can't be found
           if (file.exists(inp)) {
-            # set required inputs
-            session$setInputs(
-              moduleSelect = "Homogeneity",
-              excel_file = list(
-                datapath = inp,
-                name = "Homog_test.xlsx"
-              ),
-              sheet_number = 1,
-              file_number = 1,
-              file_name = "Homog_test.xlsx"
-            )
-            # flush reactivity and click button
-            session$flushReact()
-            session$setInputs(btn_load = "click")
+            suppressWarnings({
+              # set required inputs
+              session$setInputs(
+                moduleSelect = "Homogeneity",
+                excel_file = list(
+                  datapath = inp,
+                  name = "Homog_test.xlsx"
+                ),
+                sheet_number = 1,
+                file_number = 1,
+                file_name = "Homog_test.xlsx"
+              )
+              # flush reactivity and click button
+              session$flushReact()
+              session$setInputs(btn_load = "click")
+            })
             testthat::expect_false(is.null(rv_xlsx_range_select$tab))
             testthat::expect_true(exists("out"))
             testthat::expect_true(!is.null(out$data))
@@ -96,9 +100,11 @@ testthat::test_that(
         app = eCerto:::m_ExcelUpload_Server,
         args = list(rv = rv),
         expr = {
-          session$setInputs(moduleSelect = "Stability", excel_file = xlsx_test, sheet_number = 1, file_number = 1, file_name = "Stability_Testdata.xlsx")
-          session$flushReact()
-          session$setInputs(btn_load = "click")
+          suppressWarnings({
+            session$setInputs(moduleSelect = "Stability", excel_file = xlsx_test, sheet_number = 1, file_number = 1, file_name = "Stability_Testdata.xlsx")
+            session$flushReact()
+            session$setInputs(btn_load = "click")
+          })
           # $$JL$$ upload module was changed to respect analyte order from Excel file and to incorporate column time
           # original test data have to be modified to reflect this change
           comp <- eCerto:::test_Stability_Excel()
