@@ -44,10 +44,9 @@ m_arrheniusUI <- function(id) {
       bslib::layout_sidebar(
         padding = 0,
         sidebar = bslib::sidebar(
-          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = 260,
-          shiny::wellPanel(
-            shiny::selectInput(inputId = ns("flt_ids"), label = "exclude ids", choices = "", multiple = TRUE),
-            sub_header("Options Fig.S2", b = 12),
+          position = "right", open = "open", width = 260,
+          shiny::div(
+            sub_header("Fig.S2 options"),
             shiny::checkboxGroupInput(
               inputId = ns("s_opt_FigS2"),
               label = NULL,
@@ -60,8 +59,8 @@ m_arrheniusUI <- function(id) {
                 "Show sample IDs" = "show_ids"
               ),
               selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
-            )#,
-            #shiny::actionButton(inputId = ns("s_switch_simple"), label = "Show linear model", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
+            ),
+            shinyWidgets::pickerInput(inputId = ns("flt_ids"), label = "Exclude IDs", choices = "", multiple = TRUE, options = list(container = "body"))
           )
         ),
         shiny::plotOutput(outputId = ns("FigS2"))
@@ -78,10 +77,10 @@ m_arrheniusUI <- function(id) {
       bslib::layout_sidebar(
         padding = 0,
         sidebar = bslib::sidebar(
-          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = 260,
-          shiny::wellPanel(
+          position = "right", open = "open", width = 260,
+          shiny::div(
             sub_header(shiny::actionLink(inputId = ns("ArrheniusStorrageTemp_link"), label = "Potential Storage Temp")),
-            shiny::numericInput(inputId = ns("user_temp"), label = NULL, value = -20, min = -80, max = 23, step = 1),
+            shiny::numericInput(inputId = ns("user_temp"), label = NULL, value = -20, min = -80, max = 23, step = 1, width = 80),
             shiny::radioButtons(inputId = ns("rbtn_storage"), label = "Use values from...", choices = list("Tab.C3" = "mt", "Reference Temp" = "rt", "input-box below" = "inp"), selected = "rt"),
             shiny::numericInput(inputId = ns("num_coef"), label = NULL, value = NULL)
           )
@@ -164,14 +163,14 @@ m_arrheniusServer <- function(id, rv) {
       if (!is.factor(x[, "analyte"])) x[, "analyte"] <- factor(x[, "analyte"])
       an(levels(x[, "analyte"]))
       shiny::updateSelectInput(session = session, inputId = "analyte", choices = an())
-      shiny::updateSelectInput(session = session, inputId = "flt_ids", choices = 1:nrow(x))
+      shinyWidgets::updatePickerInput(session = session, inputId = "flt_ids", choices = 1:nrow(x))
     })
 
     shiny::observeEvent(rv$cur_an,
       {
         req(input$analyte, an())
         if (!identical(input$analyte, rv$cur_an) && rv$cur_an %in% an()) shiny::updateSelectInput(session = session, inputId = "analyte", choices = an(), selected = rv$cur_an)
-        if (!is.null(input$flt_ids)) shiny::updateSelectInput(session = session, inputId = "flt_ids", selected = NULL)
+        if (!is.null(input$flt_ids)) shinyWidgets::updatePickerInput(session = session, inputId = "flt_ids", selected = NULL)
       },
       ignoreNULL = TRUE
     )

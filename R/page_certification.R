@@ -90,11 +90,12 @@ page_CertificationUI <- function(id) {
       bslib::layout_sidebar(
         padding = 0,
         sidebar = bslib::sidebar(
-          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = sidebar_width,
-          shiny::wellPanel(
-            style = "padding-top: 10px; padding-bottom: 0px;",
+          #position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = sidebar_width,
+          position = "right", open = "open", width = sidebar_width,
+          shiny::div(
+            sub_header("Fig.C1 options"),
             shiny::checkboxGroupInput(
-              inputId = ns("C1_opt"), label = "Fig.C1 options",
+              inputId = ns("C1_opt"), label = NULL,
               choices = list(
                 "Show sample IDs" = "annotate_id",
                 "Filenames as axis labels" = "filename_labels",
@@ -176,8 +177,8 @@ page_CertificationUI <- function(id) {
           tab_C2_panel
         ),
         shiny::tagList(
-          fig_C1_panel,
-          m_materialtabelleUI(id = ns("mat_cert"), sidebar_width = sidebar_width)
+          m_materialtabelleUI(id = ns("mat_cert"), sidebar_width = sidebar_width),
+          fig_C1_panel
         ),
         col_widths =  bslib::breakpoints(
           sm = c(12, 12),

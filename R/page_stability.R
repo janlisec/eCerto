@@ -54,17 +54,19 @@ page_StabilityUI <- function(id) {
       bslib::layout_sidebar(
         padding = 0,
         sidebar = bslib::sidebar(
-          position = "right", open = "open", padding = c(0,0,0,16), bg = "white", width = 260,
-          shiny::wellPanel(
-            sub_header("Save Report"),
-            shiny::downloadButton(ns("s_Report"), label = "Download"),
-            shiny::p(),
-            shiny::checkboxGroupInput(inputId = ns("FigS1_options"), label = "Fig.S1 options", choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")),
+          position = "right", open = "open", width = 260,
+          shiny::div(
+            sub_header("Fig.S1 options"),
+            shiny::checkboxGroupInput(
+              inputId = ns("FigS1_options"), label = NULL,
+              choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")
+            ),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard" = 1, "adjusted" = 3), inline = TRUE)),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s" = "2s", "U_abs" = "U"), inline = TRUE)),
             shiny::sliderInput(inputId = ns("s_shelf_life"), label = shiny::HTML("Exp. shelf life t<sub>cert</sub> [Month]"), min = 0, max = 120, value = 60, step = 6),
-            shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE)
-            #shiny::actionButton(inputId = ns("s_switch_arrhenius"), label = "Show Arrhenius", style = "width: 100%; max-width: 160px; font-weight: 700; background-color: rgb(0,175,240); margin-bottom: 10px;")
+            shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
+            sub_header("Save Report"),
+            shiny::downloadButton(ns("s_Report"), label = "Download", style = "margin-bottom:16px;")
           )
         ),
         # $JL$ the surrounding div is required to include the empty HTML as a way to allow shinking and prevent the figure to be resized horizontally otherwise

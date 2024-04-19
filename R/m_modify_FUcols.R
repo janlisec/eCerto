@@ -35,19 +35,24 @@ modify_FUcols_UI <- function(id) {
     shinyWidgets::dropdown(
       inputId = ns("dropdown_modifyFUcols"),
       label = "Modify F/U cols",
-      width = "280px",
+      width = "440px",
+      circle = FALSE,
       shiny::tagList(
-        shiny::selectInput(inputId = ns("selinp"), label = "Create/modify column", choices = c("<new F>", "<new U>")),
-        shiny::textInput(inputId = ns("txtinp"), label = "Edit column name", value = ""),
-        shiny::p(),
-        shiny::fluidRow(
-          shiny::column(width = 6, shiny::actionButton(inputId = ns("btn"), label = "Apply")),
-          shiny::column(width = 6, shiny::actionLink(inputId = ns("tabC3opt"), label = "Show Help"))
+        bslib::layout_columns(
+          shiny::selectInput(inputId = ns("selinp"), label = "Create/modify column", choices = c("<new F>", "<new U>")),
+          shiny::textInput(inputId = ns("txtinp"), label = "Edit column name", value = "")
         ),
-        shiny::div(id = ns("msg_type")),
-        shiny::div(id = ns("msg_name"))
-      ),
-      circle = FALSE
+        bslib::layout_columns(
+          shiny::div(
+            shiny::div(id = ns("msg_type")),
+            shiny::div(id = ns("msg_name"))
+          ),
+          shiny::div(
+            shiny::actionButton(inputId = ns("btn"), label = "Apply"),
+            shiny::actionLink(inputId = ns("tabC3opt"), label = "Show Help")
+          )
+        )
+      )
     )
   )
 }

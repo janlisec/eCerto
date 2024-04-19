@@ -44,7 +44,7 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
       shiny::div(
         shiny::div(
           style = "float: right; margin-left: 15px;",
-          check_stability2_UI(id = ns("post_cert_stab"))
+          check_stability_UI(id = ns("post_cert_stab"))
         ),
         shiny::div(
           style = "float: right; margin-left: 15px;",
@@ -376,7 +376,7 @@ m_materialtabelleServer <- function(id, rv) {
       mater_table(mt)
     })
 
-    check_stability2_Server(id = "post_cert_stab", rv = rv)
+    check_stability_Server(id = "post_cert_stab", rv = rv)
 
     # Help section -------------------------------------------------------------
     shiny::observeEvent(input$tabC3head, {

@@ -27,6 +27,7 @@
 m_DataViewUI <- function(id) {
   ns <- shiny::NS(id)
   bslib::card(
+    fill = FALSE,
     bslib::card_header(
       class = "d-flex justify-content-between",
       shiny::strong("Tab.C0 - Imported data from collaborative trial"),

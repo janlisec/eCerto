@@ -41,30 +41,32 @@ m_ExcelUpload_UI <- function(id) {
       #shiny::fluidRow(
       bslib::card(
         #style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
-        style = "background-color: #f5f5f5;",
+        style = "background-color: var(--_sidebar-bg);",
         shiny::div(
           shiny::div(
-            style = "width: 120px; float: left; margin-bottom: -12px;",
+            style = "width: 130px; float: left; margin-bottom: -12px; margin-right: var(--bs-card-spacer-y);",
+            #style = "float: left; margin-bottom: -12px;",
             shiny::radioButtons(
+            #shinyWidgets::prettyRadioButtons(
               inputId = ns("moduleSelect"),
               label = "File format",
               choices = "dummy"
             )
           ),
           shiny::div(
-            style = "width: 300px; float: left; margin-left: 16px;",
+            style = "width: 300px; float: left; margin-right: var(--bs-card-spacer-y);",
             shiny::uiOutput(outputId = ns("inp_file"))
           ),
           shiny::div(
-            style = "width: 280px; float: left; margin-left: 16px;",
-            shinyjs::hidden(shiny::selectInput(inputId = ns("file_name"), label = "File", choices = ""))
+            style = "width: 280px; float: left; margin-right: var(--bs-card-spacer-y);",
+            shinyjs::hidden(shinyWidgets::pickerInput(inputId = ns("file_name"), label = "File", choices = "", options = list(container = "body")))
           ),
           shiny::div(
-            style = "width: 90px; float: left; margin-left: 16px;",
-            shinyjs::hidden(shiny::selectInput(inputId = ns("sheet_number"), label = "Sheet #", choices = "1"))
+            style = "width: 90px; float: left; margin-right: var(--bs-card-spacer-y);",
+            shinyjs::hidden(shinyWidgets::pickerInput(inputId = ns("sheet_number"), label = "Sheet #", choices = "1", options = list(container = "body")))
           ),
           shiny::div(
-            style = "width:130px; float: left; margin-left: 16px; margin-top: 32px;",
+            style = "width: 160px; float: left; margin-right: var(--bs-card-spacer-y); margin-top: 31px;",
             shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range", style = "background-color: rgb(140,180,15)"))
           )
         )
@@ -124,13 +126,13 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       sheetnames <- xlsxSheetNames(input$excel_file$datapath)
       filenames <- input$excel_file$name
       if (length(sheetnames) > 1) {
-        shiny::updateSelectInput(session = session, inputId = "sheet_number", choices = 1:length(sheetnames))
+        shinyWidgets::updatePickerInput(session = session, inputId = "sheet_number", choices = 1:length(sheetnames))
         shinyjs::showElement(id = "sheet_number")
       } else {
         shiny::updateSelectInput(session = session, inputId = "sheet_number", choices = "1")
         shinyjs::hideElement(id = "sheet_number")
       }
-      shiny::updateSelectInput(session = session, inputId = "file_name", choices = filenames)
+      shinyWidgets::updatePickerInput(session = session, inputId = "file_name", choices = filenames)
       if (length(filenames) > 1) {
         shinyjs::showElement(id = "file_name")
       } else {
@@ -155,9 +157,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     rv_xlsx_range_select <- m_xlsx_range_select_Server(
       id = "rng_select",
       current_file_input = current_file_input,
-      sheet = shiny::reactive({
-        as.numeric(input$sheet_number)
-      }),
+      sheet = shiny::reactive({ as.numeric(input$sheet_number) }),
       file = file_number,
       excelformat = exl_fmt,
       check = check

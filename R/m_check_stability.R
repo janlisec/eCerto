@@ -22,15 +22,39 @@
 #'   }
 #' )
 #' }
+#' @importFrom shinyWidgets dropdownButton
 #' @keywords internal
 #' @noRd
 check_stability_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    sub_header(shiny::actionLink(inputId = ns("tabC3postcert"), label = "Post Certification Test")),
-    shiny::actionButton(inputId = ns("btn_main"), label = "Check"),
-    shiny::uiOutput(outputId = ns("area_input")),
-    shiny::uiOutput(outputId = ns("res_output"))
+    shinyWidgets::dropdown(
+      inputId = ns("dropdown_postcert"),
+      width = "440px", right = TRUE,
+      label = "Post Certification Test",
+      #options = list(container = "body"),
+      circle = FALSE,
+      shiny::tagList(
+        bslib::layout_columns(
+          col_widths = c(5,7),
+          shiny::div(
+            shiny::textAreaInput(
+              inputId = ns("txt_textAreaInput"), label = NULL, rows = 7,
+              placeholder = paste("Copy/paste or enter numeric values (one per row) and press calculate afterwards.")
+            )
+          ),
+          shiny::div(
+            shiny::uiOutput(outputId = ns("res_output")),
+            bslib::layout_columns(
+              col_widths = c(8,4),
+              #shiny::actionButton(inputId = ns("btn_textAreaInput"), label = "Calculate", style = "margin-top: 16px"),
+              shiny::actionButton(inputId = ns("btn_textAreaInput"), label = "Calculate"),
+              shiny::actionLink(inputId = ns("tabC3postcert"), label = shiny::HTML("Show<br>Help"))
+            )
+          )
+        )
+      )
+    )
   )
 }
 
@@ -38,9 +62,6 @@ check_stability_UI <- function(id) {
 #' @noRd
 check_stability_Server <- function(id, rv = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-    shinyjs::hide(id = "area_input")
-    shinyjs::hide(id = "res_output")
-
     m_c <- shiny::reactiveVal(0)
     u_c <- shiny::reactiveVal(1)
     m_m <- reactiveVal(NA)
@@ -72,53 +93,25 @@ check_stability_Server <- function(id, rv = NULL) {
       }
     }
 
-    output$area_input <- shiny::renderUI({
-      shiny::tagList(
-        shiny::fluidRow(
-          shiny::column(
-            width = 8,
-            shiny::textAreaInput(
-              inputId = session$ns("txt_textAreaInput"),
-              label = NULL,
-              placeholder = paste("copy/paste or enter numeric values (one per row) and press calculate afterwards"),
-              width = "100%",
-              rows = 6
-            )
-          ),
-          shiny::column(
-            width = 4,
-            shiny::actionButton(inputId = session$ns("btn_textAreaInput"), label = "Calculate", width = "100%"),
-            shiny::actionButton(session$ns("btn_textAreaInput2"), "Close", width = "100%")
-          )
-        )
-      )
-    })
-
     output$res_output <- shiny::renderUI({
       req(mt())
       txt_col <- ifelse(is.finite(sk() <= sk_old()) && sk() <= sk_old(), "#70FF70", "#FF0000")
       shiny::tagList(
-        HTML("<strong>analyte ", mt()$analyte, "</strong>"), br(),
-        HTML("<var>&micro;</var><sub>c</sub> = ", round(m_c(), ra()), ", <var>u</var><sub>c</sub> = ", round(u_c(), ra())), br(),
-        HTML("<var>&micro;</var><sub>m</sub> = ", round(m_m(), ra()), ", <var>u</var><sub>m</sub> = ", round(u_m(), ra())), br(),
-        HTML(paste0("<font color='", txt_col, "'>"), "<strong><var>SK</var> = ", round(sk(), 2), "</strong></font>, <var>k</var> =", sk_old())
+        HTML("<strong>", mt()$analyte, "</strong>"),
+        bslib::layout_columns(
+          #col_widths = 2,
+          shiny::div(
+            shiny::HTML("<var>&micro;</var><sub>c</sub> = ", round(m_c(), ra())), br(),
+            shiny::HTML("<var>u</var><sub>c</sub> = ", round(u_c(), ra())), br(),
+            shiny::HTML("<var>k</var> =", sk_old())
+          ),
+          shiny::div(
+            shiny::HTML("<var>&micro;</var><sub>m</sub> = ", round(m_m(), ra())), br(),
+            shiny::HTML("<var>u</var><sub>m</sub> = ", round(u_m(), ra())), br(),
+            shiny::HTML(paste0("<font color='", txt_col, "'>"), "<strong><var>SK</var> = ", round(sk(), 2), "</strong></font>")
+          )
+        )
       )
-    })
-
-    shiny::observeEvent(input$btn_main, {
-      shiny::updateTextAreaInput(inputId = "txt_textAreaInput", value = "")
-      shinyjs::show(id = "area_input")
-      shinyjs::show(id = "res_output")
-      shinyjs::hide(id = "btn_main")
-    })
-
-    shiny::observeEvent(input$btn_textAreaInput2, {
-      # reset output
-      out$d <- NA
-      out$counter <- out$counter + 1
-      shinyjs::hide(id = "area_input")
-      shinyjs::hide(id = "res_output")
-      shinyjs::show(id = "btn_main")
     })
 
     shiny::observeEvent(input$btn_textAreaInput,

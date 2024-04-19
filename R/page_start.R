@@ -29,14 +29,12 @@ page_startUI <- function(id) {
     bslib::layout_sidebar(
       sidebar = bslib::sidebar(
         width = 360,
-        m_RDataImport_UI(ns("Rdatain")),
         shiny::div(
+          m_RDataImport_UI(ns("Rdatain")),
           hr(),
-          m_RDataExport_UI(ns("Rdataex"))
-        ),
-        shiny::div(
+          m_RDataExport_UI(ns("Rdataex")),
           hr(),
-          shiny::actionButton(inputId = ns("session_restart"), label = shiny::HTML("Restart<br>eCerto"), style = "width: 120px; font-weight: 700; background-color: rgb(210,0,30)")
+          shiny::actionButton(inputId = ns("session_restart"), label = shiny::HTML("Restart<br>eCerto"), style = "width: 150px; font-weight: 700; background-color: rgb(210,0,30)")
         )
       ),
       m_ExcelUpload_UI(ns("excelfile"))
