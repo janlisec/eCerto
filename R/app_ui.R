@@ -6,13 +6,28 @@
 #' @noRd
 app_ui <- function(request) {
   navbar_padding <- 56
+
+  eCerto_theme <- bslib::bs_theme(
+    preset = "shiny",
+    base_font = bslib::font_google(c("Assistant", "Inter", "Open Sans")[3]),
+    #heading_font = bslib::font_google(c("Assistant", "Inter", "Open Sans")[3]),
+    #"--_sidebar-bg" = "#86cecb",
+    #"navbar-bg" = "#000000",
+    #"body-bg" = "#EEEEEE",
+    #"font-family-base" = "monospace",
+    #"font-size-base" = "1.4rem",
+    #"btn-padding-y" = ".16rem",
+    #"btn-padding-x" = "2rem"
+    font_scale = 1
+  )
+
   shiny::tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
 
-    tags$head(
-      tags$style(HTML(".control-label{ font-weight: bold; }"))
-    ),
+    # tags$head(
+    #   tags$style(HTML(".control-label{ font-weight: bold; }"))
+    # ),
 
     # the following lines can be used to check for problems with the 'www' folder on different App places
     # message("UI, 'www': ", shiny::resourcePaths()["www"]),
@@ -20,16 +35,10 @@ app_ui <- function(request) {
     # message("UI, tempdir: ", tempdir()),
 
     bslib::page_navbar(
-      ## use an alternative theme
-      # theme = bslib::bs_theme(
-      #   version = 5,
-      #   bootswatch = c("sandstone","zephyr")[1],
-      #   base_font = bslib::font_google(c("Assistant", "Anonymous Pro")[2])
-      # ),
-
       id = "navbarpage",
+      #theme = eCerto_theme,
       title = list(
-        shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo", style="background-color: black;"),
+        shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo"),#, style="background-color: black;"),
         shiny::strong("BAM", style = "color: rgb(210,0,30);"),
         shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
@@ -37,7 +46,7 @@ app_ui <- function(request) {
       window_title = paste("BAM", get_golem_config("golem_name")),
       position = "fixed-top",
       footer = shiny::div(
-        style = "position: fixed; bottom: 0px; left: 0px; width: 100%; padding-left: 15px; padding-top: 2px; padding-bottom: 2px; background-color: #f8f8f8; font-family: Lucida Console, monospace;",
+        style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0;",
         shiny::HTML(
           get_golem_config("golem_name"), "|",
           get_golem_config("app_version"), "|",
@@ -95,7 +104,8 @@ app_ui <- function(request) {
         value = "tP_help",
         shiny::div(
           style = paste0("padding-top: ", navbar_padding, "px;"),
-          shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[1])))
+          #shiny::div()
+          shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2])))
         )
       )
     )
