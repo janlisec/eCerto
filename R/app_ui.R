@@ -48,7 +48,7 @@ app_ui <- function(request) {
       bg = "black",
       position = "fixed-top",
       footer = shiny::div(
-        style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: var(--bs-nav-link-color); width: 100%",
+        style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: white; width: 100%",
         shiny::HTML(
           get_golem_config("golem_name"), "|",
           get_golem_config("app_version"), "|",
