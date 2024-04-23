@@ -149,7 +149,7 @@ page_CertificationUI <- function(id) {
 
   top_panel <- bslib::card(
     fill = FALSE,
-    style = "background-color: rgba(0,0,0,0.03);",
+    style = "background-color: var(--_sidebar-bg);",
     shiny::div(
       class = "d-flex justify-content-between",
       select_panel_div,

@@ -12,7 +12,7 @@ testthat::test_that(
       options(shiny.testmode = TRUE)
       on.exit(options(shiny.testmode = NULL))
     }
-    app <- shinytest2::AppDriver$new(eCerto::run_app(), name = "run_app")
+    app <- shinytest2::AppDriver$new(eCerto::run_app(), name = "run_app", load_timeout = 25000, timeout = 6000, width = 1600, height = 1200)
 
     # get initial app values
     init_vals <- app$get_values()

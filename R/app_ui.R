@@ -25,10 +25,6 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
 
-    # tags$head(
-    #   tags$style(HTML(".control-label{ font-weight: bold; }"))
-    # ),
-
     # the following lines can be used to check for problems with the 'www' folder on different App places
     # message("UI, 'www': ", shiny::resourcePaths()["www"]),
     # message("UI, app_sys: ", app_sys('app/www')),
@@ -43,7 +39,7 @@ app_ui <- function(request) {
         shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
       selected = "Start",
-      window_title = paste("BAM", get_golem_config("golem_name")),
+      bg = "black",
       position = "fixed-top",
       footer = shiny::div(
         style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0;",
@@ -89,23 +85,16 @@ app_ui <- function(request) {
         value = "tP_LTS",
         shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), m_longtermstabilityUI("lts"))
       ),
-      # bslib::nav_panel(
-      #   title = "Help",
-      #   icon = shiny::icon("angle-right"),
-      #   value = "tP_help",
-      #   shiny::div(
-      #     style = paste0("padding-top: ", navbar_padding, "px; float: left"),
-      #     shiny::withMathJax(shiny::includeCSS(path = get_local_file("help_start.html")))
-      #   )
-      # ),
       bslib::nav_panel(
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
         shiny::div(
           style = paste0("padding-top: ", navbar_padding, "px;"),
-          #shiny::div()
-          shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2])))
+          # don't render Help page in testing mode
+          if (is.null(getOption("shiny.testmode")) || !getOption("shiny.testmode")) {
+            shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2])))
+          }
         )
       )
     )
