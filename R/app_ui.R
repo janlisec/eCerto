@@ -5,8 +5,14 @@
 #' @import shiny
 #' @noRd
 app_ui <- function(request) {
-  navbar_padding <- 56
 
+  # htis is the padding definition for all panels to respect navbar and footer
+  navbar_padding <- "56px"
+  footer_padding <- "48px"
+  nps <- paste0("padding-top: ", navbar_padding, "; padding-bottom: ", footer_padding)
+
+  # here a bslin them can be defined; however, they all fail at some point with the eCerto layout
+  # and are not used in the app
   eCerto_theme <- bslib::bs_theme(
     preset = "shiny",
     base_font = bslib::font_google(c("Assistant", "Inter", "Open Sans")[3]),
@@ -34,7 +40,7 @@ app_ui <- function(request) {
       id = "navbarpage",
       #theme = eCerto_theme,
       title = list(
-        shiny::img(src = "www/bam_logo_20pt.gif", position = "absolute", margin = "auto", alt = "BAM Logo"),#, style="background-color: black;"),
+        shiny::img(src = "www/bam_logo_200px_transparent.png", height = "40px", position = "absolute", margin = "auto", alt = "BAM Logo"),
         shiny::strong("BAM", style = "color: rgb(210,0,30);"),
         shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
@@ -42,7 +48,7 @@ app_ui <- function(request) {
       bg = "black",
       position = "fixed-top",
       footer = shiny::div(
-        style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0;",
+        style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: var(--bs-nav-link-color); width: 100%",
         shiny::HTML(
           get_golem_config("golem_name"), "|",
           get_golem_config("app_version"), "|",
@@ -55,45 +61,47 @@ app_ui <- function(request) {
         id = "start",
         title = "Start",
         icon = shiny::icon("angle-right"),
-        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_startUI("Start"))
+        shiny::div(style = nps, page_startUI("Start"))
       ),
       bslib::nav_panel(
         id = "homog_tab",
         title = "Homogeneity",
         icon = shiny::icon("angle-right"),
         value = "tP_homogeneity",
-        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_HomogeneityUI("Homogeneity"))
+        shiny::div(style = nps, page_HomogeneityUI("Homogeneity"))
       ),
       bslib::nav_panel(
         id = "stab_tab",
         title = "Stability",
         icon = shiny::icon("angle-right"),
         value = "tP_stability",
-        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_StabilityUI("Stability"))
+        shiny::div(style = nps, page_StabilityUI("Stability"))
       ),
       bslib::nav_panel(
         id = "certif_tab",
         title = "Certification",
         value = "tP_certification",
         icon = shiny::icon("angle-right"),
-        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), page_CertificationUI("certification"))
+        shiny::div(style = nps, page_CertificationUI("certification"))
       ),
       # Long term stability
       bslib::nav_panel(
         title = "LTS",
         icon = shiny::icon("angle-right"),
         value = "tP_LTS",
-        shiny::div(style = paste0("padding-top: ", navbar_padding, "px;"), m_longtermstabilityUI("lts"))
+        shiny::div(style = nps, m_longtermstabilityUI("lts"))
       ),
       bslib::nav_panel(
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
         shiny::div(
-          style = paste0("padding-top: ", navbar_padding, "px;"),
+          style = nps,
           # don't render Help page in testing mode
           if (is.null(getOption("shiny.testmode")) || !getOption("shiny.testmode")) {
             shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2])))
+          } else {
+            shiny::div("No help page because App is in testing mode currently.")
           }
         )
       )

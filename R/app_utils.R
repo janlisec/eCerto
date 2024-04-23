@@ -488,17 +488,20 @@ encode_fmt <- function(x) {
 #' @noRd
 welcome_screen <- function(id = id) {
   ns <- shiny::NS(id)
+  card_style <- "background-color: var(--_sidebar-bg);"
   shiny::tagList(
     bslib::layout_columns(
       shiny::tagList(
         bslib::card(
-          style = "background-color: rgb(0,175,240); color: white; text-shadow: 2px 2px 0px #D2001E; display: inline-block;",
-          shiny::span(
-            shiny::img(src = "www/hex-eCerto.png", alt = "eCerto Hex-Logo", width = "120px"),
+          style = "background-color: rgb(0,175,240); color: white; text-shadow: 2px 2px 0px #D2001E;",
+          bslib::layout_columns(
+            col_widths = c(2, 10),
+            shiny::img(src = "www/hex-eCerto.png", alt = "eCerto Hex-Logo", margin = "auto"),
             shiny::div(
-              style = "display: inline-block;",
+              # shiny::div(style = "font-size: large;", "Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
+              # shiny::div(style = "font-size: xx-large;", "Welcome to eCerto!")
               shiny::h3("Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
-              shiny::h1("Welcome to eCerto!")
+              shiny::h1(shiny::HTML("Welcome to <i>eCerto</i>!"))
             )
           )
         )
@@ -506,19 +509,19 @@ welcome_screen <- function(id = id) {
       shiny::tagList(
         bslib::layout_columns(col_widths = 6,
           bslib::card(
-            style = "background-color: #f5f5f5;",
+            style = card_style,
             shiny::div("Click on", shiny::actionLink(inputId = ns("getHelp"), label = shiny::HTML("<strong>this Link</strong>")), shiny::HTML("when you are <span style='color: red;'>a first time user</span> to get help!"))
           ),
           bslib::card(
-            style = "background-color: #f5f5f5;",
+            style = card_style,
             shiny::div("Read the extensive", shiny::actionLink(inputId = ns("showHelp"), label = shiny::HTML("<strong>Online Help</strong>")), shiny::HTML("(see top menue) if you want to know everything!"))
           ),
           bslib::card(
-            style = "background-color: #f5f5f5;",
+            style = card_style,
             shiny::div(shiny::HTML("Open some <strong>Test Data</strong> using the 'Load Test Data' button in the menu! You also can import a real life data set from Zenodo"))
           ),
           bslib::card(
-            style = "background-color: #f5f5f5;",
+            style = card_style,
             shiny::div(shiny::HTML("Import your own data from <strong>Excel files</strong> slecting the 'File format' and using the 'Browse' button at the top!"))
           )
         )

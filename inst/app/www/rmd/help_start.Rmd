@@ -4,9 +4,9 @@ output:
   html_document:
     toc: true
     toc_depth: 3
-    toc_float: 
+    toc_float:
       collapsed: false
-      smooth_scroll: true
+      smooth_scroll: false
     self_contained: true
 ---
 
@@ -63,7 +63,3 @@ div.figcaption {
 
 ```{r child = 'lts.Rmd'}
 ```
-
-::: {style="height: 60px; background-color: white; text-align: center; color: white; padding-top: 20px;"}
-The End
-:::
