@@ -48,9 +48,9 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
         ),
         shiny::div(
           style = "float: right; margin-left: 15px;",
-          modify_FUcols_UI(id = ns("FUcols")),
-          shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect")
-        )
+          modify_FUcols_UI(id = ns("FUcols"))
+        ),
+        shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect")
       )
     ),
     bslib::card_body(
@@ -156,7 +156,9 @@ m_materialtabelleServer <- function(id, rv) {
         attr(mt, "col_code") <- cc
       }
       # check if the option to remove F/U columns without effect should be displayed
-      if (!identical(mt, remove_unused_cols(mt = mt))) {
+      if (ncol(mt) != ncol(remove_unused_cols(mt = mt))) {
+        n <- ncol(mt)-ncol(remove_unused_cols(mt = mt))
+        shiny::updateActionButton(inputId = "clear_FU_cols", label = paste0("Remove ", n, " column", ifelse(n>1, "s", ""), " without effect"))
         shinyjs::showElement(id = "clear_FU_cols")
       } else {
         shinyjs::hideElement(id = "clear_FU_cols")
