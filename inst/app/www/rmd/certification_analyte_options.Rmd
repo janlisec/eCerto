@@ -33,24 +33,24 @@ the user is rounded to improve readability. Because analytes within an RM might 
 different scales it is possible to define analyte specific precision values for rounding. 
 The `Precision (Tables)` value is used for most values displayed in tables. 
 
-The only exception is **Tab.C3**. Here, `Precision (Cert)` is used to round $\mu_c$ and $U_{abs}$ to 
+The only exception is **Tab.C3**. Here, `Precision (Cert. Val.)` is used to round $\mu_c$ and $U_{abs}$ to 
 allow to comply with DIN/ISO regulations on rounding and columns containing relative uncertainties
 are rounded to fixed 4 digit precision.
 
 The user can decide the rounding precision for $\mu_c$ and $U_{abs}$ and even specify negative numbers 
-for `Precision (Cert)` to indicate a desired rounding digit left of the decimal separator (*i.e.* $-1$ to 
+for `Precision (Cert. Val.)` to indicate a desired rounding digit left of the decimal separator (*i.e.* $-1$ to 
 round an uncertainty of 13.1 up to 20). If the uncertainty is even larger, the user should consider to 
 upload data using a different (more appropriate) unit and, for instance, switch from mg/L to g/L.
 
 #### DIN1333
 
 *eCerto* suggests the rounding precision for $\mu_c$ and $U_{abs}$ according to DIN 1333. The appropriate
-value is displayed right over the input box of `Precision (Cert)`. It's background is colored 
+value is displayed right over the input box of `Precision (Cert. Val.)`. It's background is colored 
 <span style="background-color: #00FF00;">green</span> if it is in accordance with the user selected value 
 and <span style="background-color: #FF0000;">red</span> otherwise.
 
 The significant digit is determined based on the first non-zero digit in $U_{abs}$. The position will be
-shown above the analyte parameter `Precision (Cert)` upon selection of an analyte in **Tab.C3**. Once found, 
+shown above the analyte parameter `Precision (Cert. Val.)` upon selection of an analyte in **Tab.C3**. Once found, 
 the respective digit will be rounded up for $\mu_c$ if the consecutive digit is $\ge 5$ and down otherwise.
 For $U_{abs}$ the rounding procedure is a bit more complicated. If the respective digit is 1 or 2, than the 
 consecutive digit will be rounded up. If the respective digit is $\ge 3$, than it will be rounded up itself.

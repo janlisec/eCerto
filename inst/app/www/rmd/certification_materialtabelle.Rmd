@@ -43,7 +43,7 @@ Table column descriptions:
 
 ***Note!*** 
 Numeric values of $\mu_c$ and $U_{abs}$ are rounded to the number of digits specified by the user at the analyte selection 
-panel (top, `Precision (cert)`). A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all relative `u` 
+panel (top, `Precision (Cert. Val.)`). A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all relative `u` 
 columns are depicted with fixed 4 digits precision.
 
 **Tab.C3** can be exported within a report using the download section on top of the page.

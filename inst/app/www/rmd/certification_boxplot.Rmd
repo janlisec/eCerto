@@ -1,15 +1,17 @@
 ### Certified value calculation and vizualization of the currently selected analyte
 
-Lab means and their measurement distribution is depicted in a standard graphic layout 
-which can be exported as vector graphic (PDF) for further editing. Labs which have been 
-identified as outliers above can be excluded from the overall mean calculation in the 
-parameter section at the top of the page. This decision has to be made by the user, 
-*eCerto* will not remove any outlier automatically. However, *eCerto* keeps track of the 
-removal and indicates the neglected lab values in the plot as grey data points.
+Lab means and their measurement distribution is depicted in a standard graphic 
+layout which can be exported as vector graphic (PDF) for further editing. Labs 
+which have been identified as outliers in Tab.C1 can be excluded from the 
+overall mean calculation in the analyte parameter section at the top of the page. 
+This decision has to be made by the user, *eCerto* will not remove any outlier 
+automatically. However, *eCerto* keeps track of the removal and indicates the 
+omitted lab values in the plot as grey data points.
 
 ![**Fig.C1** Certified Value Plot with filtered Lab and option panel](fig/C_Modul_Fig1.png)
 
-Besides `width` and `height` adjustment, the plot can be modified to include individual 
-measurement using their ID (`Show IDs`). This can be usefull to identify potential 
-individual outliers. Further, x-axis annotation can be switched between using anonymous 
-`Lx` values or the imported file names as labels.
+Besides `width` and `height` adjustment, the plot can be modified to include 
+individual measurement using their ID (`Show sample IDs`). This can be useful 
+to identify potential individual outlier samples. Further, x-axis annotation 
+can be altered to show anonymous `Lx` values or the imported file names as 
+labels.
