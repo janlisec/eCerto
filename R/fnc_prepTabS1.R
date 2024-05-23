@@ -1,5 +1,5 @@
 #' @title fnc_prepTabS1.
-#' @description \code{prepTabS1} will perform statistics on imported homogeneity
+#' @description \code{prepTabS1} will perform statistics on imported stability
 #'    data.
 #' @details tbd.
 #' @param x The imported S data from an session R6 object.
@@ -37,6 +37,7 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
     }
     x_lm <- stats::lm(Value ~ Date, data = x)
     x_coef <- unname(summary(x_lm)$coefficients["Date", ])
+    x_mean <- mean(x[,"Value"], na.rm=TRUE)
     # according to B.3.4 from ISO Guide 35 which is similar to summary(lm))coef[4]
     # p_val <- 2 * stats::pt(abs(x_coef[1]/x_coef[2]), df = stats::df.residual(x_lm), lower.tail = FALSE)
     # p_val <- x_coef[4]
@@ -59,7 +60,8 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
       "slope" = x_coef[1],
       "SE_slope" = x_coef[2],
       "t_cert" = t_cert,
-      "u_stab" = abs(t_cert * x_coef[2]),
+      "mean" = x_mean,
+      "u_stab" = abs(t_cert * x_coef[2])/x_mean,
       "P" = x_coef[4]
     )
   }, .id = "analyte")

@@ -12,7 +12,7 @@
 #' @noRd
 styleTabS1 <- function(x, mt = NULL, sr = 1) {
   message("[styleTabS1] styling Tab.S1")
-  for (i in c("slope", "SE_slope", "u_stab", "P")) {
+  for (i in c("slope", "SE_slope", "mean", "u_stab", "P")) {
     x[, i] <- pn(x[, i], 4)
   }
   if (!is.null(mt)) {
@@ -27,6 +27,7 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
   colnames(x) <- gsub("_slope", "<sub>slope</sub>", colnames(x))
   colnames(x) <- gsub("_stab", "<sub>stab</sub>", colnames(x))
   colnames(x) <- gsub("_cert", "<sub>cert</sub>", colnames(x))
+  colnames(x) <- gsub("mean", "&micro<sub>s</sub>", colnames(x))
   inv_cols <- grep("style_", colnames(x)) - 1
   # attach a blank column at the end
   x <- cbind(x, data.frame(" " = " ", check.names = FALSE))
