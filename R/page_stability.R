@@ -64,7 +64,8 @@ page_StabilityUI <- function(id) {
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard" = 1, "adjusted" = 3), inline = TRUE)),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s" = "2s", "U_abs" = "U"), inline = TRUE)),
             shiny::sliderInput(inputId = ns("s_shelf_life"), label = shiny::HTML("Exp. shelf life t<sub>cert</sub> [Month]"), min = 0, max = 120, value = 60, step = 6),
-            shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
+            #shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
+            shinyWidgets::pickerInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
             sub_header("Save Report"),
             shiny::downloadButton(ns("s_Report"), label = "Download", style = "margin-bottom:16px;")
           )
@@ -160,11 +161,11 @@ page_StabilityServer <- function(id, rv) {
       shinyjs::toggle(id = "arrhenius_panel", condition = test)
       if (test) {
         lev <- levels(factor(tmp[, "Temp"]))
-        # shiny::updateSelectInput(inputId = "s_sel_temp", choices = lev, selected = lev)
-        shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = lev, selected = lev, inline = TRUE)
+        shinyWidgets::updatePickerInput(inputId = "s_sel_temp", choices = lev, selected = lev)
+        #shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = lev, selected = lev, inline = TRUE)
       } else {
-        # shiny::updateSelectInput(inputId = "s_sel_temp", choices = "")
-        shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = "", inline = TRUE)
+        shinyWidgets::updatePickerInput(inputId = "s_sel_temp", choices = "")
+        #shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = "", inline = TRUE)
       }
     })
 
