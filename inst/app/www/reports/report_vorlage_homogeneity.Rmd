@@ -42,7 +42,8 @@ if (testing) {
   }
   adjust <- params$adjust
 }
-if (!"H_type" %in% colnames(H[["data"]])) H[["data"]] <- cbind(H[["data"]], "H_type"="hom")
+#if (!"H_type" %in% colnames(H[["data"]])) H[["data"]] <- cbind(H[["data"]], "H_type"="hom")
+H[["data"]] <- eCerto:::checkHdata(x = H[["data"]])
 sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"], drop = TRUE)
 prec2 <- sapply(levels(sa), function(lsa) {
   unname(prec[sapply(names(prec), function(x) { substr(lsa, 1, nchar(x))==x })])
