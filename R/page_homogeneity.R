@@ -89,19 +89,8 @@ page_HomogeneityUI <- function(id) {
             shiny::downloadButton(ns("h_Report"), label = "Download", style = "margin-bottom:16px;")
           )
         ),
-        # $JL$ the surrounding div is required to include the empty HTML as a way to allow shinking and prevent the figure to be resized horizontally otherwise
         bslib::card_body(min_height = 400, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH1"))),
         bslib::card_body(min_height = 0, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH2")))
-        # shiny::div(
-        #   shiny::div(style = "display: inline-block; padding-right: 16px", shiny::plotOutput(ns("h_FigH1"), inline = TRUE)),
-        #   shiny::div(style = "display: inline-block;", shiny::plotOutput(ns("h_FigH2"), inline = TRUE)),
-        #   shiny::div(style = "display: inline-block;", shiny::HTML(""))
-        # )
-        # nice alternative without fixed plot height but...
-        #shiny::div(
-          # shiny::plotOutput(ns("h_FigH1")),
-          # shiny::plotOutput(ns("h_FigH2"))
-        #)
       )
     ),
     bslib::card_footer(

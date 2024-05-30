@@ -109,14 +109,19 @@ m_TransferUServer <- function(id, rv, type = c("H", "S")) {
           },
           shiny::selectizeInput(
             inputId = session$ns("U_cols"), label = "to Tab.C3 column", width = "100%", selected = u_choices[length(u_choices)], choices = u_choices,
-            options = list(render = I('{
-              item: function(item, escape) {
-                return "<div>" + item.value + "</div>";
-              },
-              option: function(item, escape) {
-                return "<div>" + item.value + "</div>";
-              }
-            }'))
+            options = list(
+              render = I(
+                '{
+                  item: function(item, escape) {
+                    return "<div>" + item.value + "</div>";
+                  },
+                  option: function(item, escape) {
+                    //return "<div class="form-control"><div>" + item.value + "</div></div>";
+                    return "<div>" + item.value + "</div>";
+                  }
+                }'
+              )
+            )
           ),
           shiny::p(),
           shiny::actionButton(inputId = session$ns("btn"), label = "Transfer")

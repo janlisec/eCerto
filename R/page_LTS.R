@@ -17,7 +17,7 @@ m_longtermstabilityUI <- function(id) {
         multiple = FALSE,
         accept = c("xls", "xlsx", "RData")
       ),
-      shiny::helpText("Example Table"),
+      shiny::p(shiny::helpText("Example Table")),
       shiny::img(src = "www/rmd/fig/L_Modul_Import.png")
     ),
     shiny::conditionalPanel(

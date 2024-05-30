@@ -496,7 +496,7 @@ welcome_screen <- function(id = id) {
           style = "background-color: rgb(0,175,240); color: white; text-shadow: 2px 2px 0px #D2001E;",
           bslib::layout_columns(
             col_widths = c(2, 10),
-            shiny::img(src = "www/hex-eCerto.png", alt = "eCerto Hex-Logo", margin = "auto"),
+            shiny::img(src = "www/hex-eCerto.png", alt = "eCerto Hex-Logo", margin = "auto", width = "90%"),
             shiny::div(
               # shiny::div(style = "font-size: large;", "Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
               # shiny::div(style = "font-size: xx-large;", "Welcome to eCerto!")
