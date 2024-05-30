@@ -22,7 +22,7 @@ This is a general report template. Specific layouts can be generated on demand.
 
 ### Modul: Homogeneity
 
-```{r data, echo=FALSE, message=FALSE}
+```{r data_prep, echo=FALSE, message=FALSE}
 # get a local representation of all data provided by Shiny
 testing <- length(params$Homogeneity)==1L && (is.na(params$Homogeneity) | params$Homogeneity=="NA")
 if (testing) {
@@ -65,7 +65,7 @@ P_col <- ifelse("P" %in% colnames(df), "P", "P_adj")
 
 This is the table of uncertainties associated with homogeneity:
 
-```{r, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
+```{r tab_H1, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
 if (knitr::is_html_output()) {
   eCerto:::styleTabH1(
     x = df, 
@@ -80,9 +80,9 @@ if (knitr::is_html_output()) {
 
 `r paste(ifelse(any(df[,P_col]<=0.05), "Not all", "All"), "analytes are homogenous between bottles.")`
 
-`r ifelse(length(unique(H[["data"]][,"analyte"]))>=2, "These are the individual Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
+`r ifelse(length(levels(df[,"analyte"]))>=2, "These are the individual Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
 
-```{r, echo=FALSE, comment=NA, message=FALSE, fig.width=max_width}
+```{r fig_H1, echo=FALSE, comment=NA, message=FALSE, fig.width=max_width}
 widths <- diff(c(0,sort(unique(figs_w)),1))
 mat <- matrix(0, nrow = length(figs_w), ncol = length(widths))
 # make individual plots to allow separate inclusion in i.e. Word reports
@@ -96,9 +96,10 @@ for (i in 1:nrow(mat)) {
 
 This is the table of (non rounded) input data:
 
-```{r, echo=FALSE, comment=NA}
+```{r tab_H0, echo=FALSE, comment=NA}
 df <- H[["data"]]
 if (length(unique(df[,"H_type"]))==1) df <- df[,colnames(df) != "H_type"]
+if (xlab != "Flasche" & "Flasche" %in% colnames(df)) colnames(df) <- gsub("^Flasche$", xlab, colnames(df))
 if (knitr::is_html_output()) {
   DT::datatable(data = df, rownames = NULL, options = list(dom = "t", paging = FALSE))
 } else if (knitr::is_latex_output()) {
