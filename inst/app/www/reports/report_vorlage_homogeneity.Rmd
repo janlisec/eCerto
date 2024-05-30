@@ -99,7 +99,7 @@ This is the table of (non rounded) input data:
 ```{r tab_H0, echo=FALSE, comment=NA}
 df <- H[["data"]]
 if (length(unique(df[,"H_type"]))==1) df <- df[,colnames(df) != "H_type"]
-if (xlab != "Flasche" & "Flasche" %in% colnames(df)) colnames(df) <- gsub("^Flasche$", xlab, colnames(df))
+if (xlab != "Flasche" & any(colnames(df)=="Flasche")) colnames(df) <- gsub("^Flasche$", xlab, colnames(df))
 if (knitr::is_html_output()) {
   DT::datatable(data = df, rownames = NULL, options = list(dom = "t", paging = FALSE))
 } else if (knitr::is_latex_output()) {
