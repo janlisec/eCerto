@@ -80,7 +80,7 @@ if (knitr::is_html_output()) {
 
 `r paste(ifelse(any(df[,P_col]<=0.05), "Not all", "All"), "analytes are homogenous between bottles.")`
 
-`r ifelse(length(unique(H[["data"]][,"analyte"])>=2), "These are the individual Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
+`r ifelse(length(unique(H[["data"]][,"analyte"]))>=2, "These are the individual Homogeneity boxplots:", "This is the Homogeneity boxplot:")`
 
 ```{r, echo=FALSE, comment=NA, message=FALSE, fig.width=max_width}
 widths <- diff(c(0,sort(unique(figs_w)),1))
