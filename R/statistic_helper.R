@@ -568,3 +568,140 @@ pval2level <- function(p, fmt = c("eCerto")) {
     ifelse(is.na(x), ".", ifelse(x < 0.01, ".01", ifelse(x < 0.05, ".05", "n.s.")))
   })
 }
+
+#' @title VonNeumannTest.
+#' @description Performs a Neumann trend test.
+#' @param x A numeric vector containing the observations.
+#' @param alternative A character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter.
+#' @param unbiased logical. In order for VN to be an unbiased estimate of the true population value, the calculated value is multiplied by n/(n−1). Default is TRUE.
+#' @details
+#' This is a copy from the DescTools package function of the same name (copied to avoid another package dependency).
+#' @noRd
+#' @keywords internal
+VonNeumannTest <- function (x, alternative = c("two.sided", "less", "greater"), unbiased = TRUE) {
+  #
+  alternative <- match.arg(alternative)
+  dname <- deparse(substitute(x))
+  x <- x[!is.na(x)]
+  d <- diff(x)
+  n <- length(x)
+  mx <- mean(x)
+  if (unbiased) {
+    VN <- sum(d^2)/sum((x - mx)^2) * n/(n - 1)
+    Ex <- 2 * n/(n - 1)
+    Vx <- 4 * n^2 * (n - 2)/((n + 1) * (n - 1)^3)
+    z <- (VN - Ex)/sqrt(Vx)
+  }
+  else {
+    VN <- sum(d^2)/sum((x - mx)^2)
+    z <- (1 - (VN/2))/sqrt((n - 2)/(n^2 - 1))
+  }
+  if (alternative == "less") {
+    pval <- stats::pnorm(z)
+  }
+  else if (alternative == "greater") {
+    pval <- stats::pnorm(z, lower.tail = FALSE)
+  }
+  else {
+    pval <- 2 * stats::pnorm(-abs(z))
+  }
+  names(VN) <- "VN"
+  method <- "Von Neumann Successive Difference Test"
+  rval <- list(statistic = c(VN, z = z), p.value = pval, method = method,
+               alternative = alternative, data.name = dname, z = z)
+  class(rval) <- "htest"
+  return(rval)
+}
+
+#' @title calc_LOD.
+#' @description Calculate the Limit of detection (LOD) based on a linear model.
+#' @param x A numeric vector containing the values of the independent variable (i.e. analyte concentration).
+#' @param y A numeric vector containing the (mean) values of the dependent variable (i.e. peak area).
+#' @param alpha Numeric. Significance level or alpha error probability. Default is 5%.
+#' @param m Numeric. Number of replicates per data point. Default is 1.
+#' @noRd
+#' @keywords internal
+calc_LOD <- function(x, y, alpha = 0.05, m = 1) {
+  n <- length(x)
+  y.lm <- lm(y ~ x)
+  b <- coef(y.lm)[2]
+  e <- residuals(y.lm)
+  s_xy <- sqrt(sum(e^2)/(n-2))
+  t_quant <- qt(1-alpha, df = n-2)
+  fac <- sqrt(1/m + 1/n + mean(x)^2/sum((x-mean(x))^2))
+  return(s_xy/b * t_quant * fac)
+}
+
+#' @title calc_LOQ.
+#' @description Calculate the Limit of quantification (LOQ) based on a linear model.
+#' @param x A numeric vector containing the values of the independent variable (i.e. analyte concentration).
+#' @param y A numeric vector containing the (mean) values of the dependent variable (i.e. peak area).
+#' @param alpha Numeric. Significance level or alpha error probability. Default is 5%.
+#' @param m Numeric. Number of replicates per data point. Default is 1.
+#' @param k Numeric. Result uncertainty. Default is 3, equivalent to 1/3 or 33%.
+#' @noRd
+#' @keywords internal
+calc_LOQ <- function(x, y, alpha = 0.05, m = 1, k = 3) {
+  ng <- calc_LOD(x = x, y = y, alpha = alpha, m = m)
+  n <- length(x)
+  y.lm <- lm(y ~ x)
+  a <- coef(y.lm)[2]
+  e <- residuals(y.lm)
+  s_xy <- sqrt(sum(e^2)/(n-2))
+  t_quant <- qt(1-alpha/2, df = n-2)
+  fac <- sqrt(1/m + 1/n + (k*ng - mean(x))^2/sum((x-mean(x))^2))
+  return(k * s_xy/a * t_quant * fac)
+}
+
+#' @title MandelTest.
+#' @description Calculate MandelTest P value comparing the residuals of a linear and quadratic model.
+#' @param res_lm Residuals of linear model.
+#' @param res_qm Residuals of quadratic model.
+#' @param prec Precision of P-value. Default is to compute 8 digit precision.
+#' @param alpha Numeric. Significance level or alpha error probability for which KW is computed. Default is 5%.
+#' @noRd
+#' @keywords internal
+MandelTest <- function(res_lm, res_qm, prec = 8, alpha = 0.05) {
+  N_lm <- length(res_lm)
+  N_qm <- length(res_qm)
+  if (N_lm!=N_qm) warning("Residuals of linear and quadratic model have different length.")
+  s_yx <- sqrt(sum(res_lm^2)/(N_lm-2))
+  s_y2x <- sqrt(sum(res_qm^2)/(N_qm-3))
+  DS2 <- (N_lm-2)*s_yx^2 - (N_qm-3)*s_y2x^2
+  PW <- DS2/s_y2x^2
+  KW <- stats::qf(p = 1-alpha, df1 = 1, df2 = N_qm-3)
+  P_Mandel <- "0."
+  for (i in 1:prec) {
+    P_min <- as.numeric(paste0(P_Mandel, 0))
+    P_max <- as.numeric(paste0(P_Mandel, 9))
+    j <- c(0:9)[max(which(stats::qf(p = seq(P_min, P_max, length.out=10), df1 = 1, df2 = N_qm-3)<PW))]
+    P_Mandel <- paste0(P_Mandel, j)
+  }
+  P_Mandel <- 1-as.numeric(P_Mandel)
+  attr(P_Mandel, "PW") <- PW
+  attr(P_Mandel, "KW") <- KW
+  return(P_Mandel)
+}
+
+#' @title F_test_outlier.
+#' @description Calculate F_test to detect an outlier residual within a linear model.
+#' @param x A lm object.
+#' @param alpha Numeric. Significance level or alpha error probability for which KW is computed. Default is 5%.
+#'
+#' @noRd
+#' @keywords internal
+F_test_outlier <- function(x, alpha = 0.05) {
+  stopifnot(inherits(x, "lm"))
+  e <- residuals(x)
+  N <- length(e)
+  s_yx <- sqrt(sum(e^2)/(N-2))
+  idx_e_max <- which.max(abs(residuals(x)))[1]
+  x2 <- update(x, data = x$model[-idx_e_max,])
+  s_yx2 <- sqrt(sum(residuals(x2)^2)/(length(residuals(x2))-2))
+  PW <- ((N-2)*s_yx^2 - (N-3)*s_yx2^2) / s_yx2^2
+  KW <- stats::qf(p = 1-alpha, df1 = 1, df2 = N-3)
+  F_Test <- ifelse(PW < KW, NA, idx_e_max)
+  attr(F_Test, "PW") <- PW
+  attr(F_Test, "KW") <- KW
+  return(F_Test)
+}
