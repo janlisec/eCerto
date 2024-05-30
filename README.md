@@ -22,6 +22,12 @@ The **eCerto** package contains a `Shiny`-App which provides functionality to
 load, process, report and backup data for the statistical evaluation of analyses 
 conducted during CRM production.
 
+The app also allows to perform long term stability monitoring (or post 
+certification monitoring) to ensure the CRM values remain within specification.
+
+Another app module allows to perform statistical tests for analytical method 
+validation, computing the working range and linearity of a method.
+
 ## Installation
 
 To run **eCerto** locally you can install the development version from 
