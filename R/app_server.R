@@ -29,6 +29,9 @@ app_server <- function(input, output, session) {
   # LTS Modul (will be removed to an independent app at some point)
   m_longtermstabilityServer("lts")
 
+  # Validation Modul
+  page_validationServer(id = "Validation")
+
   # some observers ------------------------------------------------------------
   # mainly to use 'updateNavbarPage' depending on user action -----------------
 

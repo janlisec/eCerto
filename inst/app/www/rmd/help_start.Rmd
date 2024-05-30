@@ -63,3 +63,6 @@ div.figcaption {
 
 ```{r child = 'lts.Rmd'}
 ```
+
+```{r child = 'validation.Rmd'}
+```

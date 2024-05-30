@@ -1,0 +1,4 @@
+### Method linearity
+
+The Tool calculates the statistical values relevant to determine the linearity 
+of an analytical method.

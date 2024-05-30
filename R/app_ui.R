@@ -92,6 +92,12 @@ app_ui <- function(request) {
         shiny::div(style = nps, m_longtermstabilityUI("lts"))
       ),
       bslib::nav_panel(
+        title = "Validation",
+        icon = shiny::icon("angle-right"),
+        value = "tP_Validation",
+        shiny::div(style = nps, page_validationUI("Validation"))
+      ),
+      bslib::nav_panel(
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",

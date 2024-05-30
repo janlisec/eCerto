@@ -1,0 +1,75 @@
+---
+title: "&nbsp;"
+title-meta: Method Validation-Report
+params:
+  materialtabelle: NA
+  General: NA
+  logo_file: NA
+output:
+  html_document:
+    df_print: paged
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
+if (testing) {
+  report_file <- "report_vorlage_material.Rmd"
+  logo_file <- "BAMLogo2015.png"
+  fnc_get_local_file <- function(x=NULL) {
+    pkg_path <- system.file(package = "eCerto")
+    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
+    return(file.path(pkg_path, file_path, fsep="/"))
+  }
+  res <- eCerto::CRM001
+  M <- res$General$materialtabelle
+  G <- res$General
+  A <- names(G[["apm"]])
+  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
+    warning(paste(logo_file, "is not in same folder as", report_file))
+  }
+  L <- logo_file
+} else {
+  M <- params[["materialtabelle"]]
+  G <- params[["General"]]
+  A <- names(G[["apm"]])
+  L <- params[["logo_file"]]
+}
+```
+
+***Note!*** 
+This is a Report template for demonstration purpose. Specific layouts can be 
+generated on demand (jan.lisec@bam.de).
+
+---
+
+```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
+  knitr::include_graphics(L)
+```
+
+## ***eCerto*** Report
+
+**Date: `r format(Sys.time(), '%d %B, %Y')`**
+
+### Modul: Certification
+
+Measurement data of the reference material **`r G$study_id`** was evaluated by 
+`r G$user` statistically using the software tool ***eCerto***. 
+
+**`r G$study_id`** contains `r length(A)` analytes: `r paste(A, collapse=", ")`.
+
+Homogeneity and stability of each analyte were accessed using...
+
+In an inter laboratory comparison study of ... labs, mean values for each 
+analyte were obtained and uncertainty contributions assigned as detailed 
+in **Tab.1**.
+
+```{r mat_tab, echo=FALSE}
+  if (knitr::is_html_output()) {
+    eCerto:::styleTabC3(x = M, apm = G[["apm"]])
+  } else {
+    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
+  }
+```
+

@@ -1,0 +1,4 @@
+### Working range
+
+The Tool calculates the statistical values relevant to determine the working 
+range of an analytical method.
