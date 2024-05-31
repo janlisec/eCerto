@@ -23,11 +23,11 @@ testthat::test_that(
     # run this test app in a headless browser using shinytest2
     app <- shinytest2::AppDriver$new(test_app, name = "test_app_page_start")
 
-    shiny.testmode <- getOption("shiny.testmode", default = FALSE)
-    if (!shiny.testmode) message("\nshiny.testmode is not TRUE")
+    #shiny.testmode <- getOption("shiny.testmode", default = FALSE)
+    #if (!shiny.testmode) message("\nshiny.testmode is not TRUE")
 
     # clicking on load test data led to tests to fail
-    #app$click("test-Rdatain-load_test_data")
+    app$click("test-Rdatain-load_test_data")
 
     # check if module did start by comparing with previously recorded snapshot
     app$expect_values()
