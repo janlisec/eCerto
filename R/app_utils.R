@@ -553,3 +553,20 @@ verify_suggested <- function(pkg) {
   }
   invisible(NULL)
 }
+
+#' @title auto_fill.
+#' @description Fill all empty values (NA) of a vector with the last valid value.
+#' @param x Vector of values possibly containing NA values.
+#' @return NULL.
+#' @keywords internal
+#' @noRd
+auto_fill <- function(x) {
+  stopifnot(length(x)>=2)
+  stopifnot(!is.na(x[1]))
+  idx <- is.na(x)
+  if (any(idx)) {
+    for (i in which(idx)) x[i] <- x[i-1]
+  }
+  return(x)
+}
+

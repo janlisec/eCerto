@@ -623,11 +623,11 @@ VonNeumannTest <- function (x, alternative = c("two.sided", "less", "greater"), 
 #' @keywords internal
 calc_LOD <- function(x, y, alpha = 0.05, n = 1) {
   N <- length(x)
-  y.lm <- lm(y ~ x)
-  b <- coef(y.lm)[2]
-  e <- residuals(y.lm)
+  y.lm <- stats::lm(y ~ x)
+  b <- stats::coef(y.lm)[2]
+  e <- stats::residuals(y.lm)
   s_xy <- sqrt(sum(e^2)/(N-2))
-  t_quant <- qt(1-alpha, df = N-2)
+  t_quant <- stats::qt(1-alpha, df = N-2)
   fac <- sqrt(1/n + 1/N + mean(x)^2/sum((x-mean(x))^2))
   return(s_xy/b * t_quant * fac)
 }
@@ -644,11 +644,11 @@ calc_LOD <- function(x, y, alpha = 0.05, n = 1) {
 calc_LOQ <- function(x, y, alpha = 0.05, n = 1, k = 3) {
   ng <- calc_LOD(x = x, y = y, alpha = alpha, n = n)
   N <- length(x)
-  y.lm <- lm(y ~ x)
-  a <- coef(y.lm)[2]
-  e <- residuals(y.lm)
+  y.lm <- stats::lm(y ~ x)
+  a <- stats::coef(y.lm)[2]
+  e <- stats::residuals(y.lm)
   s_xy <- sqrt(sum(e^2)/(N-2))
-  t_quant <- qt(1-alpha/2, df = N-2)
+  t_quant <- stats::qt(1-alpha/2, df = N-2)
   fac <- sqrt(1/n + 1/N + (k*ng - mean(x))^2/sum((x-mean(x))^2))
   return(k * s_xy/a * t_quant * fac)
 }
@@ -692,12 +692,14 @@ MandelTest <- function(res_lm, res_qm, prec = 8, alpha = 0.05) {
 #' @keywords internal
 F_test_outlier <- function(x, alpha = 0.05) {
   stopifnot(inherits(x, "lm"))
-  e <- residuals(x)
+  e <- stats::residuals(x)
   N <- length(e)
   s_yx <- sqrt(sum(e^2)/(N-2))
-  idx_e_max <- which.max(abs(residuals(x)))[1]
-  x2 <- update(x, data = x$model[-idx_e_max,])
-  s_yx2 <- sqrt(sum(residuals(x2)^2)/(length(residuals(x2))-2))
+  idx_e_max <- which.max(abs(e))[1]
+  x2 <- stats::update(x, data = x$model[-idx_e_max,])
+  e_x2 <- stats::residuals(x2)
+  N_x2 <- length(e_x2)
+  s_yx2 <- sqrt(sum(e_x2^2)/(N_x2-2))
   PW <- ((N-2)*s_yx^2 - (N-3)*s_yx2^2) / s_yx2^2
   KW <- stats::qf(p = 1-alpha, df1 = 1, df2 = N-3)
   F_Test <- ifelse(PW < KW, NA, idx_e_max)
