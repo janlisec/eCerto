@@ -384,7 +384,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "aca8a50a109f0562a2b86fcd0dab14a930eca7eb",
+      "RemoteSha": "e5c6932046dd0e58f78eafca5f63d1f5d2a43214",
       "RemoteHost": "api.github.com",
       "Requirements": [
         "DT",
@@ -406,7 +406,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "8a097956e82c6e8d04d059a5af8c7812"
+      "Hash": "fa440db1c5e6ad2d7be798931c449a14"
     },
     "evaluate": {
       "Package": "evaluate",
@@ -605,9 +605,9 @@
     },
     "knitr": {
       "Package": "knitr",
-      "Version": "1.46",
+      "Version": "1.47",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "evaluate",
@@ -617,7 +617,7 @@
         "xfun",
         "yaml"
       ],
-      "Hash": "6e008ab1d696a5283c79765fa7b56b47"
+      "Hash": "7c99b2d55584b982717fcc0950378612"
     },
     "later": {
       "Package": "later",

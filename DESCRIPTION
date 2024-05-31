@@ -46,7 +46,8 @@ Imports:
     shinyjs,
     shinyWidgets,
     tidyxl
-Suggests: 
+Suggests:
+    covr,
     curl,
     fs,
     jsonlite,

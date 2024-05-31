@@ -42,6 +42,7 @@ xlsxSheetNames <- function(filepath) {
 #' @return numbers formatted
 #' @examples
 #' pn(n = c(1.23456, NA, 0, 0.00001, -0.00001), p = 8)
+#' pn(n = c(-Inf, NA, NaN), p = 8)
 #' @noRd
 #' @keywords internal
 pn <- function(n = NULL, p = 4L) {
