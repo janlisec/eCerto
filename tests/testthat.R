@@ -5,7 +5,7 @@ library(eCerto)
 # testthat::test_check(package = "eCerto", reporter=c("minimal", "location"))
 
 ## check for the code covered by test functions
-# x <- covr::package_coverage(function_exclusions = "page_*")
+# x <- covr::package_coverage(quiet = FALSE, function_exclusions = "page_*")
 # covr::zero_coverage(x = x)
 # covr::function_coverage(fun = eCerto:::app_server)
 # covr::function_coverage(fun = eCerto:::list2rv, code = source("tests/testthat/test-list2rv.R"))
@@ -15,6 +15,7 @@ library(eCerto)
 Sys.setenv(R_TESTS="")
 
 ## run all tests
+# testthat::test_dir(path = "./tests/testthat")
 testthat::test_dir(path = "./testthat")
 
 ## to run only test for a specific file use

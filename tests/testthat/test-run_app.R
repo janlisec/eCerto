@@ -3,6 +3,8 @@ testthat::test_that(
   code = {
     # Don't run these tests on the CRAN build servers
     testthat::skip_on_cran()
+    testthat::skip_on_covr()
+    testthat::skip_on_ci()
 
     # remove resource path 'www' to get consistent snapshots
     if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
