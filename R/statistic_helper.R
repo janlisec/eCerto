@@ -618,17 +618,17 @@ VonNeumannTest <- function (x, alternative = c("two.sided", "less", "greater"), 
 #' @param x A numeric vector containing the values of the independent variable (i.e. analyte concentration).
 #' @param y A numeric vector containing the (mean) values of the dependent variable (i.e. peak area).
 #' @param alpha Numeric. Significance level or alpha error probability. Default is 5%.
-#' @param m Numeric. Number of replicates per data point. Default is 1.
+#' @param n Numeric. Number of replicates per data point. Default is 1.
 #' @noRd
 #' @keywords internal
-calc_LOD <- function(x, y, alpha = 0.05, m = 1) {
-  n <- length(x)
+calc_LOD <- function(x, y, alpha = 0.05, n = 1) {
+  N <- length(x)
   y.lm <- lm(y ~ x)
   b <- coef(y.lm)[2]
   e <- residuals(y.lm)
-  s_xy <- sqrt(sum(e^2)/(n-2))
-  t_quant <- qt(1-alpha, df = n-2)
-  fac <- sqrt(1/m + 1/n + mean(x)^2/sum((x-mean(x))^2))
+  s_xy <- sqrt(sum(e^2)/(N-2))
+  t_quant <- qt(1-alpha, df = N-2)
+  fac <- sqrt(1/n + 1/N + mean(x)^2/sum((x-mean(x))^2))
   return(s_xy/b * t_quant * fac)
 }
 
@@ -637,19 +637,19 @@ calc_LOD <- function(x, y, alpha = 0.05, m = 1) {
 #' @param x A numeric vector containing the values of the independent variable (i.e. analyte concentration).
 #' @param y A numeric vector containing the (mean) values of the dependent variable (i.e. peak area).
 #' @param alpha Numeric. Significance level or alpha error probability. Default is 5%.
-#' @param m Numeric. Number of replicates per data point. Default is 1.
+#' @param n Numeric. Number of replicates per data point. Default is 1.
 #' @param k Numeric. Result uncertainty. Default is 3, equivalent to 1/3 or 33%.
 #' @noRd
 #' @keywords internal
-calc_LOQ <- function(x, y, alpha = 0.05, m = 1, k = 3) {
-  ng <- calc_LOD(x = x, y = y, alpha = alpha, m = m)
-  n <- length(x)
+calc_LOQ <- function(x, y, alpha = 0.05, n = 1, k = 3) {
+  ng <- calc_LOD(x = x, y = y, alpha = alpha, n = n)
+  N <- length(x)
   y.lm <- lm(y ~ x)
   a <- coef(y.lm)[2]
   e <- residuals(y.lm)
-  s_xy <- sqrt(sum(e^2)/(n-2))
-  t_quant <- qt(1-alpha/2, df = n-2)
-  fac <- sqrt(1/m + 1/n + (k*ng - mean(x))^2/sum((x-mean(x))^2))
+  s_xy <- sqrt(sum(e^2)/(N-2))
+  t_quant <- qt(1-alpha/2, df = N-2)
+  fac <- sqrt(1/n + 1/N + (k*ng - mean(x))^2/sum((x-mean(x))^2))
   return(k * s_xy/a * t_quant * fac)
 }
 

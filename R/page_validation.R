@@ -69,16 +69,20 @@ page_validationUI <- function(id) {
         sidebar = bslib::sidebar(
           position = "right", open = "open", width = "280px",
           shiny::div(
-            shinyWidgets::pickerInput(inputId = ns("opt_tabV1_precision"), label = "Precision", multiple = FALSE, choices = 0:6, selected = 3),
+            bslib::layout_columns(
+              shinyWidgets::pickerInput(inputId = ns("opt_tabV1_alpha"), label = "alpha", multiple = FALSE, choices = c(0.01, 0.05), selected = 0.05),
+              shinyWidgets::pickerInput(inputId = ns("opt_tabV1_precision"), label = "digits", multiple = FALSE, choices = 0:6, selected = 3)
+            ),
             shinyWidgets::pickerInput(inputId = ns("opt_tabV1_k"), label = "k", multiple = FALSE, choices = 2:4, selected = 3),
-            shinyWidgets::pickerInput(inputId = ns("opt_tabV1_alpha"), label = "alpha", multiple = FALSE, choices = c(0.01, 0.05), selected = 0.05),
             shiny::hr(),
-            shiny::checkboxInput(inputId = ns("opt_tabV1_fltLevels"), label = shiny::HTML("Omit Out<sub>F</sub> Levels"), value = TRUE),
+            shiny::checkboxInput(inputId = ns("opt_tabV1_fltLevels"), label = shiny::HTML("Omit Out<sub>F</sub> Levels"), value = FALSE),
             shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Use Analytes from Fig.V1", value = TRUE),
-            shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Use Level range from Fig.V1", value = TRUE),
+            shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Use Level range from Fig.V1", value = FALSE),
             shiny::hr(),
-            shinyWidgets::pickerInput(inputId = ns("opt_tabV1_dec"), label = "dec", multiple = FALSE, choices = c(",", "."), selected = ","),
-            shiny::actionButton(inputId = ns("opt_tabV1_datamodal"), label = "Show data")
+            bslib::layout_columns(
+              shinyWidgets::pickerInput(inputId = ns("opt_tabV1_dec"), label = "sep", multiple = FALSE, choices = c(",", "."), selected = ","),
+              shiny::actionButton(inputId = ns("opt_tabV1_datamodal"), label = shiny::HTML("Show<br>data"))
+            )
           )
         ),
         shiny::div(DT::DTOutput(outputId = ns("tab_V1")))
@@ -89,6 +93,7 @@ page_validationUI <- function(id) {
   fig_V2_card <- bslib::card(
     id = ns("fig_V2_panel"),
     full_screen = TRUE,
+    min_height = "960px",
     bslib::card_header("Fig.V2 Linearity"),
     bslib::card_body(shiny::plotOutput(outputId = ns("fig_V2")))
   )
@@ -98,6 +103,12 @@ page_validationUI <- function(id) {
     bslib::card_header("Tab.V3 Imported data"),
     bslib::card_body(DT::DTOutput(outputId = ns("tab_V3")))
   )
+
+  v_report_card <- bslib::card(
+    bslib::card_header("Method Validation Report"),
+    bslib::card_body(shiny::downloadButton(outputId = ns("v_report"), label = "Validation Report"))
+  )
+
 
   shiny::tagList(
     shiny::conditionalPanel(
@@ -122,6 +133,7 @@ page_validationUI <- function(id) {
         tab_V1_card,
         fig_V2_card,
         tab_V3_card,
+        v_report_card,
         col_widths =  bslib::breakpoints(
           sm = c(12, 12),
           xl = c(8, 4)
@@ -135,6 +147,35 @@ page_validationUI <- function(id) {
 #' @noRd
 page_validationServer <- function(id, rv, msession = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
+
+    output$v_report <- shiny::downloadHandler(
+      filename = function() {"Validation Report.html"},
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it
+        rmdfile <- get_local_file("report_vorlage_validation.[Rr][Mm][Dd]$")
+        logofile <- "BAMLogo2015.png"
+        # render the markdown file
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            rmarkdown::render(
+              input = rmdfile,
+              output_file = file,
+              output_format = rmarkdown::html_document(),
+              params = list(
+                "inp_data" = style_tabV3(tab()),
+                "tab_V1" = style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision)),
+                "fig_V1" = function() { prepFigV1(ab())},
+                "fig_V1_width" = calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120),
+                "logo_file" = logofile
+              ),
+              envir = new.env(parent = globalenv())
+            )
+          },
+          message = "Rendering Validation Report.."
+        )
+      }
+    )
 
     # upload info used in UI part
     output$V_fileUploaded <- shiny::reactive({
@@ -240,101 +281,7 @@ page_validationServer <- function(id, rv, msession = NULL) {
       return(out)
     }
 
-    fig_arbeitsbereich <- function(ab = NULL) {
-      opar <- par(no.readonly = TRUE)
-      on.exit(par(opar))
-      par(mar=c(7,5,5,0)+0.1)
-      par(xaxs="i")
-      plot(x=c(1,length(ab)), y=range(ab, na.rm=TRUE), xlim=c(0.25,length(ab)+0.75), type="n", axes=F, xlab="", ylab=expression(x[i]/bar(x)~~with~~x==Area[Analyte]/Area[IS]))
-      abline(v=1:length(ab), lty=2, col=grey(0.9))
-      box(); axis(2)
-      boxplot(ab, add=TRUE, axes=FALSE, col = grey((3+as.numeric(attr(ab, "Level")))/(5+max(as.numeric(attr(ab, "Level"))))))
-      names(ab)
 
-      # show Analyte-ID and Level-ID
-      mtext(text = "Analyte-ID", side = 3, line = 1.5, at = 0, adj = 1)
-      a_id <- as.numeric(attr(ab, "Analyte"))
-      #a_id[duplicated(a_id)] <- "_"
-      #mtext(text = a_id[!duplicated(a_id)], side = 3, line = 1.5, at = (1:length(ab))[!duplicated(a_id)])
-      #mtext(text = a_id, side = 3, line = 1.5, at = 1:length(ab))
-      mtext(text = a_id[!duplicated(a_id)], side = 3, line = 1.5, at = sapply(split(1:length(ab), a_id), mean))
-      mtext(text = "Level", side = 3, line = 0.25, at = 0, adj = 1)
-      mtext(text = as.numeric(attr(ab, "Level")), side = 3, line = 0.25, at = 1:length(ab))
-
-      # # ANOVA test including currently present outliers
-      # P_ANOVA <- sapply(split(ab, attr(ab, "Analyte"), drop=TRUE), function(x) {
-      #   stopifnot(length(x)>=2)
-      #   anova(lm(unlist(x) ~ factor(rep(1:length(x), times=sapply(x,length)))))$Pr[1]
-      # })
-      # ANOVA_p_text <- sapply(P_ANOVA, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
-      # ANOVA_p_col <- sapply(P_ANOVA, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
-      # mtext(text = expression(P[ANOVA]), side = 3, line = 2.75, at = 0, adj = 1)
-      # mtext(text = ANOVA_p_text, side = 3, line = 2.75, at = sapply(split(1:length(ab), a_id), mean), col=ANOVA_p_col)
-
-      # F test to check for Variance homogeneity
-
-      P_F <- sapply(split(ab, attr(ab, "Analyte"), drop=TRUE), function(x) {
-        if (length(x)==2) var.test(x = x[[1]], y = x[[2]], alternative = "two.sided")$p.value else NA
-      })
-      if (!all(is.na(P_F))) {
-        F_p_text <- sapply(P_F, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
-        F_p_col <- sapply(P_F, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
-        mtext(text = expression(P[F-test]), side = 3, line = 2.75, at = 0, adj = 1)
-        mtext(text = F_p_text, side = 3, line = 2.75, at = sapply(split(1:length(ab), a_id), mean), col=F_p_col)
-      }
-
-      # show n
-      mtext(text = expression(n), side = 1, line = 0.25, at = 0, adj = 1)
-      mtext(text = sapply(ab, length), side = 1, line = 0.25, at = 1:length(ab))
-
-      # normality test
-      KS_p <- sapply(ab, function(x) {
-        stats::ks.test(x = x, y = "pnorm", mean = mean(x), sd = stats::sd(x))$p.value
-      })
-      KS_p_text <- sapply(KS_p, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
-      KS_p_col <- sapply(KS_p, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
-      mtext(text = expression(P[KS]), side = 1, line = 1.5, at = 0, adj = 1)
-      mtext(text = KS_p_text, side = 1, line = 1.5, at = 1:length(ab), col=KS_p_col)
-
-      # outlier test Grubbs
-      out_Grubbs <- lapply(ab, function(x) {
-        cbind(x, eCerto:::Grubbs(lab_means = data.frame("mean"=x)))
-      })
-      Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs1"]==".01"), "**", ifelse(any(x[,"Grubbs1"]==".05"), "*", "ns")) })
-      Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs1"]==".01"), 2, ifelse(any(x[,"Grubbs1"]==".05"), "orange", 3)) })
-      mtext(text = expression(P[Grubbs1]), side = 1, line = 2.75, at = 0, adj = 1)
-      mtext(text = Grubbs_text, side = 1, line = 2.75, at = 1:length(ab), col=Grubbs_col)
-      if (any(Grubbs_text!="ns")) {
-        for (i in which(Grubbs_text!="ns")) {
-          y <- out_Grubbs[[i]]
-          idx <- which(!(y[,"Grubbs1"] %in% c(".", "n.s.")))
-          points(x = rep(i, length(idx)), y = y[idx,1], pch=21, bg=2)
-        }
-      }
-      Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs2"]==".01"), "**", ifelse(any(x[,"Grubbs2"]==".05"), "*", "ns")) })
-      Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs2"]==".01"), 2, ifelse(any(x[,"Grubbs2"]==".05"), "orange", 3)) })
-      mtext(text = expression(P[Grubbs2]), side = 1, line = 4, at = 0, adj = 1)
-      mtext(text = Grubbs_text, side = 1, line = 4, at = 1:length(ab), col=Grubbs_col)
-      if (any(Grubbs_text!="ns")) {
-        for (i in which(Grubbs_text!="ns")) {
-          y <- out_Grubbs[[i]]
-          idx <- which(!(y[,"Grubbs2"] %in% c(".", "n.s.")))
-          points(x = rep(i, length(idx)), y = y[idx,1], pch=21, bg=2)
-        }
-      }
-
-      # Neumann Trend Test
-      out_Neumann <- sapply(ab, function(x) {
-        VonNeumannTest(x, unbiased = FALSE)$p.val
-      })
-      NM_text <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
-      NM_col <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
-      mtext(text = expression(P[Neumann]), side = 1, line = 5.25, at = 0, adj = 1)
-      mtext(text = NM_text, side = 1, line = 5.25, at = 1:length(ab), col=NM_col)
-
-      invisible(NULL)
-
-    }
 
     tab_linearity <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = FALSE) {
       tmp <- prep_data(tab = tab, a = a, fmt = "norm")
@@ -379,27 +326,27 @@ page_validationServer <- function(id, rv, msession = NULL) {
       P_Mandel <- MandelTest(res_lm = e, res_qm = e.qm)
 
 
-      m <- min(sapply(tmp, length))
+      n <- min(sapply(tmp, length))
       #write.table(data.frame(e), file = "clipboard", sep = "\t", row.names = FALSE, col.names = FALSE)
-      ng <- calc_LOD(x = df$Conc, y = df$Area_norm, alpha = alpha, m = m)
+      ng <- calc_LOD(x = df$Conc, y = df$Area_norm, alpha = alpha, n = n)
       #if (a=="PFBA") browser()
       out <- data.frame(
         "Analyte" = levels(factor(attr(tmp, "Analyte"))),
-        "n" = N,
-        "m" = m,
+        "N" = N,
+        "n" = n,
         "alpha" = 0.05,
+        "k" = round(1/k, 2),
         "b0" = coef(df.lm)[1],
         "b1" = coef(df.lm)[2],
         "P_KS_Res" = ks.test(x = e, y="pnorm", mean=mean(e), sd=sd(e))$p.val,
         "P_Neu_Res" = VonNeumannTest(e, unbiased = FALSE)$p.val,
-        "P_Mandel" = P_Mandel,
         "F_Test" = F_Test,
         "LOD" = ng,
-        "EG" = 2*ng,
-        "LOQ" = calc_LOQ(x = df$Conc, y = df$Area_norm, alpha = 0.05, m = m, k = k),
+        "LOQ" = calc_LOQ(x = df$Conc, y = df$Area_norm, alpha = 0.05, n = n, k = k),
         "s_yx" = s_yx,
         "s_x0" = s_x0,
-        "V_x0" = V_x0
+        "V_x0" = V_x0,
+        "P_Mandel" = P_Mandel
       )
       attr(out, "df") <- df
       attr(out, "residuals") <- e
@@ -422,7 +369,7 @@ page_validationServer <- function(id, rv, msession = NULL) {
       colnames(df) <- gsub("^b0$", "b<sub>0</sub>", colnames(df))
       colnames(df) <- gsub("^b1$", "b<sub>1</sub>", colnames(df))
       dt <- DT::datatable(data = df, options = list(dom="t", pageLength = -1), rownames = FALSE, escape = FALSE, selection = list(mode = "single", selected = tab_V1_rows_selected(), target = 'row'))
-      round_cols <- c("b<sub>0</sub>", "b<sub>1</sub>", "P<sub>KS,Res</sub>", "P<sub>Neu,Res</sub>", "P<sub>Mandel</sub>", "LOD", "EG", "LOQ", "s<sub>y,x</sub>", "s<sub>x0</sub>", "V<sub>x0</sub>")
+      round_cols <- c("b<sub>0</sub>", "b<sub>1</sub>", "P<sub>KS,Res</sub>", "P<sub>Neu,Res</sub>", "P<sub>Mandel</sub>", "LOD", "LOQ", "s<sub>y,x</sub>", "s<sub>x0</sub>", "V<sub>x0</sub>")
       dt <- DT::formatCurrency(table = dt, columns = round_cols, currency = "", digits = precision)
       pval_cols <- c("P<sub>KS,Res</sub>", "P<sub>Neu,Res</sub>", "P<sub>Mandel</sub>")
       dt <- DT::formatStyle(
@@ -562,10 +509,11 @@ page_validationServer <- function(id, rv, msession = NULL) {
       ab <- prep_data(tab=tab(), a = input$opt_V1_anal, k = input$opt_V1_k, fmt = "rel_norm")
     })
 
+    fig_V1_width <- shiny::reactive({ calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120) })
     output$fig_V1 <- shiny::renderPlot({
       req(ab())
-      fig_arbeitsbereich(ab = ab())
-    }, width = shiny::reactive({eCerto:::calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120) }))
+      prepFigV1(ab = ab())
+    }, width = fig_V1_width)
 
     tab_flt <- shiny::reactive({
       req(tab())
@@ -662,9 +610,13 @@ page_validationServer <- function(id, rv, msession = NULL) {
       style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision))
     })
 
+    style_tabV3 <- function(df) {
+      DT::datatable(data = df, rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
+    }
+
     output$tab_V3 <- DT::renderDT({
       req(tab())
-      DT::datatable(data = tab(), rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
+      style_tabV3(tab())
     })
 
   }

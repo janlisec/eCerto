@@ -7,6 +7,9 @@ developed analytical method. As it is currently work-in-progress, available
 options and output format might change in the future.
 
 
+```{r child = 'v_datapreparation.Rmd'}
+```
+
 ```{r child = 'v_dataupload.Rmd'}
 ```
 
@@ -14,6 +17,9 @@ options and output format might change in the future.
 ```
 
 ```{r child = 'v_tab_V1.Rmd'}
+```
+
+```{r child = 'v_formula_collection.Rmd'}
 ```
 
 ### Validation report

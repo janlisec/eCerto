@@ -42,7 +42,6 @@ if (testing) {
   }
   adjust <- params$adjust
 }
-#if (!"H_type" %in% colnames(H[["data"]])) H[["data"]] <- cbind(H[["data"]], "H_type"="hom")
 H[["data"]] <- eCerto:::checkHdata(x = H[["data"]])
 sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"], drop = TRUE)
 prec2 <- sapply(levels(sa), function(lsa) {
@@ -99,7 +98,7 @@ This is the table of (non rounded) input data:
 ```{r tab_H0, echo=FALSE, comment=NA}
 df <- H[["data"]]
 if (length(unique(df[,"H_type"]))==1) df <- df[,colnames(df) != "H_type"]
-if (xlab != "Flasche" & any(colnames(df)=="Flasche")) colnames(df) <- gsub("^Flasche$", xlab, colnames(df))
+if (xlab != "Flasche" & any(colnames(df)=="Flasche")) colnames(df)[colnames(df)=="Flasche"] <- xlab
 if (knitr::is_html_output()) {
   DT::datatable(data = df, rownames = NULL, options = list(dom = "t", paging = FALSE))
 } else if (knitr::is_latex_output()) {

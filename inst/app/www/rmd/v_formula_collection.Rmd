@@ -1,0 +1,24 @@
+### Symbol and formula collection
+
+$N_j$ total number of calibration levels with $j$ denoting the j-th level
+
+$n_i$ (minimal) number of replicates within a calibration level with $i$ denoting the i-th replicate
+
+$x_{i,j}$ denoting the peak area ratio of analyte and internal standard (IS) in replicate $i$ of level $j$ calculated as $x_{i,j}=\frac{A_\text {Analyte}}{A_\text {IS}}$ 
+
+$x_r$ denoting the relative analyte level $x_r = \frac {x_{i,j}} {\overline{x}_j}$
+
+$b_0, b_1, (b_2)$ denoting the coefficients (intercept, slope, ...) of a linear (quadratic) model fitting the data
+
+$e$ denoting the residuals (error) of a model
+
+$k$ denoting the result uncertainty specified by the user
+
+$t_{f,\alpha}$ denoting the $t$ distribution with $f$ degrees of freedom and probability $\alpha$
+
+$s_{x,y}$ denoting the standard error of estimate of a linear model of $N$ levels with residuals $e$ calculated as $s_{x,y}=\sqrt{\frac{\sum e^2}{N-2}}$
+
+$\text {LOD}$ limit of detection of a linear model of $N$ levels with $n$ replicates having slope $b_1$ and residuals $e$ calculated as
+$\text {LOD} = k \times \frac {s_{x,y}} {b_1} \times t_{f,\alpha} \times \sqrt {{1 \over n} + {1 \over N} + \frac {\overline{x}^2} {\sum (x-\overline{x})^2}}$
+where $f = N-2$ and $\alpha$ is specified by the user
+

@@ -2,8 +2,10 @@
 title: "&nbsp;"
 title-meta: Method Validation-Report
 params:
-  materialtabelle: NA
-  General: NA
+  inp_data: NA
+  tab_V1: NA
+  fig_V1: NA
+  fig_V1_width: NA
   logo_file: NA
 output:
   html_document:
@@ -13,63 +15,111 @@ fontsize: 11pt
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
-if (testing) {
-  report_file <- "report_vorlage_material.Rmd"
-  logo_file <- "BAMLogo2015.png"
-  fnc_get_local_file <- function(x=NULL) {
-    pkg_path <- system.file(package = "eCerto")
-    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-    return(file.path(pkg_path, file_path, fsep="/"))
-  }
-  res <- eCerto::CRM001
-  M <- res$General$materialtabelle
-  G <- res$General
-  A <- names(G[["apm"]])
-  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
-    warning(paste(logo_file, "is not in same folder as", report_file))
-  }
-  L <- logo_file
-} else {
-  M <- params[["materialtabelle"]]
-  G <- params[["General"]]
-  A <- names(G[["apm"]])
-  L <- params[["logo_file"]]
-}
 ```
 
-***Note!*** 
-This is a Report template for demonstration purpose. Specific layouts can be 
-generated on demand (jan.lisec@bam.de).
-
----
-
 ```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
-  knitr::include_graphics(L)
+  knitr::include_graphics(params$logo_file)
 ```
 
 ## ***eCerto*** Report
 
 **Date: `r format(Sys.time(), '%d %B, %Y')`**
 
-### Modul: Certification
+### Modul: Method validation
 
-Measurement data of the reference material **`r G$study_id`** was evaluated by 
-`r G$user` statistically using the software tool ***eCerto***. 
+#### Fig.V1 - Working range
 
-**`r G$study_id`** contains `r length(A)` analytes: `r paste(A, collapse=", ")`.
+The working range of an analytical method is tested using the relative 
+analyte values $x_r$ of the smallest and the largest calibration level, $j_1$
+and $j_N$.
 
-Homogeneity and stability of each analyte were accessed using...
+Relative analyte values are computed as $x_r = \frac {x_{i,j}} {\overline{x}_j}$ 
+with $x_{i,j}$ being the peak area ratios of analyte and internal standard 
+$x_{i,j}=\frac{A_\text{Analyte}}{A_\text{IS}}$ for each replicate $i$ at calibration level
+$j$.
 
-In an inter laboratory comparison study of ... labs, mean values for each 
-analyte were obtained and uncertainty contributions assigned as detailed 
-in **Tab.1**.
+For each $x_j$ in total $n$ replicate values exist and are tested:
 
-```{r mat_tab, echo=FALSE}
-  if (knitr::is_html_output()) {
-    eCerto:::styleTabC3(x = M, apm = G[["apm"]])
-  } else {
-    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
-  }
+- to follow a normal distribution (Kolmogorof-Smirnov Test, $P_{KS}$)
+- to exhibit outliers (Grubbs-Test for single $P_{Grubbs1}$ and double $P_{Grubbs2}$ outliers)
+- to show a trend, *i.e.* a drift associated with measurement order (Neumann-Test, $P_{Neumann}$)
+
+The two calibration levels $j_1$ and $j_N$ are tested for homogeneity 
+of variance using an F-Test.
+
+```{r fig_V1, echo=FALSE, fig.width=params$fig_V1_width/96, fig.dpi=96, fig.retina=4}
+  params$fig_V1()
+```
+
+#### Tab.V1 - method linearity
+
+The linearity of an analytical method is tested using the analyte values 
+$\overline{x}_j$.
+
+Analyte values are computed as the peak area ratios of analyte and internal 
+standard $x_{i,j}=\frac{A_{Analyte}}{A_{IS}}$ for each replicate $i$ at 
+calibration level $j$. $\overline{x}_j$ is the mean of the $n$ replicates at
+level $j$. The total number of calibration levels is denoted as $N$.
+
+For each analyte, a linear model $y=b_0+b_1 \times x$ over all $\overline{x}_j$ 
+is computed and the following parameters are reported:
+
+- the number of calibration levels used in the linear model $N$ 
+- the smallest number of replicates within all calibration levels $n$
+- the probability of error (alpha) selected by the user
+- the result uncertainty $k$ selected by the user and depicted as $1/k$ 
+- the coefficients $b_0$ (intercept) and $b_1$ (slope) of the linear model
+- the limit of detection $\text{LOD}$
+- the limit of quantification $\text{LOQ}$
+- the standard error of estimate $s_{y,x}$
+- the standard error of procedure $s_{x0}$
+- the ... $V_{x0}$
+
+Additionally, the residuals $e$ of the linear model are tested:
+
+- to follow a normal distribution (Kolmogorof-Smirnov Test, $P_{KS,Res}$)
+- to show a trend, i.e. a drift associated with measurement order (Neumann-Test, $P_{Neu,Res}$)
+- for the level showing the highest absolute residual to be an outlier (F-Test, $Out_F$)
+
+For comparison the data is fitted using a quadratic model 
+$y=b_0+b_1 \times x+b_2 \times x^2$. The residuals from both models, the linear 
+and the quadratic one, are compared using a Mandel-Test calculating $P_{Mandel}$.
+
+```{r tab_V1, resize.width="100%"}
+  params$tab_V1
+```
+
+params$tab_V1
+
+#### Symbol and formula collection
+
+$N_j$ total number of calibration levels with $j$ denoting the j-th level
+
+$n_i$ (minimal) number of replicates within a calibration level with $i$ denoting the i-th replicate
+
+$x_{i,j}$ denoting the peak area ratio of analyte and internal standard (IS) in replicate $i$ of level $j$ calculated as $x_{i,j}=\frac{A_\text {Analyte}}{A_\text {IS}}$ 
+
+$x_r$ denoting the relative analyte level $x_r = \frac {x_{i,j}} {\overline{x}_j}$
+
+$b_0, b_1, (b_2)$ denoting the coefficients (intercept, slope, ...) of a linear (quadratic) model fitting the data
+
+$e$ denoting the residuals (error) of a model
+
+$k$ denoting the result uncertainty specified by the user
+
+$t_{f,\alpha}$ denoting the $t$ distribution with $f$ degrees of freedom and probability $\alpha$
+
+$s_{x,y}$ denoting the standard error of estimate of a linear model of $N$ levels with residuals $e$ calculated as  $s_{x,y}=\sqrt{\frac{\sum e^2}{N-2}}$
+
+$\text {LOD}$ limit of detection of a linear model of $N$ levels with $n$ replicates having slope $b_1$ and residuals $e$ calculated as
+$\text {LOD} = k \times \frac {s_{x,y}} {b_1} \times t_{f,\alpha} \times \sqrt {{1 \over n} + {1 \over N} + \frac {\overline{x}^2} {\sum (x-\overline{x})^2}}$
+where $f = N-2$ and $\alpha$ is specified by the user
+
+#### Input data for reference
+
+This is the input data table as used internally for all calculations.
+
+```{r inp_tab, echo=FALSE}
+  params$inp_data
 ```
 

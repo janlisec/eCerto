@@ -7,10 +7,10 @@
 # renv::install("janlisec/eCerto")
 
 # To deploy to shinyapps.io:
-# rsconnect::deployApp(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto", appName = c("test","eCerto")[1], forceUpdate = TRUE)
+# rsconnect::deployApp(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto", appName = c("test","eCerto")[2], forceUpdate = TRUE)
 
 # To check for errors in shinyapps.io:
-# rsconnect::showLogs(appName = "test", account = "jali")
+# rsconnect::showLogs(appName = c("test","eCerto")[2], account = "jali")
 
 # to switch between CRAN and BAM-Server version upon compile modify
 # the option 'bam_server' in 'golem-config.yml'

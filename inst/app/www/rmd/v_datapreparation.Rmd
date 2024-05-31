@@ -1,0 +1,21 @@
+### Features and data preparation
+
+*eCerto* implements statistical procedures for analytical method validation
+according to DIN 32645:2008-11.
+
+The method performance characteristics reported by *eCerto* comprise working
+range, linearity, limit of detection (LOD), limit of quantification (LOQ) ...
+
+The statistical tests implemented in *eCerto* according to DIN 32645:2008-11 
+comprise outlier tests (Grubbs), trend tests (Neumann), tests for homogeneity 
+of variance (F-Test), ...
+
+The implemented formulas are provided or referenced in the respective help
+sections.
+
+To compute the relevant performance characteristics of an analytical method, 
+*eCerto* will evaluate replicate measurements of a dilution series of samples 
+containing any number of target analytes and their internal standards.
+
+For advice on concentration range, replicate number and calibration levels
+tested, we refer to DIN 32645:2008-11
