@@ -12,7 +12,7 @@
 #' @return A data frame.
 #' @keywords internal
 #' @noRd
-prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means = FALSE) {
+prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means = FALSE, mt = NULL, optimize_u_stab = FALSE) {
   message("[prepTabS1] perform statistics on imported stability data")
   time_fmt <- match.arg(time_fmt)
   stopifnot(all(c("analyte", "Value", "Date") %in% colnames(x)))
@@ -55,13 +55,26 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
     # b1 <- lm(y ~ x)$coef[2]
     # s <- sqrt(sum((y-b0-b1*x)^2)/(length(y)-2))
     # SE <- s / sqrt(sum((x - mean(x))^2))
+
+    if (optimize_u_stab) {
+      # this can be used to optimize u_stab to reach a total U_abs which will fit the expected shelf life
+      U_abs <- mt[mt[,"analyte"]==x[1,"analyte"],"U_abs"]
+      mu_c <- mt[mt[,"analyte"]==x[1,"analyte"],"cert_val"]
+      u_stab <- (abs(t_cert * x_coef[2])-ifelse(is.null(U_abs), 0, U_abs))/mu_c
+      #u_stab <- (abs(t_cert * x_coef[2])-ifelse(is.null(U_abs), 0, U_abs))/x_mean
+      u_stab <- ifelse(u_stab<0, 0, u_stab)
+    } else {
+      # this is the classic version
+      u_stab <- abs(t_cert * x_coef[2])/x_mean
+    }
+
     data.frame(
       "mon_diff" = mon_diff,
       "slope" = x_coef[1],
       "SE_slope" = x_coef[2],
       "t_cert" = t_cert,
       "mean" = x_mean,
-      "u_stab" = abs(t_cert * x_coef[2])/x_mean,
+      "u_stab" = u_stab,
       "P" = x_coef[4]
     )
   }, .id = "analyte")

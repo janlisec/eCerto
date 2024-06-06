@@ -59,13 +59,16 @@ page_StabilityUI <- function(id) {
             sub_header("Fig.S1 options"),
             shiny::checkboxGroupInput(
               inputId = ns("FigS1_options"), label = NULL,
-              choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend")
+              choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend"),
+              selected = c("show_legend")
             ),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard" = 1, "adjusted" = 3), inline = TRUE)),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s" = "2s", "U_abs" = "U"), inline = TRUE)),
+            shiny::hr(),
             shiny::sliderInput(inputId = ns("s_shelf_life"), label = shiny::HTML("Exp. shelf life t<sub>cert</sub> [Month]"), min = 0, max = 120, value = 60, step = 6),
-            #shiny::checkboxGroupInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", inline = TRUE),
+            shiny::checkboxInput(inputId = ns("optimize_u_stab"), value = FALSE, label = shiny::HTML("Optimize u<sub>stab</sub>")),
             shinyWidgets::pickerInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
+            shiny::hr(),
             sub_header("Save Report"),
             shiny::downloadButton(ns("s_Report"), label = "Download", style = "margin-bottom:16px;")
           )
@@ -205,7 +208,7 @@ page_StabilityServer <- function(id, rv) {
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data(), input$s_shelf_life)
-      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = "slope_of_means" %in% input$FigS1_options)
+      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = "slope_of_means" %in% input$FigS1_options, mt = getValue(rv, c("General", "materialtabelle")), optimize_u_stab = input$optimize_u_stab)
       setValue(rv, c("Stability", "s_vals"), out)
       return(out)
     })
