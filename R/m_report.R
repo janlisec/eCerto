@@ -73,12 +73,6 @@ m_reportServer <- function(id, rv) {
               input = rmdfile,
               output_file = file,
               output_format = rmarkdown::html_document(),
-              #   switch(
-              #   input$output_file_format,
-              #   PDF = rmarkdown::pdf_document(),
-              #   HTML = rmarkdown::html_document(),
-              #   Word = rmarkdown::word_document()
-              # ),
               params = list(
                 "General" = shiny::reactiveValuesToList(getValue(rv, "General")),
                 "Certification" = shiny::reactiveValuesToList(getValue(rv, "Certification")),
@@ -86,7 +80,8 @@ m_reportServer <- function(id, rv) {
                 "selected_tab" = rv$cur_an,
                 "logo_file" = logofile
               ),
-              envir = new.env(parent = globalenv())
+              envir = new.env(parent = globalenv()),
+              runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2]
             )
           },
           message = "Rendering Analyte Report.."

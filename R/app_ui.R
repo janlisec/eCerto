@@ -104,7 +104,7 @@ app_ui <- function(request) {
         shiny::div(
           style = nps,
           # don't render Help page in testing mode
-          if (is.null(getOption("shiny.testmode")) || !getOption("shiny.testmode")) {
+          if (getOption("shiny.testmode", default = TRUE)) {
             shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2])))
           } else {
             shiny::div("No help page because App is in testing mode currently.")

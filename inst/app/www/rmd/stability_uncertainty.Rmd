@@ -2,10 +2,10 @@
 
 The parameters of all linear models are collected in **Tab.S1** and the potential
 uncertainty contribution of the material stability is obtained from formula 
-$u_{stab}={|t_{cert} \times s(b_1)| \over \mu}$ where $t_{cert}$ is the expected shelf life 
+$u_{stab}={|t_{cert} \times s(b_1)| \over \mu_s}$ where $t_{cert}$ is the expected shelf life 
 of the CRM (in month) and $s(b_1)$ is the standard error `SE` of the slope of 
 the linear model. $\mu_s$ is calculated as the mean of all values of an analyte
-depicted in Fig.S1, i.e. all values included in the linear model calculation.
+depicted in **Fig.S1**, i.e. all values included in the linear model calculation.
 
 The expected shelf life can be set by the user and should incorporate the time 
 until the first certification monitoring and the certified shelf life of the 
@@ -23,6 +23,6 @@ for $n - 2$ degrees of freedom to obtain the P-values in column `P`.
 Clicking on a table row will display the analysis for the analyte specified in 
 this row.
 
-Values from column `u_stab` can be transferred to a user defined column of the 
-material table Tab.C3 in the certification module for matching analyte names. 
-Analytes of Tab.S1 which can not be matched to Tab.C3 are depicted in red.
+Values from column `u_stab_` can be transferred to a user defined column of the 
+material table **Tab.C3** in the certification module for matching analyte names. 
+Analytes of **Tab.S1** which can not be matched to **Tab.C3** are depicted in red.

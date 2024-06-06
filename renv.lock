@@ -384,7 +384,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "9570453945ae227e88c04e2aacfe5883d870e449",
+      "RemoteSha": "d821d9f4864ec6a12402575053f9ab22f9375d5f",
       "RemoteHost": "api.github.com",
       "Requirements": [
         "DT",
@@ -406,7 +406,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "9401aa0fdc5bc2a6d68791e59c3ba56f"
+      "Hash": "5e4e6e69e7da419ca916b34dece881a8"
     },
     "evaluate": {
       "Package": "evaluate",
