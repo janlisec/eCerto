@@ -6,9 +6,6 @@
 #' @param a Analyte name.
 #' @param l Level name.
 #' @param fmt Export format of the data.
-#' @examples
-#' x <- eCerto:::test_Stability_Excel()
-#' eCerto:::prepTabS1(x = x)
 #' @return A data frame.
 #' @keywords internal
 #' @noRd
@@ -20,7 +17,7 @@ prepDataV1 <- function(tab = NULL, a = NULL, l = NULL, fmt = c("raw", "norm", "r
       fmt,
       "raw" = levels(tab[,"Analyte"])[1],
       "norm" = levels(tab[,"Analyte"])[1],
-      "rel_norm" = levels(tab[,"Analyte"])
+      "rel_norm" = levels(tab[,"Analyte"])[1]
     )
   }
   stopifnot(all(a %in% levels(tab[,"Analyte"])))
