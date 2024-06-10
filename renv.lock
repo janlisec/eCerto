@@ -378,13 +378,13 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.5.2",
+      "Version": "0.5.4",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "d821d9f4864ec6a12402575053f9ab22f9375d5f",
+      "RemoteSha": "2a4b1827a8bd1acb74fb9519a65192b52d67b9e3",
       "RemoteHost": "api.github.com",
       "Requirements": [
         "DT",
@@ -406,7 +406,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "5e4e6e69e7da419ca916b34dece881a8"
+      "Hash": "0d5fcab16a7c25a077dddb1bc14d0df8"
     },
     "evaluate": {
       "Package": "evaluate",
@@ -677,16 +677,16 @@
     },
     "markdown": {
       "Package": "markdown",
-      "Version": "1.12",
+      "Version": "1.13",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "commonmark",
         "utils",
         "xfun"
       ],
-      "Hash": "765cf53992401b3b6c297b69e1edb8bd"
+      "Hash": "074efab766a9d6360865ad39512f2a7e"
     },
     "memoise": {
       "Package": "memoise",
@@ -945,14 +945,14 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "1.1.3",
+      "Version": "1.1.4",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "42548638fae05fd9a9b5f3f437fbbbe2"
+      "Hash": "3eec01f8b1dee337674b2e34ab1f9bc1"
     },
     "rmarkdown": {
       "Package": "rmarkdown",
@@ -989,7 +989,7 @@
     },
     "rsconnect": {
       "Package": "rsconnect",
-      "Version": "1.3.0",
+      "Version": "1.3.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1008,7 +1008,7 @@
         "tools",
         "yaml"
       ],
-      "Hash": "8bc31f130662910340c98602ab92fddd"
+      "Hash": "90dc9ac04cec50f25657b077d4aaca57"
     },
     "rstudioapi": {
       "Package": "rstudioapi",
