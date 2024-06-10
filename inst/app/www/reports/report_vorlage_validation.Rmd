@@ -51,6 +51,25 @@ of variance using an F-Test.
   params$fig_V1()
 ```
 
+In the following detailed plots for the levels determining the working range for
+each analyte are presented.
+
+```{r fig_V1_details, echo=FALSE, fig.height=780/96}
+  inp <- params$inp_data$x$data
+  tab <- params$tab_V1$x$data
+  as <- tab$Analyte
+  for (a in as) {
+    L_min <- tab[tab$Analyte==a,"c<sub>WR,<i>min</i></sub>"]
+    L_max <- tab[tab$Analyte==a,"c<sub>WR,<i>max</i></sub>"]
+    Ls <- sapply(c(L_min, L_max), function(x) {
+      unique(inp[inp[,"Analyte"]==a & abs(inp[,"Concentration"]-as.numeric(x))<0.001,"Level"])[1]
+    })
+    flt <- inp[,"Analyte"] %in% a & inp[,"Level"] %in% Ls
+    eCerto:::prepFigV3(x = inp[flt,,drop=FALSE], cex = 1)
+  }
+  
+```
+
 #### Tab.V1 - method linearity
 
 The linearity of an analytical method is tested using the analyte values 
@@ -89,7 +108,26 @@ and the quadratic one, are compared using a Mandel-Test calculating $P_{Mandel}$
   params$tab_V1
 ```
 
-params$tab_V1
+In the following detailed plots comparing linear and quadratic model fits for
+each analyte are presented.
+
+```{r tab_V1_details, echo=FALSE, fig.height=960/96}
+  inp <- params$inp_data$x$data
+  tab <- params$tab_V1$x$data
+  flt_outliers <- length(grep("^[(]", tab[,"Out<sub>F</sub>"]))>=1
+  as <- tab$Analyte
+  for (a in as) {
+    L_min <- tab[tab$Analyte==a,"c<sub>WR,<i>min</i></sub>"]
+    L_max <- tab[tab$Analyte==a,"c<sub>WR,<i>max</i></sub>"]
+    Ls <- sapply(c(L_min, L_max), function(x) {
+      unique(inp[inp[,"Analyte"]==a & abs(inp[,"Concentration"]-as.numeric(x))<0.001,"Level"])[1]
+    })
+    idx <- as.numeric(levels(inp[,"Level"])[which(levels(inp[,"Level"]) %in% Ls)])
+    Ls <- levels(inp[,"Level"])[idx[1]:idx[2]]
+    flt <- inp[,"Analyte"] %in% a & inp[,"Level"] %in% Ls
+    eCerto:::prepFigV2(tab = inp[flt,,drop=FALSE], a = a, flt_outliers = flt_outliers, cex = 1)
+  }
+```
 
 #### Symbol and formula collection
 

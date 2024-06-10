@@ -1,23 +1,19 @@
 #' @title Validation-Page
-#' @description \code{page_start} is the module for eCerto startup.
-#'
-#' @details Providing the backup/restore modules as well as the Excel upload.
-#'
+#' @description \code{page_validation} is the module for eCerto method validation.
+#' @details Not yet.
 #' @param id Name when called as a module in a shiny app.
-#'
 #' @examples
 #' if (interactive()) {
 #'   shiny::shinyApp(
-#'     ui = shiny::fluidPage(
-#'       eCerto:::page_startUI(id = "test")
+#'     ui = bslib::page_fluid(
+#'       eCerto:::page_validationUI(id = "test")
 #'     ),
 #'     server = function(input, output, session) {
 #'       rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
-#'       eCerto:::page_startServer(id = "test", rv = rv)
+#'       eCerto:::page_validationServer(id = "test", test_data = eCerto:::read_Vdata(file = "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_05_22_B003_Arbeitsbereich_neu.xlsx"))
 #'     }
 #'   )
 #' }
-#'
 #' @return Nothing
 #' @noRd
 
@@ -47,21 +43,28 @@ page_validationUI <- function(id) {
   )
 
   anal_V_details_card <- bslib::card(
-    bslib::card_header(
-      class = "d-flex justify-content-between",
-      "Fig.V3 - Working range (details)",
-      shinyWidgets::pickerInput(inputId = ns("opt_V2_vals"), label = NULL, multiple = FALSE, choices = c("Area_Analyte","Area_IS","Analyte/IS","relative(Analyte/IS)"))
-    ),
+    min_height = "780px",
+    bslib::card_header("Working range (details for metabolite selected in Tab.V1)"),
     bslib::card_body(
       fill = TRUE,
-      shiny::plotOutput(outputId = ns("fig_V3")),
-      DT::DTOutput(outputId = ns("tab_V2"))
+      bslib::layout_sidebar(
+        padding = 0,
+        sidebar = bslib::sidebar(
+          position = "right", open = "open", width = "280px",
+          shiny::div(
+            shinyWidgets::pickerInput(inputId = ns("opt_V2_vals"), label = NULL, multiple = FALSE, choices = c("Area_Analyte","Area_IS","Analyte/IS","relative(Analyte/IS)")),
+            shiny::hr(),
+            DT::DTOutput(outputId = ns("tab_V2"))
+          )
+        ),
+        shiny::plotOutput(outputId = ns("fig_V3"))
+      )
     )
   )
 
   tab_V1_card <- bslib::card(
     fill = TRUE,
-    bslib::card_header(shiny::actionLink(inputId = ns("Help_tabV1"), "Tab.V1 - Linearity test")),
+    bslib::card_header(shiny::actionLink(inputId = ns("Help_tabV1"), "Tab.V1 - Linearity")),
     bslib::card_body(
       fill = TRUE,
       bslib::layout_sidebar(
@@ -79,7 +82,7 @@ page_validationUI <- function(id) {
             ),
             shiny::hr(),
             shiny::checkboxInput(inputId = ns("opt_tabV1_fltLevels"), label = shiny::HTML("Omit Out<sub>F</sub> Levels"), value = FALSE),
-            shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Use Analytes from Fig.V1", value = TRUE),
+            shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Use Analytes from Fig.V1", value = FALSE),
             shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Use Level range of Fig.V1", value = FALSE),
             shiny::hr(),
             DT::DTOutput(outputId = ns("tab_V1_detail"))
@@ -95,13 +98,13 @@ page_validationUI <- function(id) {
     id = ns("fig_V2_panel"),
     full_screen = TRUE,
     min_height = "960px",
-    bslib::card_header("Fig.V2 Linearity"),
+    bslib::card_header("Linearity (details for metabolite selected in Tab.V1)"),
     bslib::card_body(shiny::plotOutput(outputId = ns("fig_V2")))
   )
 
   tab_V3_card <- bslib::card(
     id = ns("tab_V3_panel"),
-    bslib::card_header("Tab.V3 Imported data"),
+    bslib::card_header("Tab.V3 - Imported data (including calculated values and filtering information"),
     bslib::card_body(DT::DTOutput(outputId = ns("tab_V3")))
   )
 
@@ -146,9 +149,10 @@ page_validationUI <- function(id) {
 }
 
 #' @noRd
-page_validationServer <- function(id, rv, msession = NULL) {
+page_validationServer <- function(id, test_data = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
 
+    # Reports ====
     output$v_report <- shiny::downloadHandler(
       filename = function() {"Validation Report.html"},
       content = function(file) {
@@ -165,7 +169,7 @@ page_validationServer <- function(id, rv, msession = NULL) {
               output_format = rmarkdown::html_document(),
               params = list(
                 "inp_data" = style_tabV3(tab()),
-                "tab_V1" = style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision), selected = tab_V1_rows_selected()),
+                "tab_V1" = style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision), selected = NULL),
                 "fig_V1" = function() { prepFigV1(ab())},
                 "fig_V1_width" = calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120),
                 "logo_file" = logofile
@@ -178,21 +182,20 @@ page_validationServer <- function(id, rv, msession = NULL) {
       }
     )
 
+    # Upload & Data preparation ====
     # upload info used in UI part
     output$V_fileUploaded <- shiny::reactive({
-      return(!is.null(input$inp_file$datapath))
+      return(!is.null(input$inp_file$datapath) | !is.null(test_data))
     })
     shiny::outputOptions(output, "V_fileUploaded", suspendWhenHidden = FALSE)
 
-    # prep_tabV1 <- function(tab, alpha, k, flt_outliers) {
-    #   plyr::ldply(levels(tab[,"Analyte"]), function(a) {
-    #     prepTabV1(tab = tab, a = a, alpha = alpha, k = k, flt_outliers = flt_outliers)
-    #   })
-    # }
-
     tab <- shiny::reactive({
-      req(input$inp_file$datapath)
-      read_Vdata(file = input$inp_file$datapath, fmt = c("Agilent"))
+      if (!is.null(test_data)) {
+        return(test_data)
+      } else {
+        req(input$inp_file$datapath)
+        read_Vdata(file = input$inp_file$datapath, fmt = c("Agilent"))
+      }
     })
 
     shiny::observeEvent(tab(), {
@@ -207,31 +210,6 @@ page_validationServer <- function(id, rv, msession = NULL) {
       )
     })
 
-    tab_V1_rows_selected <- shiny::reactiveVal(1)
-    shiny::observeEvent(input$tab_V1_rows_selected, {
-      tab_V1_rows_selected(input$tab_V1_rows_selected)
-    }, ignoreNULL = TRUE)
-
-
-    output$tab_V1_detail <- DT::renderDT({
-      req(tab_flt())
-      df <- attr(prepTabV1(tab = tab_flt(), a = tab_V1()[tab_V1_rows_selected(),"Analyte"]), "df")
-      DT::datatable(
-        data = df, rownames = FALSE, extensions = "Buttons",
-        options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy", title = NULL, header = NULL)))
-      ) |> DT::formatRound(columns = c("Conc", "Area_norm"), dec.mark = input$opt_tabV1_dec, digits = as.numeric(input$opt_tabV1_precision))
-    })
-
-    ab <- shiny::reactive({
-      ab <- prepDataV1(tab=tab(), a = input$opt_V1_anal, l = input$opt_V1_k, fmt = "rel_norm")
-    })
-
-    fig_V1_width <- shiny::reactive({ calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120) })
-    output$fig_V1 <- shiny::renderPlot({
-      req(ab())
-      prepFigV1(ab = ab())
-    }, width = fig_V1_width)
-
     tab_flt <- shiny::reactive({
       req(tab())
       x <- tab()
@@ -240,26 +218,103 @@ page_validationServer <- function(id, rv, msession = NULL) {
         l_rng <- range(which(levels(x[,"Level"]) %in% input$opt_V1_k))
         l_rng <- seq(min(l_rng), max(l_rng))
         x <- x[as.numeric(x[,"Level"]) %in% l_rng,]
-        x[,"Level"] <- factor(x[,"Level"])
+        #x[,"Level"] <- factor(x[,"Level"])
       }
       if (input$opt_tabV1_useAnalytes) {
         req(input$opt_V1_anal)
         x <- x[as.character(x[,"Analyte"]) %in% input$opt_V1_anal,]
-        x[,"Analyte"] <- factor(x[,"Analyte"])
+        #x[,"Analyte"] <- factor(x[,"Analyte"])
       }
       return(x)
     })
 
+    current_analyte <- shiny::reactiveValues("name" = NULL, "row" = NULL)
+
+    # Tables ====
+    # Table V1 ====
+    tab_V1 <- shiny::reactive({
+      req(tab_flt())
+      message("prepTabV1")
+      prepTabV1(tab = tab_flt(), alpha = as.numeric(input$opt_tabV1_alpha), k = as.numeric(input$opt_tabV1_k), flt_outliers = input$opt_tabV1_fltLevels)
+    })
+
+    output$tab_V1 <- DT::renderDT({
+      req(tab_V1(), input$opt_tabV1_k, input$opt_tabV1_alpha, input$opt_tabV1_precision)
+      message("style_tabV1")
+      a_name <- shiny::isolate(current_analyte$name)
+      a_row <- shiny::isolate(current_analyte$row)
+      # correct current row of tab V1 in case that analyte filter is applied
+      if (!is.null(a_name) && a_name %in% tab_V1()[,"Analyte"] && a_row != which(tab_V1()[,"Analyte"] == a_name)) {
+        current_analyte$row <- a_row <- which(tab_V1()[,"Analyte"] == a_name)
+      }
+      style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision), selected = a_row)
+    })
+
+    shiny::observeEvent(input$tab_V1_rows_selected, {
+      i <- input$tab_V1_rows_selected
+      current_analyte$row <- i
+      current_analyte$name <- tab_V1()[i,"Analyte"]
+    }, ignoreNULL = TRUE)
+
+    output$tab_V1_detail <- DT::renderDT({
+      req(tab_flt(), current_analyte$name %in% tab_flt()[,"Analyte"])
+      df <- attr(prepTabV1(tab = tab_flt(), a = current_analyte$name), "df")
+      DT::datatable(
+        data = df, rownames = FALSE, extensions = "Buttons",
+        options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy", title = NULL, header = NULL)))
+      ) |> DT::formatRound(columns = c("Conc", "Area_norm"), dec.mark = input$opt_tabV1_dec, digits = as.numeric(input$opt_tabV1_precision))
+    })
+
+    # Table V2 ====
+    output$tab_V2 <- DT::renderDT({
+      req(V2_dat())
+      x <- V2_dat()
+      df <- matrix(NA, nrow = max(sapply(x, nrow)), ncol = length(x), dimnames = list(1:max(sapply(x, nrow)), names(x)))
+      for (i in 1:length(x)) df[1:length(x[[i]][,"Value"]),i] <- x[[i]][,"Value"]
+      dt <- DT::datatable(
+        data = df, rownames = FALSE, extensions = "Buttons",
+        options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy to clipboard", title = NULL, header = NULL)))
+      )
+      dt <- DT::formatCurrency(table = dt, columns = names(x), currency = "", digits = as.numeric(input$opt_tabV1_precision))
+      return(dt)
+    })
+
+    # Table V3 ====
+    style_tabV3 <- function(df) {
+      DT::datatable(data = df, rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
+    }
+
+    output$tab_V3 <- DT::renderDT({
+      req(tab())
+      style_tabV3(tab())
+    })
+
+    # Figures ====
+    # Figure V1 ====
+    ab <- shiny::reactive({
+      ab <- prepDataV1(tab=tab(), a = input$opt_V1_anal, l = input$opt_V1_k, fmt = "rel_norm")
+    })
+
+    fig_V1_width <- shiny::reactive({
+      calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120)
+    })
+
+    output$fig_V1 <- shiny::renderPlot({
+      req(ab(), input$opt_V1_anal, input$opt_V1_k)
+      prepFigV1(ab = ab())
+    }, width = fig_V1_width)
+
+    # Figure V2 ====
     output$fig_V2 <- shiny::renderPlot({
-      req(tab_flt(), tab_V1())
-      prepFigV2(tab = tab_flt(), a = tab_V1()[tab_V1_rows_selected(),"Analyte"], flt_outliers = input$opt_tabV1_fltLevels)
+      req(tab_flt(), current_analyte$name %in% tab_flt()[,"Analyte"])
+      prepFigV2(tab = tab_flt(), a = current_analyte$name, flt_outliers = input$opt_tabV1_fltLevels)
     })
 
     V2_dat <- reactive({
-      req(tab(), tab_V1(), input$opt_V1_k, input$opt_V2_vals)
+      req(tab(), tab_V1(), input$opt_V1_k, input$opt_V2_vals, current_analyte$name %in% tab()[,"Analyte"])
       # $$ check if prepDataV1 function can be extended to generate the same output as this function
       x <- tab()
-      x <- split(x, x$Analyte)[[tab_V1()[tab_V1_rows_selected(),"Analyte"]]]
+      x <- split(x, x$Analyte)[[current_analyte$name]]
       x <- split(x, x$Level)[input$opt_V1_k]
       x <- lapply(x, function(y) {
         y[,"Value"] <- NA
@@ -275,46 +330,14 @@ page_validationServer <- function(id, rv, msession = NULL) {
       return(x)
     })
 
-
+    # Figure V3 ====
     output$fig_V3 <- shiny::renderPlot({
       req(V2_dat())
-      prepFigV3(x = V2_dat(), fix_ylim = input$opt_V2_vals == "relative(Analyte/IS)")
+      flt <- tab()[,"Analyte"] %in% current_analyte$name & tab()[,"Level"] %in% input$opt_V1_k
+      prepFigV3(x = tab()[flt,,drop=FALSE])
     })
 
-    output$tab_V2 <- DT::renderDT({
-      req(V2_dat())
-      x <- V2_dat()
-      df <- matrix(NA, nrow = max(sapply(x, nrow)), ncol = length(x), dimnames = list(1:max(sapply(x, nrow)), names(x)))
-      for (i in 1:length(x)) df[1:length(x[[i]][,"Value"]),i] <- x[[i]][,"Value"]
-      dt <- DT::datatable(
-        data = df, rownames = FALSE, extensions = "Buttons",
-        options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy to clipboard", title = NULL, header = NULL)))
-      )
-      dt <- DT::formatCurrency(table = dt, columns = names(x), currency = "", digits = as.numeric(input$opt_tabV1_precision))
-      return(dt)
-    })
-
-    tab_V1 <- shiny::reactive({
-      req(tab_flt())
-      #prep_tabV1(tab = tab_flt(), alpha = as.numeric(input$opt_tabV1_alpha), k = as.numeric(input$opt_tabV1_k), flt_outliers = input$opt_tabV1_fltLevels)
-      prepTabV1(tab = tab_flt(), alpha = as.numeric(input$opt_tabV1_alpha), k = as.numeric(input$opt_tabV1_k), flt_outliers = input$opt_tabV1_fltLevels)
-    })
-
-    output$tab_V1 <- DT::renderDT({
-      req(tab_V1(), input$opt_tabV1_k, input$opt_tabV1_alpha, input$opt_tabV1_precision)
-      style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision), selected = tab_V1_rows_selected())
-    })
-
-    style_tabV3 <- function(df) {
-      DT::datatable(data = df, rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
-    }
-
-    output$tab_V3 <- DT::renderDT({
-      req(tab())
-      style_tabV3(tab())
-    })
-
-    # Help section
+    # Help section ====
     shiny::observeEvent(input$InputHelp, {
       show_help("v_dataupload")
     })

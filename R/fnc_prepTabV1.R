@@ -15,17 +15,20 @@
 #' @noRd
 prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = FALSE) {
 
-  if (is.null(a)) a <- levels(tab[,"Analyte"])
-  stopifnot(all(a %in% levels(tab[,"Analyte"])))
+  if (is.null(a)) a <- levels(factor(tab[,"Analyte"]))
+  stopifnot(all(a %in% levels(factor(tab[,"Analyte"]))))
 
   plyr::ldply(a, function(a) {
 
-    # $$ consider externalizing the call to prepDataV1
-    tmp <- prepDataV1(tab = tab, a = a, fmt = "norm")
-    df <- data.frame("Conc"=attr(tmp, "Concentration"), "Area_norm"=sapply(tmp, mean, na.rm=TRUE), row.names = 1:length(tmp))
-    # write.table(df, file = "clipboard", sep = "\t", row.names = FALSE, col.names = FALSE) # you can export this df for cross checking with DINTest
+    # extract the data
+    l <- levels(tab[,"Level"])
+    flt <- tab[,"Analyte"]==a & tab[,"Level"] %in% l
+    df <- do.call(rbind, unname(lapply(split(tab[flt,], factor(tab[flt,"Level"])), function(x) {
+      data.frame("Conc" = mean(x[, "Concentration"]), "Area_norm" = mean(x[, "norm"], na.rm=TRUE), "n" = sum(is.finite(x[, "norm"])), row.names = unique(as.character(x[,"Level"])))
+    })))
 
-    # the linear model
+    # fit the linear model
+    #if (!"Area_norm" %in% colnames(df)) browser()
     df.lm <- stats::lm(Area_norm ~ Conc, data = df)
 
     # F-test for outliers (checking highest residual)
@@ -33,15 +36,20 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     if (!is.na(idx)) {
       check_more <- TRUE
       while (check_more) {
+        #if (a == "PFHpA") browser()
+        # $$JL, comment$$ because residual outliers are tested sequentially, it is
+        # not always intuitive from the detailed linearity plot showing the full model
+        # why some levels are removed as outliers (they can have a low residual in the
+        # full model but become outlier in reduced models)
         new_F_Test <- F_test_outlier(stats::lm(Area_norm ~ Conc, data=df[-idx, ]), alpha = alpha)
         if (!is.na(new_F_Test)) {
-          idx <- c(idx, as.numeric(rownames(df)[-idx][new_F_Test]))
+          idx <- c(idx, which(rownames(df)==names(new_F_Test)))
           if (length(idx)>=(nrow(df)-3)) check_more <- FALSE
         } else {
           check_more <- FALSE
         }
       }
-      F_Test <- paste(idx, collapse = ", ")
+      F_Test <- paste(rownames(df)[idx], collapse = ", ")
       if (flt_outliers) {
         df <- df[-idx, ]
         df.lm <- stats::lm(Area_norm ~ Conc, data = df)
@@ -67,21 +75,24 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     P_Mandel <- MandelTest(res_lm = e, res_qm = e.qm)
 
     # number of replicates
-    n <- min(sapply(tmp, length))
+    n <- min(df[,"n"])
     out <- data.frame(
       "ID" = which(levels(tab[,"Analyte"]) == a),
-      "Analyte" = levels(factor(attr(tmp, "Analyte"))),
+      "Analyte" = a,
       "N" = N,
       "n" = n,
       "alpha" = 0.05,
       "k" = round(1/k, 2),
       "b0" = stats::coef(df.lm)[1],
       "b1" = stats::coef(df.lm)[2],
+      "r" = stats::cor(df.lm$fitted.values, df$Area_norm),
       "P_KS_Res" = stats::ks.test(x = e, y="pnorm", mean=mean(e), sd=stats::sd(e))$p.val,
       "P_Neu_Res" = VonNeumannTest(e, unbiased = FALSE)$p.val,
       "F_Test" = F_Test,
       "LOD" = calc_LOD(x = df$Conc, y = df$Area_norm, alpha = alpha, n = n),
       "LOQ" = calc_LOQ(x = df$Conc, y = df$Area_norm, alpha = 0.05, n = n, k = k),
+      "c_WR_min" = min(df[,"Conc"]),
+      "c_WR_max" = max(df[,"Conc"]),
       "s_yx" = s_yx,
       "s_x0" = s_x0,
       "V_x0" = V_x0,

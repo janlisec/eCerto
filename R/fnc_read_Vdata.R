@@ -11,7 +11,8 @@
 #' @return A object 'res' from an RData file.
 #' @keywords internal
 #' @noRd
-read_Vdata <- function(file = NULL, fmt = c("Agilent")) {
+read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {
+    fmt <- match.arg(fmt)
     tab <- openxlsx::read.xlsx(xlsxFile = file, sheet = 1, startRow = 2, check.names = FALSE)
     # check/prepare main table
     stopifnot(all(c("Name","Type","Level") %in% colnames(tab)))
@@ -19,7 +20,7 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent")) {
     tab_main[,"Type"] <- "Cal"
     stopifnot(!is.na(tab_main[1,"Level"]))
     tab_main[,"Level"] <- auto_fill(tab_main[,"Level"])
-    # check/prepare abalyte table
+    # check/prepare analyte table
     stopifnot(all(c("Exp..Conc.","Area") %in% colnames(tab)))
     tab_anal <- tab[,min(grep("Exp..Conc.", colnames(tab))):ncol(tab)]
     n <- length(grep("Exp..Conc.", colnames(tab_anal)))
@@ -37,7 +38,13 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent")) {
       out <- cbind(tab_main, "Analyte"=a_names[i], tmp)
       return(out)
     })
+    tab_out <- cbind("ID"=1:nrow(tab_out), tab_out)
     tab_out[,"Analyte"] <- factor(tab_out[,"Analyte"], levels=unique(tab_out[,"Analyte"]))
     tab_out[,"Level"] <- factor(tab_out[,"Level"])
+    tab_out[,"norm"] <- tab_out[,"Area_Analyte"]/tab_out[,"Area_IS"]
+    gr_mn <- lapply(split(tab_out, tab_out[,"Analyte"]), function(x) { lapply(split(x[,"norm"], x[,"Level"]), mean, na.rm=TRUE) })
+    tab_out[,"rel_norm"] <- tab_out[,"norm"]/sapply(1:nrow(tab_out), function(i) {gr_mn[[tab_out[i,"Analyte"]]][[tab_out[i,"Level"]]]})
+    tab_out[,"Exclude_Level"] <- FALSE
+    tab_out[,"Exclude_Sample"] <- FALSE
     return(tab_out)
   }

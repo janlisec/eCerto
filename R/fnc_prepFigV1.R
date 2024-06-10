@@ -14,7 +14,6 @@ prepFigV1 <- function(ab = NULL) {
   graphics::abline(v=1:length(ab), lty=2, col=grDevices::grey(0.9))
   graphics::box(); graphics::axis(2)
   graphics::boxplot(ab, add=TRUE, axes=FALSE, col = grDevices::grey((3+as.numeric(attr(ab, "Level")))/(5+max(as.numeric(attr(ab, "Level"))))))
-  names(ab)
 
   # show Analyte-ID and Level-ID
   graphics::mtext(text = "Analyte-ID", side = 3, line = 1.5, at = 0, adj = 1)

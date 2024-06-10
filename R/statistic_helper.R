@@ -703,6 +703,7 @@ F_test_outlier <- function(x, alpha = 0.05) {
   PW <- ((N-2)*s_yx^2 - (N-3)*s_yx2^2) / s_yx2^2
   KW <- stats::qf(p = 1-alpha, df1 = 1, df2 = N-3)
   F_Test <- ifelse(PW < KW, NA, idx_e_max)
+  names(F_Test) <- names(e)[idx_e_max]
   attr(F_Test, "PW") <- PW
   attr(F_Test, "KW") <- KW
   return(F_Test)
