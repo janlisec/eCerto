@@ -265,13 +265,9 @@ page_validationServer <- function(id, test_data = NULL) {
     })
 
     # Table V3 ====
-    style_tabV3 <- function(df) {
-      DT::datatable(data = df, rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
-    }
-
     output$tab_V3 <- DT::renderDT({
       req(tab())
-      style_tabV3(tab())
+      DT::datatable(data = tab(), rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
     })
 
     # Figures ====

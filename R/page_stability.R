@@ -63,7 +63,7 @@ page_StabilityUI <- function(id) {
               selected = c("show_legend")
             ),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard" = 1, "adjusted" = 3), inline = TRUE)),
-            shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choices = list("2s" = "2s", "U_abs" = "U"), inline = TRUE)),
+            shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choiceValues = list("2s", "U"), choiceNames = list("2s", shiny::HTML("U<sub>abs</sub>")), inline = TRUE)),
             shiny::hr(),
             shiny::sliderInput(inputId = ns("s_shelf_life"), label = shiny::HTML("Exp. shelf life t<sub>cert</sub> [Month]"), min = 0, max = 120, value = 60, step = 6),
             shiny::checkboxInput(inputId = ns("optimize_u_stab"), value = FALSE, label = shiny::HTML("Optimize u<sub>stab</sub>")),
