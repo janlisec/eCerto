@@ -8,6 +8,9 @@ app_server <- function(input, output, session) {
   # set up new R6 object upon app start
   rv <- eCerto$new(init_rv()) # initiate persistent variables
 
+  # message pandoc version
+  message("Current pandoc version: ", rmarkdown::pandoc_version())
+
   # register the R6 object for app testing
   shiny::exportTestValues(
     rv = rv
