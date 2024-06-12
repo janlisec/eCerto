@@ -21,7 +21,7 @@ prepFigV1 <- function(ab = NULL) {
   graphics::boxplot(ab, add=TRUE, axes=FALSE, col = grDevices::grey((3+as.numeric(attr(ab, "Level")))/(5+max(as.numeric(attr(ab, "Level"))))))
 
   # get position of right alignment of labels
-  x_ann <- par("usr")[1]
+  x_ann <- graphics::par("usr")[1]
 
   # show Analyte-ID and Level-ID
   graphics::mtext(text = "Analyte-ID", side = 3, line = 1.5, at = x_ann, adj = 1)
