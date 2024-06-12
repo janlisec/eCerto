@@ -1,11 +1,22 @@
 #' @title fnc_prepFigV2.
 #' @description \code{prepFigV2} will generate Fig.V2 (linearity details).
 #' @details tbd.
-#' @param ab The ab() object from the validation module..
+#' @param tab The imported V data.
+#' @param a Analyte name.
+#' @param alpha Probability of error.
+#' @param k result uncertainty.
+#' @param flt_outliers Logical. Shall outliers, determined via an F-test testing
+#'     the highest residual be removed from the analysis.
+#' @param cex Character expansion of Figure. In an app 1.5 is a nice scaling to
+#'     get a detailed figure comparable to the other text.
+#' @examples
+#' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
+#' tab <- eCerto:::read_Vdata(file = inp)
+#' eCerto:::prepFigV2(tab = tab, a = "PFOA", alpha = 0.01, cex = 1)
 #' @return A figure.
 #' @keywords internal
 #' @noRd
-prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = flt_outliers, cex = 1.5) {
+prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = FALSE, cex = 1.5) {
   opar <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(opar))
   vals <- prepTabV1(tab = tab, a = a, alpha = alpha, k = k, flt_outliers = flt_outliers)

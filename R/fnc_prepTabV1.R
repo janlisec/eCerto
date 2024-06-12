@@ -11,9 +11,10 @@
 #' @examples
 #' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
 #' tab <- eCerto:::read_Vdata(file = inp)
+#' eCerto:::prepTabV1(tab = tab, a = "PFOA", alpha = 0.01)
 #' plyr::ldply(levels(tab[,"Analyte"]), function(a) {
 #'     eCerto:::prepTabV1(tab = tab, a = a)
-#' })#'
+#' })
 #' @return A data frame with attributes.
 #' @keywords internal
 #' @noRd
@@ -21,6 +22,9 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
 
   if (is.null(a)) a <- levels(factor(tab[,"Analyte"]))
   stopifnot(all(a %in% levels(factor(tab[,"Analyte"]))))
+
+  alpha <- as.numeric(alpha)
+  k <- as.numeric(k)
 
   plyr::ldply(a, function(a) {
 
@@ -85,7 +89,7 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
       "Analyte" = a,
       "N" = N,
       "n" = n,
-      "alpha" = 0.05,
+      "alpha" = alpha,
       "k" = round(1/k, 2),
       "b0" = stats::coef(df.lm)[1],
       "b1" = stats::coef(df.lm)[2],
@@ -94,7 +98,7 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
       "P_Neu_Res" = VonNeumannTest(e, unbiased = FALSE)$p.val,
       "F_Test" = F_Test,
       "LOD" = calc_LOD(x = df$Conc, y = df$Area_norm, alpha = alpha, n = n),
-      "LOQ" = calc_LOQ(x = df$Conc, y = df$Area_norm, alpha = 0.05, n = n, k = k),
+      "LOQ" = calc_LOQ(x = df$Conc, y = df$Area_norm, alpha = alpha, n = n, k = k),
       "c_WR_min" = min(df[,"Conc"]),
       "c_WR_max" = max(df[,"Conc"]),
       "s_yx" = s_yx,

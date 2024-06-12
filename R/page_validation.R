@@ -212,20 +212,7 @@ page_validationServer <- function(id, test_data = NULL) {
 
     tab_flt <- shiny::reactive({
       req(tab())
-      x <- tab()
-      if (input$opt_tabV1_useLevels) {
-        req(input$opt_V1_k)
-        l_rng <- range(which(levels(x[,"Level"]) %in% input$opt_V1_k))
-        l_rng <- seq(min(l_rng), max(l_rng))
-        x <- x[as.numeric(x[,"Level"]) %in% l_rng,]
-        #x[,"Level"] <- factor(x[,"Level"])
-      }
-      if (input$opt_tabV1_useAnalytes) {
-        req(input$opt_V1_anal)
-        x <- x[as.character(x[,"Analyte"]) %in% input$opt_V1_anal,]
-        #x[,"Analyte"] <- factor(x[,"Analyte"])
-      }
-      return(x)
+      flt_Vdata(x = tab(), l = if (input$opt_tabV1_useLevels) input$opt_V1_k else NULL, a = if (input$opt_tabV1_useAnalytes) input$opt_V1_anal else NULL)
     })
 
     current_analyte <- shiny::reactiveValues("name" = NULL, "row" = NULL)
@@ -292,6 +279,7 @@ page_validationServer <- function(id, test_data = NULL) {
     # Figures ====
     # Figure V1 ====
     ab <- shiny::reactive({
+      req(tab(), input$opt_V1_anal, input$opt_V1_k)
       ab <- prepDataV1(tab=tab(), a = input$opt_V1_anal, l = input$opt_V1_k, fmt = "rel_norm")
     })
 

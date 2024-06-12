@@ -6,6 +6,11 @@
 #' @param a Analyte name.
 #' @param l Level name.
 #' @param fmt Export format of the data.
+#' @examples
+#' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
+#' tab <- eCerto:::read_Vdata(file = inp)
+#' ab <- eCerto:::prepDataV1(tab = tab, a = "PFOA", l = c("2", "7"), fmt = "norm")
+#' str(ab)
 #' @return A data frame.
 #' @keywords internal
 #' @noRd
@@ -17,7 +22,7 @@ prepDataV1 <- function(tab = NULL, a = NULL, l = NULL, fmt = c("raw", "norm", "r
       fmt,
       "raw" = levels(tab[,"Analyte"])[1],
       "norm" = levels(tab[,"Analyte"])[1],
-      "rel_norm" = levels(tab[,"Analyte"])[1]
+      "rel_norm" = levels(tab[,"Analyte"])
     )
   }
   stopifnot(all(a %in% levels(tab[,"Analyte"])))

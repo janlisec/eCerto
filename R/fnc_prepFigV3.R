@@ -1,11 +1,17 @@
 #' @title fnc_prepFigV3.
 #' @description \code{prepFigV3} will generate Fig.V3.
 #' @details tbd.
-#' @param x A list of data frames containing a column 'Value'.
+#' @param x A data.frame as imported by V module.
+#' @examples
+#' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
+#' tab <- eCerto:::read_Vdata(file = inp)
+#' x <- eCerto:::flt_Vdata(x = tab, l = c(2,4), a = "PFBA")
+#' eCerto:::prepFigV3(x = x, cex = 0.8)
 #' @return A figure.
 #' @keywords internal
 #' @noRd
 prepFigV3 <- function(x, cex = 1.5) {
+  stopifnot(all(c("Analyte", "Level", "Area_Analyte", "Area_IS", "rel_norm") %in% colnames(x)))
   opar <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(opar))
   m <- length(unique(x[,"Analyte"]))

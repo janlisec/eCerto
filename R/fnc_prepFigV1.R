@@ -3,6 +3,11 @@
 #' @details tbd.
 #' @param ab The ab() object from the validation module..
 #' @return A figure.
+#' @examples
+#' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
+#' tab <- eCerto:::read_Vdata(file = inp)
+#' ab <- eCerto:::prepDataV1(tab = tab, a = "PFOA", l = c("2", "7"), fmt = "rel_norm")
+#' eCerto:::prepFigV1(ab = ab)
 #' @keywords internal
 #' @noRd
 prepFigV1 <- function(ab = NULL) {
@@ -15,14 +20,17 @@ prepFigV1 <- function(ab = NULL) {
   graphics::box(); graphics::axis(2)
   graphics::boxplot(ab, add=TRUE, axes=FALSE, col = grDevices::grey((3+as.numeric(attr(ab, "Level")))/(5+max(as.numeric(attr(ab, "Level"))))))
 
+  # get position of right alignment of labels
+  x_ann <- par("usr")[1]
+
   # show Analyte-ID and Level-ID
-  graphics::mtext(text = "Analyte-ID", side = 3, line = 1.5, at = 0, adj = 1)
+  graphics::mtext(text = "Analyte-ID", side = 3, line = 1.5, at = x_ann, adj = 1)
   a_id <- as.numeric(attr(ab, "Analyte"))
   #a_id[duplicated(a_id)] <- "_"
   #mtext(text = a_id[!duplicated(a_id)], side = 3, line = 1.5, at = (1:length(ab))[!duplicated(a_id)])
   #mtext(text = a_id, side = 3, line = 1.5, at = 1:length(ab))
   graphics::mtext(text = a_id[!duplicated(a_id)], side = 3, line = 1.5, at = sapply(split(1:length(ab), a_id), mean))
-  graphics::mtext(text = "Level", side = 3, line = 0.25, at = 0, adj = 1)
+  graphics::mtext(text = "Level", side = 3, line = 0.25, at = x_ann, adj = 1)
   graphics::mtext(text = as.numeric(attr(ab, "Level")), side = 3, line = 0.25, at = 1:length(ab))
 
   # F test to check for Variance homogeneity
@@ -32,12 +40,12 @@ prepFigV1 <- function(ab = NULL) {
   if (!all(is.na(P_F))) {
     F_p_text <- sapply(P_F, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
     F_p_col <- sapply(P_F, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
-    graphics::mtext(text = expression(P[F-test]), side = 3, line = 2.75, at = 0, adj = 1)
+    graphics::mtext(text = expression(P[F-test]), side = 3, line = 2.75, at = x_ann, adj = 1)
     graphics::mtext(text = F_p_text, side = 3, line = 2.75, at = sapply(split(1:length(ab), a_id), mean), col=F_p_col)
   }
 
   # show n
-  graphics::mtext(text = expression(n), side = 1, line = 0.25, at = 0, adj = 1)
+  graphics::mtext(text = expression(n), side = 1, line = 0.25, at = x_ann, adj = 1)
   graphics::mtext(text = sapply(ab, length), side = 1, line = 0.25, at = 1:length(ab))
 
   # normality test
@@ -46,7 +54,7 @@ prepFigV1 <- function(ab = NULL) {
   })
   KS_p_text <- sapply(KS_p, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
   KS_p_col <- sapply(KS_p, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
-  graphics::mtext(text = expression(P[KS]), side = 1, line = 1.5, at = 0, adj = 1)
+  graphics::mtext(text = expression(P[KS]), side = 1, line = 1.5, at = x_ann, adj = 1)
   graphics::mtext(text = KS_p_text, side = 1, line = 1.5, at = 1:length(ab), col=KS_p_col)
 
   # outlier test Grubbs
@@ -55,7 +63,7 @@ prepFigV1 <- function(ab = NULL) {
   })
   Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs1"]==".01"), "**", ifelse(any(x[,"Grubbs1"]==".05"), "*", "ns")) })
   Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs1"]==".01"), 2, ifelse(any(x[,"Grubbs1"]==".05"), "orange", 3)) })
-  graphics::mtext(text = expression(P[Grubbs1]), side = 1, line = 2.75, at = 0, adj = 1)
+  graphics::mtext(text = expression(P[Grubbs1]), side = 1, line = 2.75, at = x_ann, adj = 1)
   graphics::mtext(text = Grubbs_text, side = 1, line = 2.75, at = 1:length(ab), col=Grubbs_col)
   if (any(Grubbs_text!="ns")) {
     for (i in which(Grubbs_text!="ns")) {
@@ -66,7 +74,7 @@ prepFigV1 <- function(ab = NULL) {
   }
   Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs2"]==".01"), "**", ifelse(any(x[,"Grubbs2"]==".05"), "*", "ns")) })
   Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs2"]==".01"), 2, ifelse(any(x[,"Grubbs2"]==".05"), "orange", 3)) })
-  graphics::mtext(text = expression(P[Grubbs2]), side = 1, line = 4, at = 0, adj = 1)
+  graphics::mtext(text = expression(P[Grubbs2]), side = 1, line = 4, at = x_ann, adj = 1)
   graphics::mtext(text = Grubbs_text, side = 1, line = 4, at = 1:length(ab), col=Grubbs_col)
   if (any(Grubbs_text!="ns")) {
     for (i in which(Grubbs_text!="ns")) {
@@ -82,7 +90,7 @@ prepFigV1 <- function(ab = NULL) {
   })
   NM_text <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
   NM_col <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
-  graphics::mtext(text = expression(P[Neumann]), side = 1, line = 5.25, at = 0, adj = 1)
+  graphics::mtext(text = expression(P[Neumann]), side = 1, line = 5.25, at = x_ann, adj = 1)
   graphics::mtext(text = NM_text, side = 1, line = 5.25, at = 1:length(ab), col=NM_col)
 
   invisible(NULL)

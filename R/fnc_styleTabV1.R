@@ -4,6 +4,13 @@
 #' @param df The data.frame of values.
 #' @param precision Number of digits to display.
 #' @param selected Currently selected row.
+#' @examples
+#' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
+#' tab <- eCerto:::read_Vdata(file = inp)
+#' out <- plyr::ldply(levels(tab[,"Analyte"]), function(a) {
+#'     eCerto:::prepTabV1(tab = tab, a = a)
+#' })
+#' eCerto:::style_tabV1(df = out, selected = NULL)
 #' @return A datatable object.
 #' @keywords internal
 #' @noRd
