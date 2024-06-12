@@ -3,6 +3,7 @@
 #' @param x The imported V data.
 #' @param a Analyte name(s).
 #' @param l Level name(s). Will be used to determine the maximum range of levels.
+#' @param rng Logical. If TRUE parameter l will be treated as a range, if FALSE l will be treated literary.
 #' @return A object 'res' from an RData file.
 #' @examples
 #' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
@@ -11,10 +12,14 @@
 #' eCerto:::flt_Vdata(x = tab, l = c(2,5), a = "PFBA")
 #' @keywords internal
 #' @noRd
-flt_Vdata <- function(x = NULL, l = NULL, a = NULL) {
+flt_Vdata <- function(x = NULL, l = NULL, a = NULL, rng = TRUE) {
   if (!is.null(l)) {
-    l_rng <- range(which(levels(x[,"Level"]) %in% l))
-    l_rng <- seq(min(l_rng), max(l_rng))
+    if (rng) {
+      l_rng <- range(which(levels(x[,"Level"]) %in% l))
+      l_rng <- seq(min(l_rng), max(l_rng))
+    } else {
+      l_rng <- l
+    }
     x <- x[as.numeric(x[,"Level"]) %in% l_rng,]
   }
   if (!is.null(a)) {

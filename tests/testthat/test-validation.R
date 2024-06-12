@@ -25,6 +25,10 @@ testthat::test_that(
     testthat::expect_true(inherits(out_styled, "datatables"))
 
     # check generation of Fig.V1
+    ab <- eCerto:::prepDataV1(tab = tab)
+    testthat::expect_true(length(ab)==8)
+    ab <- eCerto:::prepDataV1(tab = tab, fmt = "norm")
+    testthat::expect_true(all(names(attributes(ab))==c("names","Analyte","Level","Concentration")))
     ab <- eCerto:::prepDataV1(tab = tab, a = "PFOA", l = c("2", "7"), fmt = "rel_norm")
     pdf(NULL)
     vdiffr::expect_doppelganger(

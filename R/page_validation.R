@@ -321,8 +321,7 @@ page_validationServer <- function(id, test_data = NULL) {
     # Figure V3 ====
     output$fig_V3 <- shiny::renderPlot({
       req(V2_dat())
-      flt <- tab()[,"Analyte"] %in% current_analyte$name & tab()[,"Level"] %in% input$opt_V1_k
-      prepFigV3(x = tab()[flt,,drop=FALSE])
+      prepFigV3(x = flt_Vdata(x = tab(), l = input$opt_V1_k, a = current_analyte$name, rng = FALSE))
     })
 
     # Help section ====
