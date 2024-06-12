@@ -16,7 +16,7 @@
 #' @keywords internal
 #' @noRd
 c_filter_data <- function(x, c_apm) {
-  if (!get_golem_config("silent")) message("[c_filter_data] filter certification dataset for analyte ", c_apm$name)
+  e_msg(paste("Filtering certification dataset for analyte", c_apm$name))
   if (c_apm$name %in% x[, "analyte"]) {
     x <- x[x[, "analyte"] %in% c_apm$name, ]
     x <- x[!(x[, "ID"] %in% c_apm[["sample_filter"]]), ]

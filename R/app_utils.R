@@ -558,7 +558,7 @@ verify_suggested <- function(pkg) {
 #' @title auto_fill.
 #' @description Fill all empty values (NA) of a vector with the last valid value.
 #' @param x Vector of values possibly containing NA values.
-#' @return NULL.
+#' @return Vector of values without NA values (which are substituted).
 #' @keywords internal
 #' @noRd
 auto_fill <- function(x) {
@@ -571,3 +571,25 @@ auto_fill <- function(x) {
   return(x)
 }
 
+#' @title get_fun_name.
+#' @description Get the name of a calling function.
+#' @param n Function level to go up.
+#' @return Character.
+#' @keywords internal
+#' @noRd
+get_fun_name <- function (n = 0) {
+  n = n + 1
+  cur_call <- sys.call(sys.parent(n))
+  fun_name <- as.character(cur_call)[1]
+  #fun_name = extract_root_and_last_member(fun_name)[["name"]]
+  return(fun_name)
+}
+
+e_msg <- function(x) {
+  if (get_golem_config("silent")) {
+    invisible(NULL)
+  } else {
+    #message("[", get_fun_name(n=1), "]: ", paste(as.character(list(...))))
+    message("[", get_fun_name(n=1), "]: ", x)
+  }
+}

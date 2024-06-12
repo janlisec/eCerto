@@ -20,6 +20,8 @@
 #' @noRd
 prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = FALSE) {
 
+  e_msg("Preparing Tab.V1 (statistics) from imported data")
+
   if (is.null(a)) a <- levels(factor(tab[,"Analyte"]))
   stopifnot(all(a %in% levels(factor(tab[,"Analyte"]))))
 

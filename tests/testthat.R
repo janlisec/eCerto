@@ -1,6 +1,9 @@
 library(testthat)
 library(eCerto)
 
+# setting this variable will suppress most eCerto message calls
+Sys.setenv("GOLEM_CONFIG_ACTIVE"="default")
+
 ## run all tests similar to Ctrl+Shift+T in RStudio
 # testthat::test_check(package = "eCerto", reporter=c("minimal", "location"))
 

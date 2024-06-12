@@ -25,7 +25,7 @@ list2rv <- function(x = NULL) {
       # import functions for defined data_format schemes
       if (x$General$dataformat_version == "2021-05-27") {
         # Non-legacy upload #####
-        if (!silent) message("RDataImport: Non-legacy upload started")
+        e_msg("Non-legacy upload started")
         # rv should contain all variables from uploaded x except for deprecated once
         # split must be false here, otherwise one name list is of class character
         # the other of class list -> Error
@@ -71,13 +71,13 @@ list2rv <- function(x = NULL) {
         # reset time_stamp with current
         # $$ToDo think if this is really desirable
         setValue(rv, c("General", "time_stamp"), Sys.time())
-        if (!silent) message("RDataImport: Non-legacy upload finished")
+        e_msg("RDataImport: Non-legacy upload finished")
       }
     } else {
       # Legacy upload
-      if (!silent) message("[RDataImport]: Legacy upload started")
+      e_msg("Legacy upload started")
       if ("Certification" %in% names(x) && !is.null(x$Certification)) {
-        if (!silent) message("RDataImport_Server: Cert data transfered")
+        e_msg("Certification data transfered")
         setValue(rv, c("Certification", "data"), x[["Certification"]][["data_input"]])
         setValue(rv, c("Certification", "input_files"), x[["Certification"]][["input_files"]])
         # save
@@ -104,7 +104,7 @@ list2rv <- function(x = NULL) {
         setValue(rv, c("General", "apm"), apm)
       }
       if ("Homogeneity" %in% names(x) && !is.null(x$Homogeneity)) {
-        if (!silent) message("RDataImport_Server: Homog data transfered")
+        e_msg("Homogeneity data transfered")
         setValue(rv, c("Homogeneity", "data"), x[["Homogeneity"]][["h_dat"]])
         setValue(rv, c("Homogeneity", "input_files"), x[["Homogeneity"]][["h_file"]])
         # Processing
@@ -113,7 +113,7 @@ list2rv <- function(x = NULL) {
         setValue(rv, c("Homogeneity", "h_Fig_width"), x[["Homogeneity"]][["h_Fig_width"]])
       }
       if ("Stability" %in% names(x) && !is.null(x$Stability)) {
-        if (!silent) message("RDataImport_Server: Stab data transfered")
+        e_msg("Stability data transfered")
         setValue(rv, c("Stability", "input_files"), x[["Stability"]][["s_file"]])
         setValue(rv, c("Stability", "data"), x[["Stability"]][["s_dat"]])
         setValue(rv, c("Stability", "s_vals"), x[["Stability"]][["s_vals"]])

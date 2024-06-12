@@ -83,7 +83,6 @@ m_ExcelUpload_UI <- function(id) {
 #' @keywords internal
 m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
   ns <- shiny::NS(id)
-  silent <- get_golem_config("silent")
 
   shiny::moduleServer(id, function(input, output, session) {
     # Certification, Homogeneity, Stability -----------------------------------
@@ -167,22 +166,23 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     out <- shiny::reactiveValues(data = NULL, input_files = NULL)
 
     # load from Excel
-    load_from_excel <- function() {
+    load_from_excel <- function(fn = current_file_input()$name, fmt = c("Stability", "Homogeneity", "Certification")) {
+      fmt <- match.arg(fmt)
       load_result <- NULL
       tab_flt <- rv_xlsx_range_select$tab
       # Append File column
-      out$input_files <- current_file_input()$name
+      out$input_files <- fn
       # perform minimal validation checks
-      if (exl_fmt() == "Homogeneity") {
+      if (fmt == "Homogeneity") {
         x <- tab_flt[[1]]
         x <- checkHdata(x)
-        x[, "File"] <- rep(current_file_input()$name[1], nrow(x))
+        x[, "File"] <- rep(fn[1], nrow(x))
         load_result <- x
-      } else if (exl_fmt() == "Certification") {
-        if (!silent) message("[m_ExcelUpload_Server] Load Certification data")
+      } else if (fmt == "Certification") {
+        e_msg("Load Certification data (m_ExcelUpload_Server)")
         # append file info
         for (i in 1:length(tab_flt)) {
-          tab_flt[[i]][["File"]] <- rep(current_file_input()$name[i], nrow(tab_flt[[i]]))
+          tab_flt[[i]][["File"]] <- rep(fn[i], nrow(tab_flt[[i]]))
         }
         # try to convert to data frame
         tabC0 <- tryCatch(
@@ -201,7 +201,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
           attr(tabC0, "msg") <- "Range specification is on default value"
         }
         load_result <- tabC0
-      } else if (exl_fmt() == "Stability") {
+      } else if (fmt == "Stability") {
         # STABILITY data may come in 3 versions
         # (1) as simple two column format (Date, Value) with separate tables for each analyte
         # (2) as LTS format with a meta data header containing machine info, certification data etc.
@@ -238,7 +238,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       {
         req(rv_xlsx_range_select$tab)
         message("[m_ExcelUpload] Load-button clicked")
-        tmp <- try(load_from_excel())
+        tmp <- try(load_from_excel(fn = current_file_input()$name, fmt = exl_fmt()))
         if (inherits(tmp, "try-error") | !is.null(attr(tmp, "msg")) | is.null(tmp)) {
           shinyWidgets::ask_confirmation(
             inputId = "ignore_problems", btn_labels = c("Cancel upload", "Upload anyways"),
@@ -262,7 +262,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
 
     shiny::observeEvent(input$ignore_problems, {
       if (input$ignore_problems) {
-        tmp <- try(load_from_excel())
+        tmp <- try(load_from_excel(fn = current_file_input()$name, fmt = exl_fmt()))
         out$data <- tmp
       }
     })
@@ -270,7 +270,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     # when Excel was uploaded with LOAD-Button...
     shiny::observeEvent(out$data,
       {
-        if (!silent) message("[page_start-ExcelUpload] set rv.Data")
+        message("[page_start-ExcelUpload] set rv.Data")
         setValue(rv, c(exl_fmt(), "data"), out$data)
         setValue(rv, c(exl_fmt(), "input_files"), out$input_files)
         if (exl_fmt() == "Certification") {

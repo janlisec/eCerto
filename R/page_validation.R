@@ -221,13 +221,11 @@ page_validationServer <- function(id, test_data = NULL) {
     # Table V1 ====
     tab_V1 <- shiny::reactive({
       req(tab_flt())
-      message("prepTabV1")
       prepTabV1(tab = tab_flt(), alpha = as.numeric(input$opt_tabV1_alpha), k = as.numeric(input$opt_tabV1_k), flt_outliers = input$opt_tabV1_fltLevels)
     })
 
     output$tab_V1 <- DT::renderDT({
       req(tab_V1(), input$opt_tabV1_k, input$opt_tabV1_alpha, input$opt_tabV1_precision)
-      message("style_tabV1")
       a_name <- shiny::isolate(current_analyte$name)
       a_row <- shiny::isolate(current_analyte$row)
       # correct current row of tab V1 in case that analyte filter is applied

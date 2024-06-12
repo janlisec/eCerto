@@ -15,6 +15,7 @@
 #' @keywords internal
 #' @noRd
 style_tabV1 <- function(df, precision = 3, selected = 1) {
+  e_msg("Styling Tab.V1 for HTML output")
   colnames(df) <- gsub("^P_KS_Res$", "P<sub>KS,Res</sub>", colnames(df))
   colnames(df) <- gsub("^P_Neu_Res$", "P<sub>Neu,Res</sub>", colnames(df))
   colnames(df) <- gsub("^P_Mandel$", "P<sub>Mandel</sub>", colnames(df))
