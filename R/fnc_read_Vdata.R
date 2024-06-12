@@ -9,6 +9,11 @@
 #' @param file A valid filepath for an xlsx.
 #' @param fmt The format of the input file. Currently only 'Agilent' type is supported.
 #' @return A object 'res' from an RData file.
+#' @examples
+#' # example code
+#' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
+#' tab <- eCerto:::read_Vdata(file = inp)
+#' head(tab)
 #' @keywords internal
 #' @noRd
 read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {

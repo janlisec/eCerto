@@ -9,7 +9,11 @@
 #' @param flt_outliers Logical. Shall outliers, determined via an F-test testing
 #'     the highest residual be removed from the analysis.
 #' @examples
-#' #
+#' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
+#' tab <- eCerto:::read_Vdata(file = inp)
+#' plyr::ldply(levels(tab[,"Analyte"]), function(a) {
+#'     eCerto:::prepTabV1(tab = tab, a = a)
+#' })#'
 #' @return A data frame with attributes.
 #' @keywords internal
 #' @noRd
