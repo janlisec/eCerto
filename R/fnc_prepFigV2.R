@@ -41,8 +41,8 @@ prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     # quadratic model: m = 2
 
     # fitted data plot
-    graphics::par(mar=c(5,4,3,2)+0.1)
-    plot(x = conc, y = Area_norm, xlab = "Concentration", ylab = "Area/Area_IS", main = a)
+    graphics::par(mar=c(5,ifelse(m==1, 4, 3),3,ifelse(m==1, 0, 1))+0.1)
+    plot(x = conc, y = Area_norm, xlab = "Concentration", ylab = ifelse(m==1, "Area/Area_IS", ""), main = ifelse(m==1, a, ""))
     if (m==1) {
       df <- dfl
       e <- e.l
@@ -57,6 +57,7 @@ prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
       new_conc <- seq(min(c(0, min(conc))), max(conc), length.out=100)
       area_predicted <- stats::predict(object = qm, list(Conc = new_conc, Conc2 = new_conc^2))
       graphics::lines(x = new_conc, y = area_predicted, col = 3)
+      graphics::mtext(text = "(quadratic model)", side = 3, line = 1, cex = cex)
       graphics::mtext(text = expression(y==b[0]+b[1]*x+b[2]*x^2), side = 3, line = -1.3, at = 0, adj = 0, cex = cex)
       graphics::mtext(text = bquote(b[0]==.(round(stats::coef(qm)[1], 4))), side = 3, line = -2.5, at = 0, adj = 0, cex = cex)
       graphics::mtext(text = bquote(b[1]==.(round(stats::coef(qm)[2], 4))), side = 3, line = -3.7, at = 0, adj = 0, cex = cex)
@@ -66,23 +67,32 @@ prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     graphics::points(df, pch=4, col=2, cex=2)
 
     # barplot of residuals
-    graphics::par(mar=c(3,4,0,2)+0.1)
+    graphics::par(mar=c(3,ifelse(m==1, 4, 3),0,ifelse(m==1, 0, 1))+0.1)
     barplot.x <- graphics::barplot(unname(e), ylim = res_rng, ann=F)
     flt <- e>=0
     graphics::text(x = barplot.x[flt], y = 0, labels = paste(names(e)[flt], " "), srt=90, adj = 1, cex = 1/cex)
     graphics::text(x = barplot.x[!flt], y = 0, labels = paste(" ", names(e)[!flt]), srt=90, adj = 0, cex = 1/cex)
-    graphics::mtext(text = "Residuals", side = 2, line = 3, cex = cex)
+    graphics::mtext(text = ifelse(m==1, "Residuals", ""), side = 2, line = 3, cex = cex)
 
     # zoomed plot
-    graphics::par(mar=c(5,4,0,2)+0.1)
+    graphics::par(mar=c(5,ifelse(m==1, 4, 3),0,ifelse(m==1, 0, 1))+0.1)
     if (all(df[,1] > vals[,"LOQ"])) {
       plot(1,1,ann=FALSE,axes=F,type="n")
       graphics::text(x = 1, y = 1, labels = expression(LOQ<c[min]))
     } else {
       i <- 1+max(which(df[,1]<=vals[,"LOQ"]))
-      plot(x = conc, y = Area_norm, xlab = "Concentration", ylab = "Area/Area_IS (LOQ range)", xlim = c(0, df[i,1]), ylim = c(0, df[i,2]))
+      # xlim <- c(0, df[i,1])
+      # ylim <- c(0, df[i,2])
+      xlim <- c(0, vals[,"LOQ"])
+      y_max <- stats::predict(object = stats::lm(Area_norm ~ Conc, data=dfl), list(Conc = c(vals[,"LOD"], vals[,"LOQ"])))
+      ylim <- c(0, max(y_max))
+      plot(x = conc, y = Area_norm, xlab = "Concentration", ylab = ifelse(m==1, "Area/Area_IS (LOQ range)", ""), xlim = xlim, ylim = ylim)
       if (m==1) {
         graphics::abline(b = vals[,"b1"], a = vals[,"b0"], col = 3)
+        graphics::segments(x0 = vals[,"LOD"], y0 = 0, y1 = y_max[1], col = 4, lty = 2)
+        graphics::mtext(text = "LOD", at = vals[,"LOD"], side = 3, line = 0.1, cex = 2/3*cex, col = 4)
+        graphics::segments(x0 = vals[,"LOQ"], y0 = 0, y1 = y_max[2], col = 4, lty = 2)
+        graphics::mtext(text = "LOQ", at = vals[,"LOQ"], side = 3, line = 0.1, cex = 2/3*cex, col = 4)
       } else {
         graphics::lines(x = new_conc, y = area_predicted, col = 3)
       }
