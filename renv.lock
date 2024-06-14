@@ -378,14 +378,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.5.4",
+      "Version": "0.5.6",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "2a4b1827a8bd1acb74fb9519a65192b52d67b9e3",
-      "RemoteHost": "api.github.com",
+      "RemoteSha": "dfac1cd2652463ba44c7d5b471fa13f3f167d295",
       "Requirements": [
         "DT",
         "R",
@@ -406,18 +406,18 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "0d5fcab16a7c25a077dddb1bc14d0df8"
+      "Hash": "8703e73e843337afcad99fc11a89e5e8"
     },
     "evaluate": {
       "Package": "evaluate",
-      "Version": "0.23",
+      "Version": "0.24.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "methods"
       ],
-      "Hash": "daf4a1246be12c1fa8c7705a0935c1a0"
+      "Hash": "a1066cbc05caee9a4bf6d90f194ff4da"
     },
     "fansi": {
       "Package": "fansi",
