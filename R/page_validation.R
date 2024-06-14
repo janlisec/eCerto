@@ -9,8 +9,10 @@
 #'       eCerto:::page_validationUI(id = "test")
 #'     ),
 #'     server = function(input, output, session) {
-#'       rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
-#'       eCerto:::page_validationServer(id = "test", test_data = eCerto:::read_Vdata(file = "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_05_22_B003_Arbeitsbereich_neu.xlsx"))
+#'       #fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_05_22_B003_Arbeitsbereich_neu.xlsx"
+#'       fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_06_13_B003_NG-BG.xlsx"
+#'       td <- eCerto:::read_Vdata(file = fl)
+#'       eCerto:::page_validationServer(id = "test", test_data = td)
 #'     }
 #'   )
 #' }
@@ -168,7 +170,7 @@ page_validationServer <- function(id, test_data = NULL) {
               output_file = file,
               output_format = rmarkdown::html_document(),
               params = list(
-                "inp_data" = style_tabV3(tab()),
+                "inp_data" = DT::datatable(data = tab(), rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL)))),
                 "tab_V1" = style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision), selected = NULL),
                 "fig_V1" = function() { prepFigV1(ab())},
                 "fig_V1_width" = calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120),
