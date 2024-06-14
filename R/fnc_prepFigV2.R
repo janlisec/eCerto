@@ -47,10 +47,13 @@ prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
       df <- dfl
       e <- e.l
       graphics::abline(b = vals[,"b1"], a = vals[,"b0"], col = 3)
-      graphics::mtext(text = expression(y==b[0]+b[1]*x), side = 3, line = -1.3, at = 0, adj = 0, cex = cex)
-      graphics::mtext(text = bquote(b[0]==.(round(vals[,"b0"], 4))), side = 3, line = -2.5, at = 0, adj = 0, cex = cex)
-      graphics::mtext(text = bquote(b[1]==.(round(vals[,"b1"], 4))), side = 3, line = -3.7, at = 0, adj = 0, cex = cex)
-      graphics::mtext(text = paste("r =", round(stats::cor((stats::lm(Area_norm ~ Conc, data=df))$fitted.values, df$Area_norm), 4)), side = 3, line = -4.9, at = 0, adj = 0, cex = cex)
+      plot_ann <- list(
+        expression(y==b[0]+b[1]*x),
+        bquote(b[0]==.(round(vals[,"b0"], 4))),
+        bquote(b[1]==.(round(vals[,"b1"], 4))),
+        paste("r =", round(stats::cor((stats::lm(Area_norm ~ Conc, data=df))$fitted.values, df$Area_norm), 4))
+      )
+      for (i in 1:length(plot_ann)) graphics::mtext(text = plot_ann[[i]], side = 3, line = -0.2-1.2*i, at = par("usr")[1], adj = -0.04, cex = cex)
     } else {
       df <- dfq
       e <- e.qm
@@ -58,11 +61,14 @@ prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
       area_predicted <- stats::predict(object = qm, list(Conc = new_conc, Conc2 = new_conc^2))
       graphics::lines(x = new_conc, y = area_predicted, col = 3)
       graphics::mtext(text = "(quadratic model)", side = 3, line = 1, cex = cex)
-      graphics::mtext(text = expression(y==b[0]+b[1]*x+b[2]*x^2), side = 3, line = -1.3, at = 0, adj = 0, cex = cex)
-      graphics::mtext(text = bquote(b[0]==.(round(stats::coef(qm)[1], 4))), side = 3, line = -2.5, at = 0, adj = 0, cex = cex)
-      graphics::mtext(text = bquote(b[1]==.(round(stats::coef(qm)[2], 4))), side = 3, line = -3.7, at = 0, adj = 0, cex = cex)
-      graphics::mtext(text = bquote(b[2]==.(round(stats::coef(qm)[3], 4))), side = 3, line = -4.9, at = 0, adj = 0, cex = cex)
-      graphics::mtext(text = paste("r =", round(stats::cor(qm$fitted.values, dfq$Area_norm), 4)), side = 3, line = -6.1, at = 0, adj = 0, cex = cex)
+      plot_ann <- list(
+        expression(y==b[0]+b[1]*x+b[2]*x^2),
+        bquote(b[0]==.(round(stats::coef(qm)[1], 4))),
+        bquote(b[1]==.(round(stats::coef(qm)[2], 4))),
+        bquote(b[2]==.(round(stats::coef(qm)[3], 4))),
+        paste("r =", round(stats::cor(qm$fitted.values, dfq$Area_norm), 4))
+      )
+      for (i in 1:length(plot_ann)) graphics::mtext(text = plot_ann[[i]], side = 3, line = -0.2-1.2*i, at = par("usr")[1], adj = -0.04, cex = cex)
     }
     graphics::points(df, pch=4, col=2, cex=2)
 
