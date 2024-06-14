@@ -561,10 +561,10 @@ verify_suggested <- function(pkg) {
 #' @return Vector of values without NA values (which are substituted).
 #' @keywords internal
 #' @noRd
-auto_fill <- function(x) {
+auto_fill <- function(x, also_fill = c("")) {
   stopifnot(length(x)>=2)
   stopifnot(!is.na(x[1]))
-  idx <- is.na(x)
+  idx <- is.na(x) | x %in% also_fill
   if (any(idx)) {
     for (i in which(idx)) x[i] <- x[i-1]
   }
