@@ -53,7 +53,7 @@ prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
         bquote(b[1]==.(round(vals[,"b1"], 4))),
         paste("r =", round(stats::cor((stats::lm(Area_norm ~ Conc, data=df))$fitted.values, df$Area_norm), 4))
       )
-      for (i in 1:length(plot_ann)) graphics::mtext(text = plot_ann[[i]], side = 3, line = -0.2-1.2*i, at = par("usr")[1], adj = -0.04, cex = cex)
+      for (i in 1:length(plot_ann)) graphics::mtext(text = plot_ann[[i]], side = 3, line = -0.2-1.2*i, at = graphics::par("usr")[1], adj = -0.04, cex = cex)
     } else {
       df <- dfq
       e <- e.qm
@@ -68,7 +68,7 @@ prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
         bquote(b[2]==.(round(stats::coef(qm)[3], 4))),
         paste("r =", round(stats::cor(qm$fitted.values, dfq$Area_norm), 4))
       )
-      for (i in 1:length(plot_ann)) graphics::mtext(text = plot_ann[[i]], side = 3, line = -0.2-1.2*i, at = par("usr")[1], adj = -0.04, cex = cex)
+      for (i in 1:length(plot_ann)) graphics::mtext(text = plot_ann[[i]], side = 3, line = -0.2-1.2*i, at = graphics::par("usr")[1], adj = -0.04, cex = cex)
     }
     graphics::points(df, pch=4, col=2, cex=2)
 
