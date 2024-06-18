@@ -84,14 +84,14 @@
     },
     "PKI": {
       "Package": "PKI",
-      "Version": "0.1-12",
+      "Version": "0.1-14",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "base64enc"
       ],
-      "Hash": "999d7960fe5a5fd98267d0b68fd10065"
+      "Hash": "f5b9c6b2f62f1fa3dd53fd1ddccbb241"
     },
     "R6": {
       "Package": "R6",
@@ -378,14 +378,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.5.6",
+      "Version": "0.5.9",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "dfac1cd2652463ba44c7d5b471fa13f3f167d295",
+      "RemoteSha": "431ad9ba1dcc225cfebab8ccb97e4179ae03f3e2",
       "Requirements": [
         "DT",
         "R",
@@ -406,7 +406,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "8703e73e843337afcad99fc11a89e5e8"
+      "Hash": "0ffa5b533f6ae1e141c7ea3757c9f15f"
     },
     "evaluate": {
       "Package": "evaluate",
@@ -1308,7 +1308,7 @@
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.44",
+      "Version": "0.45",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1316,7 +1316,7 @@
         "stats",
         "tools"
       ],
-      "Hash": "317a0538d32f4a009658bcedb7923f4b"
+      "Hash": "ca59c87fe305b16a9141a5874c3a7889"
     },
     "xml2": {
       "Package": "xml2",
