@@ -24,10 +24,12 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
   }
   # use sub text in header
   colnames(x) <- gsub("_diff", "<sub>diff</sub>", colnames(x))
-  colnames(x) <- gsub("_slope", "<sub>slope</sub>", colnames(x))
+  colnames(x) <- gsub("^slope$", "b<sub>1</sub>", colnames(x))
+  colnames(x) <- gsub("^SE_slope$", "s(b<sub>1</sub>)", colnames(x))
   colnames(x) <- gsub("_stab", "<sub>stab</sub>", colnames(x))
   colnames(x) <- gsub("_cert", "<sub>cert</sub>", colnames(x))
   colnames(x) <- gsub("mean", "&micro<sub>s</sub>", colnames(x))
+  colnames(x) <- gsub("^P$", "P<sub>b1</sub>", colnames(x))
   inv_cols <- grep("style_", colnames(x)) - 1
   # attach a blank column at the end
   x <- cbind(x, data.frame(" " = " ", check.names = FALSE))
@@ -49,5 +51,12 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
     rownames = NULL, escape = FALSE
   )
   dt <- DT::formatStyle(table = dt, columns = "analyte", valueColumns = "style_analyte", target = "cell", color = DT::styleValue())
+  dt <- DT::formatStyle(
+    table = dt,
+    columns = which(colnames(x) == "P<sub>b1</sub>"),
+    target = "cell",
+    color = DT::styleInterval(cuts = 0.05, values = c("red", "")),
+    fontWeight = DT::styleInterval(cuts = 0.05, values = c("bold", "normal"))
+  )
   return(dt)
 }
