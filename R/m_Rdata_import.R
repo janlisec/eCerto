@@ -46,7 +46,6 @@ m_RDataImport_UI <- function(id) {
 m_RDataImport_Server <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    silent <- get_golem_config("silent")
 
     # helper function
     load_test_data <- function(x = NULL) {
@@ -64,7 +63,7 @@ m_RDataImport_Server <- function(id, rv) {
         # set current analyte to trigger C Modul elements
         rv$cur_an <- unname(rv$a_p("name")[1])
       } else {
-        message("Probably the format of 'rv' has changed. Please update 'data/CRM001.rda'")
+        e_msg("Probably the format of 'rv' has changed. Please update 'data/CRM001.rda'")
       }
     }
 

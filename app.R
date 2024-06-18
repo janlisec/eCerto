@@ -8,6 +8,7 @@
 
 # To deploy to shinyapps.io:
 # options(shiny.testmode = FALSE)
+# Sys.setenv("GOLEM_CONFIG_ACTIVE"="dev")
 # rsconnect::deployApp(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto", appName = c("test","eCerto")[2], forceUpdate = TRUE)
 
 # To check for errors in shinyapps.io:

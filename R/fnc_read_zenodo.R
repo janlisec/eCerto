@@ -28,7 +28,7 @@ read_zenodo <- function(id) {
     file_urls <- content$files$links$self
     # file_urls <- content$files$filename
     if (length(file_urls) >= 2) {
-      message("[read_zenodo] More than one file in this zenodo record, please select a unique id. Reading first file only.")
+      e_msg("More than one file in this zenodo record, please select a unique id. Reading first file only.")
       file_urls <- file_urls[1]
     }
 
@@ -43,7 +43,7 @@ read_zenodo <- function(id) {
     # out <- try(curl::multi_download(urls = file_urls, destfile = dest), silent = TRUE)
     if (inherits(out, "try-error")) {
       if (interactive()) {
-        message("Sorry, something went wrong upon download. :/")
+        e_msg("Sorry, something went wrong upon download. :/")
       } else {
         shinyWidgets::show_alert(title = NULL, type = "error", text = "Sorry, something went wrong upon download. :/", closeOnClickOutside = TRUE)
       }
@@ -52,7 +52,7 @@ read_zenodo <- function(id) {
     }
   } else {
     if (interactive()) {
-      message("Sorry, could not find this Zenodo ID. :/")
+      e_msg("Sorry, could not find this Zenodo ID. :/")
     } else {
       shinyWidgets::show_alert(title = NULL, type = "error", text = "Sorry, could not find this Zenodo ID. :/", closeOnClickOutside = TRUE)
     }

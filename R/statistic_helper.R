@@ -299,7 +299,7 @@ pgrubbs <- function(q, n, type = 10) {
 grubbs.test <- function(x, type = 10, tail = c("lower", "upper")) {
   tail <- match.arg(tail)
   if (!any(type == c(10, 20))) {
-    message("'grubbs.test' is only implemented for type = 10 or 20. Using type = 20 (double Grubbs).")
+    e_msg("is only implemented for type = 10 or 20. Using type = 20 (double Grubbs).")
   }
   x <- sort(x[stats::complete.cases(x)])
   n <- length(x)

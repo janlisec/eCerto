@@ -12,7 +12,6 @@
 #' @keywords internal
 #' @noRd
 list2rv <- function(x = NULL) {
-  silent <- get_golem_config("silent")
 
   # extract list elements of x by name
   xnames <- listNames(l = x, maxDepth = 2, split = FALSE)

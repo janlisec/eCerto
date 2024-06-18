@@ -11,7 +11,7 @@
 #' @keywords internal
 #' @noRd
 styleTabS1 <- function(x, mt = NULL, sr = 1) {
-  message("[styleTabS1] styling Tab.S1")
+  e_msg("styling Tab.S1")
   for (i in c("slope", "SE_slope", "mean", "u_stab", "P")) {
     x[, i] <- pn(x[, i], 4)
   }

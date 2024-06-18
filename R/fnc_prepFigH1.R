@@ -15,7 +15,7 @@
 #' @keywords internal
 #' @noRd
 prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE) {
-  message("[prepFigH1] generate boxplot for imported homogeneity data")
+  e_msg("generate boxplot for imported homogeneity data")
   stopifnot(all(c("analyte", "H_type", "Flasche", "value") %in% colnames(x)))
   prec <- try(as.integer(prec[1]))
   if (inherits(prec, "try-error") || length(prec) != 1 || is.na(prec)) prec <- 4L

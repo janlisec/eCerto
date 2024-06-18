@@ -6,7 +6,7 @@
 #' @keywords internal
 #' @noRd
 styleTabL1 <- function(x) {
-  message("[styleTabL1] styling Tab.L1")
+  e_msg("styling Tab.L1")
   # use sub text in header
   # colnames(x) <- gsub("_diff", "<sub>diff</sub>", colnames(x))
   colnames(x) <- gsub("_slope", "<sub>slope</sub>", colnames(x))

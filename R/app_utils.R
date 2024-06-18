@@ -88,7 +88,6 @@ update_reactivecell <- function(r, colname, analyterow = NULL, value) {
     value <- value[1]
   }
 
-  # message("reactivecell: Update ",  deparse(substitute(r())), "; column: ", colname)
   # extract original row to be edit into variable (1/3)
   df <- r()
   if (is.null(analyterow)) {
@@ -460,7 +459,7 @@ orderPvalue <- function(means, alpha, pmat) {
   }
   output <- data.frame("mean" = as.numeric(w[, 2]), groups = M, row.names = as.character(w[, 1]))
   if (k > 52) {
-    message("\nThe number of estimated groups (", k, ") exceeded the maximum number of available labels (52).\n")
+    e_msg(paste0("The number of estimated groups (", k, ") exceeded the maximum number of available labels (52)."))
   }
   invisible(output)
 }
@@ -589,7 +588,16 @@ e_msg <- function(x) {
   if (get_golem_config("silent")) {
     invisible(NULL)
   } else {
-    #message("[", get_fun_name(n=1), "]: ", paste(as.character(list(...))))
-    message("[", get_fun_name(n=1), "]: ", x)
+    curr_mod <- NA
+    curr_fnc <- get_fun_name(n=1)
+    curr_fnc <- rev(strsplit(curr_fnc, "\n")[[1]])[1]
+    if (curr_fnc %in% c("observe", "<reactive>")) {
+      # if (exists("session")) browser()
+      # if ("session" %in% ls(envir = sys.frame(1))) browser()
+      # if (x == "recalc cert_mean") browser()
+      # $$ToDo$$ try to get the calling module name via session$ns() to be more informative
+      #curr_mod <- ifelse(exists("session"), session$ns(""), NA)
+    }
+    message("[", curr_fnc, "]: ", x, ifelse(is.na(curr_mod), "", paste0(" (", curr_mod, ")")))
   }
 }

@@ -36,7 +36,7 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
   if (plot_nominal_scale) time <- factor(time)
   if (plot_ln_relative) val <- log(val)
   tf <- factor(tmp[, "Temp"])
-  if (length(levels(tf)) > 8) message("Nore than 8 Temp levels are not well supported in plotting.")
+  if (length(levels(tf)) > 8) e_msg("Nore than 8 Temp levels are not well supported in plotting.")
   # pchs <- c(21:25, 21:23)[as.numeric(tf)]
   # cols <- c(1:8)[as.numeric(tf)]
   ctls <- color_temperature_levels(x = tmp[, "Temp"])

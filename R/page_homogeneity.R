@@ -137,7 +137,6 @@ page_HomogeneityServer <- function(id, rv) {
       if (rv$e_present()["Homogeneity"]) {
         shiny::updateTabsetPanel(session = session, "HomogeneityPanel", selected = "loaded")
       } else {
-        message("[Homogeneity] Show empty panel")
         shiny::updateTabsetPanel(session = session, "HomogeneityPanel", selected = "standby")
       }
     })
@@ -211,14 +210,10 @@ page_HomogeneityServer <- function(id, rv) {
 
     precision <- shiny::reactive({
       shiny::req(input$h_sel_analyt)
-      # message("[H] setting precision")
       prec <- 4
       an <- as.character(h_vals()[interaction(h_vals()[, "analyte"], h_vals()[, "H_type"]) == input$h_sel_analyt, "analyte"])
       apm <- getValue(rv, c("General", "apm"))
-      if (an %in% names(apm)) {
-        # prec <- apm[[an]][["precision_export"]]
-        prec <- apm[[an]][["precision"]]
-      }
+      if (an %in% names(apm)) { prec <- apm[[an]][["precision"]] }
       return(prec)
     })
 

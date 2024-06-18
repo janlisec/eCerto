@@ -22,7 +22,7 @@ show_help <- function(filename, show_modal = TRUE) {
   }
   help_text <- NULL
   if (length(file_in) == 1 && file.exists(file_in)) {
-    message("[show_help] Rendering Rmd file: ", file_in)
+    e_msg(paste("Rendering Rmd file:", file_in))
     help_text <- shiny::withMathJax(
       shiny::HTML(
         # markdown::mark_html(file = file_in, options = "+tables+autolink+latex_math-standalone")
@@ -41,7 +41,7 @@ show_help <- function(filename, show_modal = TRUE) {
       )
     }
   } else {
-    message("[show_help] cant find help file: ", filename)
+    e_msg(paste("cant find help file:", filename))
   }
   return(help_text)
 }

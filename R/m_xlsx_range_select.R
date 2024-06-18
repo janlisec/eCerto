@@ -83,7 +83,6 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
   ns <- shiny::NS(id)
 
   shiny::moduleServer(id, function(input, output, session) {
-    silent <- get_golem_config("silent")
 
     getRngTxt <- function(sc = 1, sr = 1, ec = 1, er = 1) {
       paste0(LETTERS[sc], sr, ":", LETTERS[ec], er)
@@ -101,7 +100,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
       shiny::req(current_file_input(), sheet(), file(), excelformat())
       xl_fmt <- excelformat()
       # use different modes of fnc_load_xlsx to import data depending on file type
-      if (!silent) message("[m_xlsx_range_select_Server] reactive(tab): load ", nrow(current_file_input()), " files")
+      e_msg(paste("load ", nrow(current_file_input()), " files"))
       if (xl_fmt == "Certification") {
         l <- lapply(current_file_input()$datapath, function(x) {
           fnc_load_xlsx(filepath = x, sheet = sheet(), method = "tidyxl")
@@ -141,7 +140,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
 
     # event: upload of excel file(s)
     shiny::observeEvent(tab(), {
-      if (!silent) message("m_xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
+      e_msg("m_xlsx_range_select_Server: observeEvent(tab): table uploaded; set initial crop parameters")
       tab_param$tab <- tab()
       tab_param$tab_upload <- shiny::isolate(tab()) # unchanged table from upload (for checking if row and column was selected)
       tab_param$start_row <- 1
@@ -157,7 +156,6 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
 
     # if rows and columns in the DT() have been selected
     # shiny::observeEvent(input$uitab_cells_selected, {
-    #   if (!silent) message("m_xlsx_range_select_Server: observeEvent(input$uitab_cells_selected)")
     #   cs <- input$uitab_cells_selected
     #   if (nrow(cs) >= 2) {
     #     check_cs <- function(x, exc_fmt = "Certification") {
@@ -239,7 +237,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
     )
 
     shiny::observeEvent(input$uitab_range_selected, {
-      if (!silent) message("m_xlsx_range_select_Server: observeEvent(input$uitab_range_selected)")
+      e_msg("m_xlsx_range_select_Server: observeEvent(input$uitab_range_selected)")
       cs <- input$uitab_range_selected
       if (nrow(cs) >= 2) {
         check_cs <- function(x, exc_fmt = "Certification") {

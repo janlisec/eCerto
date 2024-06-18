@@ -134,10 +134,8 @@ m_arrheniusUI <- function(id) {
 #' @keywords internal
 m_arrheniusServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
-    silent <- get_golem_config("silent")
 
     prec <- 6
-
     out <- shiny::reactiveValues("switch" = 0)
 
     # use err_txt to provide error messages to the user

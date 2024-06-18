@@ -12,7 +12,7 @@
 #' @keywords internal
 #' @noRd
 checkHdata <- function(x) {
-  message("[checkHdata] ensure integrity of imported homogeneity data")
+  e_msg("ensure integrity of imported homogeneity data")
   # ensure that x is a data frame
   if (!is.data.frame(x)) x <- as.data.frame(x)
   # ensure that column 'analyte' exists, is unique, first column of df and converted to factor keeping order of elements

@@ -46,39 +46,29 @@ m_RDataexport_Server <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- shiny::NS(id)
 
-    silent <- get_golem_config("silent") # messages
-
     shiny::observeEvent(input$user, {
       if (!identical(input$user, getValue(rv, c("General", "user")))) {
-        if (!silent) message("RData-export: set rv$user to ", input$user)
+        e_msg(paste("set rv$user to", input$user))
         setValue(rv, c("General", "user"), input$user)
       }
     })
     shiny::observeEvent(getValue(rv, c("General", "user")), {
       if (!identical(input$user, getValue(rv, c("General", "user")))) {
-        if (!silent) message("RData-export: user-input updated to ", getValue(rv, c("General", "user")))
-        shiny::updateTextInput(
-          session = session,
-          inputId = "user",
-          value = getValue(rv, c("General", "user"))
-        )
+        e_msg(paste("user-input updated to", getValue(rv, c("General", "user"))))
+        shiny::updateTextInput(session = session, inputId = "user", value = getValue(rv, c("General", "user")))
       }
     })
 
     shiny::observeEvent(input$study_id, {
       if (!identical(input$study_id, getValue(rv, c("General", "study_id")))) {
-        if (!silent) message("RData-export: set rv$study_id to ", input$study_id)
+        e_msg(paste("set rv$study_id to ", input$study_id))
         setValue(rv, c("General", "study_id"), input$study_id)
       }
     })
     shiny::observeEvent(getValue(rv, c("General", "study_id")), {
       if (!identical(input$study_id, getValue(rv, c("General", "study_id")))) {
-        if (!silent) message("RData-export: study_id-input updated to ", getValue(rv, c("General", "study_id")))
-        shiny::updateTextInput(
-          session = session,
-          inputId = "study_id",
-          value =  getValue(rv, c("General", "study_id"))
-        )
+        e_msg(paste("study_id-input updated to ", getValue(rv, c("General", "study_id"))))
+        shiny::updateTextInput(session = session, inputId = "study_id", value =  getValue(rv, c("General", "study_id")))
       }
     })
 

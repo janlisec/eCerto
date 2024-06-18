@@ -11,7 +11,7 @@
 #' @keywords internal
 #' @noRd
 prepTabH1 <- function(x, adjust = FALSE) {
-  message("[prepTabH1] perform statistics on imported homogeneity data")
+  e_msg("perform statistics on imported homogeneity data")
   stopifnot(all(c("analyte", "H_type", "Flasche", "value") %in% colnames(x)))
   if (!is.factor(x[, "Flasche"])) x[, "Flasche"] <- factor(x[, "Flasche"])
   out <- plyr::ldply(split(x, x[, "analyte"]), function(y) {

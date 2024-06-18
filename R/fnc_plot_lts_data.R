@@ -135,7 +135,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     x_min <- floor(min(c(mon, foo_lts, t_cert)))
     x_max <- ceiling(max(c(mon, foo_lts, t_cert)))
     xlim <- c(x_min, x_max)
-    if (!all(is.finite(ylim))) message("[plot_lts_data] non-finite ylim:", ylim)
+    if (!all(is.finite(ylim))) e_msg(paste("non-finite ylim:", ylim))
     plot(
       c(foo_adj, mn + b * foo_lts) ~ c(mon, foo_lts),
       ylim = ylim, xlim = xlim, type = "n",

@@ -13,7 +13,7 @@
 #' @keywords internal
 #' @noRd
 styleTabH2 <- function(x, precision = 4) {
-  message("[styleTabH2] styling Tab.H2")
+  e_msg("styling Tab.H2")
   cols <- which(colnames(x) %in% c("mean", "sd"))
   for (i in cols) x[, i] <- pn(x[, i], precision)
   # attach a blank column at the end

@@ -58,7 +58,7 @@ eCerto <- R6::R6Class(
     #' @param rv 'reactiveValues' object.
     #' @return A new 'eCerto' object.
     initialize = function(rv) {
-      # message("Initiate R6 object")
+      e_msg("Initiate eCerto R6 object")
       if (missing(rv)) {
         # the 'reactiveValues' object parsed on initialize.
         # set up internal data structure and fill with test data

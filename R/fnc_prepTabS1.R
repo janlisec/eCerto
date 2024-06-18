@@ -13,7 +13,7 @@
 #' @keywords internal
 #' @noRd
 prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means = FALSE, mt = NULL, optimize_u_stab = FALSE) {
-  message("[prepTabS1] perform statistics on imported stability data")
+  e_msg("perform statistics on imported stability data")
   time_fmt <- match.arg(time_fmt)
   stopifnot(all(c("analyte", "Value", "Date") %in% colnames(x)))
   if (!is.numeric(t_cert) | (is.numeric(t_cert) && !(t_cert > 0))) t_cert <- as.numeric(NA)

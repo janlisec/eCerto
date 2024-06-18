@@ -63,20 +63,16 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
 #' @keywords internal
 m_materialtabelleServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
-    silent <- get_golem_config("silent")
     ns <- shiny::NS(id)
 
     modify_FUcols_Server(id = "FUcols", mt = mater_table)
 
     # use err_txt to provide error messages to the user
     err_txt <- shiny::reactiveVal(NULL)
-    shiny::observeEvent(err_txt(),
-      {
-        shinyWidgets::show_alert(title = NULL, text = err_txt(), type = "info")
-        err_txt(NULL)
-      },
-      ignoreNULL = TRUE
-    )
+    shiny::observeEvent(err_txt(), {
+      shinyWidgets::show_alert(title = NULL, text = err_txt(), type = "info")
+      err_txt(NULL)
+    }, ignoreNULL = TRUE)
 
     a <- shiny::reactive({
       req(rv$a_p("name"))
@@ -86,7 +82,6 @@ m_materialtabelleServer <- function(id, rv) {
 
     pooling <- shiny::reactive({
       shiny::req(a(), getValue(rv, c("General", "apm")))
-      # getValue(rv, c("General","apm"))[[a()]][["pooling"]]
       rv$a_p("pooling")[a()]
     })
 
@@ -147,7 +142,7 @@ m_materialtabelleServer <- function(id, rv) {
           }
         }
         if (identical(names(units), as.character(mt[, "analyte"]))) {
-          if (!silent) message("[materialtabelle] Set analyte units for 'mt' from 'rv C data'")
+          e_msg("Set analyte units for 'mt' from 'rv C data'")
           mt[, "unit"] <- units
         } else {
           err_txt("[materialtabelle] Can't set analyte units for Tab.3 - Material table")
@@ -165,7 +160,7 @@ m_materialtabelleServer <- function(id, rv) {
       }
       # store result back if modifications were performed
       if (!identical(mater_table(), mt)) {
-        if (!silent) message("[materialtabelle] set local 'mt' from 'rv'")
+        e_msg("set local 'mt' from 'rv'")
         mater_table(mt)
       }
     })
@@ -173,7 +168,7 @@ m_materialtabelleServer <- function(id, rv) {
     # helper function to update calculations
     recalc_mat_table <- function(mt = NULL) {
       if (any(is.finite(mt[, "mean"])) & any(is.finite(mt[, "sd"]))) {
-        if (!silent) message("[materialtabelle] recalculate table")
+        e_msg("recalculate table")
 
         # recalculate all cert_mean values including correction factors
         mt[, "cert_val"] <- apply(mt[, get_UF_cols(mt, "F"), drop = FALSE], 1, prod, na.rm = T)
@@ -220,7 +215,7 @@ m_materialtabelleServer <- function(id, rv) {
     # calculate cert_mean
     cert_mean <- shiny::reactive({
       shiny::req(c_fltData())
-      if (!silent) message("[materialtabelle] recalc cert_mean")
+      e_msg("recalc cert_mean")
       data <- c_fltData()[!c_fltData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs
       # from calculation of cert mean while keeping it in Figure
@@ -238,7 +233,7 @@ m_materialtabelleServer <- function(id, rv) {
     # calculate cert_sd
     cert_sd <- shiny::reactive({
       shiny::req(c_fltData())
-      if (!silent) message("[materialtabelle] recalc cert_sd")
+      e_msg("recalc cert_sd")
       data <- c_fltData()[!c_fltData()[, "L_flt"], ]
       # re-factor Lab because user may have excluded one or several labs
       # from calculation of cert mean while keeping it in Figure
@@ -272,7 +267,7 @@ m_materialtabelleServer <- function(id, rv) {
       shiny::req(c_fltData())
       an <- as.character(c_fltData()[1, "analyte"])
       if (!is.null(mater_table()) && an %in% mater_table()[, "analyte"]) {
-        if (!silent) message("[materialtabelle] update initiated for ", an)
+        e_msg(paste("update initiated for", an))
         update_reactivecell(r = mater_table, colname = "mean", analyterow = an, value = cert_mean())
         update_reactivecell(r = mater_table, colname = "sd", analyterow = an, value = cert_sd())
         update_reactivecell(r = mater_table, colname = "n", analyterow = an, value = n())
@@ -298,7 +293,7 @@ m_materialtabelleServer <- function(id, rv) {
           colnames(mt)[colnames(mt) == cc[k, "ID"]] <- cc[k, "Name"]
         }
       }
-      if (!silent) message("[materialtabelle] Check if analytes are confirmed and rename F and U cols from mater_table()")
+      e_msg("Check if analytes are confirmed and rename F and U cols from mater_table()")
       return(mt)
     })
 
@@ -329,7 +324,7 @@ m_materialtabelleServer <- function(id, rv) {
         shiny::req(mater_table())
         i <- input$matreport_rows_selected
         if (is.null(i)) {
-          message("[materialtabelle] input$matreport_rows_selected - [ToDo] implement automatic (re)selection of rows")
+          e_msg("input$matreport_rows_selected - [ToDo] implement automatic (re)selection of rows")
           # $$ToDo$$ user deselected row --> reselect previous
           # use proxy <- DT::dataTableProxy('tab') and than
           # DT::selectRows(proxy, selected=selected_row_idx$row
@@ -343,18 +338,18 @@ m_materialtabelleServer <- function(id, rv) {
           an <- as.character(mater_table()[i, "analyte"])
           if (!getValue(rv, c("General", "apm"))[[an]][["confirmed"]]) {
             # mark analyte as confirmed
-            message("[materialtabelle] setting ", an, " as confirmed")
+            e_msg(paste("setting", an, "as confirmed"))
             tmp <- getValue(rv, c("General", "apm"))
             tmp[[an]][["confirmed"]] <- TRUE
             setValue(rv, c("General", "apm"), tmp)
           }
           if (i != selected_row_idx$row) {
             # update index
-            message("[materialtabelle] input$matreport_rows_selected - setting selected_row_idx")
+            e_msg("input$matreport_rows_selected - setting selected_row_idx")
             selected_row_idx$row <- i
           } else {
             if (is.null(rv$cur_an) || rv$cur_an != an) {
-              message("[materialtabelle] setting rv$cur_an")
+              e_msg("setting rv$cur_an")
               # set current analyte in rv to trigger calculation of lab_means, c_mean, c_sd etc.
               rv$cur_an <- an
             }
@@ -366,7 +361,7 @@ m_materialtabelleServer <- function(id, rv) {
 
     # ensure update of mater_table() on user input
     shiny::observeEvent(input$matreport_cell_edit, {
-      if (!silent) message("[materialtabelle] user edited table cell")
+      e_msg("user edited table cell")
       # convert value to numeric
       x <- as.numeric(gsub("[^[:digit:].]", "", input$matreport_cell_edit$value))
 

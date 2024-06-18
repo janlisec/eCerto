@@ -21,7 +21,7 @@
 #' @keywords internal
 #' @noRd
 styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr = 1) {
-  message("[styleTabH1] styling Tab.H1")
+  e_msg("styling Tab.H1")
   P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
   style_x <- x
   for (i in 1:nrow(style_x)) {

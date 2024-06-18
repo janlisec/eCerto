@@ -176,7 +176,6 @@ page_StabilityServer <- function(id, rv) {
       if (rv$e_present()["Stability"]) {
         shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "loaded")
       } else {
-        message("[Stability] Show empty panel")
         shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "standby")
       }
     })

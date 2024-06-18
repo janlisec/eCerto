@@ -99,7 +99,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     # Excel-File-Input wrapped in renderUI to allow triggering some JS and empty the fileInput widget
     output$inp_file <- shiny::renderUI({
       shiny::req(exl_fmt())
-      message("[ExcelUpload] render upload UI")
+      e_msg("render upload UI (m_ExcelUpload_Server)")
       current_file_input(NULL)
       rv$e_present()
       shinyjs::hideElement(id = "sheet_number")
@@ -237,7 +237,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     shiny::observeEvent(input$btn_load,
       {
         req(rv_xlsx_range_select$tab)
-        message("[m_ExcelUpload] Load-button clicked")
+        e_msg("Load-button clicked (m_ExcelUpload_Server)")
         tmp <- try(load_from_excel(fn = current_file_input()$name, fmt = exl_fmt()))
         if (inherits(tmp, "try-error") | !is.null(attr(tmp, "msg")) | is.null(tmp)) {
           shinyWidgets::ask_confirmation(
@@ -270,7 +270,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     # when Excel was uploaded with LOAD-Button...
     shiny::observeEvent(out$data,
       {
-        message("[page_start-ExcelUpload] set rv.Data")
+        e_msg("set rv.Data (m_ExcelUpload_Server)")
         setValue(rv, c(exl_fmt(), "data"), out$data)
         setValue(rv, c(exl_fmt(), "input_files"), out$input_files)
         if (exl_fmt() == "Certification") {

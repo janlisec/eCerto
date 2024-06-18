@@ -53,7 +53,7 @@ prepTabC0 <- function(df_list = NULL) {
     return(x3)
   }
 
-  if (!get_golem_config("silent")) message("[prepTabC0]: Prepare dataset after upload")
+  e_msg("Prepare C dataset after upload")
 
   # process tables from multiple files individually
   df_list_tmp <- lapply(df_list, function(x) {
