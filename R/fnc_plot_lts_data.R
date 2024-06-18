@@ -24,6 +24,8 @@
 #' plot_lts_data(x = x, type = 1, t_cert = 60)
 #' plot_lts_data(x = x, type = 1, t_cert = 60, show_legend = TRUE)
 #' plot_lts_data(x = x, type = 1, slope_of_means = TRUE)
+#' x[["def"]][["U_Def"]] <- "U"
+#' plot_lts_data(x = x, type = 3, t_cert = 60, show_legend = TRUE)
 #'
 #' @noRd
 #' @keywords internal
@@ -63,15 +65,10 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]), "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
   main <- x[["def"]][, "KW"]
   sub <- x[["def"]][, "U_Def"]
-  sub <- ifelse(sub == "U", expression(U[abs]), sub)
+  sub <- ifelse(sub == "U", expression(U[abs]), expression(U))
   sub2 <- ifelse(is.na(x[["def"]][, "CertVal"]), "mean", expression("\u03BC"[c]))
   if (is.na(x[["def"]][, "CertVal"])) x[["def"]][, "CertVal"] <- mean(x[["val"]][, "Value"])
   mn <- x[["def"]][, "CertVal"]
-
-  # sub <- paste0("green lines: ", sub, ", blue line: slope, red line: ", "mean")
-  # if (t_cert>0) {
-  #   sub <- paste0(sub, ", u_stab(t_cert = ", t_cert, "): ", pn(round(SE_b*t_cert, 4)))
-  # }
 
   # correct values by coef estimate
   foo_adj <- vals - (a - mn)
@@ -135,42 +132,53 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   # generate 'fake time window' plot
   if (type %in% c(2, 3)) {
     ylim <- range(c(foo_adj, mn + b * foo_lts, mn + c(-1, 1) * U))
+    x_min <- floor(min(c(mon, foo_lts, t_cert)))
+    x_max <- ceiling(max(c(mon, foo_lts, t_cert)))
+    xlim <- c(x_min, x_max)
     if (!all(is.finite(ylim))) message("[plot_lts_data] non-finite ylim:", ylim)
     plot(
       c(foo_adj, mn + b * foo_lts) ~ c(mon, foo_lts),
-      ylim = ylim, type = "n",
+      ylim = ylim, xlim = xlim, type = "n",
       xlab = "Month", ylab = paste(ylab, "adjusted"), main = ifelse(is.na(main), "", paste(main, "(adjusted)"))
     )
+    x_ann <- graphics::par("usr")[2] - diff(graphics::par("usr")[1:2]) * 0.005
     adj.lm <- stats::lm(foo_adj ~ mon)
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))
     if (type == 3) {
-      ## the solution calculating CI for predicted (y_hat) values
-      newx <- seq(min(c(mon, foo_lts)), max(c(mon, foo_lts)), length.out = 100)
+      # the solution calculating CI for predicted (y_hat) values
+      newx <- seq(x_min, x_max, length.out = ifelse(diff(xlim) > 100, diff(xlim) + 1, 2*diff(xlim) + 1))
       preds <- stats::predict(adj.lm, newdata = data.frame(mon = newx), interval = "confidence")
       graphics::polygon(c(rev(newx), newx), c(rev(preds[, 3]), preds[, 2]), col = grDevices::grey(0.9), border = NA)
+      # the u_LTS as suggested by the ISO Guide 35
+      u_LTS <- newx*SE_b
+      graphics::lines(x = newx, y = mn + u_LTS, lty = 4, lwd = 2, col = grDevices::grey(0.8))
+      graphics::lines(x = newx, y = mn - u_LTS, lty = 4, lwd = 2, col = grDevices::grey(0.8))
+      # the u_CRM (dependent on u_LTS) as suggested by the ISO Guide 35
+      u_CRM <- mn * sapply(u_LTS, function(x) {
+        #sqrt((x/mn)^2 + (U/mn)^2)
+        sqrt(x^2 + (U/mn)^2)
+      })
+      graphics::lines(x = newx, y = mn + u_CRM, lty = 3, lwd = 2, col = grDevices::grey(0.8))
+      graphics::lines(x = newx, y = mn - u_CRM, lty = 3, lwd = 2, col = grDevices::grey(0.8))
+      # the suggested U_lim = U_CRM/3 according to the ISO Guide 35
+      graphics::lines(x = range(newx), y = rep(mn + U/3, 2), lty = 4, col = 3)
+      graphics::lines(x = range(newx), y = rep(mn - U/3, 2), lty = 4, col = 3)
+      graphics::lines(x = newx, y = mn + u_CRM/3, lty = 3, lwd = 2, col = grDevices::grey(0.8))
+      graphics::lines(x = newx, y = mn - u_CRM/3, lty = 3, lwd = 2, col = grDevices::grey(0.8))
       if (show_legend) {
         graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(CI[95](b[1])), bty = "n", inset = c(0.04, 0))
+        graphics::text(x = x_ann, y = mn + U/3, labels = expression(U[abs]/3), adj = 1)
+        graphics::text(x = x_ann, y = mn + max(u_CRM)/3, labels = expression(u[CRM]/3), adj = 1)
+        graphics::text(x = x_ann, y = mn + max(u_LTS), labels = expression(u[LTS]), adj = 1)
+        graphics::text(x = x_ann, y = mn + max(u_CRM), labels = expression(u[CRM]), adj = 1)
       }
-      # lines(newx, preds[ ,3], lty = 'dashed', col = 'blue')
-      # lines(newx, preds[ ,2], lty = 'dashed', col = 'blue')
-
-      ## ISO Guide (B.21) solution
-      # ...
-
-      ## the solution calculating CI for the lm coefficients
-      # adj.ci <- confint(adj.lm)
-      # apply(adj.ci, 2, function(x) { graphics::abline(x, col=grey(0.9)) })
-      # x.max <- max(c(mon, foo_lts))
-      # polygon(x = rep(c(0, x.max), each=2), y = c(adj.ci[1,], rev(adj.ci[1,] + adj.ci[2,]*x.max)), col = grey(0.9), border = NA)
     }
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
     graphics::abline(adj.lm, lty = 2, col = 4)
     if (show_legend) {
-      x <- graphics::par("usr")[2] - diff(graphics::par("usr")[1:2]) * 0.005
-      graphics::text(x = x, y = mn, labels = sub2, adj = 1)
-      graphics::text(x = x, y = mn + U, labels = sub, adj = 1)
-      # browser()
-      graphics::text(x = x, y = stats::predict(adj.lm, newdata = data.frame("mon" = x)), labels = expression(b[1]), adj = 1)
+      graphics::text(x = x_ann, y = mn, labels = sub2, adj = 1)
+      graphics::text(x = x_ann, y = mn + U, labels = sub, adj = 1)
+      graphics::text(x = x_ann, y = stats::predict(adj.lm, newdata = data.frame("mon" = x_ann)), labels = expression(b[1]), adj = 1)
       if (t_cert > 0) {
         graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
         graphics::mtext(text = expression(t[cert]), side = 1, line = -2, at = t_cert)
