@@ -56,17 +56,17 @@ style_tabV1 <- function(df, precision = 3, selected = 1, ordering = TRUE, font.s
   colnames(df) <- gsub("^unit_smpl$", "unit<sub>smpl</sub>", colnames(df))
 
   # modify table head
-  second_header_row <- tags$table(
+  second_header_row <- shiny::tags$table(
     class = 'display',
-    tags$thead(
-      tags$tr(
-        th(colspan = 6-length(tab_cap), ''),
-        if ("lm" %in% show_colgroups) tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
-        if ("lo" %in% show_colgroups) tags$th(colspan = 2, ''),
-        if ("wr" %in% show_colgroups) tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 7, 'Working range')
+    shiny::tags$thead(
+      shiny::tags$tr(
+        shiny::tags$th(colspan = 6-length(tab_cap), ''),
+        if ("lm" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
+        if ("lo" %in% show_colgroups) shiny::tags$th(colspan = 2, ''),
+        if ("wr" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 7, 'Working range')
       ),
-      tags$tr(
-        lapply(colnames(df), function(x) { tags$th(shiny::HTML(x)) })
+      shiny::tags$tr(
+        lapply(colnames(df), function(x) { shiny::tags$th(shiny::HTML(x)) })
       )
     )
   )
@@ -77,14 +77,14 @@ style_tabV1 <- function(df, precision = 3, selected = 1, ordering = TRUE, font.s
     options = list(
       dom="Bt", pageLength = -1, ordering = ordering,
       buttons = list(list(extend = "excel", text = "Excel", title = NULL)),
-      initComplete = htmlwidgets::JS(
+      initComplete = DT::JS(
         "function(settings, json) {",
         paste0("$(this.api().table().container()).css({'font-size': '", font.size, "'});"),
         "}"
       )
     ),
     selection = list(mode = "single", selected = selected, target = 'row'),
-    caption = if ("lm" %in% show_colgroups && length(tab_cap)>=1) { htmltools::tags$caption(
+    caption = if ("lm" %in% show_colgroups && length(tab_cap)>=1) { shiny::tags$caption(
       style = 'caption-side: bottom; text-align: left;',
       'Tab.V1 These values are consistent for all rows of the table: ', paste(tab_cap, collapse=", "), "."
     )},
