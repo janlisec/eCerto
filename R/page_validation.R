@@ -74,6 +74,18 @@ page_validationUI <- function(id) {
         sidebar = bslib::sidebar(
           position = "right", open = "open", width = "280px",
           shiny::div(
+            shiny::checkboxGroupInput(
+              inputId = ns("opt_tabV1_colflt"), label = "Column filter",
+              choices = list("Linear model"="lm", "Working range"="wr", "LOx"="lo"),
+              selected = "lm"
+            ),
+            shiny::hr(),
+            bslib::layout_columns(
+              shiny::textInput(inputId = ns("opt_tabV1_unitcali"), label = "unit cali", placeholder = "ng/mL"),
+              shiny::textInput(inputId = ns("opt_tabV1_unitsmpl"), label = "unit smpl", placeholder = "mg/kg"),
+            ),
+            shiny::numericInput(inputId = ns("opt_tabV1_convfac"), label = "conv fac", value = NA),
+            shiny::hr(),
             bslib::layout_columns(
               shinyWidgets::pickerInput(inputId = ns("opt_tabV1_alpha"), label = "alpha", multiple = FALSE, choices = c(0.01, 0.05), selected = 0.05),
               shinyWidgets::pickerInput(inputId = ns("opt_tabV1_k"), label = "k", multiple = FALSE, choices = 2:4, selected = 3)
@@ -106,13 +118,18 @@ page_validationUI <- function(id) {
 
   tab_V3_card <- bslib::card(
     id = ns("tab_V3_panel"),
-    bslib::card_header("Tab.V3 - Imported data (including calculated values and filtering information"),
+    bslib::card_header("Tab.V3 - Imported data (including calculated values and filtering information)"),
     bslib::card_body(DT::DTOutput(outputId = ns("tab_V3")))
   )
 
   v_report_card <- bslib::card(
     bslib::card_header("Method Validation Report"),
-    bslib::card_body(shiny::downloadButton(outputId = ns("v_report"), label = "Validation Report"))
+    bslib::card_body(
+      bslib::layout_columns(
+        shiny::radioButtons(inputId = ns("v_report_fmt"), label = "Validation Report Format", choices = list("HTML"="html", "docx"="docx")),
+        shiny::downloadButton(outputId = ns("v_report"), label = "Validation Report")
+      )
+    )
   )
 
 
@@ -156,7 +173,9 @@ page_validationServer <- function(id, test_data = NULL) {
 
     # Reports ====
     output$v_report <- shiny::downloadHandler(
-      filename = function() {"Validation Report.html"},
+      filename = function() {
+        paste0("Validation Report.", input$v_report_fmt)
+      },
       content = function(file) {
         # Copy the report file to a temporary directory before processing it
         rmdfile <- get_local_file("report_vorlage_validation.[Rr][Mm][Dd]$")
@@ -168,13 +187,19 @@ page_validationServer <- function(id, test_data = NULL) {
             rmarkdown::render(
               input = rmdfile,
               output_file = file,
-              output_format = rmarkdown::html_document(),
+              output_format = {
+                if (input$v_report_fmt=="html") rmarkdown::html_document() else rmarkdown::word_document()
+              },
               params = list(
-                "inp_data" = DT::datatable(data = tab(), rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL)))),
-                "tab_V1" = style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision), selected = NULL),
+                "inp_data" = tab(),
+                "tab_V1" = tab_V1(),
                 "fig_V1" = function() { prepFigV1(ab())},
                 "fig_V1_width" = calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120),
-                "logo_file" = logofile
+                "logo_file" = logofile,
+                "V_pars" = shiny::reactiveValuesToList(V_pars),
+                "helptext_v_fig_V1" = readLines(get_local_file("v_fig_V1.[Rr][Mm][Dd]$")),
+                "helptext_v_tab_V1" = readLines(get_local_file("v_tab_V1.[Rr][Mm][Dd]$")),
+                "helptext_v_formula_collection" = readLines(get_local_file("v_formula_collection.[Rr][Mm][Dd]$"))
               ),
               envir = new.env(parent = globalenv())
             )
@@ -183,6 +208,39 @@ page_validationServer <- function(id, test_data = NULL) {
         )
       }
     )
+
+    # User pars for V module ====
+    V_pars <- shiny::reactiveValues(
+      "opt_tabV1_unitcali" = "",
+      "opt_tabV1_unitsmpl" = "",
+      "opt_tabV1_convfac" = 1,
+      "opt_tabV1_colflt" = "",
+      "opt_tabV1_precision" = 3,
+      "opt_tabV1_alpha" = 0.05,
+      "opt_tabV1_k" = 3
+    )
+
+    shiny::observeEvent(input$opt_tabV1_unitcali, {
+      V_pars$opt_tabV1_unitcali <- input$opt_tabV1_unitcali
+    })
+    shiny::observeEvent(input$opt_tabV1_unitsmpl, {
+      V_pars$opt_tabV1_unitsmpl <- input$opt_tabV1_unitsmpl
+    })
+    shiny::observeEvent(input$opt_tabV1_convfac, {
+      V_pars$opt_tabV1_convfac <- input$opt_tabV1_convfac
+    })
+    shiny::observeEvent(input$opt_tabV1_colflt, {
+      V_pars$opt_tabV1_colflt <- input$opt_tabV1_colflt
+    })
+    shiny::observeEvent(input$opt_tabV1_precision, {
+      V_pars$opt_tabV1_precision <- as.numeric(input$opt_tabV1_precision)
+    })
+    shiny::observeEvent(input$opt_tabV1_alpha, {
+      V_pars$opt_tabV1_alpha <- as.numeric(input$opt_tabV1_alpha)
+    })
+    shiny::observeEvent(input$opt_tabV1_k, {
+      V_pars$opt_tabV1_k <- as.numeric(input$opt_tabV1_k)
+    })
 
     # Upload & Data preparation ====
     # upload info used in UI part
@@ -223,18 +281,25 @@ page_validationServer <- function(id, test_data = NULL) {
     # Table V1 ====
     tab_V1 <- shiny::reactive({
       req(tab_flt())
-      prepTabV1(tab = tab_flt(), alpha = as.numeric(input$opt_tabV1_alpha), k = as.numeric(input$opt_tabV1_k), flt_outliers = input$opt_tabV1_fltLevels)
+      prepTabV1(
+        tab = tab_flt(),
+        alpha = V_pars$opt_tabV1_alpha,
+        k = V_pars$opt_tabV1_k,
+        flt_outliers = input$opt_tabV1_fltLevels,
+        unit_cali = V_pars$opt_tabV1_unitcali,
+        unit_smpl = V_pars$opt_tabV1_unitsmpl,
+        conv_fac = V_pars$opt_tabV1_convfac)
     })
 
     output$tab_V1 <- DT::renderDT({
-      req(tab_V1(), input$opt_tabV1_k, input$opt_tabV1_alpha, input$opt_tabV1_precision)
+      req(tab_V1(), V_pars$opt_tabV1_k, V_pars$opt_tabV1_alpha, V_pars$opt_tabV1_precision)
       a_name <- shiny::isolate(current_analyte$name)
       a_row <- shiny::isolate(current_analyte$row)
       # correct current row of tab V1 in case that analyte filter is applied
       if (!is.null(a_name) && a_name %in% tab_V1()[,"Analyte"] && a_row != which(tab_V1()[,"Analyte"] == a_name)) {
         current_analyte$row <- a_row <- which(tab_V1()[,"Analyte"] == a_name)
       }
-      style_tabV1(df = tab_V1(), precision = as.numeric(input$opt_tabV1_precision), selected = a_row)
+      style_tabV1(df = tab_V1(), precision = V_pars$opt_tabV1_precision, selected = a_row, show_colgroups = V_pars$opt_tabV1_colflt)
     })
 
     shiny::observeEvent(input$tab_V1_rows_selected, {
@@ -249,7 +314,7 @@ page_validationServer <- function(id, test_data = NULL) {
       DT::datatable(
         data = df, rownames = FALSE, extensions = "Buttons",
         options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy", title = NULL, header = NULL)))
-      ) |> DT::formatRound(columns = c("Conc", "Area_norm"), dec.mark = input$opt_tabV1_dec, digits = as.numeric(input$opt_tabV1_precision))
+      ) |> DT::formatRound(columns = c("Conc", "Area_norm"), dec.mark = input$opt_tabV1_dec, digits = V_pars$opt_tabV1_precision)
     })
 
     # Table V2 ====
@@ -262,14 +327,25 @@ page_validationServer <- function(id, test_data = NULL) {
         data = df, rownames = FALSE, extensions = "Buttons",
         options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy to clipboard", title = NULL, header = NULL)))
       )
-      dt <- DT::formatCurrency(table = dt, columns = names(x), currency = "", digits = as.numeric(input$opt_tabV1_precision))
+      dt <- DT::formatCurrency(table = dt, columns = names(x), currency = "", digits = V_pars$opt_tabV1_precision)
       return(dt)
     })
 
     # Table V3 ====
     output$tab_V3 <- DT::renderDT({
       req(tab())
-      DT::datatable(data = tab(), rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
+      out <- tab()
+      # ToDo$$ add units from parameter list
+      if (nchar(V_pars$opt_tabV1_unitcali) >= 1) {
+        out$unit_cali <- V_pars$opt_tabV1_unitcali
+      }
+      if (is.numeric(V_pars$opt_tabV1_convfac) &&  is.finite(V_pars$opt_tabV1_convfac)) {
+        out$conv_fac <- V_pars$opt_tabV1_convfac
+        if (nchar(V_pars$opt_tabV1_unitsmpl) >= 1) {
+          out$unit_smpl <- V_pars$opt_tabV1_unitsmpl
+        }
+      }
+      DT::datatable(data = out, rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
     })
 
     # Figures ====
