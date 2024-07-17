@@ -56,19 +56,17 @@ style_tabV1 <- function(df, precision = 3, selected = 1, ordering = TRUE, font.s
   colnames(df) <- gsub("^unit_smpl$", "unit<sub>smpl</sub>", colnames(df))
 
   # modify table head
-  second_header_row <- htmltools::withTags(
-    table(
-      class = 'display',
-      thead(
-        tr(
-          th(colspan = 6-length(tab_cap), ''),
-          if ("lm" %in% show_colgroups) th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
-          if ("lo" %in% show_colgroups) th(colspan = 2, ''),
-          if ("wr" %in% show_colgroups) th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 7, 'Working range')
-        ),
-        tr(
-          lapply(colnames(df), function(x) { th(shiny::HTML(x)) })
-        )
+  second_header_row <- tags$table(
+    class = 'display',
+    tags$thead(
+      tags$tr(
+        th(colspan = 6-length(tab_cap), ''),
+        if ("lm" %in% show_colgroups) tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
+        if ("lo" %in% show_colgroups) tags$th(colspan = 2, ''),
+        if ("wr" %in% show_colgroups) tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 7, 'Working range')
+      ),
+      tags$tr(
+        lapply(colnames(df), function(x) { tags$th(shiny::HTML(x)) })
       )
     )
   )

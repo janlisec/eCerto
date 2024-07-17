@@ -53,8 +53,9 @@ Suggests:
     jsonlite,
     shinytest2,
     testthat (>= 3.0.0),
-    vdiffr
+    vdiffr,
+    webshot2
 biocViews:
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Config/testthat/edition: 3
