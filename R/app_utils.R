@@ -601,3 +601,34 @@ e_msg <- function(x) {
     message("[", curr_fnc, "]: ", x, ifelse(is.na(curr_mod), "", paste0(" (", curr_mod, ")")))
   }
 }
+
+#' @title decimal_count.
+#' @description Function to count the number of digits on the right of
+#'     a decimal point (sometimes called the mantissa).
+#' @param x A numeric.#'
+#' @examples
+#' \dontrun{
+#'   decimal_count(5.89)
+#'   sapply(c(5.89, 2, 56.454545, NA, 5.1), decimal_count)
+#' }
+#' @return Numeric.
+#' @keywords internal
+#' @noRd
+decimal_count <- function(x) {
+  # Check
+  stopifnot(class(x) == "numeric")
+  # If NA, return NA
+  if (is.na(x)) {
+    x <- NA_integer_
+  } else {
+    # If contains a period
+    if (grepl("\\.", x)) {
+      x <- gsub("0+$", "", x)
+      x <- gsub("^.+[.]", "", x)
+      x <- nchar(x)
+    } else {
+      x <- 0L
+    }
+  }
+  return(x)
+}
