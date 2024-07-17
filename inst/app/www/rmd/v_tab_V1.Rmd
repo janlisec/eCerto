@@ -5,28 +5,31 @@ $\overline{x}_j$.
 
 Analyte values are computed as the peak area ratios of analyte and internal 
 standard $x_{i,j}=\frac{A_{Analyte}}{A_{IS}}$ for each replicate $i$ at 
-calibration level $j$. $\overline{x}_j$ is the mean of the $n$ replicates at
-level $j$. The total number of calibration levels is denoted as $N$.
+calibration level $j$. Here, $\overline{x}_j$ is the mean of the $n$ replicates 
+at level $j$. The total number of calibration levels is denoted as $N$.
 
 For each analyte, a linear model $y=b_0+b_1 \times x$ over all $\overline{x}_j$ 
 is computed and the following parameters are reported:
 
 - the number of calibration levels used in the linear model $N$ 
 - the smallest number of replicates within all calibration levels $n$
-- the probability of error (alpha) selected by the user
+- the probability of error ($alpha$) selected by the user
 - the result uncertainty $k$ selected by the user and depicted as $1/k$ 
 - the coefficients $b_0$ (intercept) and $b_1$ (slope) of the linear model
 - the limit of detection $\text{LOD}$
 - the limit of quantification $\text{LOQ}$
-- the standard error of estimate $s_{y,x}$
-- the standard error of procedure $s_{x0}$
-- the ... $V_{x0}$
+- the standard error of the estimate $s_{y,x}$
+- the standard error of the procedure $s_{x0}$ (absolute precision)
+- the coefficient of variation of the procedure $V_{x0}$ (relative precision)
 
 Additionally, the residuals $e$ of the linear model are tested:
 
 - to follow a normal distribution (Kolmogorof-Smirnov Test, $P_{KS,Res}$)
 - to show a trend, i.e. a drift associated with measurement order (Neumann-Test, $P_{Neu,Res}$)
 - for the level showing the highest absolute residual to be an outlier (F-Test, $Out_F$)
+
+***Note***
+The F-Test is applied sequentially until no further outlier is detected.
 
 For comparison the data is fitted using a quadratic model 
 $y=b_0+b_1 \times x+b_2 \times x^2$. The residuals from both models, the linear 

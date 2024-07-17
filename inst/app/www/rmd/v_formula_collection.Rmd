@@ -1,6 +1,6 @@
 ### Symbol and formula collection
 
-This is the collection of arreviations and formulas used in the method validation
+This is the collection of abrreviations and formulas used in the method validation
 module of *eCerto*. While the calculations follow generally the recommendations
 given in DIN 32645:2008-11, we hope that this redundancy may serve as a quick
 reference when using *eCerto*.
@@ -24,7 +24,7 @@ $t_{f,\alpha}$ denoting the $t$ distribution with $f$ degrees of freedom and pro
 $s_{x,y}$ denoting the standard error of estimate of a linear model of $N$ levels with residuals $e$ calculated as $s_{x,y}=\sqrt{\frac{\sum e^2}{N-2}}$
 
 $\text {LOD}$ limit of detection of a linear model of $N$ levels with $n$ replicates having slope $b_1$ and residuals $e$ calculated as
-$$\text {LOD} = k \times \frac {s_{x,y}} {b_1} \times t_{f,\alpha} \times \sqrt {{1 \over n} + {1 \over N} + \frac {\overline{x}^2} {\sum (x-\overline{x})^2}}$$
+$$\text {LOD} = k \times \frac {s_{x,y}} {b_1} \times t_{f,\alpha} \times \sqrt {{\frac {1} {n}} + {\frac {1} {N}} + \frac {\overline{x}^2} {\sum (x-\overline{x})^2}}$$
 where $f = N-2$ and $\alpha$ is specified by the user
 
-... (more to come)
+... (to be completed)
