@@ -378,14 +378,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.5.10",
+      "Version": "0.5.11",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "334c364bf4cc3570eb3ec10e4c3a75cad9c1f6cd",
+      "RemoteSha": "6ab4ee6357cc51e5431e1213fbcc4d98a1d7432a",
+      "RemoteHost": "api.github.com",
       "Requirements": [
         "DT",
         "R",
@@ -406,7 +406,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "8103c6fbb79f306657bb62813e19045c"
+      "Hash": "816f4d2c06f3db2b33131ba97f8729ca"
     },
     "evaluate": {
       "Package": "evaluate",
