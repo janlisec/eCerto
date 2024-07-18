@@ -17,9 +17,11 @@ For each $x_j$ in total $n$ replicate values exist and are tested:
 
 Statistical test results are indicated in **Fig.V1** by symbols
 
-- $ns$ : not significant (green color)
-- $*$ : significant at $P\le0.05$ (orange color)
-- $**$ : significant at $P\le0.01$ (red color)
+-----    -----------------------------------------------------------------------
+ $ns$    not significant (green color)
+  $*$    significant at $P\le0.05$ (orange color)
+ $**$    significant at $P\le0.01$ (red color)
+-----    -----------------------------------------------------------------------
 
 The two calibration levels $j_1$ and $j_N$ are tested for homogeneity 
 of variance using an F-Test. The user has the option to select other calibration

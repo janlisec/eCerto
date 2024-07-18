@@ -1,0 +1,18 @@
+### Trueness
+
+The trueness of an analytical method, which describes the consistency between
+an analytical result and a reference value, can be tested in different ways.
+Possible procedures are analysis of a reference material, comparison to a 
+(different) reference method or analysis of samples of specified concentration(s).
+
+For the latter, $n \le 6$ independent samples should be prepared and analyzed at 
+3 different concentration levels $j$ covering the working range. For each level,
+the recovery should be calculated by comparison with the reference value as
+$$R = \frac{\overline{x_j}}{x_{r,j}} \times 100\%$$
+where $\overline{x_j}$ is the mean value of all replicates at level $j$ and 
+$x_{r,j}$ is the according reference value. Recovery values $80\% \le R \le 120\%$
+are acceptable.
+
+Currently, *eCerto* only allows to copy/paste a statement regarding the recovery 
+calculations which will be stored together with the other data and incorporated
+in the report.

@@ -132,6 +132,38 @@ page_validationUI <- function(id) {
     )
   )
 
+  V_card_trueness <- bslib::card(
+    id = ns("v_panel_trueness"),
+    bslib::card_header(shiny::actionLink(inputId = ns("Help_trueness"), "Trueness")),
+    bslib::card_body(
+      shiny::textAreaInput(
+        inputId = ns("txt_trueness"), label = NULL, rows = 7, width = "100%",
+        placeholder = paste("This is a placeholder for method trueness calculation")
+      )
+    )
+  )
+
+  V_card_precision <- bslib::card(
+    id = ns("v_panel_precision"),
+    bslib::card_header(shiny::actionLink(inputId = ns("Help_precision"), "Precision")),
+    bslib::card_body(
+      shiny::textAreaInput(
+        inputId = ns("txt_trueness"), label = NULL, rows = 7, width = "100%",
+        placeholder = paste("This is a placeholder for method precision calculation")
+      )
+    )
+  )
+
+  V_card_uncertainty <- bslib::card(
+    id = ns("v_panel_uncertainty"),
+    bslib::card_header(shiny::actionLink(inputId = ns("Help_uncertainty"), "Measurement uncertainty")),
+    bslib::card_body(
+      shiny::textAreaInput(
+        inputId = ns("txt_uncertainty"), label = NULL, rows = 7, width = "100%",
+        placeholder = paste("This is a placeholder for method uncertainty calculation")
+      )
+    )
+  )
 
   shiny::tagList(
     shiny::conditionalPanel(
@@ -155,6 +187,11 @@ page_validationUI <- function(id) {
         anal_V_details_card,
         tab_V1_card,
         fig_V2_card,
+        bslib::layout_columns(
+          V_card_trueness,
+          V_card_precision
+        ),
+        V_card_uncertainty,
         tab_V3_card,
         v_report_card,
         col_widths =  bslib::breakpoints(
@@ -405,6 +442,15 @@ page_validationServer <- function(id, test_data = NULL) {
     })
     shiny::observeEvent(input$Help_figV1, {
       show_help("v_fig_V1")
+    })
+    shiny::observeEvent(input$Help_trueness, {
+      show_help("v_trueness")
+    })
+    shiny::observeEvent(input$Help_precision, {
+      show_help("v_precision")
+    })
+    shiny::observeEvent(input$Help_uncertainty, {
+      show_help("v_uncertainty")
     })
 
   })

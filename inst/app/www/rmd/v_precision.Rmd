@@ -1,0 +1,7 @@
+### Precision
+
+The precision of an analytical method, which describes ..., can be obtained by ....
+
+Currently, *eCerto* only allows to copy/paste a statement regarding the precision 
+calculations which will be stored together with the other data and incorporated
+in the report.

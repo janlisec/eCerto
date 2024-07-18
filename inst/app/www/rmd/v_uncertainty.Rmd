@@ -1,0 +1,7 @@
+### Uncertainty
+
+The uncertainty of an analytical method, which describes ..., can be obtained by ....
+
+Currently, *eCerto* only allows to copy/paste a statement regarding the uncertainty 
+calculations which will be stored together with the other data and incorporated
+in the report.

@@ -19,6 +19,15 @@ options and output format might change in the future.
 ```{r child = 'v_tab_V1.Rmd'}
 ```
 
+```{r child = 'v_trueness.Rmd'}
+```
+
+```{r child = 'v_precision.Rmd'}
+```
+
+```{r child = 'v_uncertainty.Rmd'}
+```
+
 ```{r child = 'v_formula_collection.Rmd'}
 ```
 
