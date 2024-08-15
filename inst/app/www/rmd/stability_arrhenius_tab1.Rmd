@@ -12,12 +12,14 @@ $K_i$ (provided in `log(k)_calc`) are established using $K_i = m \times x_i + n$
 ![**Tab.S2** Calculation of possible storage time](fig/S_Modul_Tab2b.png)
 
 To estimate the confidence interval of the model (`CI_upper` and `CI_lower`) we need to estimate 
-some intermediate values provided in the bottom table. Here, *eCerto* calculates $a=\sum{x_i}$, $b=\sum{x_i^2}$ 
-and $n=length(x_i)$ where $x_i=1/K$ together with the standard error $err$ for this model:
+some intermediate values which are shown below **Tab.S2**. First, *eCerto* calculates $a=\sum{x_i}$, $b=\sum{x_i^2}$ 
+and $n=length(x_i)$ where $x_i$ are the inverse temperature values, $1/K$, as well as
+the standard error $err$ of the model:
 
 $$err=\sqrt{\frac{1}{n-2} \times \sum{(y_i-\overline{y})^2} - \frac{\sum{(x_i-\overline{x}) \times (y_i-\overline{y})}^2}{\sum{(x_i-\overline{x})^2}}}$$
 
-Next, these four values $a$, $b$, $n$ and $err$ allow to compute the dependent variables:
+Next, these four calculated values $a$, $b$, $n$ and $err$ allow to compute the 
+dependent variables:
 
 $$u(i) = \sqrt{\frac{err^2 \times b}{(b \times n-a^2)}}$$
 
