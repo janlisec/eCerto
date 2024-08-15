@@ -130,6 +130,24 @@ if (!knitr::is_html_output()) eCerto:::style_tabV1(df = params$tab_V1, precision
   cat(params$helptext_v_formula_collection, sep = "\n")
 ```
 
+### Trueness
+
+```{r txt_trueness, results='asis'}
+  cat(params$V_pars$txt_trueness, sep = "\n")
+```
+
+### Precision
+
+```{r txt_precision, results='asis'}
+  cat(params$V_pars$txt_precision, sep = "\n")
+```
+
+### Measurement Uncertainty
+
+```{r txt_trueness, results='asis'}
+  cat(params$V_pars$txt_trueness, sep = "\n")
+```
+
 ### Input data for reference
 
 Finally, this is the input data table as used internally for all calculations.

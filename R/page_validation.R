@@ -55,7 +55,7 @@ page_validationUI <- function(id) {
           position = "right", open = "open", width = "280px",
           shiny::div(
             shinyWidgets::pickerInput(inputId = ns("opt_V2_vals"), label = NULL, multiple = FALSE, choices = c("Area_Analyte","Area_IS","Analyte/IS","relative(Analyte/IS)")),
-            shiny::hr(),
+            #shiny::hr(),
             DT::DTOutput(outputId = ns("tab_V2"))
           )
         ),
@@ -74,36 +74,40 @@ page_validationUI <- function(id) {
         sidebar = bslib::sidebar(
           position = "right", open = "open", width = "280px",
           shiny::div(
+            DT::DTOutput(outputId = ns("tab_V1_detail"))
+          )
+        ),
+        shiny::div(
+          shinyWidgets::dropdownButton(
             shiny::checkboxGroupInput(
               inputId = ns("opt_tabV1_colflt"), label = "Column filter",
               choices = list("Linear model"="lm", "Working range"="wr", "LOx"="lo"),
               selected = "lm"
             ),
-            shiny::hr(),
-            bslib::layout_columns(
-              shiny::textInput(inputId = ns("opt_tabV1_unitcali"), label = "unit cali", placeholder = "ng/mL"),
-              shiny::textInput(inputId = ns("opt_tabV1_unitsmpl"), label = "unit smpl", placeholder = "mg/kg"),
-            ),
-            shiny::numericInput(inputId = ns("opt_tabV1_convfac"), label = "conv fac", value = NA),
-            shiny::hr(),
-            bslib::layout_columns(
-              shinyWidgets::pickerInput(inputId = ns("opt_tabV1_alpha"), label = "alpha", multiple = FALSE, choices = c(0.01, 0.05), selected = 0.05),
-              shinyWidgets::pickerInput(inputId = ns("opt_tabV1_k"), label = "k", multiple = FALSE, choices = 2:4, selected = 3)
-            ),
-            bslib::layout_columns(
-              shinyWidgets::pickerInput(inputId = ns("opt_tabV1_dec"), label = "dec sep", multiple = FALSE, choices = c(",", "."), selected = ","),
-              shinyWidgets::pickerInput(inputId = ns("opt_tabV1_precision"), label = "digits", multiple = FALSE, choices = 0:6, selected = 3)
-            ),
-            shiny::hr(),
+            label = "Column sets", circle = FALSE, width = "100%", inline = TRUE
+          ),
+          shinyWidgets::dropdownButton(
+            shiny::textInput(inputId = ns("opt_tabV1_unitcali"), label = "unit calibration", placeholder = "ng/mL"),
+            shiny::numericInput(inputId = ns("opt_tabV1_convfac"), label = "conversion factor", value = NA),
+            shiny::textInput(inputId = ns("opt_tabV1_unitsmpl"), label = "unit samples", placeholder = "mg/kg"),
+            label = "Unit specification", circle = FALSE, width = "100%", inline = TRUE
+          ),
+          shinyWidgets::dropdownButton(
+            shinyWidgets::pickerInput(inputId = ns("opt_tabV1_alpha"), label = "alpha", multiple = FALSE, choices = c(0.01, 0.05), selected = 0.05),
+            shinyWidgets::pickerInput(inputId = ns("opt_tabV1_k"), label = "k", multiple = FALSE, choices = 2:4, selected = 3),
+            shinyWidgets::pickerInput(inputId = ns("opt_tabV1_precision"), label = "digits", multiple = FALSE, choices = 0:6, selected = 3),
+            label = "Parameters", circle = FALSE, width = "100%", inline = TRUE
+          ),
+          shinyWidgets::dropdownButton(
             shiny::checkboxInput(inputId = ns("opt_tabV1_fltLevels"), label = shiny::HTML("Omit Out<sub>F</sub> Levels"), value = FALSE),
-            shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Use Analytes from Fig.V1", value = FALSE),
-            shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Use Level range of Fig.V1", value = FALSE),
-            shiny::hr(),
-            DT::DTOutput(outputId = ns("tab_V1_detail"))
-            #shiny::actionButton(inputId = ns("opt_tabV1_datamodal"), label = shiny::HTML("Show<br>data"))
-          )
+            shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Analytes Fig.V1", value = FALSE),
+            shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Level range Fig.V1", value = FALSE),
+            label = "Analyte/Level filters", circle = FALSE, width = "100%", inline = TRUE
+          ),
         ),
-        shiny::div(DT::DTOutput(outputId = ns("tab_V1")))
+        shiny::div(
+          DT::DTOutput(outputId = ns("tab_V1"))
+        )
       )
     )
   )
@@ -132,13 +136,17 @@ page_validationUI <- function(id) {
     )
   )
 
+  placeholder_default <- function(x) {
+    paste("This is a placeholder for method", x,  "calculation. You can use any markdown syntax to format the text consistently for HTML or Word export.")
+  }
+
   V_card_trueness <- bslib::card(
     id = ns("v_panel_trueness"),
     bslib::card_header(shiny::actionLink(inputId = ns("Help_trueness"), "Trueness")),
     bslib::card_body(
       shiny::textAreaInput(
         inputId = ns("txt_trueness"), label = NULL, rows = 7, width = "100%",
-        placeholder = paste("This is a placeholder for method trueness calculation")
+        placeholder = placeholder_default("trueness")
       )
     )
   )
@@ -148,8 +156,8 @@ page_validationUI <- function(id) {
     bslib::card_header(shiny::actionLink(inputId = ns("Help_precision"), "Precision")),
     bslib::card_body(
       shiny::textAreaInput(
-        inputId = ns("txt_trueness"), label = NULL, rows = 7, width = "100%",
-        placeholder = paste("This is a placeholder for method precision calculation")
+        inputId = ns("txt_precision"), label = NULL, rows = 7, width = "100%",
+        placeholder = placeholder_default("precision")
       )
     )
   )
@@ -160,7 +168,7 @@ page_validationUI <- function(id) {
     bslib::card_body(
       shiny::textAreaInput(
         inputId = ns("txt_uncertainty"), label = NULL, rows = 7, width = "100%",
-        placeholder = paste("This is a placeholder for method uncertainty calculation")
+        placeholder = placeholder_default("uncertainty")
       )
     )
   )
@@ -254,7 +262,11 @@ page_validationServer <- function(id, test_data = NULL) {
       "opt_tabV1_colflt" = "",
       "opt_tabV1_precision" = 3,
       "opt_tabV1_alpha" = 0.05,
-      "opt_tabV1_k" = 3
+      "opt_tabV1_k" = 3,
+      "opt_exp_dec_sep" = ".",
+      "txt_trueness" = "",
+      "txt_precision" = "",
+      "txt_uncertainty" = ""
     )
 
     shiny::observeEvent(input$opt_tabV1_unitcali, {
@@ -277,6 +289,15 @@ page_validationServer <- function(id, test_data = NULL) {
     })
     shiny::observeEvent(input$opt_tabV1_k, {
       V_pars$opt_tabV1_k <- as.numeric(input$opt_tabV1_k)
+    })
+    shiny::observeEvent(input$txt_trueness, {
+      V_pars$txt_trueness <- as.character(input$txt_trueness)
+    })
+    shiny::observeEvent(input$txt_precision, {
+      V_pars$txt_precision <- as.character(input$txt_precision)
+    })
+    shiny::observeEvent(input$txt_uncertainty, {
+      V_pars$txt_uncertainty <- as.character(input$txt_uncertainty)
     })
 
     # Upload & Data preparation ====
@@ -350,8 +371,21 @@ page_validationServer <- function(id, test_data = NULL) {
       df <- attr(prepTabV1(tab = tab_flt(), a = current_analyte$name), "df")
       DT::datatable(
         data = df, rownames = FALSE, extensions = "Buttons",
-        options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy", title = NULL, header = NULL)))
-      ) |> DT::formatRound(columns = c("Conc", "Area_norm"), dec.mark = input$opt_tabV1_dec, digits = V_pars$opt_tabV1_precision)
+        options = list(
+          dom = 'Bt', ordering = FALSE,
+          buttons = list(
+            list(extend = "copy", text = '<i class="fa-solid fa-copy"></i>', title = NULL, titleAttr = 'Copy to clipboard', header = NULL),
+            list(
+              extend = "collection",
+              text = '<i class="fa-solid fa-gears"></i>',
+                buttons = list(
+                text = paste0('set dec sep as "', ifelse(V_pars$opt_exp_dec_sep==".", ",", "."), '"'),
+                action = DT::JS(paste0("function ( e, dt, node, config ) { Shiny.setInputValue('", session$ns("opt_exp_dec_sep"), "', 1, {priority: 'event'}); }"))
+              )
+            )
+          )
+        )
+      ) |> DT::formatRound(columns = c("Conc", "Area_norm"), dec.mark = V_pars$opt_exp_dec_sep, mark = ifelse(V_pars$opt_exp_dec_sep==".", ",", "."), digits = V_pars$opt_tabV1_precision)
     })
 
     # Table V2 ====
@@ -362,10 +396,27 @@ page_validationServer <- function(id, test_data = NULL) {
       for (i in 1:length(x)) df[1:length(x[[i]][,"Value"]),i] <- x[[i]][,"Value"]
       dt <- DT::datatable(
         data = df, rownames = FALSE, extensions = "Buttons",
-        options = list(dom = "Bt", ordering = FALSE, buttons = list(list(extend = "copy", text = "Copy to clipboard", title = NULL, header = NULL)))
+        options = list(
+          dom = "Bt", ordering = FALSE,
+          buttons = list(
+            list(extend = "copy", text = '<i class="fa-solid fa-copy"></i>', title = NULL, titleAttr = 'Copy to clipboard', header = NULL),
+            list(
+              extend = "collection",
+              text = '<i class="fa-solid fa-gears"></i>',
+              buttons = list(
+                text = paste0('set dec sep as "', ifelse(V_pars$opt_exp_dec_sep==".", ",", "."), '"'),
+                action = DT::JS(paste0("function ( e, dt, node, config ) { Shiny.setInputValue('", session$ns("opt_exp_dec_sep"), "', 1, {priority: 'event'}); }"))
+              )
+            )
+          )
+        )
       )
-      dt <- DT::formatCurrency(table = dt, columns = names(x), currency = "", digits = V_pars$opt_tabV1_precision)
+      dt <- DT::formatRound(table = dt, columns = names(x), dec.mark = V_pars$opt_exp_dec_sep, mark = ifelse(V_pars$opt_exp_dec_sep==".", ",", "."), digits = V_pars$opt_tabV1_precision)
       return(dt)
+    })
+
+    shiny::observeEvent(input$opt_exp_dec_sep, {
+      V_pars$opt_exp_dec_sep <- ifelse(V_pars$opt_exp_dec_sep==".", ",", ".")
     })
 
     # Table V3 ====
@@ -429,7 +480,7 @@ page_validationServer <- function(id, test_data = NULL) {
 
     # Figure V3 ====
     output$fig_V3 <- shiny::renderPlot({
-      req(V2_dat())
+      req(tab(), current_analyte$name, input$opt_V1_k)
       prepFigV3(x = flt_Vdata(x = tab(), l = input$opt_V1_k, a = current_analyte$name, rng = FALSE))
     })
 
