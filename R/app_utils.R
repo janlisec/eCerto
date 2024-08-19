@@ -605,7 +605,7 @@ e_msg <- function(x) {
 #' @title decimal_count.
 #' @description Function to count the number of digits on the right of
 #'     a decimal point (sometimes called the mantissa).
-#' @param x A numeric.#'
+#' @param x A numeric.
 #' @examples
 #' \dontrun{
 #'   decimal_count(5.89)
@@ -630,5 +630,32 @@ decimal_count <- function(x) {
       x <- 0L
     }
   }
+  return(x)
+}
+
+#' @title HTML2markdown.
+#' @description Function to convert HTML tags into the markdown equivalent.
+#' @param x A character vector.
+#' @examples
+#' \dontrun{
+#'   x <- c("x<sub>i</sub>", "This is <i>formatted</i> <b>HTM<sup>L</sup></b>")
+#'   HTML2markdown(x)
+#' }
+#' @return Numeric.
+#' @keywords internal
+#' @noRd
+HTML2markdown <- function(x) {
+  # Checks
+  stopifnot(class(x) == "character")
+  x <- gsub("<i>", "*", x)
+  x <- gsub("</i>", "*", x)
+  x <- gsub("<sub>", "~", x)
+  x <- gsub("</sub>", "~", x)
+  x <- gsub("<sup>", "^", x)
+  x <- gsub("</sup>", "^", x)
+  x <- gsub("<b>", "**", x)
+  x <- gsub("</b>", "**", x)
+  x <- gsub("<strong>", "**", x)
+  x <- gsub("</strong>", "**", x)
   return(x)
 }
