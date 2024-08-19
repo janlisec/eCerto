@@ -3,9 +3,6 @@ title: "&nbsp;"
 title-meta: Method Validation-Report
 params:
   inp_data: NA
-  tab_V1: NA
-  fig_V1: NA
-  fig_V1_width: NA
   logo_file: NA
   V_pars: NA
   helptext_v_fig_V1: NA
@@ -19,12 +16,38 @@ fontsize: 11pt
 always_allow_html: true
 ---
 
+<!-- This is a reminder how the font-size within a DT table can be set globally for the whole document using css -->
+<!-- ```{css, eval = TRUE, echo = FALSE} -->
+<!-- .dataTables_wrapper { -->
+<!--     font-size: 200%; -->
+<!-- } -->
+<!-- ``` -->
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 #knitr::opts_chunk$set(out.width = '100%', dpi=300)
 if (!knitr::is_html_output()) library(webshot2)
+fs_tab <- "175%"
+prec <- params$V_pars$opt_tabV1_precision
+ab <- eCerto:::prepDataV1(tab=params$inp_data, a = params$V_pars$opt_figV1_anal, l = params$V_pars$opt_figV1_level, fmt = "rel_norm")
+fig_V1_width <- eCerto:::calc_bxp_width(n = length(params$V_pars$opt_figV1_anal)*length(params$V_pars$opt_figV1_level), w_point = 28, w_axes = 120)
+tab_v1 <- eCerto:::prepTabV1(
+  tab = eCerto:::flt_Vdata(
+    x = params$inp_data, 
+    l = if (params$V_pars$opt_tabV1_useLevels) params$V_pars$opt_figV1_level else NULL, 
+    a = if (params$V_pars$opt_tabV1_useAnalytes) params$V_pars$opt_figV1_anal else NULL
+  ),
+  alpha = params$V_pars$opt_tabV1_alpha,
+  k = params$V_pars$opt_tabV1_k,
+  flt_outliers = params$V_pars$opt_tabV1_fltLevels,
+  unit_cali = params$V_pars$opt_tabV1_unitcali,
+  unit_smpl = params$V_pars$opt_tabV1_unitsmpl,
+  conv_fac = params$V_pars$opt_tabV1_convfac
+)
 ```
 
+
+<!-- In HTML the logo is right aligned. Unfortunately the option fig.align is not supported in Word -->
 ```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
   knitr::include_graphics(params$logo_file)
 ```
@@ -39,16 +62,33 @@ if (!knitr::is_html_output()) library(webshot2)
   cat(params$helptext_v_fig_V1, sep = "\n")
 ```
 
-```{r fig_V1, echo=FALSE, fig.width=params$fig_V1_width/96, fig.dpi=96, fig.retina=4}
-  params$fig_V1()
+```{r fig_V1, echo=FALSE, fig.width=fig_V1_width/96, fig.dpi=96, fig.retina=4}
+  eCerto:::prepFigV1(ab = ab)
+```
+
+The working range concentrations within the solutions and samples, respectively, 
+are provided in the following table.
+
+```{r tab_V1_wr, message=FALSE, resize.width="100%"}
+tab_V1_wr <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, show_colgroups = "wr")
+if (knitr::is_html_output()) {
+  tab_V1_wr
+} else {
+  colnames(tab_V1_wr$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_wr$x$data))
+  knitr::kable(tab_V1_wr$x$data, digits = prec)
+}
+```
+
+```{r tab_V1_wr_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
+if (!knitr::is_html_output()) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "wr")
 ```
 
 In the following, detailed plots for the levels determining the working range for
 each analyte are presented.
 
-```{r fig_V1_details, echo=FALSE, fig.height=780/96}
+```{r fig_V1_details, echo=FALSE, fig.height=880/96, fig.width=640/96}
   inp <- params$inp_data
-  tab <- params$tab_V1
+  tab <- tab_v1
   as <- tab$Analyte
   for (a in as) {
     L_min <- tab[tab$Analyte==a,"c_WR_min"]
@@ -61,18 +101,10 @@ each analyte are presented.
   }
 ```
 
-The working range concentrations within the solutions and samples, respectively, 
-are provided in the following table.
-
-```{r tab_V1_wr, message=FALSE, resize.width="100%"}
-  if (knitr::is_html_output()) {
-    eCerto:::style_tabV1(df = params$tab_V1, precision = params$V_pars$opt_tabV1_precision, selected = NULL, ordering = FALSE, font.size = "90%", show_colgroups = "wr")
-  }
-```
-
-```{r tab_V1_wr_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
-if (!knitr::is_html_output()) eCerto:::style_tabV1(df = params$tab_V1, precision = params$V_pars$opt_tabV1_precision, selected = NULL, ordering = FALSE, font.size = "120%", show_colgroups = "wr")
-```
+<!-- Yihui suggested the \newpage command here https://bookdown.org/yihui/rmarkdown-cookbook/pagebreaks.html to achieve a page break -->
+<!-- In theory the div approach should work as well but doesn't in this report when converted to Word -->
+<!-- <div style="page-break-after: always;"></div> -->
+\newpage
 
 ```{r helptext_v_tab_V1, results='asis'}
   cat(params$helptext_v_tab_V1, sep = "\n")
@@ -81,21 +113,25 @@ if (!knitr::is_html_output()) eCerto:::style_tabV1(df = params$tab_V1, precision
 Linear model parameters for all analytes are provided in the following table.
 
 ```{r tab_V1_lm, message=FALSE, resize.width="100%"}
-  if (knitr::is_html_output()) {
-    eCerto:::style_tabV1(df = params$tab_V1, precision = params$V_pars$opt_tabV1_precision, selected = NULL, ordering = FALSE, font.size = "90%", show_colgroups = "lm")
-  }
+tab_V1_lm <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, show_colgroups = "lm")
+if (knitr::is_html_output()) {
+  tab_V1_lm
+} else {
+  colnames(tab_V1_lm$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_lm$x$data))
+  knitr::kable(tab_V1_lm$x$data, digits = prec, caption = tab_V1_lm$x$caption)
+}
 ```
 
 ```{r tab_V1_lm_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
-if (!knitr::is_html_output()) eCerto:::style_tabV1(df = params$tab_V1, precision = params$V_pars$opt_tabV1_precision, selected = NULL, ordering = FALSE, font.size = "120%", show_colgroups = "lm")
+if (!knitr::is_html_output()) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "lm")
 ```
 
 In the following, detailed plots comparing linear and quadratic model fits for
 each analyte are presented.
 
-```{r tab_V1_details, echo=FALSE, message=FALSE, fig.height=960/96}
+```{r tab_V1_details, echo=FALSE, message=FALSE, fig.height=880/96, fig.width=640/96}
   inp <- params$inp_data
-  tab <- params$tab_V1
+  tab <- tab_v1
   flt_outliers <- length(grep("^[(]", tab[,"F_Test"]))>=1
   as <- tab$Analyte
   for (a in as) {
@@ -111,24 +147,27 @@ each analyte are presented.
   }
 ```
 
+\newpage
+
 ### Limit of Detection and Quantification
 
 Based on the linear models specified above the following LOD and LOQ values were 
 determined for all analytes.
 
 ```{r tab_V1_lox, message=FALSE, resize.width="100%"}
+  tab_V1_lox <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, show_colgroups = "lo")
   if (knitr::is_html_output()) {
-    eCerto:::style_tabV1(df = params$tab_V1, precision = params$V_pars$opt_tabV1_precision, selected = NULL, ordering = FALSE, font.size = "90%", show_colgroups = "lo")
+    tab_V1_lox
+  } else {
+    knitr::kable(tab_V1_lox$x$data, digits = prec)
   }
 ```
 
 ```{r tab_V1_lox_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
-if (!knitr::is_html_output()) eCerto:::style_tabV1(df = params$tab_V1, precision = params$V_pars$opt_tabV1_precision, selected = NULL, ordering = FALSE, font.size = "120%", show_colgroups = "lo")
+if (!knitr::is_html_output()) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "lo")
 ```
 
-```{r helptext_v_formula_collection, results='asis'}
-  cat(params$helptext_v_formula_collection, sep = "\n")
-```
+\newpage
 
 ### Trueness
 
@@ -136,30 +175,44 @@ if (!knitr::is_html_output()) eCerto:::style_tabV1(df = params$tab_V1, precision
   cat(params$V_pars$txt_trueness, sep = "\n")
 ```
 
+\newpage
+
 ### Precision
 
 ```{r txt_precision, results='asis'}
   cat(params$V_pars$txt_precision, sep = "\n")
 ```
 
+\newpage
+
 ### Measurement Uncertainty
 
-```{r txt_trueness, results='asis'}
-  cat(params$V_pars$txt_trueness, sep = "\n")
+```{r txt_uncertainty, results='asis'}
+  cat(params$V_pars$txt_uncertainty, sep = "\n")
 ```
+
+\newpage
+
+```{r helptext_v_formula_collection, results='asis'}
+  cat(params$helptext_v_formula_collection, sep = "\n")
+```
+
+\newpage
 
 ### Input data for reference
 
 Finally, this is the input data table as used internally for all calculations.
 
 ```{r inp_tab, echo=FALSE, resize.width="100%"}
-  inp <- params$inp_data
-  tab <- params$tab_V1
-  as <- tab$Analyte
-  inp <- inp[inp[,"Analyte"] %in% as,]
-  if (knitr::is_html_output()) {
-    DT::datatable(data = inp, rownames = FALSE, extensions = "Buttons", options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL))))
-  } else {
-    knitr::kable(inp)
-  }
+inp <- params$inp_data
+inp <- inp[inp[,"Analyte"] %in% tab_v1$Analyte,]
+inp <- inp[, !(colnames(inp) %in% c("Type", "Exclude_Level", "Exclude_Sample", "norm", "rel_norm"))]
+if (knitr::is_html_output()) {
+  DT::datatable(
+    data = inp, rownames = FALSE, extensions = "Buttons", 
+    options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL)))
+  )
+} else {
+  knitr::kable(inp, row.names = FALSE, digits = prec+1)
+}
 ```

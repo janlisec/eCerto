@@ -35,8 +35,8 @@ page_validationUI <- function(id) {
         sidebar = bslib::sidebar(
           position = "right", open = "open", width = "280px",
           shiny::div(
-            shinyWidgets::pickerInput(inputId = ns("opt_V1_anal"), label = "Analyte(s)", multiple = TRUE, choices = ""),
-            shinyWidgets::pickerInput(inputId = ns("opt_V1_k"), label = "Calibration Level(s)", multiple = TRUE, choices = "")
+            shinyWidgets::pickerInput(inputId = ns("opt_figV1_anal"), label = "Analyte(s)", multiple = TRUE, choices = ""),
+            shinyWidgets::pickerInput(inputId = ns("opt_figV1_level"), label = "Calibration Level(s)", multiple = TRUE, choices = "")
           )
         ),
         shiny::plotOutput(outputId = ns("fig_V1"))
@@ -137,12 +137,19 @@ page_validationUI <- function(id) {
   )
 
   placeholder_default <- function(x) {
-    paste("This is a placeholder for method", x,  "calculation. You can use any markdown syntax to format the text consistently for HTML or Word export.")
+    paste("This is a placeholder for method", x,  "calculation. You can use any markdown syntax to format the text consistently for HTML or Word export. In general it will be sufficient to know the formatting tags for *italic* and **bold** as well as superscript for ^13^C and subscript like in H~2~O. Some templates can be loaded using the icon in the box header.")
   }
 
   V_card_trueness <- bslib::card(
     id = ns("v_panel_trueness"),
-    bslib::card_header(shiny::actionLink(inputId = ns("Help_trueness"), "Trueness")),
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::actionLink(inputId = ns("Help_trueness"), "Trueness"),
+      shinyWidgets::dropdown(
+        shiny::selectInput(inputId = ns("opt_trueness_template"), label = "Select template", choices = c("none", "spike")),
+        style = "bordered", icon = icon("gear"), right = TRUE, size = "xs", status = "primary"
+      )
+    ),
     bslib::card_body(
       shiny::textAreaInput(
         inputId = ns("txt_trueness"), label = NULL, rows = 7, width = "100%",
@@ -237,9 +244,6 @@ page_validationServer <- function(id, test_data = NULL) {
               },
               params = list(
                 "inp_data" = tab(),
-                "tab_V1" = tab_V1(),
-                "fig_V1" = function() { prepFigV1(ab())},
-                "fig_V1_width" = calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120),
                 "logo_file" = logofile,
                 "V_pars" = shiny::reactiveValuesToList(V_pars),
                 "helptext_v_fig_V1" = readLines(get_local_file("v_fig_V1.[Rr][Mm][Dd]$")),
@@ -256,6 +260,8 @@ page_validationServer <- function(id, test_data = NULL) {
 
     # User pars for V module ====
     V_pars <- shiny::reactiveValues(
+      "opt_figV1_anal" = "",
+      "opt_figV1_level" = "",
       "opt_tabV1_unitcali" = "",
       "opt_tabV1_unitsmpl" = "",
       "opt_tabV1_convfac" = 1,
@@ -263,12 +269,26 @@ page_validationServer <- function(id, test_data = NULL) {
       "opt_tabV1_precision" = 3,
       "opt_tabV1_alpha" = 0.05,
       "opt_tabV1_k" = 3,
+      "opt_tabV1_useAnalytes" = FALSE,
+      "opt_tabV1_fltLevels" = FALSE,
       "opt_exp_dec_sep" = ".",
       "txt_trueness" = "",
       "txt_precision" = "",
       "txt_uncertainty" = ""
     )
 
+    shiny::observeEvent(input$opt_tabV1_useAnalytes, {
+      V_pars$opt_tabV1_useAnalytes <- input$opt_tabV1_useAnalytes
+    })
+    shiny::observeEvent(input$opt_tabV1_fltLevels, {
+      V_pars$opt_tabV1_fltLevels <- input$opt_tabV1_fltLevels
+    })
+    shiny::observeEvent(input$opt_figV1_anal, {
+      V_pars$opt_figV1_anal <- input$opt_figV1_anal
+    })
+    shiny::observeEvent(input$opt_figV1_level, {
+      V_pars$opt_figV1_level <- input$opt_figV1_level
+    })
     shiny::observeEvent(input$opt_tabV1_unitcali, {
       V_pars$opt_tabV1_unitcali <- input$opt_tabV1_unitcali
     })
@@ -277,6 +297,9 @@ page_validationServer <- function(id, test_data = NULL) {
     })
     shiny::observeEvent(input$opt_tabV1_convfac, {
       V_pars$opt_tabV1_convfac <- input$opt_tabV1_convfac
+    })
+    shiny::observeEvent(input$opt_tabV1_useLevels, {
+      V_pars$opt_tabV1_useLevels <- input$opt_tabV1_useLevels
     })
     shiny::observeEvent(input$opt_tabV1_colflt, {
       V_pars$opt_tabV1_colflt <- input$opt_tabV1_colflt
@@ -300,6 +323,14 @@ page_validationServer <- function(id, test_data = NULL) {
       V_pars$txt_uncertainty <- as.character(input$txt_uncertainty)
     })
 
+    trueness_template_spike <- "The trueness was determined by testing the recovery rate **W [%]** at 3 different concentration levels covering the working area range and using *n=6* replicates at each level. We determined **W=...%** which is within the acceptable range of 80..100%."
+
+
+    shiny::observeEvent(input$opt_trueness_template, {
+      if (input$opt_trueness_template=="none") { shiny::updateTextAreaInput(inputId = "txt_trueness", value = "") }
+      if (input$opt_trueness_template=="spike") { shiny::updateTextAreaInput(inputId = "txt_trueness", value = trueness_template_spike) }
+    })
+
     # Upload & Data preparation ====
     # upload info used in UI part
     output$V_fileUploaded <- shiny::reactive({
@@ -318,19 +349,19 @@ page_validationServer <- function(id, test_data = NULL) {
 
     shiny::observeEvent(tab(), {
       shinyWidgets::updatePickerInput(
-        session = session, inputId = "opt_V1_anal", choices = levels(tab()$Analyte), selected = levels(tab()$Analyte),
+        session = session, inputId = "opt_figV1_anal", choices = levels(tab()$Analyte), selected = levels(tab()$Analyte),
         choicesOpt = list(subtext = paste0("(",1:length(levels(tab()$Analyte)),")")),
         options = list('container' = "body", 'actions-box' = TRUE, 'deselect-all-text' = "None", 'select-all-text' = "All", 'none-selected-text' = "None selected")
       )
       shinyWidgets::updatePickerInput(
-        session = session, inputId = "opt_V1_k", choices = levels(tab()$Level), selected = levels(tab()$Level)[c(1,length(levels(tab()$Level)))],
+        session = session, inputId = "opt_figV1_level", choices = levels(tab()$Level), selected = levels(tab()$Level)[c(1,length(levels(tab()$Level)))],
         options = list(container = "body", 'actions-box' = TRUE, 'deselect-all-text' = "None", 'select-all-text' = "All", 'none-selected-text' = "None selected")
       )
     })
 
     tab_flt <- shiny::reactive({
       req(tab())
-      flt_Vdata(x = tab(), l = if (input$opt_tabV1_useLevels) input$opt_V1_k else NULL, a = if (input$opt_tabV1_useAnalytes) input$opt_V1_anal else NULL)
+      flt_Vdata(x = tab(), l = if (V_pars$opt_tabV1_useLevels) V_pars$opt_figV1_level else NULL, a = if (V_pars$opt_tabV1_useAnalytes) V_pars$opt_figV1_anal else NULL)
     })
 
     current_analyte <- shiny::reactiveValues("name" = NULL, "row" = NULL)
@@ -343,7 +374,7 @@ page_validationServer <- function(id, test_data = NULL) {
         tab = tab_flt(),
         alpha = V_pars$opt_tabV1_alpha,
         k = V_pars$opt_tabV1_k,
-        flt_outliers = input$opt_tabV1_fltLevels,
+        flt_outliers = V_pars$opt_tabV1_fltLevels,
         unit_cali = V_pars$opt_tabV1_unitcali,
         unit_smpl = V_pars$opt_tabV1_unitsmpl,
         conv_fac = V_pars$opt_tabV1_convfac)
@@ -423,7 +454,7 @@ page_validationServer <- function(id, test_data = NULL) {
     output$tab_V3 <- DT::renderDT({
       req(tab())
       out <- tab()
-      # ToDo$$ add units from parameter list
+      # add units from parameter list if provided
       if (nchar(V_pars$opt_tabV1_unitcali) >= 1) {
         out$unit_cali <- V_pars$opt_tabV1_unitcali
       }
@@ -439,31 +470,31 @@ page_validationServer <- function(id, test_data = NULL) {
     # Figures ====
     # Figure V1 ====
     ab <- shiny::reactive({
-      req(tab(), input$opt_V1_anal, input$opt_V1_k)
-      ab <- prepDataV1(tab=tab(), a = input$opt_V1_anal, l = input$opt_V1_k, fmt = "rel_norm")
+      req(tab(), any(nchar(V_pars$opt_figV1_anal)>=1), any(nchar(V_pars$opt_figV1_level)>=1))
+      prepDataV1(tab=tab(), a = V_pars$opt_figV1_anal, l = V_pars$opt_figV1_level, fmt = "rel_norm")
     })
 
     fig_V1_width <- shiny::reactive({
-      calc_bxp_width(n = length(input$opt_V1_anal)*length(input$opt_V1_k), w_point = 28, w_axes = 120)
+      calc_bxp_width(n = length(V_pars$opt_figV1_anal)*length(V_pars$opt_figV1_level), w_point = 28, w_axes = 120)
     })
 
     output$fig_V1 <- shiny::renderPlot({
-      req(ab(), input$opt_V1_anal, input$opt_V1_k)
+      req(ab(), any(nchar(V_pars$opt_figV1_anal)>=1), any(nchar(V_pars$opt_figV1_level)>=1))
       prepFigV1(ab = ab())
     }, width = fig_V1_width)
 
     # Figure V2 ====
     output$fig_V2 <- shiny::renderPlot({
       req(tab_flt(), current_analyte$name %in% tab_flt()[,"Analyte"])
-      prepFigV2(tab = tab_flt(), a = current_analyte$name, flt_outliers = input$opt_tabV1_fltLevels)
+      prepFigV2(tab = tab_flt(), a = current_analyte$name, flt_outliers = V_pars$opt_tabV1_fltLevels)
     })
 
     V2_dat <- reactive({
-      req(tab(), tab_V1(), input$opt_V1_k, input$opt_V2_vals, current_analyte$name %in% tab()[,"Analyte"])
+      req(tab(), tab_V1(), V_pars$opt_figV1_level, input$opt_V2_vals, current_analyte$name %in% tab()[,"Analyte"])
       # $$ check if prepDataV1 function can be extended to generate the same output as this function
       x <- tab()
       x <- split(x, x$Analyte)[[current_analyte$name]]
-      x <- split(x, x$Level)[input$opt_V1_k]
+      x <- split(x, x$Level)[V_pars$opt_figV1_level]
       x <- lapply(x, function(y) {
         y[,"Value"] <- NA
         if (input$opt_V2_vals == "Area_Analyte") { y[,"Value"] <- y[,"Area_Analyte"] }
@@ -480,8 +511,8 @@ page_validationServer <- function(id, test_data = NULL) {
 
     # Figure V3 ====
     output$fig_V3 <- shiny::renderPlot({
-      req(tab(), current_analyte$name, input$opt_V1_k)
-      prepFigV3(x = flt_Vdata(x = tab(), l = input$opt_V1_k, a = current_analyte$name, rng = FALSE))
+      req(tab(), current_analyte$name, V_pars$opt_figV1_level)
+      prepFigV3(x = flt_Vdata(x = tab(), l = V_pars$opt_figV1_level, a = current_analyte$name, rng = FALSE))
     })
 
     # Help section ====
