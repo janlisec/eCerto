@@ -1,4 +1,4 @@
-### Tab.V1 - method linearity
+### Linearity
 
 The linearity of an analytical method is tested using the analyte values 
 $\overline{x}_j$.
@@ -25,7 +25,7 @@ is computed and the following parameters are reported:
 Additionally, the residuals $e$ of the linear model are tested:
 
 - to follow a normal distribution (Kolmogorof-Smirnov Test, $P_{KS,Res}$)
-- to show a trend, i.e. a drift associated with measurement order (Neumann-Test, $P_{Neu,Res}$)
+- to show a trend, *i.e.* a drift associated with measurement order (Neumann-Test, $P_{Neu,Res}$)
 - for the level showing the highest absolute residual to be an outlier (F-Test, $Out_F$)
 
 ***Note***

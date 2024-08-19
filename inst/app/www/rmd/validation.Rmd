@@ -2,7 +2,7 @@
 
 ***Note!***
 The Validation module is an add-on to *eCerto*. It is not required to compute CRM
-statistics. It is ment to quickly validate working area and linearity of a novel
+statistics. It is ment to quickly validate working area and linearity of a newly
 developed analytical method. As it is currently work-in-progress, available
 options and output format might change in the future.
 
@@ -33,7 +33,8 @@ options and output format might change in the future.
 
 ### Validation report
 
-The user can export a PDF report containing all imported, edited and calculated data and figures.
+The user can export a report, in HTML or docx format, containing all imported, 
+edited and calculated data and figures.
 
 <br/>
 <br/>

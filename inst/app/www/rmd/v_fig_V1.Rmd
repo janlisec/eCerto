@@ -1,4 +1,4 @@
-### Fig.V1 - Working range
+### Working range
 
 The working range of an analytical method is tested using the relative 
 analyte values $x_r$ of the smallest and the largest calibration level, $j_1$
@@ -6,8 +6,8 @@ and $j_N$, respectively.
 
 Relative analyte values are computed as $x_r = \frac {x_{i,j}} {\overline{x}_j}$ 
 with $x_{i,j}$ being the peak area ratios of analyte and internal standard 
-$x_{i,j}=\frac{A_\text{Analyte}}{A_\text{IS}}$ for each replicate $i$ at calibration level
-$j$.
+$x_{i,j}=\frac{A_\text{Analyte}}{A_\text{IS}}$ for each replicate $i$ at 
+calibration level $j$.
 
 For each $x_j$ in total $n$ replicate values exist and are tested:
 
@@ -15,15 +15,12 @@ For each $x_j$ in total $n$ replicate values exist and are tested:
 - to exhibit outliers (Grubbs-Test for single $P_{Grubbs1}$ and double $P_{Grubbs2}$ outliers)
 - to show a trend, *i.e.* a drift associated with measurement order (Neumann-Test, $P_{Neumann}$)
 
-Statistical test results are indicated in **Fig.V1** by symbols
+Statistical test results are indicated in **Fig.V1** by colored symbols as $ns=$ 
+not significant (green color), $*=$ significant at $P\le0.05$ (orange color) and
+$**=$ significant at $P\le0.01$ (red color).
 
------    -----------------------------------------------------------------------
- $ns$    not significant (green color)
-  $*$    significant at $P\le0.05$ (orange color)
- $**$    significant at $P\le0.01$ (red color)
------    -----------------------------------------------------------------------
-
-The two calibration levels $j_1$ and $j_N$ are tested for homogeneity 
+The two min/max calibration levels $j_1$ and $j_N$ are tested for homogeneity 
 of variance using an F-Test. The user has the option to select other calibration
-levels as min or max, *i.e.* $j_2$ or $j_{N-1}$. In case of a significant F-Test (no 
-variance homogeneity), this allows to limit the working range to acceptable values.
+levels as min or max, *i.e.* $j_2$ or $j_{N-1}$. In case of a significant F-Test 
+(no variance homogeneity), this allows to limit the working range to acceptable 
+values.
