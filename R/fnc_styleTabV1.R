@@ -4,18 +4,21 @@
 #' @param df The data.frame of values.
 #' @param precision Number of digits to display.
 #' @param selected Currently selected row.
-#' @param show_colgroups Character.
+#' @param interact_ele Show interactive elements (ordering and buttons), respectively use FALSE to hide them for Word export.
+#' @param font.size Specify table font.size explicitly.
+#' @param show_colgroups Character indicating col groups to be shown or hidden.
 #' @examples
 #' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
 #' tab <- eCerto:::read_Vdata(file = inp)
 #' out <- plyr::ldply(levels(tab[,"Analyte"]), function(a) {
 #'     eCerto:::prepTabV1(tab = tab, a = a)
 #' })
-#' eCerto:::style_tabV1(df = out, selected = NULL, ordering = FALSE)
+#' out_dt <- eCerto:::style_tabV1(df = out, selected = NULL, ordering = FALSE)
+#' out_dt
 #' @return A datatable object.
 #' @keywords internal
 #' @noRd
-style_tabV1 <- function(df, precision = 3, selected = 1, ordering = TRUE, font.size = "100%", show_colgroups = c("lm", "wr", "lo")) {
+style_tabV1 <- function(df, precision = 3, selected = 1, interact_ele = TRUE, font.size = NA, show_colgroups = c("lm", "wr", "lo")) {
   e_msg("Styling Tab.V1 for HTML output")
 
   # check for columns with consistent values, which can be better stored in a table caption
@@ -61,9 +64,9 @@ style_tabV1 <- function(df, precision = 3, selected = 1, ordering = TRUE, font.s
     shiny::tags$thead(
       shiny::tags$tr(
         shiny::tags$th(colspan = 6-length(tab_cap), ''),
-        if ("lm" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
+        if ("lm" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; border:2px solid white; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
         if ("lo" %in% show_colgroups) shiny::tags$th(colspan = 2, ''),
-        if ("wr" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; text-align:center; font-style:italic", colspan = 7, 'Working range')
+        if ("wr" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; border:2px solid white; text-align:center; font-style:italic", colspan = 7, 'Working range')
       ),
       shiny::tags$tr(
         lapply(colnames(df), function(x) { shiny::tags$th(shiny::HTML(x)) })
@@ -73,15 +76,15 @@ style_tabV1 <- function(df, precision = 3, selected = 1, ordering = TRUE, font.s
 
   # create DT object
   dt <- DT::datatable(
-    data = df, rownames = FALSE, extensions = "Buttons", escape = FALSE,
+    data = df, rownames = FALSE, extensions = "Buttons", escape = FALSE, width = min(960, c(820,640,280)[c("lm", "wr", "lo") %in% show_colgroups]),
     options = list(
-      dom="Bt", pageLength = -1, ordering = ordering,
-      buttons = list(list(extend = "excel", text = "Excel", title = NULL)),
-      initComplete = DT::JS(
+      dom = ifelse(interact_ele, "Bt", "t"), pageLength = -1, ordering = interact_ele,
+      buttons = if (interact_ele)  { list(list(extend = "excel", text = "Excel", title = NULL)) },
+      initComplete = if (!is.na(font.size)) {DT::JS(
         "function(settings, json) {",
         paste0("$(this.api().table().container()).css({'font-size': '", font.size, "'});"),
         "}"
-      )
+      )}
     ),
     selection = list(mode = "single", selected = selected, target = 'row'),
     caption = if ("lm" %in% show_colgroups && length(tab_cap)>=1) { shiny::tags$caption(
