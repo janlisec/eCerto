@@ -1,12 +1,12 @@
 ### Linearity
 
-The linearity of an analytical method is tested using the analyte values 
-$\overline{x}_j$.
+The linearity of an analytical method is tested using the mean normalized analyte 
+values at different concentrations $\overline{x}_j$.
 
-Analyte values are computed as the peak area ratios of analyte and internal 
-standard $x_{i,j}=\frac{A_{Analyte}}{A_{IS}}$ for each replicate $i$ at 
-calibration level $j$. Here, $\overline{x}_j$ is the mean of the $n$ replicates 
-at level $j$. The total number of calibration levels is denoted as $N$.
+Analyte values are computed for each replicate $i$ at calibration level $j$ as 
+the peak area ratios of analyte and internal standard $x_{i,j}=\frac{A_{Analyte}}{A_{IS}}$. 
+Here, $\overline{x}_j$ is the mean of the $i=1..n$ replicates at level $j$. 
+The total number of calibration levels is denoted as $N$.
 
 For each analyte, a linear model $y=b_0+b_1 \times x$ over all $\overline{x}_j$ 
 is computed and the following parameters are reported:

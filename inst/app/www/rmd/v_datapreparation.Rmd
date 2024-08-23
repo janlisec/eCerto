@@ -4,7 +4,8 @@
 according to DIN 32645:2008-11.
 
 The method performance characteristics reported by *eCerto* comprise working
-range, linearity, limit of detection (LOD), limit of quantification (LOQ) ...
+range, linearity, limit of detection (LOD) and limit of quantification (LOQ) 
+together with statements on trueness, precision and uncertainty.
 
 The statistical tests implemented in *eCerto* according to DIN 32645:2008-11 
 comprise outlier tests (Grubbs), trend tests (Neumann), tests for homogeneity 

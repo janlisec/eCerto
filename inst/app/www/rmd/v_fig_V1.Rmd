@@ -1,15 +1,15 @@
 ### Working range
 
-The working range of an analytical method is tested using the relative 
-analyte values $x_r$ of the smallest and the largest calibration level, $j_1$
-and $j_N$, respectively.
+The working range of an analytical method is tested using the relative analyte 
+values $x_r$ of the smallest and the largest calibration level, $j_1$ and $j_N$, 
+respectively.
 
 Relative analyte values are computed as $x_r = \frac {x_{i,j}} {\overline{x}_j}$ 
 with $x_{i,j}$ being the peak area ratios of analyte and internal standard 
-$x_{i,j}=\frac{A_\text{Analyte}}{A_\text{IS}}$ for each replicate $i$ at 
+$x_{i,j}=\frac{A_\text{Analyte}}{A_\text{IS}}$ for each replicate $i$ and 
 calibration level $j$.
 
-For each $x_j$ in total $n$ replicate values exist and are tested:
+For each $x_j$ in total $i=1..n$ replicate values exist and are tested:
 
 - to follow a normal distribution (Kolmogorof-Smirnov Test, $P_{KS}$)
 - to exhibit outliers (Grubbs-Test for single $P_{Grubbs1}$ and double $P_{Grubbs2}$ outliers)

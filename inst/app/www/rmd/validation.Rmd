@@ -31,10 +31,13 @@ options and output format might change in the future.
 ```{r child = 'v_formula_collection.Rmd'}
 ```
 
-### Validation report
+### Validation report and data backup
 
 The user can export a report, in HTML or docx format, containing all imported, 
 edited and calculated data and figures.
+
+For later reference, all data and parameters can be stored (and reimported) in an
+RData file.
 
 <br/>
 <br/>

@@ -9,7 +9,8 @@ reference when using *eCerto*.
 |-------:|:--------------------------------------------------------------------|
 | $N_j$  | total number of calibration levels with $j$ denoting the j-th level |
 | $n_i$  | (minimal) number of replicates within a calibration level with $i$ denoting the i-th replicate |
-| $x_{i,j}$ | denoting the peak area ratio of analyte and internal standard (IS) in replicate $i$ of level $j$ calculated as $x_{i,j}=\frac{A_\text {Analyte}}{A_\text {IS}}$ |
+| $x_{i,j}$ | denoting the normalized analyte value, the ratio of analyte and internal standard (IS) peak areas in replicate $i$ of level $j$ calculated as $x_{i,j}=\frac{A_\text {Analyte}}{A_\text {IS}}$ |
+| $\overline{x}_j$ | mean of normalized analyte values at concentration $j$ |
 | $x_r$ | denoting the relative analyte level $x_r = \frac {x_{i,j}} {\overline{x}_j}$ |
 | $b_0, b_1, (b_2)$ | denoting the coefficients (intercept, slope, ...) of a linear (quadratic) model fitting the data |
 | $e$   | denoting the residuals (error) of a model |
