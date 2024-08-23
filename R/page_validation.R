@@ -93,16 +93,16 @@ page_validationUI <- function(id) {
             label = "Unit specification", circle = FALSE, width = "100%", inline = TRUE
           ),
           shinyWidgets::dropdownButton(
+            shiny::checkboxInput(inputId = ns("opt_tabV1_fltLevels"), label = shiny::HTML("Omit Out<sub>F</sub> Levels"), value = FALSE),
             shinyWidgets::pickerInput(inputId = ns("opt_tabV1_alpha"), label = "alpha", multiple = FALSE, choices = c(0.01, 0.05), selected = 0.05),
             shinyWidgets::pickerInput(inputId = ns("opt_tabV1_k"), label = "k", multiple = FALSE, choices = 2:4, selected = 3),
             shinyWidgets::pickerInput(inputId = ns("opt_tabV1_precision"), label = "digits", multiple = FALSE, choices = 0:6, selected = 3),
             label = "Parameters", circle = FALSE, width = "100%", inline = TRUE
           ),
           shinyWidgets::dropdownButton(
-            shiny::checkboxInput(inputId = ns("opt_tabV1_fltLevels"), label = shiny::HTML("Omit Out<sub>F</sub> Levels"), value = FALSE),
-            shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Analytes Fig.V1", value = FALSE),
-            shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Level range Fig.V1", value = FALSE),
-            label = "Analyte/Level filters", circle = FALSE, width = "100%", inline = TRUE
+            shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Analyte selection", value = FALSE),
+            shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Level range", value = FALSE),
+            label = "Synchronize filters with Fig.V1", circle = FALSE, width = "100%", inline = TRUE
           ),
         ),
         shiny::div(
@@ -127,12 +127,23 @@ page_validationUI <- function(id) {
   )
 
   v_report_card <- bslib::card(
-    bslib::card_header("Method Validation Report"),
+    bslib::card_header("Method Validation Report and Data Backup"),
     bslib::card_body(
       bslib::layout_columns(
         shiny::radioButtons(inputId = ns("v_report_fmt"), label = "Validation Report Format", choices = list("HTML"="html", "docx"="docx")),
-        shiny::downloadButton(outputId = ns("v_report"), label = "Validation Report")
-      )
+        shiny::div(style = "margin-top: 32px; width: 100%", shiny::downloadButton(outputId = ns("v_report"), label = "Validation Report"))
+      ),
+      bslib::layout_columns(
+        shiny::div(style = "margin-top: 32px; width: 100%", shiny::downloadButton(outputId = ns("v_backup_save"), label = "Save data backup")),
+        shiny::fileInput(
+          inputId = ns("v_backup_load"),
+          label = "Load data backup",
+          multiple = F,
+          placeholder = "RData",
+          accept = c("RData", "rda")
+        )
+      ),
+      shiny::div(id = ns("inp_file_name"), "This div will show the original Excel File name used upon import.")
     )
   )
 
@@ -186,10 +197,10 @@ page_validationUI <- function(id) {
       ns = ns, # namespace of current module
       shiny::fileInput(
         inputId = ns("inp_file"),
-        label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel"),
+        label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData"),
         multiple = F,
         placeholder = "xlsx",
-        accept = c("xls", "xlsx")
+        accept = c("xlsx", "RData", "rda")
       ),
       shiny::p(shiny::helpText("Example Table (Agilent MassHunter Export format)")),
       shiny::img(src = "www/rmd/fig/V_Modul_Import.png")
@@ -223,7 +234,7 @@ page_validationUI <- function(id) {
 page_validationServer <- function(id, test_data = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
 
-    # Reports ====
+    # Reports & Backup ====
     output$v_report <- shiny::downloadHandler(
       filename = function() {
         paste0("Validation Report.", input$v_report_fmt)
@@ -258,6 +269,27 @@ page_validationServer <- function(id, test_data = NULL) {
       }
     )
 
+    output$v_backup_save <- shiny::downloadHandler(
+      filename = function() {
+        paste0("eCerto_V_backup.RData", "")
+      },
+      content = function(file) {
+        eCerto_V_backup <- list(
+          "tab" = tab(),
+          "V_pars" = reactiveValuesToList(V_pars)
+        )
+        # store backup
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            save(eCerto_V_backup, file = file)
+          },
+          message = "Storing data backup.."
+        )
+      },
+      contentType = "RData"
+    )
+
     # User pars for V module ====
     V_pars <- shiny::reactiveValues(
       "opt_figV1_anal" = "",
@@ -274,7 +306,10 @@ page_validationServer <- function(id, test_data = NULL) {
       "opt_exp_dec_sep" = ".",
       "txt_trueness" = "",
       "txt_precision" = "",
-      "txt_uncertainty" = ""
+      "txt_uncertainty" = "",
+      "inp_file_name" = "",
+      "inp_file_path" = "",
+      "par_update" = 0
     )
 
     shiny::observeEvent(input$opt_tabV1_useAnalytes, {
@@ -338,13 +373,64 @@ page_validationServer <- function(id, test_data = NULL) {
     })
     shiny::outputOptions(output, "V_fileUploaded", suspendWhenHidden = FALSE)
 
+    v_env <- new.env()
     tab <- shiny::reactive({
       if (!is.null(test_data)) {
         return(test_data)
       } else {
-        req(input$inp_file$datapath)
-        read_Vdata(file = input$inp_file$datapath, fmt = c("Agilent"))
+        req(V_pars$input_file_path)
+        x <- V_pars$input_file_path
+        if (tolower(tools::file_ext(x)) %in% c("rdata", "rda")) {
+          load(file = x, envir = v_env)
+          shiny::isolate(V_pars$par_update <- V_pars$par_update + 1)
+          get("eCerto_V_backup", envir = v_env)[["tab"]]
+        } else {
+          fmt <- check_fmt_Vdata(file = x)
+          read_Vdata(file = x, fmt = fmt)
+        }
       }
+    })
+
+    shiny::observeEvent(input$v_backup_load$datapath, {
+      V_pars$input_file_path <- input$v_backup_load$datapath
+    })
+    shiny::observeEvent(input$inp_file$datapath, {
+      shinyjs::html(id = "inp_file_name", html = shiny::HTML(input$inp_file$name))
+      # keep name of XLSX file
+      if (tolower(tools::file_ext(input$inp_file$name)) == "xlsx") V_pars$input_file_name <- input$inp_file$name
+      V_pars$input_file_path <- input$inp_file$datapath
+    })
+
+
+    shiny::observeEvent(V_pars$par_update, {
+      shiny::showModal(
+        shiny::modalDialog(title = "Please wait...", size = "s",
+          shiny::actionButton(inputId = session$ns("btn_V_par_load"), label = shiny::HTML("Please wait several seconds until figure and table are visible in the background before loading previous parameter settings by pushing this button")),
+          footer = NULL
+        )
+      )
+    }, ignoreInit = TRUE)
+
+    shiny::observeEvent(input$btn_V_par_load, {
+      tmp <- get("eCerto_V_backup", envir = v_env)[["V_pars"]]
+      shinyWidgets::updatePickerInput(session = session, inputId = "opt_figV1_anal", selected = tmp$opt_figV1_anal)
+      shinyWidgets::updatePickerInput(session = session, inputId = "opt_figV1_level", selected = tmp$opt_figV1_level)
+      shiny::updateTextInput(session = session, inputId = "opt_tabV1_unitcali", value = tmp$opt_tabV1_unitcali)
+      shiny::updateTextInput(session = session, inputId = "opt_tabV1_unitsmpl", value = tmp$opt_tabV1_unitsmpl)
+      shiny::updateNumericInput(session = session, inputId = "opt_tabV1_convfac", value = as.numeric(tmp$opt_tabV1_convfac))
+      shiny::updateNumericInput(session = session, inputId = "opt_tabV1_precision", value = as.numeric(tmp$opt_tabV1_precision))
+      shiny::updateNumericInput(session = session, inputId = "opt_tabV1_alpha", value = as.numeric(tmp$opt_tabV1_alpha))
+      shiny::updateNumericInput(session = session, inputId = "opt_tabV1_k", value = as.numeric(tmp$opt_tabV1_k))
+      shiny::updateTextAreaInput(session = session, inputId = "txt_trueness", value = tmp$txt_trueness)
+      shiny::updateTextAreaInput(session = session, inputId = "txt_precision", value = tmp$txt_precision)
+      shiny::updateTextAreaInput(session = session, inputId = "txt_uncertainty", value = tmp$txt_uncertainty)
+      shiny::updateCheckboxInput(session = session, inputId = "opt_tabV1_useAnalytes", value = tmp$opt_tabV1_useAnalytes)
+      shiny::updateCheckboxInput(session = session, inputId = "opt_tabV1_useLevels", value = tmp$opt_tabV1_useLevels)
+      shiny::updateCheckboxInput(session = session, inputId = "opt_tabV1_fltLevels", value = tmp$opt_tabV1_fltLevels)
+      shiny::updateCheckboxGroupInput(session = session, inputId = "opt_tabV1_colflt", selected = tmp$opt_tabV1_colflt)
+      V_pars$input_file_name <- tmp$input_file_name
+      shinyjs::html(id = "inp_file_name", html = shiny::HTML("Original data source file:", V_pars$input_file_name))
+      shiny::removeModal()
     })
 
     shiny::observeEvent(tab(), {
