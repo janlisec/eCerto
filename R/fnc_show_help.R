@@ -34,7 +34,7 @@ show_help <- function(filename, show_modal = TRUE) {
         shiny::modalDialog(
           help_text,
           footer = NULL,
-          size = "m",
+          size = "l",
           easyClose = TRUE,
           title = NULL
         )
