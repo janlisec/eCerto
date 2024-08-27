@@ -8,8 +8,8 @@
 #' @examples
 #' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
 #' tab <- eCerto:::read_Vdata(file = inp)
-#' eCerto:::flt_Vdata(x = tab, l = c(2,3), a = c("PFOA", "PFBA"))
-#' eCerto:::flt_Vdata(x = tab, l = c(2,5), a = "PFBA")
+#' eCerto:::flt_Vdata(x = tab, l = c("2","4"), a = c("PFOA", "PFBA"))
+#' eCerto:::flt_Vdata(x = tab, l = c(2,5), a = "PFBA", rng = FALSE)
 #' @keywords internal
 #' @noRd
 flt_Vdata <- function(x = NULL, l = NULL, a = NULL, rng = TRUE) {

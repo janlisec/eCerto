@@ -42,19 +42,11 @@ read_zenodo <- function(id) {
     out <- try(curl::curl_download(url = file_urls, destfile = dest, quiet = FALSE), silent = TRUE)
     # out <- try(curl::multi_download(urls = file_urls, destfile = dest), silent = TRUE)
     if (inherits(out, "try-error")) {
-      if (interactive()) {
-        e_msg("Sorry, something went wrong upon download. :/")
-      } else {
-        shinyWidgets::show_alert(title = NULL, type = "error", text = "Sorry, something went wrong upon download. :/", closeOnClickOutside = TRUE)
-      }
+      warning_or_modal(x = "Sorry, something went wrong upon download. :/")
     } else {
       return(check_RData(x = dest))
     }
   } else {
-    if (interactive()) {
-      e_msg("Sorry, could not find this Zenodo ID. :/")
-    } else {
-      shinyWidgets::show_alert(title = NULL, type = "error", text = "Sorry, could not find this Zenodo ID. :/", closeOnClickOutside = TRUE)
-    }
+    warning_or_modal(x = "Sorry, could not find this Zenodo ID. :/")
   }
 }

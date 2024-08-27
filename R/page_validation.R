@@ -197,10 +197,10 @@ page_validationUI <- function(id) {
       ns = ns, # namespace of current module
       shiny::fileInput(
         inputId = ns("inp_file"),
-        label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData"),
-        multiple = F,
+        label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),
+        multiple = FALSE,
         placeholder = "xlsx",
-        accept = c("xlsx", "RData", "rda")
+        accept = c("xlsx", "RData")
       ),
       shiny::p(shiny::helpText("Example Table (Agilent MassHunter Export format)")),
       shiny::img(src = "www/rmd/fig/V_Modul_Import.png")
@@ -428,6 +428,7 @@ page_validationServer <- function(id, test_data = NULL) {
       shiny::updateCheckboxInput(session = session, inputId = "opt_tabV1_useLevels", value = tmp$opt_tabV1_useLevels)
       shiny::updateCheckboxInput(session = session, inputId = "opt_tabV1_fltLevels", value = tmp$opt_tabV1_fltLevels)
       shiny::updateCheckboxGroupInput(session = session, inputId = "opt_tabV1_colflt", selected = tmp$opt_tabV1_colflt)
+      # restore and show original data file name
       V_pars$input_file_name <- tmp$input_file_name
       shinyjs::html(id = "inp_file_name", html = shiny::HTML("Original data source file:", V_pars$input_file_name))
       shiny::removeModal()

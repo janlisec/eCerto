@@ -2,14 +2,15 @@
 #' @title Assert a specific column (type and position) in a data frame.
 #' @description \code{assert_col} will check in a data.frame for name, position,
 #'    type of a specific column and ensure that the return value (data frame)
-#'    contains a respective column.
+#'    contains a respective column. If possible, the current values are converted
+#'    into the specified type.
 #' @details tbd.
 #' @param df Input data frame.
 #' @param name Name of the column to ensure (and to search for).
 #' @param pos Position of this column. NULL to keep position where found in df.
 #' @param type Desired data type of this column.
 #' @param fuzzy_name Allow fuzzy matching (additional blanks and case insensitive search allowed).
-#' @param default_value Default value if column needs to be created or can not be converted to specified type. Keep NULL to use pre defined
+#' @param default_value Default value if column needs to be created or can not be converted to specified type. Keep NULL to use pre defined default values.
 #' @examples
 #' x <- data.frame(
 #'   "analyte" = c("A", "B"),
@@ -42,7 +43,9 @@
 #' sapply(1:ncol(x), function(i) {
 #'   class(x[, i])
 #' })
-#' @return A data frame with a column of the specified name and type at the specified position.
+#' @return A data frame with a column of the specified name and type at the
+#'     specified position. An error message is attached to the result as an
+#'     attribute in case of unexpected events.
 #' @export
 assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "numeric", "factor", "logical", "Date"), fuzzy_name = TRUE, default_value = NULL) {
   type <- match.arg(type)
@@ -120,7 +123,7 @@ assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "n
   }
   new_vals <- stats::setNames(data.frame(new_vals), name)
 
-  # put dataframe together
+  # put data.frame together
   if (!is.null(cp)) df <- df[, -cp, drop = FALSE]
   if (pos > ncol(df)) {
     df <- cbind(df, new_vals)

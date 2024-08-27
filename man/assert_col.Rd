@@ -24,15 +24,18 @@ assert_col(
 
 \item{fuzzy_name}{Allow fuzzy matching (additional blanks and case insensitive search allowed).}
 
-\item{default_value}{Default value if column needs to be created or can not be converted to specified type. Keep NULL to use pre defined}
+\item{default_value}{Default value if column needs to be created or can not be converted to specified type. Keep NULL to use pre defined default values.}
 }
 \value{
-A data frame with a column of the specified name and type at the specified position.
+A data frame with a column of the specified name and type at the
+specified position. An error message is attached to the result as an
+attribute in case of unexpected events.
 }
 \description{
 \code{assert_col} will check in a data.frame for name, position,
 type of a specific column and ensure that the return value (data frame)
-contains a respective column.
+contains a respective column. If possible, the current values are converted
+into the specified type.
 }
 \details{
 tbd.

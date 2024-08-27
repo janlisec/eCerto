@@ -11,24 +11,12 @@ xlsxSheetNames <- function(filepath) {
     if (tolower(ext) == "xlsx") {
       openxlsx::getSheetNames(x)
     } else {
-      if (is.null(shiny::getDefaultReactiveDomain())) {
-        stop("Please select only Excel (.xlsx) files.")
-      } else {
-        shiny::showModal(
-          shiny::modalDialog("Please select only Excel (.xlsx) files.", title = "Wrong Filetype?")
-        )
-      }
+      warning_or_modal("Please select only Excel (.xlsx) files.")
       return(NULL)
     }
   })
   if (length(unique(a)) != 1) {
-    if (is.null(shiny::getDefaultReactiveDomain())) {
-      stop("Sheet names are different within files.")
-    } else {
-      shiny::showModal(
-        shiny::modalDialog("Sheet names are different within files.", title = "Different sheetnames?")
-      )
-    }
+    warning_or_modal("Sheet names are different within files.")
   }
   return(a[[1]])
 }
@@ -280,6 +268,10 @@ h_statement <- function(x, a) {
 #' mt <- eCerto:::init_materialtabelle(LETTERS[1:3])
 #' eCerto:::get_UF_cols(mt = mt, type = "F")
 #' eCerto:::get_UF_cols(mt = mt, type = "U_round")
+#' mt <- cbind(mt, data.frame("F1"=rep(1,3), "U1"=rep(0,3)))
+#' attr(mt, "col_code") <- data.frame("ID"=c("F1","U1"), "Name"=c("F_name","U_name"))
+#' eCerto:::get_UF_cols(mt)
+#' eCerto:::get_UF_cols(mt, type="F")
 get_UF_cols <- function(mt = NULL, type = c("U", "F", "U_round")[1]) {
   u_calc_cols <- "u_char"
   f_calc_cols <- "mean"
@@ -584,6 +576,16 @@ get_fun_name <- function (n = 0) {
   return(fun_name)
 }
 
+#' @title e_msg.
+#' @description Prepare a standard message to be shown in the console during an
+#'     R-Shiny app being active. The message will be amended by information on
+#'     the environment (current function or module/observer) to facilitate
+#'     error traceback.
+#' @details Will return NULL in case that golem config silent = TRUE.
+#' @param x A character vector containing the message parts.
+#' @return Character.
+#' @keywords internal
+#' @noRd
 e_msg <- function(x) {
   if (get_golem_config("silent")) {
     invisible(NULL)
@@ -599,6 +601,29 @@ e_msg <- function(x) {
       #curr_mod <- ifelse(exists("session"), session$ns(""), NA)
     }
     message("[", curr_fnc, "]: ", x, ifelse(is.na(curr_mod), "", paste0(" (", curr_mod, ")")))
+  }
+}
+
+#' @title warning_or_modal.
+#' @description Return a modal with an error message when called in a Shiny-App
+#'     or return a e_msg otherwise.
+#' @param x A character vector containing the message parts.
+#' @param type modal type.
+#' @return Character.
+#' @keywords internal
+#' @noRd
+warning_or_modal <- function(x, type = c("warning", "info", "success", "error")) {
+  type <- match.arg(type)
+  if (!is.null(shiny::getDefaultReactiveDomain())) {
+    shinyWidgets::show_alert(
+      title = NULL,
+      type = "error",
+      text = x,
+      closeOnClickOutside = TRUE
+    )
+  } else {
+    warning(x)
+    e_msg(x)
   }
 }
 

@@ -48,13 +48,13 @@
     },
     "BiocManager": {
       "Package": "BiocManager",
-      "Version": "1.30.23",
+      "Version": "1.30.24",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "47e968dfe563c1b22c2e20a067ec21d5"
+      "Hash": "dcb7fa4b65120de23d3496b94cc0d1da"
     },
     "BiocVersion": {
       "Package": "BiocVersion",
@@ -367,25 +367,25 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.36",
+      "Version": "0.6.37",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "utils"
       ],
-      "Hash": "fd6824ad91ede64151e93af67df6376b"
+      "Hash": "33698c4b3127fc9f506654607fb73676"
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.5.12",
+      "Version": "0.5.13",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "021437bbf79a5c46191a27c6c61af76635a6661c",
+      "RemoteSha": "921fb0f8ffedb359b3613ad64c00a4c05bc7581f",
+      "RemoteHost": "api.github.com",
       "Requirements": [
         "DT",
         "R",
@@ -406,7 +406,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "4fcbe3df223aa2ad37f103f50e540f2d"
+      "Hash": "e00ab9f3bd00b4744fc03e63857385cf"
     },
     "evaluate": {
       "Package": "evaluate",
@@ -485,7 +485,7 @@
     },
     "golem": {
       "Package": "golem",
-      "Version": "0.4.1",
+      "Version": "0.5.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -499,7 +499,7 @@
         "utils",
         "yaml"
       ],
-      "Hash": "dc12172dc35c6c80e18b430dc546fc24"
+      "Hash": "b4a1b89aff817fa4acb14e98428af2b5"
     },
     "here": {
       "Package": "here",
