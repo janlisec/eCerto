@@ -13,14 +13,18 @@
 #' @examples
 #' \donttest{
 #' if (interactive()) {
-#'   test <- eCerto$new()
+#'   # establish new Shiny session and new eCerto object
+#'   ShinySession <- shiny::MockShinySession$new()
+#'   test <- eCerto::eCerto$new()
+#'   # view current value stored in specific eCerto slot and register observer
 #'   shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
 #'   shiny::observeEvent(eCerto::getValue(test, c("Certification", "data")), {
 #'     message("Certification$data changed:", eCerto::getValue(test, "Certification")$data)
 #'   })
+#'   # change value of specific eCerto slot and flush reactivity to trigger observer
 #'   shiny::isolate(eCerto::setValue(test, c("Certification", "data"), 5))
+#'   ShinySession$flushReact()
 #'   shiny::isolate(eCerto::getValue(test, c("Certification", "data")))
-#'   shiny:::flushReact()
 #' }
 #' tmp <- eCerto$new()
 #' shiny::isolate(tmp$c_plot())

@@ -329,13 +329,13 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "5.2.1",
+      "Version": "5.2.2",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "R"
       ],
-      "Hash": "411ca2c03b1ce5f548345d2fc2685f7a"
+      "Hash": "8f27335f2bcff4d6035edcc82d7d46de"
     },
     "desc": {
       "Package": "desc",
@@ -378,14 +378,14 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.5.13",
+      "Version": "0.5.14",
       "Source": "GitHub",
       "RemoteType": "github",
+      "RemoteHost": "api.github.com",
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "921fb0f8ffedb359b3613ad64c00a4c05bc7581f",
-      "RemoteHost": "api.github.com",
+      "RemoteSha": "116461f8a7705037e9337a7dafac2af337e79955",
       "Requirements": [
         "DT",
         "R",
@@ -406,7 +406,7 @@
         "shinyjs",
         "tidyxl"
       ],
-      "Hash": "e00ab9f3bd00b4744fc03e63857385cf"
+      "Hash": "9cb387f2755360a6093beef756010bbe"
     },
     "evaluate": {
       "Package": "evaluate",
