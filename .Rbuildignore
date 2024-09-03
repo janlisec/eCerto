@@ -4,6 +4,7 @@
 ^\.Rproj\.user$
 ^source$
 ^LICENSE\.md$
+^README\.md$
 ^\.github$
 ^shiny_bookmarks$
 ^\.gitlab$

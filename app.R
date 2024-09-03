@@ -24,6 +24,9 @@
 # covr::function_coverage(fun = eCerto:::styleTabC1, code = source("tests/testthat/test-fnc_styleTabC1.R"))
 # covr::function_coverage(fun = eCerto:::plot_lts_data, code = source("tests/testthat/test-fnc_plot_lts_data.R"))
 
+# to profile the performance and investigate the reactive tree run the following line before starting the app and push Ctrl+F3 in the browser to show the log file
+# reactlog::reactlog_enable()
+
 pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 options("golem.app.prod" = TRUE)
 eCerto::run_app() # add parameters here (if any)

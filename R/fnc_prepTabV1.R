@@ -81,11 +81,10 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     s_x0 <- s_yx/stats::coef(df.lm)[2]
     V_x0 <- 100*(s_x0/mean(df[,1], na.rm=T))
 
-    # Mandel test
+    # Residuals of quadratic model (for Mandel test)
     df2 <- cbind(df, "Conc2" = df$Conc^2)
     df.qm <- stats::lm(Area_norm ~ Conc + Conc2, data=df2)
     e.qm <- stats::residuals(df.qm)
-    P_Mandel <- MandelTest(res_lm = e, res_qm = e.qm)
 
     # number of replicates
     n <- min(df[,"n"])
@@ -104,7 +103,7 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
       "s_yx" = s_yx,
       "s_x0" = s_x0,
       "V_x0" = V_x0,
-      "P_Mandel" = P_Mandel,
+      "P_Mandel" = MandelTest(res_lm = e, res_qm = e.qm),
       "P_KS_Res" = stats::ks.test(x = e, y="pnorm", mean=mean(e), sd=stats::sd(e))$p.val,
       "P_Neu_Res" = VonNeumannTest(e, unbiased = FALSE)$p.val,
       "F_Test" = F_Test,
