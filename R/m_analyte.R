@@ -119,7 +119,7 @@ m_analyteServer <- function(id, rv) {
         shiny::req(apm())
         a <- a()
         if (a %in% rv$a_p("name")) {
-          message("[m_analyte] update parameter inputs for ", a)
+          e_msg(paste("update parameter inputs for", a))
           shinyjs::html(id = "curr_analyte", html = apm()[[a]]$name)
           shiny::updateCheckboxInput(
             inputId = "pooling",
@@ -158,7 +158,7 @@ m_analyteServer <- function(id, rv) {
           # check if color of suggested rounding is already correct for this analyte
           update_DIN1333_HTML()
         } else {
-          message("[m_analyte] Can't update parameter inputs for ", a)
+          e_msg(paste("Can't update parameter inputs for", a))
         }
       },
       ignoreInit = FALSE,
@@ -189,7 +189,7 @@ m_analyteServer <- function(id, rv) {
         shiny::req(apm(), a())
         tmp <- apm()
         if (!identical(input$precision, tmp[[a()]]$precision)) {
-          message("[m_analyte] update 'precision'")
+          e_msg("update 'precision'")
           tmp[[a()]]$precision <- input$precision
           apm(tmp)
         }
@@ -204,7 +204,7 @@ m_analyteServer <- function(id, rv) {
         shiny::req(apm(), a())
         tmp <- apm()
         if (!identical(input$precision_export, tmp[[a()]]$precision_export)) {
-          message("[m_analyte] update 'precision_export'")
+          e_msg("update 'precision_export'")
           tmp[[a()]]$precision_export <- input$precision_export
           apm(tmp)
           update_DIN1333_HTML()
@@ -220,7 +220,7 @@ m_analyteServer <- function(id, rv) {
         shiny::req(apm(), a())
         tmp <- apm()
         if (!identical(input$sample_filter, tmp[[a()]]$sample_filter)) {
-          message("[m_analyte] update 'sample_filter'")
+          e_msg("update 'sample_filter'")
           if (length(input$sample_filter) < length(tmp[[a()]]$sample_ids) - 1) {
             if (is.null(input$sample_filter)) {
               tmp[[a()]]["sample_filter"] <- list(NULL)
@@ -249,7 +249,7 @@ m_analyteServer <- function(id, rv) {
         shiny::req(apm(), a())
         tmp <- apm()
         if (!identical(input$lab_filter, tmp[[a()]]$lab_filter)) {
-          message("[m_analyte] update 'lab_filter'")
+          e_msg("update 'lab_filter'")
           if (length(input$lab_filter) < length(tmp[[a()]]$lab_ids) - 1) {
             if (is.null(input$lab_filter)) {
               tmp[[a()]]["lab_filter"] <- list(NULL)
@@ -277,7 +277,7 @@ m_analyteServer <- function(id, rv) {
         shiny::req(apm(), a())
         tmp <- apm()
         if (!identical(input$pooling, tmp[[a()]]$pooling)) {
-          message("[m_analyte] update 'pooling'")
+          e_msg("update 'pooling'")
           tmp[[a()]]$pooling <- input$pooling
           apm(tmp)
         }
@@ -290,7 +290,7 @@ m_analyteServer <- function(id, rv) {
     shiny::observeEvent(apm(),
       {
         if (!identical(getValue(rv, c("General", "apm")), apm())) {
-          message("[m_analyte] apm changed, set rv.apm")
+          e_msg("apm changed, set rv.apm")
           setValue(rv, c("General", "apm"), apm())
         }
       },

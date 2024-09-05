@@ -362,7 +362,7 @@ page_CertificationServer <- function(id, rv) {
 
     shiny::observeEvent(CertValPlot_list(),
       {
-        message("CertValPlot_list changed; set rv.CertValPlot")
+        e_msg("CertValPlot parameter list changed")
         setValue(rv, c("Certification_processing", "CertValPlot"), CertValPlot_list())
       },
       ignoreInit = TRUE

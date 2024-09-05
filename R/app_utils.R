@@ -569,11 +569,8 @@ auto_fill <- function(x, also_fill = c("")) {
 #' @keywords internal
 #' @noRd
 get_fun_name <- function (n = 0) {
-  n = n + 1
-  cur_call <- sys.call(sys.parent(n))
-  fun_name <- as.character(cur_call)[1]
-  #fun_name = extract_root_and_last_member(fun_name)[["name"]]
-  return(fun_name)
+  cur_call <- sys.call(sys.parent(n + 1))
+  return(as.character(cur_call)[1])
 }
 
 #' @title e_msg.
@@ -593,7 +590,12 @@ e_msg <- function(x) {
     curr_mod <- NA
     curr_fnc <- get_fun_name(n=1)
     curr_fnc <- rev(strsplit(curr_fnc, "\n")[[1]])[1]
-    if (curr_fnc %in% c("observe", "<reactive>")) {
+    if (curr_fnc %in% c("observe", "<reactive>", "eventReactiveValueFunc")) {
+      #
+      y <- rlang::trace_back(globalenv())
+      i <- length(y$call)
+      y <- attr(attr(y$call[[i]], "srcref"), "srcfile")
+      curr_fnc <- basename(y$filename)
       # if (exists("session")) browser()
       # if ("session" %in% ls(envir = sys.frame(1))) browser()
       # if (x == "recalc cert_mean") browser()

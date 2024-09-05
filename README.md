@@ -31,18 +31,28 @@ validation, computing the working range and linearity of a method.
 
 ## Installation
 
-To run **eCerto** locally you can install the development version from 
-[GitHub](https://github.com/janlisec/eCerto) and start the app with:
+To run **eCerto** *locally* you can install the package from 
+[CRAN](https://cran.r-project.org/package=CorMID) 
+or the development version from [GitHub](https://github.com/janlisec/eCerto) and 
+start the app with:
 
 ``` r
-# install.packages("devtools")
+# CRAN
+install.packages("eCerto")
+
+# GitHub (alternative for the latest version)
+install.packages("devtools")
 devtools::install_github("janlisec/eCerto")
+
+# start the app
 eCerto::run_app()
 ```
 
-Other than that, **eCerto** currently has only few exported functions. Before 
-installation you can test the app version hosted at [BAM](https://apps.bam.de/shn00/eCerto/ "www.bam.de/eCerto")
-using your own or the provided example data.
+Apart from `run_app()`, the **eCerto** package currently provides only some 
+example data sets and few exported functions. Before installation you can test 
+the app version hosted at 
+[BAM](https://apps.bam.de/shn00/eCerto/ "www.bam.de/eCerto") using your own 
+or the provided example data.
 
 ## Detailed documentation
 
