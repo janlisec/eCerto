@@ -591,16 +591,12 @@ e_msg <- function(x) {
     curr_fnc <- get_fun_name(n=1)
     curr_fnc <- rev(strsplit(curr_fnc, "\n")[[1]])[1]
     if (curr_fnc %in% c("observe", "<reactive>", "eventReactiveValueFunc")) {
-      #
-      y <- rlang::trace_back(globalenv())
-      i <- length(y$call)
-      y <- attr(attr(y$call[[i]], "srcref"), "srcfile")
-      curr_fnc <- basename(y$filename)
-      # if (exists("session")) browser()
-      # if ("session" %in% ls(envir = sys.frame(1))) browser()
-      # if (x == "recalc cert_mean") browser()
-      # $$ToDo$$ try to get the calling module name via session$ns() to be more informative
-      #curr_mod <- ifelse(exists("session"), session$ns(""), NA)
+      if (requireNamespace("rlang", quietly = TRUE)) {
+        y <- rlang::trace_back(globalenv())
+        i <- length(y$call)
+        y <- attr(attr(y$call[[i]], "srcref"), "srcfile")
+        curr_mod <- basename(y$filename)
+      }
     }
     message("[", curr_fnc, "]: ", x, ifelse(is.na(curr_mod), "", paste0(" (", curr_mod, ")")))
   }

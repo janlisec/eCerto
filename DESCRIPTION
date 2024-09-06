@@ -51,6 +51,7 @@ Suggests:
     curl,
     fs,
     jsonlite,
+    rlang,
     shinytest2,
     testthat (>= 3.0.0),
     vdiffr,

@@ -26,7 +26,8 @@ always_allow_html: true
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 #knitr::opts_chunk$set(out.width = '100%', dpi=300)
-if (!knitr::is_html_output()) library(webshot2)
+word_tabs_as_fig <- !knitr::is_html_output() && requireNamespace("webshot2", quietly = TRUE)
+if (word_tabs_as_fig) library(webshot2)
 fs_tab <- "175%"
 prec <- params$V_pars$opt_tabV1_precision
 ab <- eCerto:::prepDataV1(tab=params$inp_data, a = params$V_pars$opt_figV1_anal, l = params$V_pars$opt_figV1_level, fmt = "rel_norm")
@@ -80,7 +81,7 @@ if (knitr::is_html_output()) {
 ```
 
 ```{r tab_V1_wr_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
-if (!knitr::is_html_output()) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "wr")
+if (word_tabs_as_fig) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "wr")
 ```
 
 In the following, detailed plots for the levels determining the working range for
@@ -123,7 +124,7 @@ if (knitr::is_html_output()) {
 ```
 
 ```{r tab_V1_lm_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
-if (!knitr::is_html_output()) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "lm")
+if (word_tabs_as_fig) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "lm")
 ```
 
 In the following, detailed plots comparing linear and quadratic model fits for
@@ -164,7 +165,7 @@ determined for all analytes.
 ```
 
 ```{r tab_V1_lox_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
-if (!knitr::is_html_output()) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "lo")
+if (word_tabs_as_fig) eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, font.size = fs_tab, show_colgroups = "lo")
 ```
 
 \newpage
