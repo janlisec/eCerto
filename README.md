@@ -6,6 +6,8 @@
 [![R-CMD-check](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml)
 [![codecov](https://codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg)](https://app.codecov.io/gh/janlisec/eCerto?branch=main)
+[![](https://img.shields.io/badge/devel%20version-0.5.16-blue.svg)](https://github.com/janlisec/eCerto)
+[![ABC](https://img.shields.io/badge/doi-10.1007/s00216-023-05099-3-yellow.svg)](https://doi.org/10.1007/s00216-023-05099-3)
 <!-- badges: end -->
 
 <img src="inst/app/www/hex-eCerto.png" width="170" align="right"/>
@@ -59,3 +61,42 @@ or the provided example data.
 A description of **eCerto** showing a re-evaluation of previously published CRM data 
 can be found in this [scientific article](https://doi.org/10.1007/s00216-023-05099-3).
 Most of the functionality is also described in the online help.
+
+![eCerto screenshot](dev/eCerto_screenshot.png?raw=true "eCerto screenshot")
+
+
+This is a list of the implemented statistical tests and functionality:
+
+- Homogeneity
+    - mean, standard deviation, n
+    - ANOVA P-value (bonferroni adjusted)
+    - uncertainty contribution
+    - boxplot of specimen
+    - z-scores over all analytes and specimen
+    - downloadable HTML report
+- Stability
+    - linear model parameters, their errors and significance
+    - uncertainty contribution for specified shelf life
+    - annotated graphical representations of the linear models and their uncertainties
+    - Arrhenius calculations to evaluate stability using different temperature levels
+    - downloadable HTML report
+- Certification (Inter Laboratory Comparison Study)
+    - testing outliers for mean and variance of labs (Scheffe, Dixon, single/double Grubbs, Cochran)
+    - testing the lab mean distribution (Bartlett, ANOVA/KS, Skewness/Agostino, Kurtosis/Anscombe)
+    - sequential filtering of outliers possible
+    - uncertainty contribution of ILC study and combined uncertainty (relative and absolute)
+    - annotated graphical representation of analyte data 
+    - downloadable HTML report per analyte or for the CRM
+- Long Term Stability
+    - simple post certification testing as an option
+    - long term monitoring with sequential updating of remaining shelf life
+    - downloadable PDF report/certificate
+- Method Validation
+    - working range
+    - linear model parameters and statistical evaluation of the residuals (Mandel, Neumann, KS)
+    - residual comparison against quadratic models
+    - LOD/LOQ
+    - Trueness, Precision, Measurement uncertainty as statement boxes for reference
+    - downloadable HTML/Word report
+    
+
