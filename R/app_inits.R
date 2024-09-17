@@ -136,18 +136,19 @@ init_apm <- function(x) {
   # create list with lists of all analytes (i.e. a nested list)
   apm <- sapply(levels(x[, "analyte"]), function(an) {
     out <- templ
-    out$name <- an
-    out$sample_ids <- x[as.character(x[, "analyte"]) == an, "ID"]
+    out[["name"]] <- an
+    out[["sample_ids"]] <- x[as.character(x[, "analyte"]) == an, "ID"]
     y <- x[as.character(x[, "analyte"]) == an, , drop = FALSE]
     out$lab_ids <- unique(as.character(y[, "Lab"]))
-    if ("S_flt" %in% colnames(y) && any(y[, "S_flt"])) out$sample_filter <- y[which(y[, "S_flt"]), "ID"]
-    if ("L_flt" %in% colnames(y) && any(y[, "L_flt"])) out$lab_filter <- unique(as.character(y[which(y[, "L_flt"]), "Lab"]))
+    if ("S_flt" %in% colnames(y) && any(y[, "S_flt"])) out[["sample_filter"]] <- y[which(y[, "S_flt"]), "ID"]
+    if ("L_flt" %in% colnames(y) && any(y[, "L_flt"])) out[["lab_filter"]] <- unique(as.character(y[which(y[, "L_flt"]), "Lab"]))
     if ("unit" %in% colnames(y)) out[["unit"]] <- as.character(unique(y[, "unit"])[1])
     # try to make an initial guess regarding the desired rounding according to DIN1333
     n <- try(digits_DIN1333(2 * stats::sd(sapply(split(y[, "value"], y[, "Lab"]), mean)) / sqrt(length(unique(y[, "Lab"])))), silent = TRUE)
     if (!inherits(n, "try-error") && is.finite(n)) {
-      out$precision_export <- n
-      out$precision <- n + 1
+      out[["precision_export"]] <- n
+      # limit the allowed rounding precision for tables similar to what shiny accepts through user input
+      out[["precision"]] <- min(max(n + 1, 0), 6)
     }
     return(out)
   }, simplify = FALSE)
