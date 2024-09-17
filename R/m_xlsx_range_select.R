@@ -61,10 +61,10 @@ m_xlsx_range_select_UI <- function(id) {
         id = ns("range_select_card"),
         #height = "100%",
         bslib::card_header(shiny::uiOutput(outputId = ns("uitxt"))),
-        shiny::div(
+        shinyjs::hidden(shiny::div(
           style = "width: 420px; float: left; color: red; background: rgba(0,0,0,0.04); border: 4px; padding: 16px;",
           id = ns("info_msg")
-        ),
+        )),
         shiny::div(DT::DTOutput(outputId = ns("uitab")))
       )
     )
@@ -210,8 +210,10 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
     shiny::observeEvent(check(), {
       if (check()) {
         shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", excelformat(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
+        shinyjs::show(id = "info_msg")
       } else {
         shinyjs::html(id = "info_msg", html = "")
+        shinyjs::hide(id = "info_msg")
       }
     })
 
