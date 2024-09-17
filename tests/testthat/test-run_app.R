@@ -3,15 +3,15 @@ testthat::test_that(
   code = {
     # Don't run these tests on the CRAN build servers
     testthat::skip_on_cran()
-    testthat::skip_on_covr()
-    testthat::skip_on_ci()
+    #testthat::skip_on_covr()
+    #testthat::skip_on_ci()
 
     # remove resource path 'www' to get consistent snapshots
-    if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
+    #if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
 
     # $$ test does not work using RCHECK but only when called via testthat::test_file(path = "tests/testthat/test-run_app.R")
 
-    # app <- shinytest2::AppDriver$new(eCerto::run_app(options = list("test.mode" = TRUE)), name = "run_app", load_timeout = 45*1000, timeout = 12*1000, width = 1600, height = 1200, view = FALSE)
+    #app <- shinytest2::AppDriver$new(eCerto::run_app(options = list("test.mode" = TRUE)), name = "run_app", load_timeout = 45*1000, timeout = 12*1000, seed = 1234, width = 1920, height = 1080, view = TRUE)
     #
     # # get initial app values
     # init_vals <- app$get_values()
