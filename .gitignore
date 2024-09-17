@@ -7,7 +7,7 @@ eCerto.Rproj
 # rsconnect files
 rsconnect/
 # dev folder containing the Golem way of starting the App in dev mode
-dev/
+# dev/
 # Session Data files
 .RData
 # User-specific files
