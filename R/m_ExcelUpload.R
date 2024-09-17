@@ -198,7 +198,8 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         # in case (a) it is Certification module and (b) the input table has not been filtered, then ask if this is correct
         test_selection <- ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab[[1]]) & nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab[[1]])
         if (test_selection) {
-          attr(tabC0, "msg") <- "Range specification is on default value"
+          e_msg("Range specification is on default value")
+          #attr(tabC0, "msg") <- "Range specification is on default value"
         }
         load_result <- tabC0
       } else if (fmt == "Stability") {
