@@ -53,7 +53,7 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
         shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect")
       )
     ),
-    bslib::card_body(
+    bslib::card_body(max_height = 600,
       shiny::div(DT::DTOutput(ns("matreport")))
     )
   )

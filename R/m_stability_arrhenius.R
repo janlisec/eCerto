@@ -18,10 +18,7 @@
 #'       # rv <- eCerto$new(init_rv())
 #'       # x <- eCerto:::test_Stability_Arrhenius()
 #'       # isolate(setValue(rv, c("Stability", "data"), x))
-#'       out <- eCerto:::m_arrheniusServer(id = "arrhenius", rv = rv)
-#'       shiny::observeEvent(out$switch, {
-#'         print(out$switch)
-#'       })
+#'       eCerto:::m_arrheniusServer(id = "arrhenius", rv = rv)
 #'     }
 #'   )
 #' }
@@ -59,8 +56,7 @@ m_arrheniusUI <- function(id) {
                 "Show sample IDs" = "show_ids"
               ),
               selected = c("show_reference_point", "plot_nominal_scale", "plot_in_month", "plot_ln_relative")
-            ),
-            shinyWidgets::pickerInput(inputId = ns("flt_ids"), label = "Exclude IDs", choices = "", multiple = TRUE, options = list(container = "body"))
+            )
           )
         ),
         shiny::plotOutput(outputId = ns("FigS2"))
@@ -93,18 +89,6 @@ m_arrheniusUI <- function(id) {
           shiny::div(style = "padding-right: 16px; min-width: 200px;", DT::DTOutput(outputId = ns("outTab"))),
           shiny::div(DT::DTOutput(outputId = ns("Tab2")))
         )
-
-
-        # shiny::div(style = "width = 90%",
-        #   shiny::fluidRow(
-        #     shiny::column(width = 6, DT::DTOutput(outputId = ns("Tab1"))),
-        #     shiny::column(width = 4, DT::DTOutput(outputId = ns("Tab1exp"))),
-        #     shiny::column(width = 2, DT::DTOutput(outputId = ns("outTab")))
-        #   ),
-        #   shiny::fluidRow(
-        #     shiny::column(width = 10, DT::DTOutput(outputId = ns("Tab2")))
-        #   )
-        # )
       )
     ),
     bslib::card_footer(
@@ -136,24 +120,13 @@ m_arrheniusServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
 
     prec <- 6
-    out <- shiny::reactiveValues("switch" = 0)
 
     # use err_txt to provide error messages to the user
     err_txt <- shiny::reactiveVal(NULL)
-    shiny::observeEvent(err_txt(),
-      {
-        shinyWidgets::show_alert(title = "Error", text = err_txt(), type = "error")
-        err_txt(NULL)
-      },
-      ignoreNULL = TRUE
-    )
-
-    shiny::observeEvent(input$s_switch_simple,
-      {
-        out$switch <- out$switch + 1
-      },
-      ignoreInit = TRUE
-    )
+    shiny::observeEvent(err_txt(), {
+      shinyWidgets::show_alert(title = "Error", text = err_txt(), type = "error")
+      err_txt(NULL)
+    }, ignoreNULL = TRUE)
 
     an <- reactiveVal()
     shiny::observeEvent(getValue(rv, c("Stability", "data")), {
@@ -161,43 +134,31 @@ m_arrheniusServer <- function(id, rv) {
       if (!is.factor(x[, "analyte"])) x[, "analyte"] <- factor(x[, "analyte"])
       an(levels(x[, "analyte"]))
       shiny::updateSelectInput(session = session, inputId = "analyte", choices = an())
-      shinyWidgets::updatePickerInput(session = session, inputId = "flt_ids", choices = 1:nrow(x))
     })
 
-    shiny::observeEvent(rv$cur_an,
-      {
-        req(input$analyte, an())
-        if (!identical(input$analyte, rv$cur_an) && rv$cur_an %in% an()) shiny::updateSelectInput(session = session, inputId = "analyte", choices = an(), selected = rv$cur_an)
-        if (!is.null(input$flt_ids)) shinyWidgets::updatePickerInput(session = session, inputId = "flt_ids", selected = NULL)
-      },
-      ignoreNULL = TRUE
-    )
+    shiny::observeEvent(rv$cur_an, {
+      req(input$analyte, an())
+      if (!identical(input$analyte, rv$cur_an) && rv$cur_an %in% an()) shiny::updateSelectInput(session = session, inputId = "analyte", choices = an(), selected = rv$cur_an)
+    }, ignoreNULL = TRUE)
 
-    shiny::observeEvent(input$analyte,
-      {
-        if (is.null(rv$cur_an) | !identical(rv$cur_an, input$analyte)) rv$cur_an <- input$analyte
-      },
-      ignoreNULL = TRUE,
-      ignoreInit = TRUE
-    )
-
+    shiny::observeEvent(input$analyte, {
+      if (is.null(rv$cur_an) | !identical(rv$cur_an, input$analyte)) rv$cur_an <- input$analyte
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
     df <- shiny::reactive({
       shiny::req(input$analyte)
       dat <- getValue(rv, c("Stability", "data"))
-      # [ToDo JL] the filtering step should be initiated during upload and user selections should be saved
-      rownames(dat) <- 1:nrow(dat)
-      if (length(input$flt_ids) >= 1) {
-        dat <- dat[-as.numeric(input$flt_ids), ]
-      }
       req_col <- c("analyte", "time", "Value", "Temp")
       shiny::validate(shiny::need(req_col %in% colnames(dat), message = paste("These columns required for Arrhenius calculations are not available:", paste(req_col[!(req_col %in% colnames(dat))], collapse = ", "))))
       shiny::validate(shiny::need(input$analyte %in% as.character(dat[, "analyte"]), message = "How did you manage to specify a non existent analyte name?"))
       tmp <- dat[as.character(dat[, "analyte"]) == input$analyte, ]
+      # filtering step according to user selection
+      s_pars <- getValue(rv, c("Stability", "s_pars"))
+      tmp <- tmp[!rownames(tmp) %in% s_pars$s_samples_filtered,]
       # normalize data to mean of t=0
       flt <- is.finite(tmp[, "Value"]) & tmp[, "Value"] > 0
       if (!all(flt)) {
-        err_txt(paste("Did filter the follwing values:", paste(tmp[!flt, "Value"], collapse = ", ")))
+        err_txt(paste("Did filter the following values:", paste(paste("ID_", rownames(tmp)[!flt], ": ", tmp[!flt, "Value"], sep=""), collapse = ", ")))
         tmp <- tmp[flt, ]
       }
       tmp[, "Value"] <- tmp[, "Value"] / mean(tmp[tmp[, "time"] == 0, "Value"], na.rm = TRUE)
@@ -386,6 +347,5 @@ m_arrheniusServer <- function(id, rv) {
       show_help("stability_arrhenius_storage")
     })
 
-    return(out)
   })
 }

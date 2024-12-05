@@ -46,7 +46,9 @@ fnc_load_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...
   # load file with specified method
   a <- switch(method,
     "tidyxl" = tidyxl::xlsx_cells(path = filepath, sheets = sheet, include_blank_cells = FALSE, ...),
-    "openxlsx" = openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = TRUE, ...)
+    # detectDates = TRUE caused crashes in version 4.2.7 of openxlsx
+    #"openxlsx" = openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = TRUE, ...)
+    "openxlsx" = openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = FALSE, ...)
   )
 
   # post process data
@@ -73,6 +75,13 @@ fnc_load_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...
     # print(out)
     out <- as.data.frame(out)
   } else {
+    # ensure Date format if Date column is present
+    if ("Date" %in% colnames(a)) {
+      if (!inherits(a[, "Date"], "Date")) {
+        if (is.numeric(a[, "Date"])) a[, "Date"] <- openxlsx::convertToDate(a[,"Date"])
+        if (is.character(a[, "Date"])) a[, "Date"] <- as.Date.character(a[, "Date"], tryFormats = c("%Y-%m-%d", "%d.%m.%Y", "%Y/%m/%d"))
+      }
+    }
     out <- a
   }
 

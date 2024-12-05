@@ -44,7 +44,7 @@ read_zenodo <- function(id) {
     if (inherits(out, "try-error")) {
       warning_or_modal(x = "Sorry, something went wrong upon download. :/")
     } else {
-      return(check_RData(x = dest))
+      return(check_RData_with_res_object(x = dest))
     }
   } else {
     warning_or_modal(x = "Sorry, could not find this Zenodo ID. :/")

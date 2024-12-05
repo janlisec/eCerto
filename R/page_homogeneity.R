@@ -65,7 +65,9 @@ page_HomogeneityUI <- function(id) {
     id = ns("fig_H1_panel"),
     style = "resize:vertical;",
     bslib::card_header(
-      shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.H1 - boxplot of specimen values"))
+      class = "d-flex justify-content-between",
+      shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.H1 - boxplot of specimen values")),
+      shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("h_Report"), label = "Download Report"))
     ),
     bslib::card_body(
       fill = TRUE,
@@ -84,9 +86,7 @@ page_HomogeneityUI <- function(id) {
                 "Show combined analyte z-scores" = "show_H2"
               )
             ),
-            shiny::textInput(inputId = ns("FigH1_xlab"), label = "Edit x-axis label", value = "Flasche"),
-            sub_header("Save Report"),
-            shiny::downloadButton(ns("h_Report"), label = "Download", style = "margin-bottom:16px;")
+            shiny::textInput(inputId = ns("FigH1_xlab"), label = "Edit x-axis label", value = "Flasche")
           )
         ),
         bslib::card_body(min_height = 400, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH1"))),

@@ -27,75 +27,51 @@ page_StabilityUI <- function(id) {
   ns <- shiny::NS(id)
 
   tab_S1_panel <- bslib::card(
-    #min_height = 500
-    #fill = FALSE,
     bslib::card_header(
       class = "d-flex justify-content-between",
       shiny::strong(shiny::actionLink(inputId = ns("tab_link"), label = "Tab.S1 - calculation of uncertainty contribution")),
-      shiny::div(
-        shiny::div(style = "float: left; margin-left: 15px;", m_TransferUUI(id = ns("s_transfer")))
-      )
+      shiny::div(shiny::div(style = "float: left; margin-left: 15px;", m_TransferUUI(id = ns("s_transfer"))))
     ),
-    bslib::card_body(
+    bslib::card_body(max_height = 600,
       shiny::div(DT::DTOutput(ns("s_tab1"))),
       shinyjs::hidden(shiny::radioButtons(inputId = ns("time_fmt"), label = "Time format in lm", choices = c("mon", "day"), selected = "mon"))
+    ),
+    bslib::card_footer(
+      shiny::p(id = ns("temp_level_info"), "")
     )
   )
 
   fig_S1_panel <- bslib::card(
-    id = ns("fig_H1_panel"),
+    id = ns("fig_S1_panel"),
     style = "resize:vertical;",
     bslib::card_header(
-      shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot"))
+      class = "d-flex justify-content-between",
+      shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot")),
+      shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("s_Report"), label = "Download Report"))
     ),
     bslib::card_body(
-      #min_height = 300,
-      #fill = TRUE,
       bslib::layout_sidebar(
         padding = 0,
         sidebar = bslib::sidebar(
           position = "right", open = "open", width = 260,
           shiny::div(
             sub_header("Fig.S1 options"),
-            shiny::checkboxGroupInput(
-              inputId = ns("FigS1_options"), label = NULL,
-              choices = list("Average by Day" = "slope_of_means", "Annotate plot" = "show_legend"),
-              selected = c("show_legend")
-            ),
+            shiny::div(style = "margin-top: -2px;", shiny::checkboxInput(inputId = ns("slope_of_means"), label = "Average by Day", value = FALSE)),
+            shiny::div(style = "margin-top: -12px;", shiny::checkboxInput(inputId = ns("show_legend"), label = "Annotate plot", value = TRUE)),
+            shiny::div(style = "margin-top: -12px;", shiny::checkboxInput(inputId = ns("show_ids"), label = "Show sample IDs", value = FALSE)),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("plot_type"), label = NULL, choices = list("standard" = 1, "adjusted" = 3), inline = TRUE)),
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choiceValues = list("2s", "U"), choiceNames = list("2s", shiny::HTML("U<sub>abs</sub>")), inline = TRUE)),
             shiny::hr(),
             shiny::sliderInput(inputId = ns("s_shelf_life"), label = shiny::HTML("Exp. shelf life t<sub>cert</sub> [Month]"), min = 0, max = 120, value = 60, step = 6),
             shiny::checkboxInput(inputId = ns("optimize_u_stab"), value = FALSE, label = shiny::HTML("Optimize u<sub>stab</sub>")),
             shinyWidgets::pickerInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
-            shiny::hr(),
-            sub_header("Save Report"),
-            shiny::downloadButton(ns("s_Report"), label = "Download", style = "margin-bottom:16px;")
+            shinyWidgets::pickerInput(inputId = ns("s_samples_filtered"), label = "Exclude IDs", choices = "", multiple = TRUE, options = list(container = "body"))
           )
         ),
-        # $JL$ the surrounding div is required to include the empty HTML as a way to allow shinking and prevent the figure to be resized horizontally otherwise
         shiny::plotOutput(ns("s_plot"), height = "500px")
-        # shiny::div(
-        #   shiny::div(style = "display: inline-block;", shiny::plotOutput(ns("s_plot"), height = "500px", inline = TRUE)),
-        #   shiny::div(style = "display: inline-block;", shiny::HTML(""))
-        # )
       )
     )
   )
-
-  # bslib::navset_card_pill(
-  #   ...,
-  #   id = NULL,
-  #   selected = NULL,
-  #   title = NULL,
-  #   sidebar = NULL,
-  #   header = NULL,
-  #   footer = NULL,
-  #   height = NULL,
-  #   placement = c("above", "below"),
-  #   full_screen = FALSE,
-  #   wrapper = card_body
-  # )
 
   shiny::tabsetPanel(
     id = ns("StabilityPanel"),
@@ -125,51 +101,130 @@ page_StabilityUI <- function(id) {
       shiny::div(id = ns("arrhenius_panel"), m_arrheniusUI(id = ns("arrhenius")))
     )
 
-    # shiny::tabPanel(
-    #   title = "altern-Panel",
-    #   value = "tP_arrhenius",
-    #   m_arrheniusUI(id = ns("arrhenius"))
-    # )
   )
 }
 
 #' @noRd
 page_StabilityServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
-    # server part of the arrhenius module
-    arrhenius_out <- m_arrheniusServer(id = "arrhenius", rv = rv)
 
-    #
-    shiny::observeEvent(arrhenius_out$switch,
-      {
-        shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "loaded")
-      },
-      ignoreInit = TRUE
+    # server part of the arrhenius module
+    m_arrheniusServer(id = "arrhenius", rv = rv)
+
+    # collect user parameters in a reactive values list (to store and retrieve from file)
+    s_pars <- shiny::reactiveValues(
+      # allow filtering of individual s sample values
+      "s_samples_filtered" = NULL,
+      "slope_of_means" = FALSE,
+      "show_legend" = TRUE,
+      "show_ids" = FALSE,
+      "s_sel_temp" = NULL,
+      "s_shelf_life" = 60
     )
 
-    # # switch back and forth between stability 'main' and 'arrhenius' panels
-    # shiny::observeEvent(input$s_switch_arrhenius,
-    #   {
-    #     shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "tP_arrhenius")
-    #   },
-    #   ignoreInit = TRUE
-    # )
+    shiny::observe({
+      # take care that user selected parameters are copied to rv object (to be maintained upon save)
+      s_pars$s_samples_filtered
+      s_pars$slope_of_means
+      s_pars$show_legend
+      s_pars$show_ids
+      s_pars$s_sel_temp
+      s_pars$s_shelf_life
+      if (!identical(getValue(rv, c("Stability", "s_pars")), shiny::reactiveValuesToList(s_pars))) {
+        setValue(rv, c("Stability", "s_pars"), shiny::reactiveValuesToList(s_pars))
+      }
+    })
 
     shiny::observeEvent(getValue(rv, c("Stability", "data")), {
       tmp <- getValue(rv, c("Stability", "data"))
       # does the data contain Temp information (arrhenius model)
       test <- "Temp" %in% colnames(tmp)
       shinyjs::toggle(id = "s_sel_temp", condition = test)
-      #shinyjs::toggle(id = "s_switch_arrhenius", condition = test)
       shinyjs::toggle(id = "arrhenius_panel", condition = test)
       if (test) {
-        lev <- levels(factor(tmp[, "Temp"]))
-        shinyWidgets::updatePickerInput(inputId = "s_sel_temp", choices = lev, selected = lev)
-        #shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = lev, selected = lev, inline = TRUE)
+        temp_levels <- levels(factor(tmp[, "Temp"]))
+        shinyWidgets::updatePickerInput(inputId = "s_sel_temp", choices = temp_levels, selected = temp_levels)
+        s_pars$s_sel_temp <- temp_levels
       } else {
-        shinyWidgets::updatePickerInput(inputId = "s_sel_temp", choices = "")
-        #shiny::updateCheckboxGroupInput(inputId = "s_sel_temp", choices = "", inline = TRUE)
+        temp_levels <- ""
+        shinyWidgets::updatePickerInput(inputId = "s_sel_temp", choices = temp_levels)
+        s_pars$s_sel_temp <- NULL
       }
+      # does the data contain filtering information and IDs already? if not add column and row.names.
+      if (is.null(rownames(tmp))) rownames(tmp) <- 1:nrow(tmp)
+      if (!identical(tmp, getValue(rv, c("Stability", "data")))) {
+        setValue(rv, c("Stability","data"), tmp)
+      }
+      if (is.null(getValue(rv, c("Stability", "s_pars")))) {
+        # if no s_pars entry exists in 'rv' object create a default one
+        setValue(rv, c("Stability", "s_pars"), shiny::reactiveValuesToList(s_pars))
+      } else {
+        # if s_pars entry exists in 'rv' object restore previous parameters
+        tmp <- getValue(rv, c("Stability", "s_pars"))
+        if ("s_samples_filtered" %in% names(tmp)) s_pars$s_samples_filtered <- tmp$s_samples_filtered else s_pars$s_samples_filtered <- NULL
+        if ("s_sel_temp" %in% names(tmp) && !is.null(tmp$s_sel_temp)) s_pars$s_sel_temp <- tmp$s_sel_temp
+        if ("slope_of_means" %in% names(tmp)) s_pars$slope_of_means <- tmp$slope_of_means else s_pars$slope_of_means <- FALSE
+        if ("show_legend" %in% names(tmp)) s_pars$show_legend <- tmp$show_legend else s_pars$show_legend <- TRUE
+        if ("show_ids" %in% names(tmp)) s_pars$show_ids <- tmp$show_ids else s_pars$show_ids <- FALSE
+        if ("s_shelf_life" %in% names(tmp)) s_pars$s_shelf_life <- tmp$s_shelf_life else s_pars$s_shelf_life <- 60
+        # JL: if more parameters are to be stored for S module they can be set up in this if/else construct
+      }
+    })
+
+    shiny::observeEvent(input$s_sel_temp_open, {
+      # the *_open input of a picker allows to trigger only after the multiple select is closed thus avoiding too frequent updates
+      if (!isTRUE(input$s_sel_temp_open)) {
+        s_pars$s_sel_temp <- input$s_sel_temp
+      }
+    })
+
+    shiny::observeEvent(input$s_samples_filtered_open, {
+      # the *_open input of a picker allows to trigger only after the multiple select is closed thus avoiding too frequent updates
+      if (!isTRUE(input$s_samples_filtered_open)) {
+        choices <- rownames(s_Data())[as.character(s_Data()[,"analyte"])==S_analyte()]
+        selected <- input$s_samples_filtered
+        tmp <- s_pars$s_samples_filtered
+        # remove ID subset
+        tmp <- tmp[!(tmp %in% choices)]
+        # re add ID selection
+        tmp <- sort(c(tmp, selected))
+        s_pars$s_samples_filtered <- tmp
+      }
+    })
+
+    shiny::observeEvent(s_pars$s_sel_temp, {
+      if (any(s_pars$s_sel_temp != "")) {
+        shinyjs::html(id = "temp_level_info", html = paste0("Temperature levels used for calculations in Tab.S1: ", paste(s_pars$s_sel_temp, collapse="\u00B0C, "), "\u00B0C"))
+        if (!identical(s_pars$s_sel_temp, input$s_sel_temp)) shinyWidgets::updatePickerInput(inputId = "s_sel_temp", selected = s_pars$s_sel_temp)
+      } else {
+        shinyjs::html(id = "temp_level_info", html = "")
+      }
+    })
+
+
+    shiny::observeEvent(input$show_ids, {
+      if (!identical(s_pars$show_ids, input$show_ids)) s_pars$show_ids <- input$show_ids
+    })
+    shiny::observeEvent(s_pars$show_ids, {
+      if (!identical(s_pars$show_ids, input$show_ids)) shiny::updateCheckboxInput(inputId = "show_ids", value = s_pars$show_ids)
+    })
+    shiny::observeEvent(input$slope_of_means, {
+      if (!identical(s_pars$slope_of_means, input$slope_of_means)) s_pars$slope_of_means <- input$slope_of_means
+    })
+    shiny::observeEvent(s_pars$slope_of_means, {
+      if (!identical(s_pars$slope_of_means, input$slope_of_means)) shiny::updateCheckboxInput(inputId = "slope_of_means", value = s_pars$slope_of_means)
+    })
+    shiny::observeEvent(input$show_legend, {
+      if (!identical(s_pars$show_legend, input$show_legend)) s_pars$show_legend <- input$show_legend
+    })
+    shiny::observeEvent(s_pars$show_legend, {
+      if (!identical(s_pars$show_legend, input$show_legend)) shiny::updateCheckboxInput(inputId = "show_legend", value = s_pars$show_legend)
+    })
+    shiny::observeEvent(input$s_shelf_life, {
+      if (!identical(s_pars$s_shelf_life, input$s_shelf_life)) s_pars$s_shelf_life <- input$s_shelf_life
+    })
+    shiny::observeEvent(s_pars$s_shelf_life, {
+      if (!identical(s_pars$s_shelf_life, input$s_shelf_life)) shiny::updateSliderInput(inputId = "s_shelf_life", value = s_pars$s_shelf_life)
     })
 
     shiny::observeEvent(rv$e_present(), {
@@ -186,19 +241,18 @@ page_StabilityServer <- function(id, rv) {
       s_dat <- getValue(rv, c("Stability", "data"))
       if (!is.factor(s_dat[, "analyte"])) s_dat[, "analyte"] <- factor(s_dat[, "analyte"], levels = unique(s_dat[, "analyte"]))
       if ("Temp" %in% colnames(s_dat)) {
-        shiny::validate(shiny::need(expr = length(input$s_sel_temp) >= 1, message = "Please select a Temp level."))
-        s_dat <- s_dat[as.character(s_dat[, "Temp"]) %in% input$s_sel_temp, ]
+        shiny::validate(shiny::need(expr = length(s_pars$s_sel_temp) >= 1, message = "Please select a Temp level."))
+        s_dat <- s_dat[as.character(s_dat[, "Temp"]) %in% s_pars$s_sel_temp, ]
         shiny::validate(shiny::need(expr = diff(range(s_dat[, "time"])) > 0, message = "Please select Temp levels such that independent time points exist."))
+        test_number_of_values <- sapply(split(s_dat, s_dat[,"analyte"]), nrow) > 0
+        shiny::validate(shiny::need(expr = all(test_number_of_values), message = paste("These analytes do not contain data points:", paste(names(which(test_number_of_values==0)), collapse=", "))))
       }
       tmp <- shiny::isolate(getValue(rv, c("Stability", "s_vals")))
       if (!is.null(tmp)) {
         # expected shelf life (t_cert) could be stored as an input parameter permanently in RData,
         # but having it in Tab.S1 (s_vals) from now on allows to restore a previous setting as well
         if ("t_cert" %in% colnames(tmp)) {
-          shiny::updateSliderInput(
-            inputId = "s_shelf_life",
-            value = ifelse(is.finite(tmp[1, "t_cert"]), tmp[1, "t_cert"], 0)
-          )
+          shiny::updateSliderInput(inputId = "s_shelf_life", value = ifelse(is.finite(tmp[1, "t_cert"]), tmp[1, "t_cert"], 0))
         }
       }
       return(s_dat)
@@ -207,7 +261,8 @@ page_StabilityServer <- function(id, rv) {
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data(), input$s_shelf_life)
-      out <- prepTabS1(x = s_Data(), time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = "slope_of_means" %in% input$FigS1_options, mt = getValue(rv, c("General", "materialtabelle")), optimize_u_stab = input$optimize_u_stab)
+      s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
+      out <- prepTabS1(x = s_dat, time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = s_pars$slope_of_means, mt = getValue(rv, c("General", "materialtabelle")), optimize_u_stab = input$optimize_u_stab)
       setValue(rv, c("Stability", "s_vals"), out)
       return(out)
     })
@@ -216,8 +271,10 @@ page_StabilityServer <- function(id, rv) {
     S_analyte <- shiny::reactive({
       req(s_vals(), rv$cur_an)
       if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
-      shiny::validate(shiny::need(expr = rv$cur_an %in% as.character(s_vals()[, "analyte"]), message = paste("Analyte", rv$cur_an, "is not present in S data.")))
-      rv$cur_an
+      shiny::validate(shiny::need(expr = rv$cur_an %in% as.character(shiny::isolate(s_vals())[, "analyte"]), message = paste("Analyte", rv$cur_an, "is not present in S data.")))
+      #if (rv$cur_an != as.character(s_vals()[s_tab1_current$row, "analyte"])) {
+        rv$cur_an
+      #}
     })
 
     # Tables
@@ -227,46 +284,44 @@ page_StabilityServer <- function(id, rv) {
       s_tab1_current$redraw
       styleTabS1(x = s_vals(), mt = getValue(rv, c("General", "materialtabelle")), sr = s_tab1_current$row)
     })
-    shiny::observeEvent(input$s_tab1_rows_selected,
-      {
-        if (is.null(input$s_tab1_rows_selected)) {
-          # trigger a redraw of s_tab1 if the user deselects the current row
-          s_tab1_current$redraw <- s_tab1_current$redraw + 1
-        } else {
-          if (s_tab1_current$row != input$s_tab1_rows_selected) {
-            sel <- as.character(s_vals()[input$s_tab1_rows_selected, "analyte"])
-            if (!identical(rv$cur_an, sel)) rv$cur_an <- sel
-          }
+    shiny::observeEvent(input$s_tab1_rows_selected, {
+      if (is.null(input$s_tab1_rows_selected)) {
+        # trigger a redraw of s_tab1 if the user deselects the current row
+        s_tab1_current$redraw <- s_tab1_current$redraw + 1
+      } else {
+        if (s_tab1_current$row != input$s_tab1_rows_selected) {
+          sel <- as.character(s_vals()[input$s_tab1_rows_selected, "analyte"])
+          if (!identical(rv$cur_an, sel)) rv$cur_an <- sel
         }
-      },
-      ignoreNULL = FALSE,
-      ignoreInit = TRUE
-    )
+      }
+    }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
-    observeEvent(S_analyte(),
-      {
-        req(s_vals())
-        # update view for currently selected analyte (trigger coming from C module or Arrhenius module)
-        if (!(s_tab1_current$row == which(as.character(s_vals()[, "analyte"]) == S_analyte()))) {
-          s_tab1_current$row <- which(as.character(s_vals()[, "analyte"]) == S_analyte())
-        }
-        if (!is.null(input$s_sel_dev)) {
-          mt <- getValue(rv, c("General", "materialtabelle"))
-          a <- S_analyte()
-          test <- a %in% mt[, "analyte"] && is.finite(mt[which(mt[, "analyte"] == a), "mean"])
-          if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
-        }
-      },
-      ignoreNULL = TRUE,
-      ignoreInit = TRUE
-    )
+    observeEvent(S_analyte(), {
+      #req(s_vals(), rv$cur_an != S_analyte())
+      req(s_vals())
+      # update view for currently selected analyte (trigger coming from C module or Arrhenius module)
+      if (!(s_tab1_current$row == which(as.character(s_vals()[, "analyte"]) == S_analyte()))) {
+        s_tab1_current$row <- which(as.character(s_vals()[, "analyte"]) == S_analyte())
+      }
+      if (!is.null(input$s_sel_dev)) {
+        mt <- getValue(rv, c("General", "materialtabelle"))
+        a <- S_analyte()
+        test <- a %in% mt[, "analyte"] && is.finite(mt[which(mt[, "analyte"] == a), "mean"])
+        if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
+      }
+      # update sample filter
+      choices <- rownames(s_Data())[as.character(s_Data()[,"analyte"])==S_analyte()]
+      selected <- intersect(s_pars$s_samples_filtered, choices)
+      shinyWidgets::updatePickerInput(session = session, inputId = "s_samples_filtered", choices = choices, selected = selected)
+    }, ignoreNULL = TRUE, ignoreInit = FALSE)
 
     # Fig.S1
     output$s_plot <- shiny::renderPlot({
       shiny::req(s_Data(), S_analyte())
+      s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
       plot_lts_data(
         x = prepFigS1(
-          s = s_Data(),
+          s = s_dat,
           an = S_analyte(),
           apm = getValue(rv, c("General", "apm")),
           U_Def = input$s_sel_dev,
@@ -274,8 +329,9 @@ page_StabilityServer <- function(id, rv) {
         ),
         type = as.numeric(input$plot_type),
         t_cert = input$s_shelf_life,
-        slope_of_means = "slope_of_means" %in% input$FigS1_options,
-        show_legend = "show_legend" %in% input$FigS1_options
+        slope_of_means = s_pars$slope_of_means,
+        show_legend = s_pars$show_legend,
+        show_ids = s_pars$show_ids
       )
     })
 
@@ -298,7 +354,18 @@ page_StabilityServer <- function(id, rv) {
               output_file = file,
               output_format = rmarkdown::html_document(),
               params = list(
-                "Stability" = shiny::reactiveValuesToList(getValue(rv, "Stability"))
+                "Stability" = shiny::reactiveValuesToList(getValue(rv, "Stability")),
+                "Options" = list(
+                  "s_Data" = s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),],
+                  "apm" = getValue(rv, c("General", "apm")),
+                  "U_Def" = input$s_sel_dev,
+                  "mt" = getValue(rv, c("General", "materialtabelle")),
+                  "type" = as.numeric(input$plot_type),
+                  "t_cert" = input$s_shelf_life,
+                  "slope_of_means" = s_pars$slope_of_means,
+                  "show_legend" = s_pars$show_legend,
+                  "show_ids" = s_pars$show_ids
+                )
               ),
               envir = new.env(parent = globalenv())
             )

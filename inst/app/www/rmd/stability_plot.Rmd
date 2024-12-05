@@ -13,7 +13,7 @@ availability and user choice.
 ***Note!*** If no table of certified values is present or the analyte is yet unconfirmed, than red 
 and green lines represent mean and standard deviation of the currently depicted stability data.
 
-The dashed blue line indicates the linear model. It's parameters are transferred to **Tab.S1** and 
-are used to calculate `u_stab`.
+The dashed blue line indicates the linear model. It's parameter $b_1$ is reported in **Tab.S1** and 
+used to calculate `u_stab`.
 
 ![**Fig.S1** Linear model plot visualizing stability data](fig/S_Modul_Fig1.png)

@@ -86,7 +86,8 @@ init_rv <- function() {
     "Stability" = shiny::reactiveValues(
       "input_files" = NULL,
       "data" = NULL,
-      "s_vals" = NULL
+      "s_vals" = NULL,
+      "s_pars" = NULL
     )
   )
 }

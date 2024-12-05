@@ -125,7 +125,7 @@ m_RDataImport_Server <- function(id, rv) {
     # Load Backup Data ---------------------------------------------------------
     rdata <- shiny::eventReactive(input$in_file_ecerto_backup,
       {
-        check_RData(x = input$in_file_ecerto_backup$datapath)
+        check_RData_with_res_object(x = input$in_file_ecerto_backup$datapath)
       },
       ignoreNULL = TRUE
     )
