@@ -37,7 +37,7 @@ prepTabC0 <- function(df_list = NULL) {
     analyte <- x2[, 1]
     unit <- x2[, 2]
     # drop first (analyte name), second (unit) and File name column
-    dat <- x2[, !names(x2) %in% c(names(x2[, c(1, 2)]), "File")]
+    dat <- x2[, !names(x2) %in% c(names(x2[, c(1, 2)]), "File"), drop=FALSE]
     # create new data frame
     x3 <- data.frame(
       "analyte" = factor(rep(analyte, times = ncol(dat)), levels = analyte),

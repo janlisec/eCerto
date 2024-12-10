@@ -27,8 +27,8 @@ prepTabC2 <- function(dat = NULL, excl_labs = FALSE) {
     "Median" = stats::median(x),
     "SD" = stats::sd(x),
     "MAD" = stats::mad(x),
-    "Bartlett_p" = stats::bartlett.test(value ~ Lab, data = dat)$p.value,
-    "ANOVA_p" = stats::anova(stats::lm(value ~ Lab, data = dat))$Pr[1],
+    "Bartlett_p" = NA,
+    "ANOVA_p" = NA,
     "KS_p" = stats::ks.test(x = x, y = "pnorm", mean = mean(x), sd = stats::sd(x))$p.value,
     "Skewness" = moments::skewness(x = x),
     "Agostino_p" = NA,
@@ -36,6 +36,8 @@ prepTabC2 <- function(dat = NULL, excl_labs = FALSE) {
     "Anscombe_p" = NA
   )
   tmp <- list(
+    "Bartlett_p" = try(stats::bartlett.test(value ~ Lab, data = dat)$p.value, silent = TRUE),
+    "ANOVA_p" = try(stats::anova(stats::lm(value ~ Lab, data = dat))$Pr[1], silent = TRUE),
     "Agostino_p" = try(moments::agostino.test(x = x)$p.value, silent = TRUE),
     "Anscombe_p" = try(moments::anscombe.test(x = x)$p.value, silent = TRUE)
   )

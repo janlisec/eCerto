@@ -134,8 +134,8 @@ Cochran <- function(data = NULL, fmt = c("alpha", "pval", "cval", "cval05", "cva
   })
   out <- data.frame("Cochran" = rep(NA, length(vars)), row.names = names(vars))
   # there might be labs reporting data without variance --> these should be excluded from/before performing Cochrane test
-  if (any(vars == 0)) {
-    flt <- vars > 0
+  if (any(vars == 0 | !is.finite(vars))) {
+    flt <- is.finite(vars) & vars > 0
     vars <- vars[flt]
     ns <- ns[flt]
     out[!flt, "Cochran"] <- switch(fmt,

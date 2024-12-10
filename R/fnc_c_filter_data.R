@@ -26,10 +26,10 @@ c_filter_data <- function(x, c_apm) {
     # Notify User in case that only 1 finite measurement remained within group
     shiny::validate(
       shiny::need(
-        all(sapply(split(x[, "value"], x[, "Lab"]), length) >= 2),
+        all(sapply(split(x[, "value"], x[, "Lab"]), length) >= 1),
         message = paste(names(which(
-          sapply(split(x[, "value"], x[, "Lab"]), length) < 2
-        ))[1], "has less than 2 replicates left. Please remove an Sample-ID filter.")
+          sapply(split(x[, "value"], x[, "Lab"]), length) < 1
+        ))[1], "has no replicates left. Please remove an Sample-ID filter.")
       ),
       shiny::need(
         is.numeric(c_apm[["precision"]]) && c_apm[["precision"]] >= 0 && c_apm[["precision"]] <= 6,

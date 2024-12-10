@@ -39,6 +39,7 @@ CertValPlot <- function(data = NULL, annotate_id = FALSE, filename_labels = FALS
       "n" = sum(is.finite(x))
     )
   }, .id = "Lab")
+  ds[!is.finite(ds[,"SD"]),"SD"] <- 0
   ds <- data.frame(ds, "Filter" = sapply(split(data[, "L_flt"], data$Lab), all))
   ds <- ds[order(ds$MW), ]
   dsfm <- ds$MW[!ds[, "Filter"]]
