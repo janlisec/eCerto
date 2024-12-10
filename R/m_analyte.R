@@ -172,7 +172,7 @@ m_analyteServer <- function(id, rv) {
         n <- digits_DIN1333(x = mt[mt[, "analyte"] == a(), "U_abs"])
         n_col <- ifelse(n == apm()[[a()]]$precision_export, "#00FF00", "#FF0000")
         if (is.finite(n)) {
-          shinyjs::html(id = "DIN1333_info", html = paste0("<strong>Cert. Val. </strong><span style = 'background-color: ", n_col, "'>(", n, ")</span>"))
+          shinyjs::html(id = "DIN1333_info", html = paste0("<strong>\u00B5<sub>c</sub> </strong><span style = 'background-color: ", n_col, "'>(", n, ")</span>"))
         }
       })
     }

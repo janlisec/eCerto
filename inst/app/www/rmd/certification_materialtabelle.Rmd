@@ -1,17 +1,19 @@
 ### Table of certified values
 
-The table of certified values (**Tab.C3**) combines all data collected within a certification trial to provide for each 
-measured entity within the certified material the certified mean $\mu_c$ (`cert_val`) and the certified uncertainty 
-`U_abs`.
+The table of certified values (**Tab.C3**) combines all data collected within a 
+certification trial to provide for each measured entity within the certified 
+material the certified mean $\mu_c$ and the certified uncertainty $U_{abs}$.
 
 ![**Tab.C3** Table of certified values](fig/C_Modul_Tab3.png)
 
 ***Note!*** 
-Only for analytes which have been visually inspected by the user certified values will be transfered to this table
-to ensure that inspection took place. The reported `mean` is similar to the value obtained in **Fig.C1** but will be 
+Only for analytes which have been visually inspected by the user certified values 
+will be transfered to this table to ensure that inspection took place. The 
+reported `mean` is similar to the value obtained in **Fig.C1** but will be 
 different to **Tab.C2** when Labs are filtered for an analyte.
 
-Several columns of the material table can be edited by the user by clicking in an individual cell and entering a new value.
+Several columns of the material table can be edited by the user by clicking in 
+an individual cell and entering a new value.
 
 Table column descriptions:
 
@@ -27,7 +29,7 @@ Table column descriptions:
     If the user decides to allow `pooling` than `n` will reflect the number of finite measurement values from 
     all labs for this analyte (`n = 2 x 5 = 10`).
 -   `F` columns can be added/edited and may contain correction factors $f_i$ to adjust $\mu$ and obtain 
-    the certified mean `cert_val` by $\mu_c = \mu \times \prod f_i$
+    the certified mean by $\mu_c = \mu \times \prod f_i$
 -   `u` columns can be added and may contain relative uncertainty contributions 
     (e.g. from homogeneity or stability modules)
 
@@ -39,11 +41,12 @@ Table column descriptions:
 -   `u_com` is the *com*bined uncertainty from all `u` columns, where all relative uncertainty components $u_i$ 
     are combined using formula $u_{com}=\sqrt{\sum{u_i^2}}$
 -   `k` is an additional expansion factor for the uncertainty $U=u_{com} \times k$
--   `U_abs` specifies the absolute uncertainty and is calculated by $U_{abs}=U \times \mu_c$
+-   $U_{abs}$ specifies the absolute uncertainty and is calculated by $U_{abs}=U \times \mu_c$
 
 ***Note!*** 
-Numeric values of $\mu_c$ and $U_{abs}$ are rounded to the number of digits specified by the user at the analyte selection 
-panel (top, `Precision (Cert. Val.)`). A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all relative `u` 
-columns are depicted with fixed 4 digits precision.
+Numeric values of $\mu_c$ and $U_{abs}$ are rounded to the number of digits 
+specified by the user at the analyte selection panel (*Precision µ~c~*).
+A precision according to DIN 1333 based on $U_{abs}$ is suggested. However, all 
+relative `u` columns are depicted with fixed 4 digits precision.
 
 **Tab.C3** can be exported within a report using the download section on top of the page.
