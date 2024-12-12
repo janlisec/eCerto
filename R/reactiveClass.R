@@ -175,10 +175,13 @@ eCerto <- R6::R6Class(
     a_p = function(val = c("precision", "precision_export", "pooling", "confirmed", "unit", "name")) {
       val <- match.arg(val)
       as <- shiny::isolate(private$..eData[["General"]][["apm"]])
-      out <- sapply(names(as), function(x) {
-        as[[x]][[val]]
-      })
-      return(out)
+      if (is.null(as)) {
+        return(NULL)
+      } else {
+        return(sapply(names(as), function(x) {
+          as[[x]][[val]]
+        }))
+      }
     },
     #' @description Return modules with existing data.
     #' @return A named logical vector.
