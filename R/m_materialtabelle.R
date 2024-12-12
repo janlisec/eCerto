@@ -226,9 +226,6 @@ m_materialtabelleServer <- function(id, rv) {
         mean(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = T))
       )
     })
-    shiny::observeEvent(cert_mean(), {
-      setValue(rv, c("Certification_processing", "cert_mean"), cert_mean())
-    })
 
     # calculate cert_sd
     cert_sd <- shiny::reactive({
@@ -246,9 +243,6 @@ m_materialtabelleServer <- function(id, rv) {
         stats::sd(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = T))
       )
     })
-    shiny::observeEvent(cert_sd(), {
-      setValue(rv, c("Certification_processing", "cert_sd"), cert_sd())
-    })
 
     # update mt
     shiny::observeEvent(mater_table(), {
@@ -259,7 +253,7 @@ m_materialtabelleServer <- function(id, rv) {
       }
     })
 
-    # when an Analyte-tab was selected --> update materialtabelle
+    # when an Analyte was selected --> update materialtabelle
     # TODO Check that analyte-column is unique
     # in case mater table has been initiated...
     # shiny::observeEvent(c_fltData(),{
@@ -267,10 +261,19 @@ m_materialtabelleServer <- function(id, rv) {
       shiny::req(c_fltData())
       an <- as.character(c_fltData()[1, "analyte"])
       if (!is.null(mater_table()) && an %in% mater_table()[, "analyte"]) {
-        e_msg(paste("update initiated for", an))
-        update_reactivecell(r = mater_table, colname = "mean", analyterow = an, value = cert_mean())
-        update_reactivecell(r = mater_table, colname = "sd", analyterow = an, value = cert_sd())
-        update_reactivecell(r = mater_table, colname = "n", analyterow = an, value = n())
+        i <- which(mater_table()[, "analyte"]==an)
+        if (!identical(unname(cert_mean()), mater_table()[i,2])) {
+          e_msg(paste("update \u00B5_c for", an))
+          update_reactivecell(r = mater_table, colname = "mean", analyterow = an, value = cert_mean())
+        }
+        if (!identical(unname(cert_sd()), mater_table()[i,4])) {
+          e_msg(paste("update sd for", an))
+          update_reactivecell(r = mater_table, colname = "sd", analyterow = an, value = cert_sd())
+        }
+        if (!identical(unname(n()), mater_table()[i,5])) {
+          e_msg(paste("update n for", an))
+          update_reactivecell(r = mater_table, colname = "n", analyterow = an, value = n())
+        }
       }
     })
 
@@ -341,12 +344,13 @@ m_materialtabelleServer <- function(id, rv) {
             e_msg(paste("setting", an, "as confirmed"))
             tmp <- getValue(rv, c("General", "apm"))
             tmp[[an]][["confirmed"]] <- TRUE
-            setValue(rv, c("General", "apm"), tmp)
+            shiny::isolate(setValue(rv, c("General", "apm"), tmp))
           }
           if (i != selected_row_idx$row) {
             # update index
             e_msg("input$matreport_rows_selected - setting selected_row_idx")
             selected_row_idx$row <- i
+            rv$cur_an <- an
           } else {
             if (is.null(rv$cur_an) || rv$cur_an != an) {
               e_msg("setting rv$cur_an")
