@@ -66,8 +66,8 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
 
   # establish linear model
   foo.lm <- stats::lm(vals ~ mon)
-  a <- stats::coef(foo.lm)[1]
-  b <- stats::coef(foo.lm)[2]
+  a <- stats::coef(foo.lm)[1] # <-- intercept
+  b <- stats::coef(foo.lm)[2] # <-- slope
   SE_b <- summary(foo.lm)$coefficients["mon", 2]
   # b.ci <- confint(object = foo.lm, parm = 'mon', level = 0.95)
 
@@ -111,7 +111,8 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
         graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(s(b[1]) ~ "x" ~ t[cert]), bty = "n", inset = c(0.04, 0))
       }
     }
-    graphics::abline(foo.lm, lty = 2, col = 4) # <-- slope
+    graphics::abline(a = mn, b = b, lty = 2, col = grDevices::grey(0.8)) # <-- slope shifted to µ_c
+    graphics::abline(a = a, b = b, lty = 2, col = 4) # <-- slope
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
     if ("Temp" %in% colnames(x[["val"]])) {
       # accelerated study plot version indicating different symbols for different Temp levels
