@@ -55,7 +55,7 @@ page_CertificationUI <- function(id) {
       )
     ),
     bslib::card_body(
-      shiny::div(DT::dataTableOutput(ns("overview_stats")))
+      shiny::div(DT::dataTableOutput(ns("TabC1")))
     )
   )
 
@@ -113,7 +113,7 @@ page_CertificationUI <- function(id) {
         ),
         # $JL$ the surrounding div is required to include the empty HTML as a way to allow shinking and prevent the figure to be resized horizontally otherwise
         shiny::div(
-          shiny::div(style = "display: inline-block;", shiny::plotOutput(ns("overview_CertValPlot"))),
+          shiny::div(style = "display: inline-block;", shiny::plotOutput(ns("fig_C1"))),
           shiny::div(style = "display: inline-block;", shiny::HTML(""))
         )
       )
@@ -218,53 +218,47 @@ page_CertificationServer <- function(id, rv) {
     # report module
     m_reportServer(id = "report", rv = rv)
 
-    # selected_tab() holds the locally selected analyte in the C module
-    # if possible this is similar to the global current analyte (rv$cur_an)
-    selected_tab <- shiny::reactiveVal(NULL)
-    # selected_tab_valid <- shiny::reactive({ selected_tab() %in% rv$a_p("name") })
-    shiny::observeEvent(rv$cur_an,
-      {
-        req(rv$e_present()["Certification"])
-        # ensure that App works in case that S and C data don't match
-        if (rv$cur_an %in% rv$a_p("name")) {
-          selected_tab(rv$cur_an)
-        } else {
-          message("[page_certification] cant change local selected_tab to rv$cur_an as it is not in C list")
-        }
-      },
-      ignoreInit = TRUE
-    )
+    # -- -- -- -- -- -- --
+    # Tab_C0 (iported data)
+    m_DataViewServer(id = "dv", rv = rv)
 
+    # C_analyte() checks if the globally selected analyte is available in the C module
+    C_analyte <- shiny::reactive({
+      req(rv$cur_an)
+      shiny::validate(shiny::need(expr = rv$cur_an %in% rv$a_p("name"), message = paste("Analyte", rv$cur_an, "is not present in C data.")))
+      rv$cur_an
+    })
+
+    # precision needs to be local to avoid excessive updates of Tab.C1 and Tab.C2 due to changes in 'apm'
+    precision <- shiny::reactiveVal(4)
+
+    # this data.frame contains the following columns for each analyte:
+    # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
+    dat <- shiny::reactiveVal(NULL)
+
+    # if new C data is uploaded from Excel or RData in 'rv'
     shiny::observeEvent(getValue(rv, c("Certification", "data")),
       {
         if (is.null(getValue(rv, c("Certification", "data")))) {
           shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standby")
         } else {
+          #dat(c_filter_data(x = getValue(rv, c("Certification", "data")), c_apm = getValue(rv, c("General", "apm"))[[C_analyte()]]))
           shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "loaded")
-          if (is.null(selected_tab())) {
-            # ensure that App works in case that S and C data don't match
-            if (rv$cur_an %in% rv$a_p("name")) {
-              selected_tab(rv$cur_an)
-            } else {
-              message("[page_certification] cant change local selected_tab to rv$cur_an as it is not in C list")
-            }
-          }
         }
       },
       ignoreNULL = FALSE
     )
 
-    # --- --- --- --- --- --- --- --- --- --- ---
-    precision <- shiny::reactive({
-      shiny::req(selected_tab(), selected_tab() %in% rv$a_p("name"))
-      getValue(rv, c("General", "apm"))[[selected_tab()]][["precision"]]
-    })
-
-    # this data.frame contains the following columns for each analyte:
-    # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
-    dat <- shiny::reactive({
-      shiny::req(selected_tab(), selected_tab() %in% rv$a_p("name"))
-      return(c_filter_data(x = getValue(rv, c("Certification", "data")), c_apm = getValue(rv, c("General", "apm"))[[selected_tab()]]))
+    shiny::observe({
+      req(C_analyte(), getValue(rv, c("General", "apm")))
+      #tmp <- c_filter_data(x = getValue(rv, c("Certification", "data")), c_apm = getValue(rv, c("General", "apm"))[[C_analyte()]])
+      if (!identical(rv$c_fltData(), dat())) {
+        message("setting new dat for analyte", rv$cur_an)
+        dat(rv$c_fltData())
+      }
+      if (!identical(rv$a_p("precision")[C_analyte()], precision())) {
+        precision(rv$a_p("precision")[C_analyte()])
+      }
     })
 
     shiny::observeEvent(dat(), {
@@ -274,17 +268,14 @@ page_CertificationServer <- function(id, rv) {
       }
     })
 
-    # -- -- -- -- -- -- --
-    m_DataViewServer(id = "dv", rv = rv)
-
-    # store Fig options
-    shiny::observeEvent(input$Fig01_width, {
-      setValue(rv, c("Certification_processing", "CertValPlot", "Fig01_width"), input$Fig01_width)
-    })
-
-    shiny::observeEvent(input$Fig01_height, {
-      setValue(rv, c("Certification_processing", "CertValPlot", "Fig01_height"), input$Fig01_height)
-    })
+    # # store Fig options
+    # shiny::observeEvent(input$Fig01_width, {
+    #   setValue(rv, c("Certification_processing", "CertValPlot", "Fig01_width"), input$Fig01_width)
+    # })
+    #
+    # shiny::observeEvent(input$Fig01_height, {
+    #   setValue(rv, c("Certification_processing", "CertValPlot", "Fig01_height"), input$Fig01_height)
+    # })
 
     shiny::observeEvent(input$C1_opt,
       {
@@ -299,49 +290,28 @@ page_CertificationServer <- function(id, rv) {
       ignoreNULL = FALSE
     )
 
-    shiny::observeEvent(getValue(rv, c("Certification_processing", "CertValPlot")),
-      {
-        shiny::req(input$C1_opt)
-        w <- ifelse(
-          "auto_width" %in% input$C1_opt,
-          calc_bxp_width(n = length(unique(dat()$Lab))),
-          getValue(rv, c("Certification_processing", "CertValPlot", "Fig01_width"))
-        )
-        shiny::updateNumericInput(
-          session = session,
-          inputId = "Fig01_width",
-          value = w
-        )
-        shiny::updateNumericInput(
-          session = session,
-          inputId = "Fig01_height",
-          value = getValue(rv, c("Certification_processing", "CertValPlot", "Fig01_height"))
-        )
-      },
-      ignoreNULL = TRUE
-    )
+    shiny::observeEvent(getValue(rv, c("Certification_processing", "CertValPlot")), {
+      shiny::req(input$C1_opt)
+      w <- ifelse(
+        "auto_width" %in% input$C1_opt,
+        calc_bxp_width(n = length(unique(dat()$Lab))),
+        getValue(rv, c("Certification_processing", "CertValPlot", "Fig01_width"))
+      )
+      shiny::updateNumericInput(session = session, inputId = "Fig01_width", value = w)
+      shiny::updateNumericInput(session = session, inputId = "Fig01_height", value = getValue(rv, c("Certification_processing", "CertValPlot", "Fig01_height")))
+    }, ignoreNULL = TRUE)
 
     # CertVal Plot
-    output$test <- shiny::renderPlot({plot(1:10)})
-
-    output$overview_CertValPlot <- shiny::renderPlot(
-      {
-        shiny::req(dat())
-        CertValPlot(
-          data = dat(),
-          annotate_id = "annotate_id" %in% input$C1_opt,
-          filename_labels = "filename_labels" %in% input$C1_opt,
-          show_legend = "show_legend" %in% input$C1_opt,
-          dp = rv$a_p()[as.character(dat()[1, "analyte"])]
-        )
-      },
-      height = shiny::reactive({
-        input$Fig01_height
-      }),
-      width = shiny::reactive({
-        input$Fig01_width
-      })
-    )
+    output$fig_C1 <- shiny::renderPlot({
+      shiny::req(dat())
+      CertValPlot(
+        data = dat(),
+        annotate_id = "annotate_id" %in% input$C1_opt,
+        filename_labels = "filename_labels" %in% input$C1_opt,
+        show_legend = "show_legend" %in% input$C1_opt,
+        dp = precision()
+      )
+    }, height = shiny::reactive({ input$Fig01_height }), width = shiny::reactive({ input$Fig01_width }))
 
     CertValPlot_list <- shiny::reactive({
       shiny::req(input$Fig01_width)
@@ -353,7 +323,7 @@ page_CertificationServer <- function(id, rv) {
           "CertValPlot(data=data, annotate_id=", "annotate_id" %in% input$C1_opt,
           ", filename_labels=", "filename_labels" %in% input$C1_opt,
           ", show_legend=", "show_legend" %in% input$C1_opt,
-          ", dp=", rv$a_p()[as.character(dat()[1, "analyte"])], ")"
+          ", dp=", precision(), ")"
         )),
         "Fig01_width" = input$Fig01_width,
         "Fig01_height" = input$Fig01_height
@@ -362,7 +332,7 @@ page_CertificationServer <- function(id, rv) {
 
     shiny::observeEvent(CertValPlot_list(),
       {
-        e_msg("CertValPlot parameter list changed")
+        e_msg("Fig.C1 options changed")
         setValue(rv, c("Certification_processing", "CertValPlot"), CertValPlot_list())
       },
       ignoreInit = TRUE
@@ -371,7 +341,7 @@ page_CertificationServer <- function(id, rv) {
     # FIGURE DOWNLOAD
     output$Fig01 <- shiny::downloadHandler(
       filename = function() {
-        paste0(getValue(rv, c("General", "study_id")), "_", getValue(rv, c("General", "apm"))[[selected_tab()]][["name"]], "_Fig01.pdf")
+        paste0(getValue(rv, c("General", "study_id")), "_", getValue(rv, c("General", "apm"))[[C_analyte()]][["name"]], "_Fig01.pdf")
       },
       content = function(file) {
         grDevices::pdf(file = file, width = input$Fig01_width / 72, height = input$Fig01_height / 72)
@@ -388,16 +358,15 @@ page_CertificationServer <- function(id, rv) {
     )
 
     # Tab.1 Outlier statistics
-    overview_stats_pre <- shiny::reactive({
-      shiny::req(dat(), selected_tab(), selected_tab() %in% rv$a_p("name"), input$tabC1_opt2)
+    TabC1_pre <- shiny::reactive({
+      shiny::req(dat(), input$tabC1_opt2)
       prepTabC1(dat = dat(), lab_means = rv$c_lab_means(data = dat()), excl_labs = input$tabC1_opt, fmt = encode_fmt(input$tabC1_opt2))
     })
-    shiny::observeEvent(overview_stats_pre(), {
-      setValue(rv, c("Certification_processing", "stats"), overview_stats_pre())
+    shiny::observeEvent(TabC1_pre(), {
+      setValue(rv, c("Certification_processing", "stats"), TabC1_pre())
     })
-    output$overview_stats <- DT::renderDataTable({
-      req(selected_tab() %in% rv$a_p("name"))
-      styleTabC1(x = overview_stats_pre(), n = rv$a_p()[selected_tab()], fmt = encode_fmt(input$tabC1_opt2))
+    output$TabC1 <- DT::renderDataTable({
+      styleTabC1(x = TabC1_pre(), n = precision(), fmt = encode_fmt(input$tabC1_opt2))
     })
 
     # Tab.2 Labmean statistics
@@ -409,15 +378,13 @@ page_CertificationServer <- function(id, rv) {
       setValue(rv, c("Certification_processing", "mstats"), TabC2_pre())
     })
     output$TabC2 <- DT::renderDataTable({
-      req(selected_tab() %in% rv$a_p("name"))
-      styleTabC2(x = TabC2_pre(), n = getValue(rv, c("General", "apm"))[[selected_tab()]][["precision"]])
+      styleTabC2(x = TabC2_pre(), n = precision())
     })
 
     # Normality statement and QQ plot
     output$tab2_statement <- shiny::renderUI({
       KS_p <- as.numeric(TabC2_pre()[, "KS_p"]) < 0.05
       shiny::fluidRow(
-        #style = "padding-bottom: 10px;",
         shiny::column(
           width = 12,
           shiny::HTML(paste0("The data ", ifelse(KS_p, "<font color=\"#FF0000\">", "<font color=\"#00FF00\">"), "is", ifelse(KS_p, " not ", " "), "normally distributed</font> (KS<sub>p</sub>", ifelse(KS_p, "<", "&ge;"), "0.05).")),
@@ -435,9 +402,8 @@ page_CertificationServer <- function(id, rv) {
     })
     output$qqplot <- shiny::renderPlot(
       {
-        req(selected_tab() %in% rv$a_p("name"))
-        y <- overview_stats_pre()[, "mean"]
-        stats::qqnorm(y = y, main = paste("QQ plot for analyte", selected_tab()))
+        y <- TabC1_pre()[, "mean"]
+        stats::qqnorm(y = y, main = paste("QQ plot for analyte", C_analyte()))
         stats::qqline(y = y, col = 2)
       },
       height = 400,
