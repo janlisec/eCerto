@@ -41,7 +41,6 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     })))
 
     # fit the linear model
-    #if (!"Area_norm" %in% colnames(df)) browser()
     df.lm <- stats::lm(Area_norm ~ Conc, data = df)
 
     # F-test for outliers (checking highest residual)
@@ -49,7 +48,6 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     if (!is.na(idx)) {
       check_more <- TRUE
       while (check_more) {
-        #if (a == "PFHpA") browser()
         # $$JL, comment$$ because residual outliers are tested sequentially, it is
         # not always intuitive from the detailed linearity plot showing the full model
         # why some levels are removed as outliers (they can have a low residual in the

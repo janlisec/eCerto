@@ -165,7 +165,6 @@ m_longtermstabilityServer <- function(id) {
 
     shiny::observeEvent(input$LTS_opt,
       {
-        # browser()
         shinyjs::toggleElement(id = "LTS_def", condition = "show_property_values" %in% input$LTS_opt)
       },
       ignoreInit = FALSE,
@@ -337,7 +336,6 @@ m_longtermstabilityServer <- function(id) {
     #  when clicking on a point in the plot, select Rows in data table proxy
     shiny::observeEvent(input$plot1_hover, {
       p <- input$plot1_hover
-      # browser()
       # print(shiny::nearPoints(d(), p, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10))
     })
     #  when clicking on a point in the plot, select Rows in data table proxy

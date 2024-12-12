@@ -10,6 +10,7 @@
 #' @keywords internal
 #' @noRd
 styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
+  e_msg("Styling Tab.C3")
   precision_U <- 4
   prec_exp <- NULL
   if (!is.null(apm)) {
@@ -68,7 +69,6 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1) {
   dt <- DT::formatCurrency(table = dt, columns = u_cols, currency = "", digits = precision_U)
   # if (!is.null(prec_exp)) dt <- DT::formatCurrency(table = dt, columns = "cert_val", currency = "", digits = prec_exp)
   if (!is.null(prec_exp)) {
-    #browser()
     #dt <- DT::formatCurrency(table = dt, columns = "\u00B5<sub>c</sub>", currency = "", digits = prec_exp)
   }
   return(dt)
