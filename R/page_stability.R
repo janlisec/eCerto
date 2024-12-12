@@ -30,9 +30,19 @@ page_StabilityUI <- function(id) {
     bslib::card_header(
       class = "d-flex justify-content-between",
       shiny::strong(shiny::actionLink(inputId = ns("tab_link"), label = "Tab.S1 - calculation of uncertainty contribution")),
-      shiny::div(shiny::div(style = "float: left; margin-left: 15px;", m_TransferUUI(id = ns("s_transfer"))))
+      shiny::div(
+        shiny::div(
+          style = "float: right; margin-left: 15px;",
+          m_TransferUUI(ns("s_transfer"))
+        ),
+        shiny::div(
+          style = "float: left; margin-left: 15px;",
+          shiny::checkboxInput(inputId = ns("s_adjust"), width = 130, label = shiny::HTML("P-value adjust-<br>ment (bonferroni)"), value = TRUE)
+        )
+      )
     ),
-    bslib::card_body(max_height = 600,
+    #bslib::card_body(max_height = 600,
+    bslib::card_body(
       shiny::div(DT::DTOutput(ns("s_tab1"))),
       shinyjs::hidden(shiny::radioButtons(inputId = ns("time_fmt"), label = "Time format in lm", choices = c("mon", "day"), selected = "mon"))
     ),
@@ -262,7 +272,7 @@ page_StabilityServer <- function(id, rv) {
     s_vals <- shiny::reactive({
       shiny::req(s_Data(), input$s_shelf_life)
       s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
-      out <- prepTabS1(x = s_dat, time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = s_pars$slope_of_means, mt = getValue(rv, c("General", "materialtabelle")), optimize_u_stab = input$optimize_u_stab)
+      out <- prepTabS1(x = s_dat, time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = s_pars$slope_of_means, mt = getValue(rv, c("General", "materialtabelle")), optimize_u_stab = input$optimize_u_stab, adjust = input$s_adjust)
       setValue(rv, c("Stability", "s_vals"), out)
       return(out)
     })
@@ -272,9 +282,7 @@ page_StabilityServer <- function(id, rv) {
       req(s_vals(), rv$cur_an)
       if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
       shiny::validate(shiny::need(expr = rv$cur_an %in% as.character(shiny::isolate(s_vals())[, "analyte"]), message = paste("Analyte", rv$cur_an, "is not present in S data.")))
-      #if (rv$cur_an != as.character(s_vals()[s_tab1_current$row, "analyte"])) {
-        rv$cur_an
-      #}
+      rv$cur_an
     })
 
     # Tables
@@ -299,18 +307,18 @@ page_StabilityServer <- function(id, rv) {
     observeEvent(S_analyte(), {
       #req(s_vals(), rv$cur_an != S_analyte())
       req(s_vals())
+      s_a <- S_analyte()
       # update view for currently selected analyte (trigger coming from C module or Arrhenius module)
-      if (!(s_tab1_current$row == which(as.character(s_vals()[, "analyte"]) == S_analyte()))) {
-        s_tab1_current$row <- which(as.character(s_vals()[, "analyte"]) == S_analyte())
+      if (!(s_tab1_current$row == which(as.character(s_vals()[, "analyte"]) == s_a))) {
+        s_tab1_current$row <- which(as.character(s_vals()[, "analyte"]) == s_a)
       }
       if (!is.null(input$s_sel_dev)) {
         mt <- getValue(rv, c("General", "materialtabelle"))
-        a <- S_analyte()
-        test <- a %in% mt[, "analyte"] && is.finite(mt[which(mt[, "analyte"] == a), "mean"])
+        test <- s_a %in% mt[, "analyte"] && is.finite(mt[which(mt[, "analyte"] == s_a), "mean"])
         if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
       }
       # update sample filter
-      choices <- rownames(s_Data())[as.character(s_Data()[,"analyte"])==S_analyte()]
+      choices <- rownames(s_Data())[as.character(s_Data()[,"analyte"])==s_a]
       selected <- intersect(s_pars$s_samples_filtered, choices)
       shinyWidgets::updatePickerInput(session = session, inputId = "s_samples_filtered", choices = choices, selected = selected)
     }, ignoreNULL = TRUE, ignoreInit = FALSE)
