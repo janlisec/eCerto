@@ -83,8 +83,8 @@ list2rv <- function(x = NULL) {
         setValue(rv, c("General", "user"), x[["Certification"]][["user"]])
         setValue(rv, c("General", "study_id"), x[["Certification"]][["study_id"]])
         # processing
-        setValue(rv, c("Certification_processing", "cert_mean"), x[["Certification"]][["cert_mean"]])
-        setValue(rv, c("Certification_processing", "cert_sd"), x[["Certification"]][["cert_sd"]])
+        #setValue(rv, c("Certification_processing", "cert_mean"), x[["Certification"]][["cert_mean"]])
+        #setValue(rv, c("Certification_processing", "cert_sd"), x[["Certification"]][["cert_sd"]])
         setValue(rv, c("Certification_processing", "CertValPlot"), x[["Certification"]][["CertValPlot"]])
         setValue(rv, c("Certification_processing", "stats"), x[["Certification"]][["stats"]])
         setValue(rv, c("Certification_processing", "mstats"), x[["Certification"]][["mstats"]])
