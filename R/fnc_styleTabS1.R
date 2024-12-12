@@ -12,7 +12,8 @@
 #' @noRd
 styleTabS1 <- function(x, mt = NULL, sr = 1) {
   e_msg("styling Tab.S1")
-  for (i in c("slope", "SE_slope", "mean", "u_stab", "P")) {
+  P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
+  for (i in c("slope", "SE_slope", "mean", "u_stab", P_col)) {
     x[, i] <- pn(x[, i], 4)
   }
   if (!is.null(mt)) {
@@ -30,6 +31,7 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
   colnames(x) <- gsub("_cert", "<sub>cert</sub>", colnames(x))
   colnames(x) <- gsub("mean", "&micro<sub>s</sub>", colnames(x))
   colnames(x) <- gsub("^P$", "P<sub>b1</sub>", colnames(x))
+  colnames(x) <- gsub("^P_adj$", "P<sub>adj,b1</sub>", colnames(x))
   inv_cols <- grep("style_", colnames(x)) - 1
   # attach a blank column at the end
   x <- cbind(x, data.frame(" " = " ", check.names = FALSE))
@@ -53,7 +55,7 @@ styleTabS1 <- function(x, mt = NULL, sr = 1) {
   dt <- DT::formatStyle(table = dt, columns = "analyte", valueColumns = "style_analyte", target = "cell", color = DT::styleValue())
   dt <- DT::formatStyle(
     table = dt,
-    columns = which(colnames(x) == "P<sub>b1</sub>"),
+    columns = which(colnames(x) %in% c("P<sub>b1</sub>", "P<sub>adj,b1</sub>")),
     target = "cell",
     color = DT::styleInterval(cuts = 0.05, values = c("red", "")),
     fontWeight = DT::styleInterval(cuts = 0.05, values = c("bold", "normal"))

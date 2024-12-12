@@ -12,12 +12,12 @@
 #' @return A data frame.
 #' @keywords internal
 #' @noRd
-prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means = FALSE, mt = NULL, optimize_u_stab = FALSE) {
+prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means = FALSE, mt = NULL, optimize_u_stab = FALSE, adjust = FALSE) {
   e_msg("perform statistics on imported stability data")
   time_fmt <- match.arg(time_fmt)
   stopifnot(all(c("analyte", "Value", "Date") %in% colnames(x)))
   if (!is.numeric(t_cert) | (is.numeric(t_cert) && !(t_cert > 0))) t_cert <- as.numeric(NA)
-  plyr::ldply(split(x, x[, "analyte"]), function(x) {
+  out <- plyr::ldply(split(x, x[, "analyte"]), function(x) {
     if (slope_of_means) {
       # compute mean values by Date
       x <- plyr::ldply(split(x, x[, "Date"]), function(y) {
@@ -35,13 +35,18 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
       x[, "Date"] <- calc_time_diff(x[, "Date"], type = "mon", exact = TRUE)
       mon_diff <- round(max(x[, "Date"]), 1)
     }
-    x_lm <- stats::lm(Value ~ Date, data = x)
-    x_coef <- unname(summary(x_lm)$coefficients["Date", ])
-    x_mean <- mean(x[,"Value"], na.rm=TRUE)
+    if (mon_diff == 0) {
+      e_msg(paste("Check", x[1,"analyte"]))
+      x_coef <- rep(0,4)
+      x_mean <- 0
+    } else {
+      x_lm <- stats::lm(Value ~ Date, data = x)
+      x_coef <- unname(summary(x_lm)$coefficients["Date", ])
+      x_mean <- mean(x[,"Value"], na.rm=TRUE)
+    }
     # according to B.3.4 from ISO Guide 35 which is similar to summary(lm))coef[4]
     # p_val <- 2 * stats::pt(abs(x_coef[1]/x_coef[2]), df = stats::df.residual(x_lm), lower.tail = FALSE)
     # p_val <- x_coef[4]
-    # browser()
     # according to B.3.2 [B16] and [B17] from ISO Guide 35 which is similar to summary(lm))coef[2]
     # d_in <- read.table("clipboard", sep="\t", dec=",")
     # d_means <- apply(d_in, 2, function(x) {c(mean(x), stats::sd(x))})
@@ -78,4 +83,9 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
       "P" = x_coef[4]
     )
   }, .id = "analyte")
+  if (!is.null(adjust) && adjust) {
+    out[, "P"] <- stats::p.adjust(p = out[, "P"], method = "bonferroni")
+    colnames(out) <- gsub("^P$", "P_adj", colnames(out))
+  }
+  return(out)
 }
