@@ -19,7 +19,7 @@ read_lts_input <- function(file = NULL, simplify = FALSE) {
   for (i in 1:length(sheets)) {
     out[[i]][["def"]] <- openxlsx::read.xlsx(xlsxFile = file, sheet = i, startRow = 1, rows = 1:2)
     out[[i]][["val"]] <- openxlsx::read.xlsx(xlsxFile = file, sheet = i, startRow = 4, detectDates = TRUE)
-    if (!"Comment" %in% colnames(out[[i]][["val"]])) out[[i]][["val"]] <- cbind(out[[i]][["val"]], "Comment" = NA)
+    if (!"Comment" %in% colnames(out[[i]][["val"]])) out[[i]][["val"]] <- cbind(out[[i]][["val"]], "Comment" = as.character(NA))
     if ("Date" %in% colnames(out[[i]][["val"]])) {
       if (!inherits(out[[i]][["val"]][, "Date"], "Date")) {
         out[[i]][["val"]][, "Date"] <- plyr::ldply(out[[i]][["val"]][, "Date"], function(x) {

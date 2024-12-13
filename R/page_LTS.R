@@ -12,7 +12,7 @@
 #'     ),
 #'     server = function(input, output, session) {
 #'       fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/TS5/LTS_BAM-B003.xlsx"
-#'       eCerto:::m_longtermstabilityServer(id = "test", test_data = fl)
+#'       eCerto:::m_longtermstabilityServer(id = "test", test_data = NULL)
 #'     }
 #'   )
 #' }
@@ -109,7 +109,14 @@ m_longtermstabilityUI <- function(id) {
 m_longtermstabilityServer <- function(id, test_data = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
 
-    lts <- shiny::reactiveValues("data" = NULL)
+    lts <- shiny::reactiveValues(
+      "data" = NULL,
+      "KWs" = NULL,
+      "tab_L1" = NULL
+    )
+
+    # i() will provide the currently selected KW from the list as a numeric index throughout Server
+    i <- shiny::reactiveVal(NULL)
 
     LTS_Data <- shiny::reactive({
       if (!is.null(input$LTS_input_file) | !is.null(test_data)) {
@@ -163,7 +170,8 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     })
 
     shiny::observeEvent(LTS_Data(), {
-      lts[["data"]] <- LTS_Data()
+      lts$data <- LTS_Data()
+      lts$KWs <- sapply(LTS_Data(), function(x) { x[["def"]][, "KW"] })
     })
 
     # upload info used in UI part
@@ -172,23 +180,13 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     })
     shiny::outputOptions(output, "LTS_fileUploaded", suspendWhenHidden = FALSE)
 
-    LTS_KWs <- shiny::reactive({
-      shiny::req(lts$data)
-      kw_names <- sapply(lts$data, function(x) { x[["def"]][, "KW"] })
-      return(kw_names)
+    shiny::observeEvent(lts$KWs, {
+      shinyWidgets::updatePickerInput(inputId = "LTS_sel_KW", choices = lts$KWs, selected = lts$KWs[1])
     })
 
-    shiny::observeEvent(LTS_KWs, {
-      #shiny::updateSelectInput(inputId = "LTS_sel_KW", choices = LTS_KWs(), selected = LTS_KWs()[1])
-      shinyWidgets::updatePickerInput(inputId = "LTS_sel_KW", choices = LTS_KWs(), selected = LTS_KWs()[1])
-    }, ignoreInit = FALSE)
-
-    # i() will provide the currently selected KW from the list as a numeric index throughout Server
-    i <- shiny::reactiveVal(NULL)
-
     shiny::observeEvent(input$LTS_sel_KW, {
-      if (!identical(i(), which(LTS_KWs() %in% input$LTS_sel_KW))) {
-        i(which(LTS_KWs() %in% input$LTS_sel_KW))
+      if (!identical(i(), which(lts$KWs %in% input$LTS_sel_KW))) {
+        i(which(lts$KWs %in% input$LTS_sel_KW))
       }
     }, ignoreInit = TRUE)
 
@@ -198,54 +196,29 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       "File" = as.character("filename"),
       "Comment" = as.character(NA), stringsAsFactors = FALSE
     )
-    LTS_tmp_val <- shiny::reactiveVal(LTS_new_val)
 
     # Data Tables
-    # current LTS values
-    tab_LTSvals <- shiny::reactiveVal(shiny::isolate(lts[["data"]][[i()]][["val"]][, 1:3]))
     shiny::observeEvent(i(), {
       # select the current set of values based on i() without showing the comments (to save screen space)
-      tab_LTSvals(lts[["data"]][[i()]][["val"]][, 1:3])
-    })
-    output$tab_L1 <- DT::renderDataTable(
-      {
-        shiny::req(i())
-        # trigger redraw on new value and update reactive Value to this end
-        input$LTS_newPoint_Apply
-        tab_LTSvals(shiny::isolate(lts[["data"]][[i()]][["val"]][, 1:3]))
-        styleTabL1(x = tab_LTSvals())
-      },
-      server = FALSE
-    )
+      lts$tab_L1 <- lts[["data"]][[i()]][["val"]][, 1:3]
+    }, ignoreInit = TRUE)
+
+    output$tab_L1 <- DT::renderDataTable({
+      shiny::req(lts$tab_L1)
+      styleTabL1(x = lts$tab_L1)
+    }, server = FALSE)
 
     # current LTS definition
-    output$LTS_def <- DT::renderDataTable(
-      {
-        shiny::req(lts$data, i())
-        out <- lts$data[[i()]][["def"]]
-        out[, "Coef_of_Var"] <- formatC(round(out[, "Coef_of_Var"], 4), digits = 4, format = "f")
-        # reorder and rename columns according to wish of Carsten Prinz
-        out <- out[, c("RM", "KW", "KW_Def", "KW_Unit", "CertVal", "U", "U_Def", "Coef_of_Var", "acc_Datasets", "Device", "Method")]
-        colnames(out) <- c("Reference Material", "Property", "Name", "Unit", "Certified value", "Uncertainty", "Uncertainty unit", "Coeff. of Variance", "accepted Datasets", "Device", "Method")
-        rownames(out) <- out[,"Property"]
-        return(t(out))
-      },
-      options = list(paging = FALSE, searching = FALSE, ordering = FALSE, dom = "t")
-    )
-
-    # entry table for new datapoint
-    output$LTS_NewVal <- DT::renderDataTable({
-      DT::datatable(
-        data = LTS_new_val,
-        options = list(
-          paging = FALSE, searching = FALSE, ordering = FALSE, dom = "t",
-          columnDefs = list(
-            list("width" = "80px", "targets" = which(!(colnames(LTS_new_val) %in% c("Comment"))) - 1)
-          )
-        ),
-        rownames = NULL, editable = TRUE
-      )
-    })
+    output$LTS_def <- DT::renderDataTable({
+      shiny::req(lts$data, i())
+      out <- lts$data[[i()]][["def"]]
+      out[, "Coef_of_Var"] <- formatC(round(out[, "Coef_of_Var"], 4), digits = 4, format = "f")
+      # reorder and rename columns according to wish of Carsten Prinz
+      out <- out[, c("RM", "KW", "KW_Def", "KW_Unit", "CertVal", "U", "U_Def", "Coef_of_Var", "acc_Datasets", "Device", "Method")]
+      colnames(out) <- c("Reference Material", "Property", "Name", "Unit", "Certified value", "Uncertainty", "Uncertainty unit", "Coeff. of Variance", "accepted Datasets", "Device", "Method")
+      rownames(out) <- out[,"Property"]
+      return(t(out))
+    }, options = list(paging = FALSE, searching = FALSE, ordering = FALSE, dom = "t"))
 
     # helper data.frame containing only Month and Value information of current KW
     d <- shiny::reactive({
@@ -258,30 +231,27 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     })
 
     # when a row in table was selected (either by user clicking the table or clicking in the plot)
-    shiny::observeEvent(input$tab_L1_rows_selected,
-      {
-        shiny::req(lts$data)
-        if (!is.null(input$tab_L1_rows_selected)) {
-          # when a row is selected in table or plot change title and value
-          sr <- input$tab_L1_rows_selected # selected row
-          comm <- lts[["data"]][[i()]][["val"]][[sr, "Comment"]]
-          shinyjs::enable(id = "datacomment")
-          shinyjs::enable(id = "dataflt")
-          shiny::updateTextInput(session = session, inputId = "datacomment", value = comm)
-          shiny::updateCheckboxInput(inputId = "dataflt", value = lts[["data"]][[i()]][["val"]][sr, "Filter"])
-          if (!is.na(comm)) comm <- paste("<br>Comment:", comm) else comm <- ""
-          shinyjs::html(id = "LTS_selected_point", html = paste0("Selected data point: month ", d()[sr, "mon"], " and value ", round(d()[sr, "vals"],4), comm))
-        } else {
-          # when row gets deselected/ no row is selected
-          shinyjs::disable(id = "datacomment")
-          shiny::updateTextInput(session = session, inputId = "datacomment", value = NA)
-          shinyjs::disable(id = "dataflt")
-          shiny::updateCheckboxInput(inputId = "dataflt", value = FALSE)
-          shinyjs::html(id = "LTS_selected_point", html = "Selected data point: none")
-        }
-      },
-      ignoreNULL = FALSE
-    )
+    shiny::observeEvent(input$tab_L1_rows_selected, {
+      shiny::req(lts$data)
+      if (!is.null(input$tab_L1_rows_selected)) {
+        # when a row is selected in table or plot change title and value
+        sr <- input$tab_L1_rows_selected # selected row
+        comm <- lts[["data"]][[i()]][["val"]][[sr, "Comment"]]
+        shinyjs::enable(id = "datacomment")
+        shinyjs::enable(id = "dataflt")
+        shiny::updateTextInput(session = session, inputId = "datacomment", value = comm)
+        shiny::updateCheckboxInput(inputId = "dataflt", value = lts[["data"]][[i()]][["val"]][sr, "Filter"])
+        if (!is.na(comm)) comm <- paste("<br>Comment:", comm) else comm <- ""
+        shinyjs::html(id = "LTS_selected_point", html = paste0("Selected data point: month ", d()[sr, "mon"], " and value ", round(d()[sr, "vals"],4), comm))
+      } else {
+        # when row gets deselected/ no row is selected
+        shinyjs::disable(id = "datacomment")
+        shiny::updateTextInput(session = session, inputId = "datacomment", value = NA)
+        shinyjs::disable(id = "dataflt")
+        shiny::updateCheckboxInput(inputId = "dataflt", value = FALSE)
+        shinyjs::html(id = "LTS_selected_point", html = "Selected data point: none")
+      }
+    }, ignoreNULL = FALSE)
 
     # Data Figures
     output$LTS_plot1_1 <- shiny::renderPlot({
@@ -294,7 +264,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       ### if a point in data table is selected --> mark in plot 1
       sr <- input$tab_L1_rows_selected
       if (length(sr)) {
-        graphics::points(x = rep(d()[sr, "mon"], 2), y = rep(d()[sr, "vals"], 2), pch = c(21, 4), cex = 2, col = 5)
+        graphics::points(x = rep(d()[sr, "mon"], 2), y = rep(d()[sr, "vals"], 2), pch = c(21, 4), cex = 2.5, col = 5)
       }
     })
 
@@ -318,6 +288,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       p <- input$plot1_hover
       # print(shiny::nearPoints(d(), p, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10))
     })
+
     #  when clicking on a point in the plot, select Rows in data table proxy
     shiny::observeEvent(input$plot1_click, {
       # 1/3 nearest point to click location
@@ -331,16 +302,6 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       # 3/3
       DT::selectRows(proxy = proxy, selected = idx)
       DT::selectPage(proxy = proxy, page = (idx - 1) %/% input$tab_L1_state$length + 1)
-    })
-
-    # Edit Value/Information of new datapoint
-    shiny::observeEvent(input[["LTS_NewVal_cell_edit"]], {
-      cell <- input[["LTS_NewVal_cell_edit"]]
-      i <- cell$row
-      j <- 1 + cell$col
-      tmp <- LTS_tmp_val()
-      tmp[i, j] <- DT::coerceValue(val = cell$value, old = tmp[i, j])
-      LTS_tmp_val(tmp)
     })
 
     # add new value
@@ -359,14 +320,14 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
           ord <- 1:(nrow(tmp) + 1)
         }
         lts$data[[i()]][["val"]] <- rbind(tmp, nval)[ord, ]
+        lts$tab_L1 <- lts$data[[i()]][["val"]][, 1:3]
       }
     })
 
     # add new comment and set filter
     shiny::observeEvent(input$btn_Comment_state, {
-
       if (input$btn_Comment_state) {
-
+        # dont do anything while button is still open
       } else {
         if (any(input$tab_L1_rows_selected)) {
           lts[["data"]][[i()]][["val"]][input$tab_L1_rows_selected, "Comment"] <- ifelse(input$datacomment == "", NA, input$datacomment)
@@ -389,10 +350,15 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
         # font files: "BAMKlavika-Light.ttf", "BAMKlavika-Medium.ttf", "BAMKlavika-LightItalic.ttf", "BAMKlavika-MediumItalic.ttf"
 
         # Set up parameters to pass to Rmd document
-        dat <- lts[["data"]]
-        if (length(dat) >= 2 & i() >= 2) for (j in rev(1:(i() - 1))) dat[j] <- NULL
+        x <- lts[["data"]][i()]
+        # remove filtered values from report (if any)
+        if (any(x[[1]][["val"]][,"Filter"])) {
+          x[[1]][["val"]] <- x[[1]][["val"]][!x[[1]][["val"]][,"Filter"],]
+        }
+        #dat <- lts[["data"]]
+        #if (length(dat) >= 2 & i() >= 2) for (j in rev(1:(i() - 1))) dat[j] <- NULL
         params <- list(
-          "dat" = dat,
+          "dat" = x,
           "logo_file" = logofile,
           "fnc" = list("plot_lts_data" = plot_lts_data)
         )
