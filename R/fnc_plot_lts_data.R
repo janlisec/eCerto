@@ -73,7 +73,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
 
   # extract relevant values from definition part
   U <- x[["def"]][, "U"]
-  ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]), "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
+  ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]) | x[["def"]][, "KW"]==x[["def"]][, "KW_Def"], "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
   main <- x[["def"]][, "KW"]
   sub <- x[["def"]][, "U_Def"]
   sub <- ifelse(sub == "U", expression(U[abs]), expression(U))

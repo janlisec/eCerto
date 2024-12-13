@@ -14,7 +14,7 @@ styleTabL1 <- function(x) {
   dt <- DT::datatable(
     data = x,
     options = list(
-      paging = TRUE, pageLength = 25, searching = FALSE, stateSave = TRUE,
+      paging = TRUE, pageLength = 10, searching = FALSE, stateSave = TRUE,
       columnDefs = list(
         list("width" = "60px", "targets" = colnames(x) %in% c("Value", "Date"))
       )
