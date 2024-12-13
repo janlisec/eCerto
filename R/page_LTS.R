@@ -302,7 +302,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       shiny::req(lts[["data"]], i())
       input$LTS_newPoint_Apply
       e_msg("Render LTS_plot1_2")
-      #browser()
+      #remove filtered Values from Fig.L1-2
       x <- lts$data[[i()]]
       if (any(x[["val"]][,"Filter"])) {
         x[["val"]] <- x[["val"]][!x[["val"]][,"Filter"],]

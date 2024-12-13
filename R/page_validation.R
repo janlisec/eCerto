@@ -2,6 +2,7 @@
 #' @description \code{page_validation} is the module for eCerto method validation.
 #' @details Not yet.
 #' @param id Name when called as a module in a shiny app.
+#' @param test_data Provide test_data to module.
 #' @examples
 #' if (interactive()) {
 #'   shiny::shinyApp(
