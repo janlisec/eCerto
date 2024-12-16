@@ -5,7 +5,7 @@
 #' @details Function can handle reactive and non reactive parameters to be used in shiny apps.
 #'
 #' @param filepath A list of imported Excel tables.
-#' @param sheet The name or number of the sheet to read from files in `filepath`.
+#' @param sheet The number of the sheet to read from files in `filepath`.
 #' @param method Either 'tidyxl' or 'openxlsx'.
 #' @param ... Further parameters to the read functions specified by method.
 #'

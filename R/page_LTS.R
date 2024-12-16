@@ -12,7 +12,7 @@
 #'     ),
 #'     server = function(input, output, session) {
 #'       fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/TS5/LTS_BAM-B003.xlsx"
-#'       eCerto:::m_longtermstabilityServer(id = "test", test_data = NULL)
+#'       eCerto:::m_longtermstabilityServer(id = "test", test_data = fl)
 #'     }
 #'   )
 #' }
@@ -63,8 +63,12 @@ m_longtermstabilityUI <- function(id) {
           DT::dataTableOutput(ns("LTS_def"))
         ),
         bslib::layout_columns(
-          shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover")),
-          shiny::plotOutput(ns("LTS_plot1_2"), height = "450px")
+          #shiny::div(
+            #style = "position:relative",
+            shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover")),
+            #uiOutput(ns("hover_info")),
+            shiny::plotOutput(ns("LTS_plot1_2"), height = "450px")
+          #)
         )
       )
     ),
@@ -127,42 +131,48 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
           return(NULL)
         }
         if (tolower(file.type) == "rdata") {
-          tryCatch({load(fl_path)}, error = function(e) { stop(shiny::safeError(e)) })
-          if (!exists("LTS_dat")) {
-            warning("Did load RData backup but could not find object 'LTS_dat' inside.")
-            LTS_dat <- NULL
-          }
+          tmp_env <- new.env()
+          tryCatch({ load(fl_path, envir = tmp_env )}, error = function(e) { stop(shiny::safeError(e)) })
+          if (is.null(get0("LTS_dat", tmp_env))) { e_msg("Did load RData file but could not find object 'LTS_dat' inside.") }
+          LTS_dat <- get0("LTS_dat", tmp_env)
         } else {
           LTS_dat <- read_lts_input(file = fl_path)
-          check_validity <- TRUE
-          i <- 0
-          while (check_validity & i < length(LTS_dat)) {
-            for (i in 1:length(LTS_dat)) {
-              def_cols <- c("RM", "KW", "KW_Def", "KW_Unit", "CertVal", "U", "U_Def", "Device", "Method", "Coef_of_Var", "acc_Datasets")
-              check_def_cols <- def_cols %in% colnames(LTS_dat[[i]][["def"]])
-              val_cols <- c("Value", "Date", "File")
-              check_val_cols <- val_cols %in% colnames(LTS_dat[[i]][["val"]])
-              if (!all(check_def_cols)) {
-                warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(def_cols[!check_def_cols], collapse = ", "))
-                shinyWidgets::show_alert(title = "Warning", text = warn_txt, type = "warning")
-                LTS_dat[[i]][["def"]] <- cbind(LTS_dat[[i]][["def"]], as.data.frame(matrix(NA, ncol = sum(!check_def_cols), nrow = 1, dimnames = list(NULL, def_cols[!check_def_cols]))))
-              }
-              if (!all(check_val_cols)) {
-                warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(val_cols[!check_val_cols], collapse = ", "))
-                shinyWidgets::show_alert(title = "Warning", text = warn_txt, type = "warning")
-              }
-              if (!"Comment" %in% colnames(LTS_dat[[i]][["val"]])) LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Comment" = as.character(rep(NA, nrow(LTS_dat[[i]][["val"]]))))
-              if (!"Filter" %in% colnames(LTS_dat[[i]][["val"]])) LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Filter" = rep(FALSE, nrow(LTS_dat[[i]][["val"]])))
-              if (!inherits(LTS_dat[[i]][["val"]][, "Date"], "Date")) {
-                LTS_dat[[i]][["val"]][, "Date"] <- as.Date.character(LTS_dat[[i]][["val"]][, "Date"], tryFormats = c("%Y-%m-%d", "%d.%m.%Y", "%Y/%m/%d"))
-              }
-              if (!inherits(LTS_dat[[i]][["val"]][, "Date"], "Date")) e_msg("Sorry, could not convert column 'Date' into correct format.")
-              if (!LTS_dat[[i]][["def"]][, "U_Def"] %in% c("1s", "2s", "CI", "1sx", "2sx")) e_msg("Sorry, unexpected value in 'U_Def'. Allowed: '1s', '2s', 'CI', '1sx' and '2sx'. Please check.")
-              shiny::validate(shiny::need(inherits(LTS_dat[[i]][["val"]][, "Date"], "Date"), "Sorry, could not convert column 'Date' into correct format."))
-              shiny::validate(shiny::need(LTS_dat[[i]][["def"]][, "U_Def"] %in% c("1s", "2s", "CI", "1sx", "2sx"), "Sorry, unexpected value in 'U_Def'. Allowed: '1s', '2s', 'CI', '1sx' and '2sx'. Please check."))
-              LTS_dat[[i]][["def"]] <- LTS_dat[[i]][["def"]][, def_cols]
-              LTS_dat[[i]][["val"]] <- LTS_dat[[i]][["val"]][, c(val_cols, "Comment", "Filter")]
+        }
+        # perform checks
+        check_validity <- TRUE
+        i <- 0
+        while (!is.null(LTS_dat) && check_validity & i < length(LTS_dat)) {
+          for (i in 1:length(LTS_dat)) {
+            def_cols <- c("RM", "KW", "KW_Def", "KW_Unit", "CertVal", "U", "U_Def", "Device", "Method", "Coef_of_Var", "acc_Datasets")
+            check_def_cols <- def_cols %in% colnames(LTS_dat[[i]][["def"]])
+            val_cols <- c("Value", "Date", "File")
+            check_val_cols <- val_cols %in% colnames(LTS_dat[[i]][["val"]])
+            if (!all(check_def_cols)) {
+              warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(def_cols[!check_def_cols], collapse = ", "))
+              shinyWidgets::show_alert(title = "Warning", text = warn_txt, type = "warning")
+              LTS_dat[[i]][["def"]] <- cbind(LTS_dat[[i]][["def"]], as.data.frame(matrix(NA, ncol = sum(!check_def_cols), nrow = 1, dimnames = list(NULL, def_cols[!check_def_cols]))))
             }
+            if (!all(check_val_cols)) {
+              warn_txt <- paste0("Can't find the following columns in input file", i, " 'definition' part: ", paste(val_cols[!check_val_cols], collapse = ", "))
+              shinyWidgets::show_alert(title = "Warning", text = warn_txt, type = "warning")
+            }
+            if (!"Comment" %in% colnames(LTS_dat[[i]][["val"]])) {
+              LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Comment" = as.character(rep(NA, nrow(LTS_dat[[i]][["val"]]))))
+            } else {
+              LTS_dat[[i]][["val"]][which(LTS_dat[[i]][["val"]][,"Comment"] == ""),"Comment"] <- NA
+            }
+            if (!"Filter" %in% colnames(LTS_dat[[i]][["val"]])) {
+              LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Filter" = rep(FALSE, nrow(LTS_dat[[i]][["val"]])))
+            }
+            if (!inherits(LTS_dat[[i]][["val"]][, "Date"], "Date")) {
+              LTS_dat[[i]][["val"]][, "Date"] <- as.Date.character(LTS_dat[[i]][["val"]][, "Date"], tryFormats = c("%Y-%m-%d", "%d.%m.%Y", "%Y/%m/%d"))
+            }
+            if (!inherits(LTS_dat[[i]][["val"]][, "Date"], "Date")) e_msg("Sorry, could not convert column 'Date' into correct format.")
+            if (!LTS_dat[[i]][["def"]][, "U_Def"] %in% c("1s", "2s", "CI", "1sx", "2sx")) e_msg("Sorry, unexpected value in 'U_Def'. Allowed: '1s', '2s', 'CI', '1sx' and '2sx'. Please check.")
+            shiny::validate(shiny::need(inherits(LTS_dat[[i]][["val"]][, "Date"], "Date"), "Sorry, could not convert column 'Date' into correct format."))
+            shiny::validate(shiny::need(LTS_dat[[i]][["def"]][, "U_Def"] %in% c("1s", "2s", "CI", "1sx", "2sx"), "Sorry, unexpected value in 'U_Def'. Allowed: '1s', '2s', 'CI', '1sx' and '2sx'. Please check."))
+            LTS_dat[[i]][["def"]] <- LTS_dat[[i]][["def"]][, def_cols]
+            LTS_dat[[i]][["val"]] <- LTS_dat[[i]][["val"]][, c(val_cols, "Comment", "Filter")]
           }
         }
         return(LTS_dat)
@@ -263,7 +273,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       plot_lts_data(x = lts$data[[i()]], type = 1)
       ### if a point in data table is selected --> mark in plot 1
       sr <- input$tab_L1_rows_selected
-      if (length(sr)) {
+      if (length(sr)==1) {
         graphics::points(x = rep(d()[sr, "mon"], 2), y = rep(d()[sr, "vals"], 2), pch = c(21, 4), cex = 2.5, col = 5)
       }
     })
@@ -272,8 +282,8 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       shiny::req(lts[["data"]], i())
       input$LTS_newPoint_Apply
       e_msg("Render LTS_plot1_2")
-      #remove filtered Values from Fig.L1-2
       x <- lts$data[[i()]]
+      #remove filtered Values from Fig.L1-2
       if (any(x[["val"]][,"Filter"])) {
         x[["val"]] <- x[["val"]][!x[["val"]][,"Filter"],]
       }
@@ -284,18 +294,51 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     proxy <- DT::dataTableProxy("tab_L1")
 
     #  when clicking on a point in the plot, select Rows in data table proxy
-    shiny::observeEvent(input$plot1_hover, {
-      p <- input$plot1_hover
-      # print(shiny::nearPoints(d(), p, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10))
-    })
+    # shiny::observeEvent(input$plot1_hover, {
+    #   p <- input$plot1_hover
+    #   #bslib::tooltip()
+    #   # print(shiny::nearPoints(d(), p, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10))
+    # })
+
+    # output$hover_info <- renderUI({
+    #   #browser()
+    #   hover <- input$plot1_hover
+    #   point <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10)
+    #   if (nrow(point) == 0) return(NULL)
+    #
+    #   # calculate point position INSIDE the image as percent of total dimensions
+    #   # from left (horizontal) and from top (vertical)
+    #   left_pct <- (hover$x - hover$domain$left) / (hover$domain$right - hover$domain$left)
+    #   top_pct <- (hover$domain$top - hover$y) / (hover$domain$top - hover$domain$bottom)
+    #
+    #   # calculate distance from left and bottom side of the picture in pixels
+    #   left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
+    #   top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
+    #
+    #   # create style property fot tooltip
+    #   # background color is set so tooltip is a bit transparent
+    #   # z-index is set so we are sure are tooltip will be on top
+    #   style <- paste0("position:absolute; z-index:100; background-color: rgba(245, 245, 245, 0.85); ", "left:", left_px + 2, "px; top:", top_px + 2, "px;")
+    #
+    #   # actual tooltip created as wellPanel
+    #   wellPanel(
+    #     style = style,
+    #     shiny::p(shiny::HTML(paste0("<b> oint: </b>", rownames(point), "<br/>",
+    #                   "<b> month: </b>", point$mon, "<br/>",
+    #                   "<b> value: </b>", point$vals, "<br/>",
+    #                   "<b> Distance from left: </b>", left_px, "<b>, from top: </b>", top_px)))
+    #   )
+    # })
+
+
 
     #  when clicking on a point in the plot, select Rows in data table proxy
     shiny::observeEvent(input$plot1_click, {
       # 1/3 nearest point to click location
-      a <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10)
+      a <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 5)
       # 2/3 index in table
       if (nrow(a) >= 2) {
-        shinyWidgets::show_alert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
+        #shinyWidgets::show_alert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
         a <- a[which.min(a[, "dist_"])[1], ]
       }
       idx <- which(d()$mon == a$mon & d()$vals == a$vals)

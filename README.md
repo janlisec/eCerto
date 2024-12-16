@@ -6,7 +6,7 @@
 [![R-CMD-check](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml)
 [![codecov](https://codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg)](https://app.codecov.io/gh/janlisec/eCerto?branch=main)
-[![](https://img.shields.io/badge/devel%20version-0.5.16-blue.svg)](https://github.com/janlisec/eCerto)
+[![](https://img.shields.io/badge/devel%20version-0.7.2-blue.svg)](https://github.com/janlisec/eCerto)
 [![](https://img.shields.io/badge/doi-10.1007/s00216--023--05099--3-yellow.svg)](https://doi.org/10.1007/s00216-023-05099-3)
 <!-- badges: end -->
 
