@@ -37,4 +37,4 @@ jobs:
           publish_branch: badges
           github_token: ${{ secrets.GITHUB_TOKEN }}
           user_name: ${{ github.event.repository.owner.login }}
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          user_email: ${{ github.event.repository.owner.login }}
