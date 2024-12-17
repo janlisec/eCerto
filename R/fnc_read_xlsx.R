@@ -1,6 +1,6 @@
-#' @title fnc_load_xlsx.
+#' @title fnc_read_xlsx.
 #'
-#' @description \code{fnc_load_xlsx} will handle upload of a single Excel file.
+#' @description \code{fnc_read_xlsx} will handle upload of a single Excel file.
 #'
 #' @details Function can handle reactive and non reactive parameters to be used in shiny apps.
 #'
@@ -13,18 +13,18 @@
 #' # test function with
 #' x <- tempfile(fileext = ".xlsx")
 #' openxlsx::write.xlsx(x = matrix(rnorm(9), ncol = 3, dimnames = list(1:3, paste0("Header", 1:3))), file = x)
-#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1)
-#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1, method = "openxlsx")
-#' eCerto:::fnc_load_xlsx(filepath = "C:/not_existent.file", sheet = 1)
-#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 2)
+#' eCerto:::fnc_read_xlsx(filepath = x, sheet = 1)
+#' eCerto:::fnc_read_xlsx(filepath = x, sheet = 1, method = "openxlsx")
+#' eCerto:::fnc_read_xlsx(filepath = "C:/not_existent.file", sheet = 1)
+#' eCerto:::fnc_read_xlsx(filepath = x, sheet = 2)
 #' x <- system.file("extdata", "EmptyExcel.xlsx", package = "ecerto")
-#' eCerto:::fnc_load_xlsx(filepath = x, sheet = 1, method = "openxlsx")
+#' eCerto:::fnc_read_xlsx(filepath = x, sheet = 1, method = "openxlsx")
 #'
 #' @return A dataframe.
 #'
 #' @noRd
 #' @keywords internal
-fnc_load_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...) {
+fnc_read_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...) {
   method <- match.arg(method)
   # isolate reactive variables if provided
   if (shiny::is.reactive(filepath)) filepath <- shiny::isolate(filepath())

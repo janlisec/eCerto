@@ -141,7 +141,8 @@ each analyte are presented.
     Ls <- sapply(c(L_min, L_max), function(x) {
       unique(inp[inp[,"Analyte"]==a & abs(inp[,"Concentration"]-as.numeric(x))<0.001,"Level"])[1]
     })
-    idx <- as.numeric(levels(inp[,"Level"])[which(levels(inp[,"Level"]) %in% Ls)])
+    #idx <- as.numeric(levels(inp[,"Level"])[which(levels(inp[,"Level"]) %in% Ls)])
+    idx <- which(levels(inp[,"Level"]) %in% Ls)
     Ls <- levels(inp[,"Level"])[idx[1]:idx[2]]
     flt <- inp[,"Analyte"] %in% a & inp[,"Level"] %in% Ls
     eCerto:::prepFigV2(tab = inp[flt,,drop=FALSE], a = a, flt_outliers = flt_outliers, cex = 1)

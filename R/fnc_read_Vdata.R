@@ -46,20 +46,29 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {
         out <- cbind(tab_main, "Analyte"=a_names[i], tmp)
         return(out)
       })
-      tab_out <- cbind("ID"=1:nrow(tab_out), tab_out)
-      tab_out[,"Analyte"] <- factor(tab_out[,"Analyte"], levels=unique(tab_out[,"Analyte"]))
-      tab_out[,"Level"] <- factor(tab_out[,"Level"])
-      tab_out[,"norm"] <- tab_out[,"Area_Analyte"]/tab_out[,"Area_IS"]
-      gr_mn <- lapply(split(tab_out, tab_out[,"Analyte"]), function(x) { lapply(split(x[,"norm"], x[,"Level"]), mean, na.rm=TRUE) })
-      tab_out[,"rel_norm"] <- tab_out[,"norm"]/sapply(1:nrow(tab_out), function(i) {gr_mn[[tab_out[i,"Analyte"]]][[tab_out[i,"Level"]]]})
-      tab_out[,"Exclude_Level"] <- FALSE
-      tab_out[,"Exclude_Sample"] <- FALSE
     }
     if (fmt == "eCerto") {
       tab_out <- openxlsx::read.xlsx(xlsxFile = file, sheet = 1, colNames = TRUE, rowNames = FALSE)
       shiny::validate(shiny::need(!any(grep("xml:space", colnames(tab_out))), message = "Please re-save your Excel file and try again."))
-      tab_out[,"Analyte"] <- factor(tab_out[,"Analyte"], levels=unique(tab_out[,"Analyte"]))
-      tab_out[,"Level"] <- factor(tab_out[,"Level"])
     }
+    if (!all(c("Name", "Type", "Level", "Analyte", "Concentration", "Area_Analyte", "Area_IS") %in% colnames(tab_out))) e_msg("Column in input Excel file missing")
+    if (!is.factor(tab_out[,"Analyte"])) tab_out[,"Analyte"] <- factor(tab_out[,"Analyte"], levels=unique(tab_out[,"Analyte"]))
+    if (!is.factor(tab_out[,"Level"])) {
+      lev <- try(as.numeric(tab_out[,"Level"]))
+      if (!inherits(lev, "try-error") && all(is.finite(lev))) {
+        lev <- unique(as.character(sort(lev)))
+      } else {
+        lev <- unique(sort(as.character(tab_out[,"Level"])))
+      }
+      tab_out[,"Level"] <- factor(tab_out[,"Level"], levels = lev)
+    }
+    if (!"ID" %in% colnames(tab_out)) tab_out[,"ID"] <- 1:nrow(tab_out)
+    if (!"norm" %in% colnames(tab_out)) tab_out[,"norm"] <- tab_out[,"Area_Analyte"]/tab_out[,"Area_IS"]
+    gr_mn <- lapply(split(tab_out, tab_out[,"Analyte"]), function(x) { lapply(split(x[,"norm"], x[,"Level"]), mean, na.rm=TRUE) })
+    if (!"rel_norm" %in% colnames(tab_out)) tab_out[,"rel_norm"] <- tab_out[,"norm"]/sapply(1:nrow(tab_out), function(i) {gr_mn[[tab_out[i,"Analyte"]]][[tab_out[i,"Level"]]]})
+    if (!"Exclude_Level" %in% colnames(tab_out)) tab_out[,"Exclude_Level"] <- FALSE
+    if (!"Exclude_Sample" %in% colnames(tab_out)) tab_out[,"Exclude_Sample"] <- FALSE
+    # reorder columns
+    tab_out <- tab_out[,c("ID", "Name", "Type", "Level", "Analyte", "Concentration", "Area_Analyte", "Area_IS", "norm", "rel_norm", "Exclude_Level", "Exclude_Sample")]
     return(tab_out)
   }

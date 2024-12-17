@@ -35,7 +35,7 @@ prepFigV1 <- function(ab = NULL) {
 
   # F test to check for Variance homogeneity
   P_F <- sapply(split(ab, attr(ab, "Analyte"), drop=TRUE), function(x) {
-    if (length(x)==2) stats::var.test(x = x[[1]], y = x[[2]], alternative = "two.sided")$p.value else NA
+    if (length(x)==2 && all(sapply(x, function(y) {sum(is.finite(y))})>=3)) stats::var.test(x = x[[1]], y = x[[2]], alternative = "two.sided")$p.value else NA
   })
   if (!all(is.na(P_F))) {
     F_p_text <- sapply(P_F, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
@@ -57,36 +57,35 @@ prepFigV1 <- function(ab = NULL) {
   graphics::mtext(text = expression(P[KS]), side = 1, line = 1.5, at = x_ann, adj = 1)
   graphics::mtext(text = KS_p_text, side = 1, line = 1.5, at = 1:length(ab), col=KS_p_col)
 
-  # outlier test Grubbs
+  # outlier test Grubbs_1,2
   out_Grubbs <- lapply(ab, function(x) {
     cbind(x, Grubbs(lab_means = data.frame("mean"=x)))
   })
-  Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs1"]==".01"), "**", ifelse(any(x[,"Grubbs1"]==".05"), "*", "ns")) })
-  Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs1"]==".01"), 2, ifelse(any(x[,"Grubbs1"]==".05"), "orange", 3)) })
-  graphics::mtext(text = expression(P[Grubbs1]), side = 1, line = 2.75, at = x_ann, adj = 1)
-  graphics::mtext(text = Grubbs_text, side = 1, line = 2.75, at = 1:length(ab), col=Grubbs_col)
-  if (any(Grubbs_text!="ns")) {
-    for (i in which(Grubbs_text!="ns")) {
-      y <- out_Grubbs[[i]]
-      idx <- which(!(y[,"Grubbs1"] %in% c(".", "n.s.")))
-      graphics::points(x = rep(i, length(idx)), y = y[idx,1], pch=21, bg=2)
-    }
-  }
-  Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs2"]==".01"), "**", ifelse(any(x[,"Grubbs2"]==".05"), "*", "ns")) })
-  Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[,"Grubbs2"]==".01"), 2, ifelse(any(x[,"Grubbs2"]==".05"), "orange", 3)) })
-  graphics::mtext(text = expression(P[Grubbs2]), side = 1, line = 4, at = x_ann, adj = 1)
-  graphics::mtext(text = Grubbs_text, side = 1, line = 4, at = 1:length(ab), col=Grubbs_col)
-  if (any(Grubbs_text!="ns")) {
-    for (i in which(Grubbs_text!="ns")) {
-      y <- out_Grubbs[[i]]
-      idx <- which(!(y[,"Grubbs2"] %in% c(".", "n.s.")))
-      graphics::points(x = rep(i, length(idx)), y = y[idx,1], pch=21, bg=2)
+  for (k in 1:2) {
+    Gk <- paste0("Grubbs", k)
+    if (k==1) graphics::mtext(text = expression(P[Grubbs1]), side = 1, line = 2.75, at = x_ann, adj = 1)
+    if (k==2) graphics::mtext(text = expression(P[Grubbs2]), side = 1, line = 4, at = x_ann, adj = 1)
+    if (Gk %in% colnames(out_Grubbs)) {
+      Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[, Gk]==".01"), "**", ifelse(any(x[, Gk]==".05"), "*", "ns")) })
+      Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[, Gk]==".01"), 2, ifelse(any(x[, Gk]==".05"), "orange", 3)) })
+      graphics::mtext(text = Grubbs_text, side = 1, line = ifelse(k==1, 2.75, 4), at = 1:length(ab), col=Grubbs_col)
+      if (any(Grubbs_text!="ns")) {
+        for (i in which(Grubbs_text!="ns")) {
+          y <- out_Grubbs[[i]]
+          idx <- which(!(y[, Gk] %in% c(".", "n.s.")))
+          graphics::points(x = rep(i, length(idx)), y = y[idx,1], pch=21, bg=2)
+        }
+      }
     }
   }
 
   # Neumann Trend Test
   out_Neumann <- sapply(ab, function(x) {
-    VonNeumannTest(x, unbiased = FALSE)$p.val
+    if (sum(is.finite(x))>=3) {
+      VonNeumannTest(x, unbiased = FALSE)$p.val
+    } else {
+      NA
+    }
   })
   NM_text <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
   NM_col <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })

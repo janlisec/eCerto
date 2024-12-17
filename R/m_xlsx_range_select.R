@@ -99,11 +99,11 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
     tab <- shiny::reactive({
       shiny::req(current_file_input(), sheet(), file(), excelformat())
       xl_fmt <- excelformat()
-      # use different modes of fnc_load_xlsx to import data depending on file type
+      # use different modes of fnc_read_xlsx to import data depending on file type
       e_msg(paste("load ", nrow(current_file_input()), " files"))
       if (xl_fmt == "Certification") {
         l <- lapply(current_file_input()$datapath, function(x) {
-          fnc_load_xlsx(filepath = x, sheet = sheet(), method = "tidyxl")
+          fnc_read_xlsx(filepath = x, sheet = sheet(), method = "tidyxl")
         })
         shiny::validate(
           shiny::need(all(!sapply(l, is.null)), "uploaded Excel files contain an empty one"),
@@ -128,10 +128,10 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
       } else if (xl_fmt == "Stability") {
         # for Stability, all sheets are loaded in Background
         l <- lapply(1:length(xlsxSheetNames(current_file_input()$datapath)), function(x) {
-          fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = x, method = "openxlsx")
+          fnc_read_xlsx(filepath = current_file_input()$datapath[1], sheet = x, method = "openxlsx")
         })
       } else if (xl_fmt == "Homogeneity") {
-        l <- list(fnc_load_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method = "openxlsx"))
+        l <- list(fnc_read_xlsx(filepath = current_file_input()$datapath[1], sheet = sheet(), method = "openxlsx"))
       }
       return(l)
     })

@@ -19,9 +19,9 @@ flt_Vdata <- function(x = NULL, l = NULL, a = NULL, rng = TRUE) {
       l_rng <- range(which(levels(x[,"Level"]) %in% l))
       l_rng <- seq(min(l_rng), max(l_rng))
     } else {
-      l_rng <- l
+      l_rng <- which(levels(x[,"Level"]) %in% l)
     }
-    x <- x[as.numeric(x[,"Level"]) %in% l_rng,]
+    x <- x[x[,"Level"] %in% levels(x[,"Level"])[l_rng],]
   }
   if (!is.null(a)) {
     x <- x[as.character(x[,"Analyte"]) %in% a,]

@@ -20,6 +20,6 @@ check_fmt_Vdata <- function(file = NULL) {
     if (all(x[,"is_blank"] | (!is.na(x[,"character"]) & x[,"character"]==""))) fmt <- "Agilent"
     # check if all expected eCerto names are in row 1
     x <- as.vector(unlist(tab[tab$row == 1, "character"]))
-    if (all(c("ID", "Name", "Level", "Analyte", "Concentration", "Area_Analyte", "Area_IS") %in% x)) fmt <- "eCerto"
+    if (all(c("Name", "Type", "Level", "Analyte", "Concentration", "Area_Analyte", "Area_IS") %in% x)) fmt <- "eCerto"
     return(fmt)
 }

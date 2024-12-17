@@ -11,8 +11,9 @@
 #'     ),
 #'     server = function(input, output, session) {
 #'       #fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_05_22_B003_Arbeitsbereich_neu.xlsx"
-#'       fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_06_13_B003_NG-BG.xlsx"
-#'       td <- eCerto:::read_Vdata(file = fl)
+#'       #fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_06_13_B003_NG-BG.xlsx"
+#'       fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/JS1/BDE47_oberere Kali2_JL.xlsx"
+#'       td <- eCerto:::read_Vdata(file = fl, fmt = check_fmt_Vdata(fl))
 #'       eCerto:::page_validationServer(id = "test", test_data = td)
 #'     }
 #'   )
@@ -465,7 +466,8 @@ page_validationServer <- function(id, test_data = NULL) {
         flt_outliers = V_pars$opt_tabV1_fltLevels,
         unit_cali = V_pars$opt_tabV1_unitcali,
         unit_smpl = V_pars$opt_tabV1_unitsmpl,
-        conv_fac = V_pars$opt_tabV1_convfac)
+        conv_fac = V_pars$opt_tabV1_convfac
+      )
     })
 
     output$tab_V1 <- DT::renderDT({
