@@ -6,9 +6,8 @@
 [![R-CMD-check](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml)
 [![codecov](https://codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg)](https://app.codecov.io/gh/janlisec/eCerto?branch=main)
-[![GitHub version](https://img.shields.io/badge/devel%20version-0.7.2-blue.svg)](https://github.com/janlisec/eCerto)
+[![](https://img.shields.io/badge/devel%20version-0.7.3-blue.svg)](https://github.com/janlisec/eCerto)
 [![](https://img.shields.io/badge/doi-10.1007/s00216--023--05099--3-yellow.svg)](https://doi.org/10.1007/s00216-023-05099-3)
-[![GitHub version](https://github.com/janlisec/eCerto/actions/workflows/repository-badges.yaml/version.svg)](https://github.com/janlisec/eCerto/actions/workflows/repository-badges.yaml)
 <!-- badges: end -->
 
 <img src="inst/app/www/hex-eCerto.png" width="170" align="right"/>

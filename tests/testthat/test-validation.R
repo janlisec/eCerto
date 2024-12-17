@@ -6,6 +6,9 @@ testthat::test_that(
     inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
     testthat::expect_true(file.exists(inp))
 
+    # check if format is recognized
+    testthat::expect_equal(eCerto:::check_fmt_Vdata(inp), "Agilent")
+
     # check Excel file import using example data
     tab <- eCerto:::read_Vdata(file = inp)
     testthat::expect_true(is.data.frame(tab))

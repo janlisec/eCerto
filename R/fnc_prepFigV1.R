@@ -65,7 +65,7 @@ prepFigV1 <- function(ab = NULL) {
     Gk <- paste0("Grubbs", k)
     if (k==1) graphics::mtext(text = expression(P[Grubbs1]), side = 1, line = 2.75, at = x_ann, adj = 1)
     if (k==2) graphics::mtext(text = expression(P[Grubbs2]), side = 1, line = 4, at = x_ann, adj = 1)
-    if (Gk %in% colnames(out_Grubbs)) {
+    if (all(sapply(out_Grubbs, function(x) { Gk %in% colnames(x) }))) {
       Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[, Gk]==".01"), "**", ifelse(any(x[, Gk]==".05"), "*", "ns")) })
       Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[, Gk]==".01"), 2, ifelse(any(x[, Gk]==".05"), "orange", 3)) })
       graphics::mtext(text = Grubbs_text, side = 1, line = ifelse(k==1, 2.75, 4), at = 1:length(ab), col=Grubbs_col)
