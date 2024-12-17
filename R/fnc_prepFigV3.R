@@ -26,7 +26,7 @@ prepFigV3 <- function(x, cex = 1.5) {
       flt.L <- x[,"Level"]==unique(x[,"Level"])[i]
       graphics::par(mar=c(1, ifelse(i==1, 4, 3), 2.5, ifelse(i==1, 0, 1))+0.1)
       plot(x[flt.a & flt.L, "Area_Analyte"], ylab=ifelse(i==1, "Area_Analyte", ""), main="", xlab="", axes=FALSE)
-      graphics::axis(side = 2); box()
+      graphics::axis(side = 2); graphics::box()
       graphics::mtext(text = paste("Level =", unique(x[,"Level"])[i]), side = 3, line = 0.2, adj = 0, cex = cex)
       graphics::mtext(text = ifelse(i==1, paste0(a_name, " (", a_id, ")"), ""), side = 3, line = 1.4, adj = 0, cex = cex)
     }
@@ -36,7 +36,7 @@ prepFigV3 <- function(x, cex = 1.5) {
       graphics::par(mar=c(2.5, ifelse(i==1, 4, 3), 1, ifelse(i==1, 0, 1))+0.1)
       plot(x[flt.a & flt.L, "Area_IS"], ylab=ifelse(i==1, "Area_IS", ""), xlab="", main="", ylim=ylim, axes=FALSE)
       if (i==1) graphics::axis(side = 2)
-      box()
+      graphics::box()
     }
     graphics::par(mar=c(3,4,0.2,0)+0.1)
     ylim <- range(x[flt.a, "rel_norm"], na.rm=TRUE)
@@ -47,7 +47,7 @@ prepFigV3 <- function(x, cex = 1.5) {
       if (i==1) graphics::axis(side = 2)
       graphics::mtext(text = "Replicate", side = 1, line = 2.5, adj = 0.5, cex = cex)
       graphics::axis(side = 1, at = seq(sum(flt.a & flt.L)))
-      box()
+      graphics::box()
       graphics::abline(h=1, lty=2, col=grDevices::grey(0.9))
     }
   }

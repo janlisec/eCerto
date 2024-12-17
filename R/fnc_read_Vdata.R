@@ -32,7 +32,7 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {
       stopifnot(all(c("Exp..Conc.","Area") %in% colnames(tab)))
       tab_anal <- tab[,min(grep("Exp..Conc.", colnames(tab))):ncol(tab)]
       n <- length(grep("Exp..Conc.", colnames(tab_anal)))
-      n_cols <- unique(diff(grep("Exp..Conc.", colnames(tab_anal))))
+      n_cols <- unique(diff(grep("Exp..Conc.", c(colnames(tab_anal), "Exp..Conc."))))
       stopifnot(length(n_cols)==1)
       stopifnot(n_cols %in% c(2,3))
       # get analyte names
