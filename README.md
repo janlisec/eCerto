@@ -2,12 +2,12 @@
 # eCerto
 
 <!-- badges: start -->
+[![Static Badge](https://img.shields.io/badge/LiveApp-blue)](https://apps.bam.de/shn01/eCerto/)
 [![CRAN status](https://www.r-pkg.org/badges/version/eCerto)](https://CRAN.R-project.org/package=eCerto)
 [![R-CMD-check](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml)
 [![codecov](https://codecov.io/gh/janlisec/eCerto/branch/main/graph/badge.svg)](https://app.codecov.io/gh/janlisec/eCerto?branch=main)
-[![](https://img.shields.io/badge/devel%20version-0.7.3-blue.svg)](https://github.com/janlisec/eCerto)
-[![](https://img.shields.io/badge/doi-10.1007/s00216--023--05099--3-yellow.svg)](https://doi.org/10.1007/s00216-023-05099-3)
+[![Static Badge](https://img.shields.io/badge/doi-10.1007/s00216--023--05099--3-yellow.svg)](https://doi.org/10.1007/s00216-023-05099-3)
 <!-- badges: end -->
 
 <img src="inst/app/www/hex-eCerto.png" width="170" align="right"/>
@@ -25,13 +25,13 @@ The **eCerto** package contains a `Shiny`-App which provides functionality to
 load, process, report and backup data for the statistical evaluation of analyses 
 conducted during CRM production.
 
-The app also allows to perform long term stability monitoring (or post 
+The app also allows to perform *long term stability* monitoring (or post 
 certification monitoring) to ensure the CRM values remain within specification.
 
-Another app module allows to perform statistical tests for analytical method 
-validation, computing the working range and linearity of a method.
+Another app module allows to perform statistical tests for analytical *method 
+validation*, computing the working range and linearity of a method.
 
-## Installation
+## Installation (as a local package)
 
 To run **eCerto** *locally* you can install the package from 
 [CRAN](https://cran.r-project.org/package=CorMID) 
@@ -51,10 +51,20 @@ eCerto::run_app()
 ```
 
 Apart from `run_app()`, the **eCerto** package currently provides only some 
-example data sets and few exported functions. Before installation you can test 
-the app version hosted at 
-[BAM](https://apps.bam.de/shn00/eCerto/ "www.bam.de/eCerto") using your own 
+example data sets and few exported functions. 
+
+## Live App
+
+Before installation you can test the *most recent* app version hosted at 
+[BAM](https://apps.bam.de/shn01/eCerto/ "www.bam.de/eCerto") using your own 
 or the provided example data.
+
+**eCerto** is frequently updated. Should you experience problems using the 
+*most recent* version from the link above, please:
+
+* report a [GitHub Issue](https://github.com/janlisec/eCerto/issues) and 
+* try the (hopefully) more stable version also hosted at
+[BAM](https://apps.bam.de/shn00/eCerto/ "www.bam.de/eCerto").
 
 ## Detailed documentation
 
@@ -63,7 +73,6 @@ can be found in this [scientific article](https://doi.org/10.1007/s00216-023-050
 Most of the functionality is also described in the online help.
 
 ![eCerto screenshot](dev/eCerto_screenshot.png?raw=true "eCerto screenshot")
-
 
 This is a list of the implemented statistical tests and functionality:
 
