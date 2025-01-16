@@ -1,0 +1,57 @@
+---
+title: "&nbsp;"
+title-meta: DRMD-Report
+params:
+  D: NA
+  logo_file: NA
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+fontsize: 11pt
+always_allow_html: true
+---
+
+<!-- This is a reminder how the font-size within a DT table can be set globally for the whole document using css -->
+<!-- ```{css, eval = TRUE, echo = FALSE} -->
+<!-- .dataTables_wrapper { -->
+<!--     font-size: 200%; -->
+<!-- } -->
+<!-- ``` -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+#knitr::opts_chunk$set(out.width = '100%', dpi=300)
+word_tabs_as_fig <- !knitr::is_html_output() && requireNamespace("webshot2", quietly = TRUE)
+if (word_tabs_as_fig) library(webshot2)
+fs_tab <- "175%"
+D <- params$D
+```
+
+
+<!-- In HTML the logo is right aligned. Unfortunately the option fig.align is not supported in Word -->
+```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
+  knitr::include_graphics(params$logo_file)
+```
+
+# ***eCerto*** Report
+
+**Date: `r format(Sys.time(), '%d %B, %Y')`**
+
+## Modul: DRMD
+
+This could be in PDF, HTML or Word format (all with different advantages and disadvantages).
+
+It could be a report or even a certificate (all based on the data in the XML, given that a specified format can be provided).
+
+Below are the administrative data of the currently loaded XML file just for a proof of concept.
+
+```{r tab_D1, message=FALSE, resize.width="100%"}
+tab_D1 <- eCerto:::styleTabD1(df = D[["tab_D1"]], selected = NULL, interact_ele = FALSE)
+if (knitr::is_html_output()) {
+  tab_D1
+} else {
+  colnames(tab_D1$x$data) <- eCerto:::HTML2markdown(colnames(tab_D1$x$data))
+  knitr::kable(tab_D1$x$data, caption = tab_D1$x$caption)
+}
+```

@@ -35,6 +35,9 @@ app_server <- function(input, output, session) {
   # Validation Modul
   page_validationServer(id = "Validation")
 
+  # DRMD Modul
+  page_DRMDServer(id = "DRMD")
+
   # some observers ------------------------------------------------------------
   # mainly to use 'updateNavbarPage' depending on user action -----------------
 
