@@ -1,3 +1,11 @@
+# eCerto 0.8.2
+
+* analyte parameter UI moved to Tab.C3
+* report buttons moved to Tab.C3
+* all card items in C module are collapsible now
+* Fig.C1 can be moved between layout columns to better deal with CRMs containing many (>15) analytes
+* D module got improved layout
+
 # eCerto 0.8.1
 
 * New module DRMD (Digital Reference Material Document)
