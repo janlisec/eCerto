@@ -20,7 +20,3 @@ in the box.
 
 ***Note!***
 To close a help window you need to click anywhere *outside* of it with your mouse.
-
-To provide a consistent layout, input sections (buttons, select boxes and others) 
-are usually indicated by a grey backgound. Output sections (tables and figures) 
-should render on a white backgound.
