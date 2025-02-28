@@ -37,10 +37,15 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
   #wb <- "50px"
   bslib::card(
     #min_height = 500, max_height = 600,
+    id = ns("tab_C3_panel"),
     fill = FALSE,
     bslib::card_header(
+      id = ns("tab_C3_panel_body"),
       class = "d-flex justify-content-between",
-      shiny::strong(shiny::actionLink(inputId = ns("tabC3head"), label = "Tab.C3 - Certified values within material")),
+      shiny::div(
+        shiny::strong(shiny::actionLink(inputId = ns("tabC3head"), label = "Tab.C3 - Certified values within material")),
+        shiny::actionButton(inputId = ns("btn"), label = NULL, icon = shiny::icon("compress-arrows-alt"), style = "border: none; padding-left: 5px; padding-right: 5px; padding-top: 0px; padding-bottom: 0px;")
+      ),
       shiny::div(
         shiny::div(
           style = "float: right; margin-left: 15px;",
@@ -50,10 +55,21 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
           style = "float: right; margin-left: 15px;",
           modify_FUcols_UI(id = ns("FUcols"))
         ),
+        shiny::div(
+          style = "float: right; margin-left: 15px;",
+          # Report-Section
+          m_reportUI(ns("report"))
+        ),
+        shiny::div(
+          style = "float: right; margin-left: 15px;",
+          # Analyte-Options
+          m_analyteUI(ns("analyteModule"))
+        ),
         shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect")
       )
     ),
-    bslib::card_body(max_height = 600,
+    bslib::card_body(
+      id = ns("body"),
       shiny::div(DT::DTOutput(ns("matreport")))
     )
   )
@@ -65,7 +81,21 @@ m_materialtabelleServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- shiny::NS(id)
 
+    # FU-col module
     modify_FUcols_Server(id = "FUcols", mt = mater_table)
+
+    # report module
+    m_reportServer(id = "report", rv = rv)
+
+    # Analyte options
+    m_analyteServer(id = "analyteModule", rv = rv)
+
+    shiny::observeEvent(input$btn, {
+      x <- input$btn %% 2 == 0
+      shinyjs::toggleElement(id = "body", condition = x)
+      shiny::updateActionButton(inputId = "btn", icon = shiny::icon(ifelse(x, "compress-arrows-alt", "expand-arrows-alt")))
+    }, ignoreInit = TRUE)
+
 
     # use err_txt to provide error messages to the user
     err_txt <- shiny::reactiveVal(NULL)

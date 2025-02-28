@@ -79,6 +79,28 @@ page_DRMDUI <- function(id) {
     )
   )
 
+  tab_D3_card <- bslib::card(
+    id = ns("tab_D3_panel"),
+    bslib::card_header(
+      class = "d-flex justify-content-between",
+      shiny::actionLink(inputId = ns("TabD1_link"), label = "Tab.D3 - Full XML data"),
+      shinyWidgets::dropdownButton(
+        label = "Modify Admin Data", circle = FALSE, width = "100%", inline = TRUE,
+        shiny::actionButton(inputId = ns("D_add_admin"), label = "Add term"),
+        shiny::actionButton(inputId = ns("D_rem_admin"), label = "Rem term")
+      )
+    ),
+    bslib::card_body(shiny::div(DT::DTOutput(outputId = ns("tab_D3"))), max_height = 920),
+    bslib::card_footer(
+      class = "d-flex justify-content-between",
+      shiny::div(id = ns("D_level_path"), "D_level_path"),
+      shiny::div(
+        shiny::textAreaInput(ns("D1_current_value"), label = NULL, rows = 5, width = "520px"),
+        shiny::actionButton(inputId = ns("btn_D1_modify"), label = "Apply", height = "36px")
+      )
+    )
+  )
+
   shiny::tagList(
     shiny::conditionalPanel(
       condition = "output.D_fileUploaded == false",
@@ -96,9 +118,10 @@ page_DRMDUI <- function(id) {
       bslib::layout_columns(
         tab_D1_card,
         tab_D2_card,
+        tab_D3_card,
         col_widths =  bslib::breakpoints(
-          sm = c(12, 12),
-          xl = c(4, 8)
+          sm = c(12, 12, 12),
+          xl = c(4, 8, 12)
         )
       )
     )
@@ -114,9 +137,11 @@ page_DRMDServer <- function(id, test_data = NULL) {
       "xml_file" = NULL,
       "data" = NULL,
       "data_mod" = NULL,
+      "xml_file" = NULL,
       "tab_D1" = NULL,
-      "tab_D2" = NULL,
       "tab_D1_i" = NULL,
+      "tab_D2" = NULL,
+      "tab_D3" = NULL,
       "all_i" = NULL,
       "i" = NULL,
       "all_j" = NULL,
@@ -162,6 +187,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
         D$tab_D1 <- NULL
         D$tab_D1_i <- NULL
         D$tab_D2 <- NULL
+        D$tab_D3 <- NULL
         D$all_i <- NULL
         D$i <- NULL
         D$all_j <- NULL
@@ -173,6 +199,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
         D$tab_D1 <- xml2df(D_data(), type = "admin")
         D$tab_D1_i <- 1
         D$tab_D2 <- xml2df(D_data(), type = "quant")
+        D$tab_D3 <- xml2df(D_data(), type = "full")
         D$all_i <- unique(D$tab_D2$L3)
         D$i <- unique(D$tab_D2$L3)[1]
         D$all_j <- unique(D$tab_D2$L3)
@@ -221,6 +248,12 @@ page_DRMDServer <- function(id, test_data = NULL) {
     output$tab_D2 <- DT::renderDataTable({
       shiny::req(D$tab_D2)
       styleTabD2(df = D$tab_D2, L3 = D$i)
+    })
+
+    output$tab_D3 <- DT::renderDataTable({
+      shiny::req(D$tab_D3)
+      #styleTabD1(df = D$tab_D1, selected = shiny::isolate(D$tab_D1_i))
+      D$tab_D3
     })
 
     # table observers

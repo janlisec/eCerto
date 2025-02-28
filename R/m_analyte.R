@@ -16,7 +16,7 @@
 #' @examples
 #' if (interactive()) {
 #'   shiny::shinyApp(
-#'     ui = shiny::fluidPage(
+#'     ui = bslib::page_fluid(
 #'       shinyjs::useShinyjs(),
 #'       m_analyteUI(id = "test")
 #'     ),
@@ -36,39 +36,47 @@ m_analyteUI <- function(id) {
 
   # parameter panel for an analyte
   shiny::tagList(
-    shiny::div(
-      shiny::div(
-        style = "float: left; margin-right: 16px;",
-        shiny::actionLink(inputId = ns("analyte_help_link"), label = "Parameters for Analyte", style = "font-weight: 700; margin-bottom: 10px;"),
-        shiny::p(id = ns("curr_analyte"), style = "color: #ffffff; background-color: #0d6efd; font-weight: 700; text-align: center; margin-bottom: 2px; padding: 2px", "select analyte"),
-        shiny::checkboxInput(inputId = ns("pooling"), label = "pooling", value = FALSE, width = "90px")
-      ),
-      shiny::div(
-        style = "float:left; margin-right: 16px;",
-        shiny::div("Filter IDs", style = "background: grey; text-align: center; padding: 1px; font-size: 80%; color: white;"),
-        shiny::div(
-          style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
-          sub_header("Samples", b = 0),
-          shinyWidgets::pickerInput(inputId = ns("sample_filter"), label = NULL, choices = "", multiple = TRUE, width = "100px", options = list(container = "body"))
-        ),
-        shiny::div(
-          style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
-          sub_header("Labs", b = 0),
-          shinyWidgets::pickerInput(inputId = ns("lab_filter"), label = NULL, choices = "", multiple = TRUE, width = "100px", options = list(container = "body"))
-        ),
-      ),
-      shiny::div(
-        style = "float: left;",
-        shiny::div("Precision (acc. to DIN1333)", style = "background: grey; text-align: center; padding: 1px; font-size: 80%; color: white;"),
-        shiny::div(
-          style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
-          sub_header("Tables", b = 0),
-          shiny::numericInput(inputId = ns("precision"), label = NULL, value = 4, min = 0, max = 10, step = 1, width = "100px")
-        ),
-        shiny::div(
-          style = "float: left; width: 50%; min-width: 80px; margin-bottom: -12px;",
-          shiny::div(id = ns("DIN1333_info"), sub_header("Certified Values", b = 0)),
-          shiny::numericInput(inputId = ns("precision_export"), label = NULL, value = 4, min = -2, max = 6, step = 1, width = "100px")
+    shinyWidgets::dropdown(
+      inputId = ns("dropdown_analyt_pars"),
+      label = "Options",
+      width = "735px",
+      circle = FALSE,
+      shiny::tagList(
+        bslib::layout_columns(
+          shiny::div(
+            style = "float: left;",
+            shiny::actionLink(inputId = ns("analyte_help_link"), label = "Parameters for Analyte", style = "font-weight: 700; margin-bottom: 10px;"),
+            shiny::p(id = ns("curr_analyte"), style = "color: #ffffff; background-color: #0d6efd; font-weight: 700; text-align: center; margin-bottom: 2px; padding: 2px", "select analyte"),
+            shiny::checkboxInput(inputId = ns("pooling"), label = "pooling", value = FALSE, width = "90px")
+          ),
+          shiny::div(
+            style = "float:left;",
+            shiny::div("Filter IDs", style = "background: grey; text-align: center; padding: 1px; font-size: 80%; color: white;"),
+            shiny::div(
+              style = "float: left; width: 50%; min-width: 90px;",
+              sub_header("Samples", b = 0),
+              shinyWidgets::pickerInput(inputId = ns("sample_filter"), label = NULL, choices = "", multiple = TRUE, width = "100px", options = list(container = "body"))
+            ),
+            shiny::div(
+              style = "float: left; width: 50%; min-width: 90px;",
+              sub_header("Labs", b = 0),
+              shinyWidgets::pickerInput(inputId = ns("lab_filter"), label = NULL, choices = "", multiple = TRUE, width = "100px", options = list(container = "body"))
+            ),
+          ),
+          shiny::div(
+            style = "float: left;",
+            shiny::div("Precision (acc. to DIN1333)", style = "background: grey; text-align: center; padding: 1px; font-size: 80%; color: white;"),
+            shiny::div(
+              style = "float: left; width: 50%; min-width: 80px;",
+              sub_header("Tables", b = 0),
+              shiny::numericInput(inputId = ns("precision"), label = NULL, value = 4, min = 0, max = 10, step = 1, width = "100px")
+            ),
+            shiny::div(
+              style = "float: left; width: 50%; min-width: 80px;",
+              shiny::div(id = ns("DIN1333_info"), sub_header("Certified Values", b = 0)),
+              shiny::numericInput(inputId = ns("precision_export"), label = NULL, value = 4, min = -2, max = 6, step = 1, width = "100px")
+            )
+          )
         )
       )
     )

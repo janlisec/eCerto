@@ -11,7 +11,7 @@
 #'
 #' @noRd
 #' @keywords internal
-xml2df <- function(xml_list, type = c("admin", "quant")) {
+xml2df <- function(xml_list, type = c("admin", "quant", "full")) {
   type <- match.arg(type)
 
   # helpers
@@ -70,6 +70,13 @@ xml2df <- function(xml_list, type = c("admin", "quant")) {
       out <- flatten_list(x = out)
       return(out)
     })
+    out <- flatten_list(x = out)
+  }
+
+  if (type=="full") {
+    browser()
+    ele <- names(xml_list)
+    out <- list2df(x=purrr::pluck(xml_list, !!!ele), upper_levels = ele)
     out <- flatten_list(x = out)
   }
 

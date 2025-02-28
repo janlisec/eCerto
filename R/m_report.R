@@ -37,11 +37,19 @@
 m_reportUI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    shiny::div(
-      style = "float: left;",
-      sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download HTML Report")),
-      shiny::downloadButton(outputId = ns("AnalyteReport"), label = "Analyte"),
-      shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM")
+    shinyWidgets::dropdown(
+      inputId = ns("dropdown_report"),
+      label = "Report",
+      width = "335px",
+      circle = FALSE,
+      shiny::tagList(
+        shiny::div(
+          style = "float: left; padding-bottom: 0.5em;",
+          sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download HTML Report")),
+          shiny::downloadButton(outputId = ns("AnalyteReport"), label = "Analyte"),
+          shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM")
+        )
+      )
     )
   )
 }
