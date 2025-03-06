@@ -4,7 +4,6 @@
 #' @param df The data.frame of values.
 #' @param selected Currently selected row.
 #' @param interact_ele Show interactive elements (ordering and buttons), respectively use FALSE to hide them for Word export.
-#' @param font.size Specify table font.size explicitly.
 #' @examples
 #' inp <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/DRMD/drmc-007.xml"
 #' tab <- eCerto:::read_drmd_xml(inp)
@@ -14,8 +13,20 @@
 #' @return A datatable object.
 #' @keywords internal
 #' @noRd
-styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, font.size = NA, L3 = NULL) {
+styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, L3 = NULL) {
   e_msg("Styling Tab.D2 for HTML output")
+
+  #browser()
+  # === new version
+  if (all(c("idx", "path") %in% colnames(df))) {
+    df <- df[df[,"value"]!="[ comment ]",]
+    df <- df[grep("quantity", df[,"path"]),]
+    df$L3 <- sapply(strsplit(df[,"idx"],"_"),function(x){x[3]})
+    df$L8 <- sapply(strsplit(df[,"idx"],"_"),function(x){x[8]})
+    df$name <- sapply(strsplit(df[,"path"],"_"),function(x){x[length(x)]})
+    df <- cbind(df[,!colnames(df)%in%"value"], "value" = df[,"value"])
+  }
+  # === new version
 
   if (is.null(L3)) {
     result_idx <- unique(df$L3)
@@ -41,43 +52,10 @@ styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, font.size = NA, L3
     data = df, rownames = FALSE, extensions = "Buttons", escape = FALSE,
     options = list(
       dom = ifelse(interact_ele, "Bt", "t"), pageLength = -1, ordering = FALSE,
-      buttons = if (interact_ele)  { list(list(extend = "excel", text = "Excel", title = NULL)) },
-      initComplete = if (!is.na(font.size)) {DT::JS(
-        "function(settings, json) {",
-        paste0("$(this.api().table().container()).css({'font-size': '", font.size, "'});"),
-        "}"
-      )}
+      buttons = if (interact_ele)  { list(list(extend = "excel", text = "Excel", title = NULL)) }
     ),
-    selection = list(mode = "single", selected = selected, target = 'row')#,
-    # caption = if (length(tab_cap)>=1) { shiny::tags$caption(
-    #   style = 'caption-side: bottom; text-align: left;',
-    #   'Tab.V1 These values are consistent for all rows of the table: ', paste(tab_cap, collapse=", "), "."
-    # )}
+    selection = list(mode = "single", selected = selected, target = 'row')
   )
 
-  # column formaters
-  # round_cols <- c("b<sub>0</sub>", "b<sub>1</sub>", "P<sub>KS,e</sub>", "P<sub>Neu,e</sub>", "P<sub>Mandel</sub>", "LOD", "LOQ", "s<sub>y,x</sub>", "s<sub>x0</sub>", "V<sub>x0</sub>")
-  # round_cols <- round_cols[round_cols %in% colnames(df)]
-  # dt <- DT::formatCurrency(table = dt, columns = round_cols, currency = "", digits = precision)
-  #
-  # pval_cols <- c("P<sub>KS,e</sub>", "P<sub>Neu,e</sub>", "P<sub>Mandel</sub>")
-  # pval_cols <- pval_cols[pval_cols %in% colnames(df)]
-  # dt <- DT::formatStyle(
-  #   table = dt,
-  #   columns = pval_cols,
-  #   target = "cell",
-  #   color = DT::styleInterval(cuts = c(0.01, 0.05), values = c("red", "orange", "")),
-  #   fontWeight = DT::styleInterval(cuts = c(0.01, 0.05), values = c("bold", "normal", "normal"))
-  # )
-  # if ("r" %in% colnames(df)) {
-  #   dt <- DT::formatCurrency(table = dt, columns = "r", currency = "", digits = 4)
-  #   dt <- DT::formatStyle(
-  #     table = dt,
-  #     columns = "r",
-  #     target = "cell",
-  #     color = DT::styleInterval(cuts = c(0.995, 0.999), values = c("red", "orange", "")),
-  #     fontWeight = DT::styleInterval(cuts = c(0.995, 0.999), values = c("bold", "normal", "normal"))
-  #   )
-  # }
   return(dt)
 }

@@ -16,7 +16,7 @@
 #' @examples
 #' if (interactive()) {
 #'   shiny::shinyApp(
-#'     ui = shiny::fluidPage(
+#'     ui = bslib::page_fluid(
 #'       shinyjs::useShinyjs(),
 #'       eCerto:::m_materialtabelleUI(id = "test")
 #'     ),

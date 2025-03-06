@@ -74,7 +74,7 @@ xml2df <- function(xml_list, type = c("admin", "quant", "full")) {
   }
 
   if (type=="full") {
-    browser()
+    #browser()
     ele <- names(xml_list)
     out <- list2df(x=purrr::pluck(xml_list, !!!ele), upper_levels = ele)
     out <- flatten_list(x = out)

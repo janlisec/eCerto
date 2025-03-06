@@ -47,7 +47,7 @@ It could be a report or even a certificate (all based on the data in the XML, gi
 Below are the administrative data of the currently loaded XML file just for a proof of concept.
 
 ```{r tab_D1, message=FALSE, resize.width="100%"}
-tab_D1 <- eCerto:::styleTabD1(df = D[["tab_D1"]], selected = NULL, interact_ele = FALSE)
+tab_D1 <- eCerto:::styleTabD1(df = D[["tab_D1"]], selected = NULL)
 if (knitr::is_html_output()) {
   tab_D1
 } else {

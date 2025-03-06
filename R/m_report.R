@@ -47,7 +47,8 @@ m_reportUI <- function(id) {
           style = "float: left; padding-bottom: 0.5em;",
           sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download HTML Report")),
           shiny::downloadButton(outputId = ns("AnalyteReport"), label = "Analyte"),
-          shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM")
+          shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM"),
+          shiny::downloadButton(outputId = ns("DRMDSnippet"), label = "DRMD")
         )
       )
     )
@@ -58,6 +59,40 @@ m_reportUI <- function(id) {
 #' @keywords internal
 m_reportServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
+
+    output$DRMDSnippet <- shiny::downloadHandler(
+      filename = function() {
+        paste0(getValue(rv, c("General", "study_id")), "_DRMD.xml")
+      },
+      content = function(file) {
+        #browser()
+
+        # Laden der XSD-Datei für SI units von der PTB URL
+        #xsd <- xml2::read_xml("https://ptb.de/si/v2.2.1/SI_Format.xsd")
+        #flatten_list_to_df(xml2::as_list(xsd))
+
+        mt <- styleTabC3(x = getValue(rv, c("General", "materialtabelle")), apm = getValue(rv, c("General", "apm")))$x$data
+        mt_xml <- lapply(1:nrow(mt), function(i) {
+          new_dcc_quantity_result(
+            name = mt[i,"analyte"],
+            label = mt[i,"analyte"],
+            value = mt[i,"\u00B5<sub>c</sub>"],
+            unit = mt[i,"unit"],
+            uncertainty = mt[i,"U<sub>abs</sub>"],
+            coverageFactor = mt[i,"k"]
+          )
+        })
+
+        drmd_lst <- new_drmd_document(
+          admin_data = new_drmd_admin_data(),
+          result_data = new_drmd_measurementResult(quantities = mt_xml)
+        )
+        drmd_xml <- xml2::as_xml_document(x = remove_prefix(drmd_lst))
+        # write to xml file
+        return(xml2::write_xml(x = drmd_xml, file = file))
+      }
+    )
+
     output$AnalyteReport <- shiny::downloadHandler(
       filename = function() {
         paste0(
@@ -92,7 +127,7 @@ m_reportServer <- function(id, rv) {
               runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2]
             )
           },
-          message = "Rendering Analyte Report.."
+          message = "Rendering Analyte Report..."
         )
         return(out)
       }
@@ -136,7 +171,7 @@ m_reportServer <- function(id, rv) {
               envir = new.env(parent = globalenv())
             )
           },
-          message = "Rendering Material Report.."
+          message = "Rendering Material Report..."
         )
       }
     )

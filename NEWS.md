@@ -1,3 +1,12 @@
+# eCerto 0.8.3
+* Tab.C3 can be exported to a DRMD XML file
+* Tab.D2 indicates relevant XML node information (for selected measurement node)
+  in header
+* Tab.D1 shows index path for each value allowing to selectively edit nodes
+  with similar name path
+* various (internal) functions to work with XML data (flatten/extend lists),
+  setup DRMD specific structure, etc.
+
 # eCerto 0.8.2
 
 * analyte parameter UI moved to Tab.C3

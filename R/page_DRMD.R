@@ -49,6 +49,7 @@ page_DRMDUI <- function(id) {
       class = "d-flex justify-content-between",
       shiny::actionLink(inputId = ns("TabD2_link"), label = "Tab.D2 - Quant data"),
       shiny::div(
+        shiny::div(id = ns("Result_set_annotations"), style = "float: left; margin-left: 15px; text-align: right; width: 420px;", "Result set annotations"),
         # "D_sel_i" will hold all available 'Results' nodes
         shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::pickerInput(inputId = ns("D_sel_i"), label = NULL, choices = "", width = "200px"))
         # shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::dropdownButton(
@@ -57,14 +58,13 @@ page_DRMDUI <- function(id) {
         #   shiny::checkboxInput(inputId = ns("dataflt"), label = "Filter datapoint", value = FALSE)
         #   #shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment")
         # )),
-        # shiny::div(style = "float: left; margin-left: 15px; text-align: right; width: 132px;", shiny::checkboxInput(inputId = ns("LTS_opt_show_ci"), label = shiny::HTML("Use CI<sub>95</sub> (slope)"), value = TRUE))
       )
     ),
     bslib::card_body(
       bslib::layout_sidebar(
         padding = 0,
         sidebar = bslib::sidebar(
-          position = "right", open = "open", width = "280px",
+          position = "right", open = FALSE, width = "280px",
           shiny::div(
             shiny::div("Here could be a form where values of the selected 'quant' item from Tab.D2 are modified.")
           )
@@ -83,22 +83,9 @@ page_DRMDUI <- function(id) {
     id = ns("tab_D3_panel"),
     bslib::card_header(
       class = "d-flex justify-content-between",
-      shiny::actionLink(inputId = ns("TabD1_link"), label = "Tab.D3 - Full XML data"),
-      shinyWidgets::dropdownButton(
-        label = "Modify Admin Data", circle = FALSE, width = "100%", inline = TRUE,
-        shiny::actionButton(inputId = ns("D_add_admin"), label = "Add term"),
-        shiny::actionButton(inputId = ns("D_rem_admin"), label = "Rem term")
-      )
+      shiny::actionLink(inputId = ns("TabD1_link"), label = "Tab.D3 - Full XML data")
     ),
-    bslib::card_body(shiny::div(DT::DTOutput(outputId = ns("tab_D3"))), max_height = 920),
-    bslib::card_footer(
-      class = "d-flex justify-content-between",
-      shiny::div(id = ns("D_level_path"), "D_level_path"),
-      shiny::div(
-        shiny::textAreaInput(ns("D1_current_value"), label = NULL, rows = 5, width = "520px"),
-        shiny::actionButton(inputId = ns("btn_D1_modify"), label = "Apply", height = "36px")
-      )
-    )
+    bslib::card_body(shiny::div(DT::DTOutput(outputId = ns("tab_D3"))), max_height = 920)
   )
 
   shiny::tagList(
@@ -137,7 +124,6 @@ page_DRMDServer <- function(id, test_data = NULL) {
       "xml_file" = NULL,
       "data" = NULL,
       "data_mod" = NULL,
-      "xml_file" = NULL,
       "tab_D1" = NULL,
       "tab_D1_i" = NULL,
       "tab_D2" = NULL,
@@ -190,20 +176,21 @@ page_DRMDServer <- function(id, test_data = NULL) {
         D$tab_D3 <- NULL
         D$all_i <- NULL
         D$i <- NULL
-        D$all_j <- NULL
-        D$j <- NULL
       } else {
         D$data <- D_data()
         D$data_mod <- NULL
         D$xml_file <- input$D_input_file$name[1]
-        D$tab_D1 <- xml2df(D_data(), type = "admin")
+        #D$tab_D1 <- xml2df(D_data(), type = "admin")
+        D$tab_D1 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = "^1_1")
         D$tab_D1_i <- 1
-        D$tab_D2 <- xml2df(D_data(), type = "quant")
-        D$tab_D3 <- xml2df(D_data(), type = "full")
-        D$all_i <- unique(D$tab_D2$L3)
-        D$i <- unique(D$tab_D2$L3)[1]
-        D$all_j <- unique(D$tab_D2$L3)
-        D$j <- unique(D$tab_D2$L3)[1]
+        #D$tab_D2 <- xml2df(D_data(), type = "quant")
+        #D$all_i <- unique(D$tab_D2$L3)
+        #D$i <- unique(D$tab_D2$L3)[1]
+        D$tab_D2 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = "^1_2")
+        idx_results <- unique(sapply(strsplit(D$tab_D2[,"idx"],"_"),function(x){x[3]}))
+        D$all_i <- idx_results
+        D$i <- idx_results[length(idx_results)]
+        D$tab_D3 <- flatten_list_to_df(D_data())
       }
     }, ignoreNULL = FALSE)
 
@@ -225,10 +212,13 @@ page_DRMDServer <- function(id, test_data = NULL) {
 
         # assign new value to modified data list
         if (is.null(D$data_mod)) D$data_mod <- D$data
-        #browser()
-        ele <- stats::na.omit(unname(unlist(D$tab_D1[input$tab_D1_rows_selected,-ncol(D$tab_D1)])))
+        # ===
+        # old version
+        #ele <- stats::na.omit(unname(unlist(D$tab_D1[input$tab_D1_rows_selected,-ncol(D$tab_D1)])))
+        # new version
+        ele <- as.numeric(strsplit(D$tab_D1[input$tab_D1_rows_selected,"idx"], "_")[[1]])
+        # ===
         purrr::pluck(D$data_mod, !!!ele)[[1]] <- input$D1_current_value
-        #purrr::pluck(D$data_mod, !!!ele[1:7], 2, ele[9]) <- "Test"
       }
     }, ignoreInit = TRUE)
 
@@ -236,6 +226,16 @@ page_DRMDServer <- function(id, test_data = NULL) {
       shinyjs::toggleState(id = "btn_D1_modify", condition = !identical(input$D1_current_value, D$tab_D1[input$tab_D1_rows_selected,"value"]))
     }, ignoreInit = TRUE)
 
+
+    shiny::observeEvent(D$i, {
+      req(D$tab_D2)
+      txt <- "new text"
+      L3 <- sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[3] })
+      L6 <- sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[6] })
+      txt <- D$tab_D2[which(L3 == D$i & L6 == 1),"value"]
+      #browser()
+      if (length(txt)>=1 && !all(is.na(txt))) shinyjs::html(id = "Result_set_annotations", html = shiny::HTML(paste(txt, sep="<br>")))
+    })
 
     # tables
     # the admin data
@@ -252,8 +252,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
 
     output$tab_D3 <- DT::renderDataTable({
       shiny::req(D$tab_D3)
-      #styleTabD1(df = D$tab_D1, selected = shiny::isolate(D$tab_D1_i))
-      D$tab_D3
+      styleTabD3(df = D$tab_D3)
     })
 
     # table observers
@@ -267,7 +266,12 @@ page_DRMDServer <- function(id, test_data = NULL) {
       if (!is.null(i)) {
         x <- D$tab_D1[input$tab_D1_rows_selected,]
         shiny::updateTextAreaInput(inputId = "D1_current_value", value = unname(unlist(x[,"value"])))
-        tab_cap <- rev(unname(rev(stats::na.omit(unlist(x)))[-1]))
+        # ====
+        # old Version
+        #tab_cap <- rev(unname(rev(stats::na.omit(unlist(x)))[-1]))
+        # new version
+        tab_cap <- sub("^[^:]*:", "", strsplit(x[,"path"], "_")[[1]])
+        # ====
         shinyjs::html(id = "D_level_path", paste(tab_cap, collapse="<br>"))
         #shinyjs::disable(id = "btn_D1_modify")
       }
