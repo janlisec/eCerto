@@ -1,3 +1,6 @@
+# eCerto 0.8.4
+* function adjusted to comply with current DRMD XML schema definition
+
 # eCerto 0.8.3
 * Tab.C3 can be exported to a DRMD XML file
 * Tab.D2 indicates relevant XML node information (for selected measurement node)

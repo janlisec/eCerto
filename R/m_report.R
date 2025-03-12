@@ -87,7 +87,9 @@ m_reportServer <- function(id, rv) {
           admin_data = new_drmd_admin_data(),
           result_data = new_drmd_measurementResult(quantities = mt_xml)
         )
-        drmd_xml <- xml2::as_xml_document(x = remove_prefix(drmd_lst))
+        #browser()
+        #drmd_xml <- xml2::as_xml_document(x = remove_prefix(drmd_lst))
+        drmd_xml <- xml2::as_xml_document(x = drmd_lst)
         # write to xml file
         return(xml2::write_xml(x = drmd_xml, file = file))
       }

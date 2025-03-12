@@ -253,11 +253,11 @@ new_dcc_quantity_result <- function(name = "Copper (Cu)", label = "Cu", value = 
 #' drmd_result_container <- new_drmd_measurementResult(quantities = dcc)
 #' drmd_result_container2 <- new_drmd_measurementResult(isCertified = "false", name_drmd = "Fun values only.", quantities = dcc)
 new_drmd_measurementResult <- function(isCertified = "true", name_drmd = "Certified mass fractions and their associated uncertainties.", name_dcc = "Certified Values", description = "Description", quantities = NULL) {
-  lst <- list("drmd:measurementResult" = structure(list(), "isCertified" = isCertified))
-  purrr::pluck(lst, "drmd:measurementResult", "dcc:name") <- list("dcc:content" = structure(list(name_drmd), "lang" = "en"))
-  purrr::pluck(lst, "drmd:measurementResult", "dcc:results") <- list("dcc:result" = list("dcc:name" = structure(list(name_dcc), "lang" = "en")))
-  purrr::pluck(lst, "drmd:measurementResult", "dcc:results", "dcc:result", "dcc:description") <- list("dcc:content" = structure(list(description), "lang" = "en"))
-  purrr::pluck(lst, "drmd:measurementResult", "dcc:results", "dcc:result", "dcc:data", "dcc:list") <- quantities
+  lst <- list("drmd:materialProperties" = structure(list(), "isCertified" = isCertified))
+  purrr::pluck(lst, "drmd:materialProperties", "drmd:name") <- list("dcc:content" = structure(list(name_drmd), "lang" = "en"))
+  purrr::pluck(lst, "drmd:materialProperties", "drmd:results") <- list("dcc:result" = list("dcc:name" = structure(list(name_dcc), "lang" = "en")))
+  purrr::pluck(lst, "drmd:materialProperties", "drmd:results", "dcc:result", "dcc:description") <- list("dcc:content" = structure(list(description), "lang" = "en"))
+  purrr::pluck(lst, "drmd:materialProperties", "drmd:results", "dcc:result", "dcc:data", "dcc:list") <- quantities
   return(lst)
 }
 
@@ -283,7 +283,7 @@ new_drmd_document <- function(admin_data = NULL, result_data = NULL, remove_ns =
     list(
       admin_data,
       result_data
-    ), names = c("drmd:administrativeData", "drmd:measurementResults"), "schemaVersion"="0.0.1", "xmlns:dcc"="https://ptb.de/dcc", "xmlns:drmd"="https://example.org/drmd", "xmlns:si"="https://ptb.de/si")
+    ), names = c("drmd:administrativeData", "drmd:materialPropertiesList"), "schemaVersion"="0.0.1", "xmlns:dcc"="https://ptb.de/dcc", "xmlns:drmd"="https://example.org/drmd", "xmlns:si"="https://ptb.de/si")
   )
   if (remove_ns) lst <- remove_prefix(lst)
   return(lst)
