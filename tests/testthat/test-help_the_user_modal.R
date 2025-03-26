@@ -9,6 +9,6 @@ testthat::test_that("'show_help' renders Rmd files correctly", {
     testthat::expect_error(eCerto:::show_help(filename = fn, show_modal = TRUE))
   })
   # returns error if no valid file
-  if ("www" %in% names(resourcePaths())) removeResourcePath("www")
+  if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
   testthat::expect_error(eCerto:::show_help(filename = "bla", show_modal = FALSE))
 })
