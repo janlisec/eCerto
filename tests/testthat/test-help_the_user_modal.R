@@ -1,4 +1,5 @@
 testthat::test_that("'show_help' renders Rmd files correctly", {
+  testthat::skip_on_cran()
   fn <- system.file("app/www/rmd/start_gethelp.Rmd", package = "eCerto")
   testthat::expect_true(file.exists(fn))
   suppressMessages({

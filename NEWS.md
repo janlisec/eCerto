@@ -1,3 +1,7 @@
+# eCerto 0.8.5
+* skipping a test for markdown rendering the help files on CRAN to avoid an 
+  markdown relatederror
+
 # eCerto 0.8.4
 * function adjusted to comply with current DRMD XML schema definition
 
@@ -15,7 +19,8 @@
 * analyte parameter UI moved to Tab.C3
 * report buttons moved to Tab.C3
 * all card items in C module are collapsible now
-* Fig.C1 can be moved between layout columns to better deal with CRMs containing many (>15) analytes
+* Fig.C1 can be moved between layout columns to better deal with CRMs containing 
+  many (>15) analytes
 * D module got improved layout
 
 # eCerto 0.8.1
