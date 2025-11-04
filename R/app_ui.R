@@ -45,8 +45,10 @@ app_ui <- function(request) {
         shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
       selected = "Start",
-      bg = "black",
-      position = "fixed-top",
+      navbar_options = list(
+        bg = "black",
+        position = "fixed-top"
+      ),
       footer = shiny::div(
         style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: white; width: 100%",
         shiny::HTML(
