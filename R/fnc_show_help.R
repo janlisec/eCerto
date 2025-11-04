@@ -32,8 +32,8 @@ show_help <- function(filename, show_modal = TRUE) {
     help_text <- shiny::withMathJax(
       shiny::HTML(
         # markdown::mark_html(file = file_in, options = "+tables+autolink+latex_math-standalone")
-        #markdown::markdownToHTML(file = file_in, fragment.only = TRUE)
-        litedown::fuse(input = file_in, output = NA)
+        markdown::markdownToHTML(file = file_in, fragment.only = TRUE)
+        #litedown::fuse(input = file_in, output = NA)
       )
     )
     if (show_modal) {

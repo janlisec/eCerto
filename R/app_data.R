@@ -12,6 +12,13 @@
 #' @source jan.lisec@@bam.de
 "LTS001"
 
+#' @title A raster representation of the BAM logo to be used in Reports.
+#' @docType data
+#' @format A raster representation of the BAM logo png file.
+#' @usage data(BAMlogo_raster)
+#' @source jan.lisec@@bam.de
+"BAMlogo_raster"
+
 #' @title Dixon critical values table.
 #' @docType data
 #' @format A data frame containing Dixon critical values with n in rows and alpha in cols.
