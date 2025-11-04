@@ -1,18 +1,27 @@
 ---
 title: "*eCerto* (Statistics for CRM production)"
 output:
-  html_document:
-    toc: true
-    toc_depth: 3
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
-    embed-resources: true
-    standalone: true
+  #html_document:
+    #toc: true
+    #toc_depth: 3
+    #toc_float:
+    #  collapsed: false
+    #  smooth_scroll: false
+    #embed-resources: true
+    #standalone: true
+  html:
+    options:
+      toc:
+        depth: 3
+        number_sections: true
+      embed-resources: true
+    meta:
+      css: ["@default", "@heading-anchor"]
+      js: ["@sidenotes", "@heading-anchor"]
 ---
 
 
-```{css, eval = TRUE, echo = FALSE}
+```{css, eval = FALSE, echo = FALSE}
 
 .tocify-header {
   text-indent: initial;
@@ -32,18 +41,15 @@ output:
   text-indent: initial;
   padding-left: 60px;
 }
-```
 
-<style>
 div.figcaption {
   font-size: 0.8em;
   background: rgba(0, 0, 0, 0.04);
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding: 2px;
   margin-top: 4px;
   margin-bottom: 10px;
 }
-</style>
+```
 
 ```{r child = 'start.Rmd'}
 ```

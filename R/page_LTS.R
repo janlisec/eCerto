@@ -389,7 +389,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       content = function(file) {
         # ensure that logo file and font files are in the same folder as the Rmd.
         rmdfile <- get_local_file("report_vorlage_lts.Rmd")
-        logofile <- "BAMLogo2015.png"
+        # logofile <- "BAMLogo2015.png"
         # font files: "BAMKlavika-Light.ttf", "BAMKlavika-Medium.ttf", "BAMKlavika-LightItalic.ttf", "BAMKlavika-MediumItalic.ttf"
 
         # Set up parameters to pass to Rmd document
@@ -401,9 +401,9 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
         #dat <- lts[["data"]]
         #if (length(dat) >= 2 & i() >= 2) for (j in rev(1:(i() - 1))) dat[j] <- NULL
         params <- list(
-          "dat" = x,
-          "logo_file" = logofile,
-          "fnc" = list("plot_lts_data" = plot_lts_data)
+          "dat" = x#,
+          #"logo_file" = logofile,
+          #"fnc" = list("plot_lts_data" = plot_lts_data)
         )
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document

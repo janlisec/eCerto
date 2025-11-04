@@ -2,7 +2,7 @@
 #' @title Implementation of the STEYX function from Excel.
 #' @description Translation of `STEYX` function from Excel to R. It is implemented
 #'    according to the formula described in
-#'    <http://office.microsoft.com/en-au/excel-help/steyx-function-HP010062545.aspx>.
+#'    <https://support.microsoft.com/en-us/office/steyx-function-6ce74b2c-449d-4a6e-b9ac-f9cef5ba48ab>.
 #'    At least 3 finite pairs of data points are required for the calculation.
 #' @param x x values as numeric vector.
 #' @param y y values as numeric vector of similar length as x.

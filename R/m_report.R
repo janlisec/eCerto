@@ -31,7 +31,6 @@
 #' }
 #'
 #' @importFrom knitr is_html_output kable
-#' @importFrom magick image_read
 #' @noRd
 #' @keywords internal
 m_reportUI <- function(id) {

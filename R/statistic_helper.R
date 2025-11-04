@@ -180,7 +180,7 @@ Cochran <- function(data = NULL, fmt = c("alpha", "pval", "cval", "cval05", "cva
 
 #' @title qgrubbs.
 #' @description To calculate the critical Grubbs value z_alpha.
-#'     ToDo [JL] This should be re-implemented to really get q for a specific p,
+#'     ToDo$$JL This should be re-implemented to really get q for a specific p,
 #'     while currently we have to modify p as shown in examples.
 #' @param p The desired p-value level, i.e. 0.01 or 0.05 for a one sided test.
 #' @param n The number of values or labs.

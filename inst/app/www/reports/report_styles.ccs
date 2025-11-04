@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'BAMKlavika';
+  src: local('BAMKlavika-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BAMKlavika';
+  src: local('BAMKlavika-Medium.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BAMKlavika';
+  src: local('BAMKlavika-LightItalic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'BAMKlavika';
+  src: local('BAMKlavika-MediumItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+body {
+  font-family: 'BAMKlavika', sans-serif;
+}

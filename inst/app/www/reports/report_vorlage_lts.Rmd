@@ -3,14 +3,10 @@ title-meta: "LTS-Report"
 output:
   pdf_document: 
     latex_engine: lualatex
-#    keep_tex: true
 # This needs to stay, because 'xcolor' package can not be loaded with option 'table' as this would lead to a clash
 # see this link: https://community.rstudio.com/t/colors-by-names-using-xcolor-latex-error-option-clash-for-package-xcolor/81514/4
 classoption: table
 header-includes:
-#- \usepackage{float}
-#- \floatplacement{figure}{H}  
-#- \usepackage{booktabs}
 - \usepackage{xcolor}
 - \usepackage{caption}
 - \usepackage{fontspec}
@@ -18,8 +14,6 @@ header-includes:
 fig_caption: yes
 params:
   dat: NA
-  logo_file: NA
-  fnc: NA
 ---
 
 ```{r setup, include=FALSE}
@@ -36,42 +30,34 @@ if (testing) {
   LTS_dat <- eCerto::LTS001
   d <- LTS_dat[[i]][["def"]]
   v <- LTS_dat[[i]][["val"]]
-  l <- "BAMLogo2015.png"
-  if (!file.exists(file.path(dirname(report_file), l))) {
-    warning(l, " is not in same folder as ", basename(report_file))
-  }
-  plot_lts_data <- eCerto:::plot_lts_data
 } else {
   d <- params[["dat"]][[i]][["def"]]
   v <- params[["dat"]][[i]][["val"]]
-  l <- params[["logo_file"]]
-  plot_lts_data <- params[["fnc"]][["plot_lts_data"]]
 }
+plot_lts_data <- eCerto:::plot_lts_data
 ```
 
 ```{r logo, echo=FALSE, fig.align='right', fig.height = 0.5}
 # show BAM Logo topright
-if (!(is.null(l) | is.na(l))) {
-    logo_raster <- as.raster(magick::image_read(path = l))
-    graphics::par(mar=c(1,0,0,0))
-    layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
-    plot(1,1,axes=F,ann=F, type="n")
-    mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)
-    mtext(side = 3, line = -2.25, text = paste("Material:", d[,"RM"]), adj = 0)
-    mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), '%Y-%m-%d')), adj = 0.75)
-    plot(logo_raster)
-}
-  
+logo_raster <- eCerto::BAMlogo_raster
+graphics::par(mar=c(1,0,0,0))
+layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
+plot(1,1,axes=F,ann=F, type="n")
+mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)
+mtext(side = 3, line = -2.25, text = paste("Material:", d[,"RM"]), adj = 0)
+mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), '%Y-%m-%d')), adj = 0.75)
+plot(logo_raster)
+
 ```
 
 ```{r plots, echo=FALSE, results='asis', dev.args = list(pointsize = 9), fig.height = 3.5}
-  # 2 plots as in App version
-  graphics::par(mar=c(5,4,4,2)+0.1)
-  graphics::par(mfrow=c(1,2))
-    x <- list("val"=v, "def"=d)
-    plot_lts_data(x = x, type=1)
-    lts <- plot_lts_data(x = x, type=2)
-  graphics::par(mfrow=c(1,1))
+# 2 plots as in App version
+graphics::par(mar=c(5,4,4,2)+0.1)
+graphics::par(mfrow=c(1,2))
+  x <- list("val"=v, "def"=d)
+  plot_lts_data(x = x, type=1)
+  lts <- plot_lts_data(x = x, type=2)
+graphics::par(mfrow=c(1,1))
 ```
 
 ```{r stats}

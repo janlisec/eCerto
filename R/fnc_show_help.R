@@ -4,10 +4,16 @@
 #' @param show_modal Will show the returned help_text in a modal. Can be suppressed by setting to FALSE for testing purposes.
 #' @return Returns the help text as HTML (currently produces errors when used)
 #' @examples
-#' eCerto:::show_help(
-#'   filename = system.file("app/www/rmd/start_gethelp.Rmd", package = "eCerto"),
+#' foo <- eCerto:::show_help(
+#'   #filename = system.file("app/www/rmd/start_gethelp.Rmd", package = "eCerto"),
+#'   #filename = system.file("app/www/rmd/stability_plot.Rmd", package = "eCerto"),
+#'   #filename = system.file("app/www/rmd/help_start.Rmd", package = "eCerto"),
+#'   filename = system.file("app/www/rmd/help_test.Rmd", package = "eCerto"),
 #'   show_modal = FALSE
 #' )
+#' str(foo)
+#' shiny::shinyApp(ui = bslib::page_fluid(foo), server = function(input, output) {}, options = list("width"=800))
+
 #' @noRd
 #' @keywords internal
 #' @importFrom markdown mark_html
@@ -26,7 +32,8 @@ show_help <- function(filename, show_modal = TRUE) {
     help_text <- shiny::withMathJax(
       shiny::HTML(
         # markdown::mark_html(file = file_in, options = "+tables+autolink+latex_math-standalone")
-        markdown::markdownToHTML(file = file_in, fragment.only = TRUE)
+        #markdown::markdownToHTML(file = file_in, fragment.only = TRUE)
+        litedown::fuse(input = file_in, output = NA)
       )
     )
     if (show_modal) {
