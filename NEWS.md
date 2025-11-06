@@ -4,6 +4,9 @@
 * DRMD schema incorporated as external data
 * DRMD table visualization improved for idx column
 
+# eCerto 0.8.7 [03.11.2025]
+* Docker container creation incorporated in the GitHub CI
+
 # eCerto 0.8.5
 * skipping a test for markdown rendering the help files on CRAN to avoid an 
   markdown related error

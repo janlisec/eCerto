@@ -24,4 +24,4 @@ RUN R -e "install.packages('remotes'); remotes::install_github('janlisec/eCerto'
 WORKDIR /app
 
 # Startkommando: ruft die Funktion run_app() aus dem Package auf
-CMD ["R", "-e", "PKGNAME::run_app()"]
+CMD ["R", "-e", "eCerto::run_app()"]
