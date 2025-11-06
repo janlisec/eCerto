@@ -8,7 +8,7 @@
 #' inp <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/DRMD/drmc-007.xml"
 #' tab <- eCerto:::read_drmd_xml(inp)
 #' tab <- eCerto:::xml2df(tab, type = "quant")
-#' out_dt <- eCerto:::style_tabD2(df = tab, selected = NULL, interact_ele = FALSE)
+#' out_dt <- eCerto:::styleTabD2(df = tab, selected = NULL, interact_ele = FALSE)
 #' out_dt
 #' @return A datatable object.
 #' @keywords internal

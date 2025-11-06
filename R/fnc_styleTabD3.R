@@ -14,13 +14,22 @@
 styleTabD3 <- function(df, interact_ele = TRUE) {
   e_msg("Styling Tab.D3 for HTML output")
 
+  # hide first column ("path")
+  df <- df[,-1, drop=FALSE]
+
+  # convert column 'idx' for better display
+  df[,"idx"] <- format_hierarchy(df[,"idx"])
+
   # create DT object
   dt <- DT::datatable(
-    data = df[,-1], rownames = FALSE, escape = FALSE, filter = 'top',
+    data = df, rownames = FALSE, escape = FALSE, filter = 'top',
     options = list(
       dom = "fti", pageLength = -1, ordering = FALSE, search = list(regex = TRUE)
     ),
     selection = 'none'
   )
+
+  dt <- DT::formatStyle(dt, 'idx', fontFamily = 'monospace')
+
   return(dt)
 }

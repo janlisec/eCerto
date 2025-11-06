@@ -1,0 +1,653 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<drmd:digitalReferenceMaterialDocument xmlns:dcc="https://ptb.de/dcc" xmlns:drmd="https://example.org/drmd" xmlns:si="https://ptb.de/si" schemaVersion="0.3.0">
+	<drmd:administrativeData>
+		<drmd:coreData>
+			<drmd:titleOfTheDocument>referenceMaterialCertificate</drmd:titleOfTheDocument>
+			<drmd:uniqueIdentifier>7d7e1a89-bad4-4fc7-bd8a-4b7c5d5d224a</drmd:uniqueIdentifier>
+                        <drmd:documentIdentifiers>
+                                <drmd:documentIdentifier>
+                                        <drmd:scheme>BAM-CERT</drmd:scheme>
+                                        <drmd:value>M375a</drmd:value>
+                                        <drmd:link>https://bam.de/crm/M375a</drmd:link>
+                                </drmd:documentIdentifier>
+                        </drmd:documentIdentifiers>
+<drmd:validity>
+    <drmd:untilRevoked>true</drmd:untilRevoked>
+</drmd:validity>
+		</drmd:coreData>
+		<drmd:referenceMaterialProducer>
+			<drmd:name>
+				<dcc:content lang="en">Reference Material Producer</dcc:content>
+			</drmd:name>
+			<drmd:contact>
+				<dcc:name>
+					<dcc:content lang="en">Contact Name</dcc:content>
+				</dcc:name>
+				<dcc:eMail>sales.crm@bam.de</dcc:eMail>
+				<dcc:phone>+49 30 8104 2061</dcc:phone>
+				<dcc:fax>+49 30 8104 72061</dcc:fax>
+				<dcc:location>
+					<dcc:street>Richard-Willstätter-Str.</dcc:street>
+					<dcc:streetNo>11</dcc:streetNo>
+					<dcc:postCode>D-12489</dcc:postCode>
+					<dcc:city>Berlin</dcc:city>
+					<dcc:countryCode>DE</dcc:countryCode>
+				</dcc:location>
+                        </drmd:contact>
+                        <drmd:organizationIdentifiers>
+                                <drmd:organizationIdentifier>
+                                        <drmd:scheme>ROR</drmd:scheme>
+                                        <drmd:value>b03x516a66</drmd:value>
+                                        <drmd:link>https://ror.org/b03x516a66</drmd:link>
+                                </drmd:organizationIdentifier>
+                        </drmd:organizationIdentifiers>
+                </drmd:referenceMaterialProducer>
+		<drmd:respPersons>
+			<dcc:respPerson>
+				<dcc:person>
+					<dcc:name>
+						<dcc:content lang="en">Dr. Mustermann</dcc:content>
+					</dcc:name>
+				</dcc:person>
+				<dcc:role>Committee for Certification</dcc:role>
+			</dcc:respPerson>
+			<dcc:respPerson>
+				<dcc:person>
+					<dcc:name>
+						<dcc:content lang="en">Dr. John Doe</dcc:content>
+					</dcc:name>
+				</dcc:person>
+				<dcc:role>Project Coordinator, Division 1.6</dcc:role>
+			</dcc:respPerson>
+		</drmd:respPersons>
+		</drmd:administrativeData>
+	<drmd:materials>
+			<drmd:material>
+				<drmd:name>
+					<dcc:content lang="en">CuZn39Pb3</dcc:content>
+				</drmd:name>
+				<drmd:description>
+					<dcc:content lang="en">The Reference Material is available in the form of discs
+						(approx. 38 mm diameter and 30 mm height).</dcc:content>
+				</drmd:description>
+				<drmd:minimumSampleSize>
+					<dcc:itemQuantity>
+						<si:realListXMLList>
+							<si:valueXMLList>0.2</si:valueXMLList>
+							<si:unitXMLList>g</si:unitXMLList>
+						</si:realListXMLList>
+					</dcc:itemQuantity>
+				</drmd:minimumSampleSize>
+                                <drmd:materialIdentifiers>
+                                        <drmd:materialIdentifier>
+                                                <drmd:scheme>BAM-RM</drmd:scheme>
+                                                <drmd:value>371-a</drmd:value>
+                                                <drmd:link>https://bam.de/crm/371-a</drmd:link>
+                                        </drmd:materialIdentifier>
+                                </drmd:materialIdentifiers>
+			</drmd:material>
+		</drmd:materials>
+		<drmd:materialPropertiesList>
+		
+		<drmd:materialProperties isCertified="true">
+			<drmd:name>
+				<dcc:content lang="en">Certified mass fractions and their associated uncertainties.</dcc:content>
+			</drmd:name>
+			<drmd:results>
+				<drmd:result>
+					<drmd:name>
+						<dcc:content lang="en">Certified Values</dcc:content>
+					</drmd:name>
+					<drmd:description>
+						<dcc:content lang="en">1) Unweighted mean value of the means of accepted
+							sets of data (consisting of at least 3 single results), each set being
+							obtained by a different laboratory and/or a different method of
+							measurement.
+							2) Estimated expanded uncertainty U with a coverage factor of k = 2,
+							corresponding to a level of confidence of approx. 95 %, as defined in
+							the Guide to the Expression of Uncertainty in Measurement, (GUM, ISO/IEC
+							Guide 98-3:2008).
+							uncertainties.</dcc:content>
+					</drmd:description>
+					<drmd:data>
+						<drmd:list>
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Copper (Cu)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                    <si:label>Cu</si:label>
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>57.68</si:value>
+									<si:unit>\percent</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>0.14</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Zinc (Zn)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                    <si:label>Zn</si:label>
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>38.2</si:value>
+									<si:unit>\percent</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>0.4</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Lead (Pb)</dcc:content>
+								</dcc:name>
+								<si:real>
+									<si:label>Pb</si:label>
+                                    <si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>3.07</si:value>
+									<si:unit>\percent</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>0.06</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Iron (Fe)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                    <si:label>Fe</si:label>
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>0.175</si:value>
+									<si:unit>\percent</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>0.005</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Tin (Sn)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                	<si:label>Sn</si:label>
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>0.158</si:value>
+									<si:unit>\percent</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>0.004</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Nickel (Ni)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                	<si:label>Ni</si:label>
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>0.1174</si:value>
+									<si:unit>\percent</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>0.0020</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Manganese (Mn)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Mn</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>139.5</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>1.7</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Silver (Ag)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Ag</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>50.6</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>1.4</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Aluminum (Al)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Al</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>107</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>4</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Arsenic (As)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>As</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>178</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>5</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Bismuth (Bi)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Bi</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>58.9</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>1.8</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Cadmium (Cd)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Cd</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>62.4</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>1.5</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Cobalt (Co)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Co</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>71.2</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>1.5</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Chromium (Cr)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Cr</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>1</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Indium (In)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>In</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>109.1</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>1.9</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Phosphorus (P)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>P</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>83</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>4</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Antimony (Sb)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Sb</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>120</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>4</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Tellurium (Te)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Te</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>42.9</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>1.4</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+						</drmd:list>
+					</drmd:data>
+				</drmd:result>
+			</drmd:results>
+
+		</drmd:materialProperties>
+		<drmd:materialProperties isCertified="false">
+			<drmd:name>
+				<dcc:content lang="en">Certified mass fractions and their associated uncertainties.</dcc:content>
+			</drmd:name>
+			<drmd:results>
+				
+				<drmd:result>
+					<drmd:name>
+						<dcc:content lang="en">Informative Values</dcc:content>
+					</drmd:name>
+					<drmd:description>
+						<dcc:content lang="en">Values were not certified, but given for information,
+							because the spread of results was considered to be too high.
+							Estimated expanded uncertainty U with a coverage factor of k = 2,
+							corresponding to a level of confidence of approx. 95 %, as defined in
+							the Guide to the expression of uncertainty in measurement, (GUM, ISO/IEC
+							Guide 98-3:2008).
+            </dcc:content>
+					</drmd:description>
+					<drmd:data>
+						<drmd:list>
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Silicon (Si)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Si</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>103</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>12</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+							
+							<drmd:quantity refType="basic_measuredValue">
+								<dcc:name>
+									<dcc:content lang="en">Germanium (Ge)</dcc:content>
+								</dcc:name>
+								<si:real>
+                                									<si:label>Ge</si:label>
+
+									<si:quantityTypeQUDT>MassFraction</si:quantityTypeQUDT>
+									<si:value>15</si:value>
+									<si:unit>\milli\gram\kilogram\tothe{-1}</si:unit>
+									<si:measurementUncertaintyUnivariate>
+										<si:expandedMU>
+											<si:valueExpandedMU>4</si:valueExpandedMU>
+											<si:coverageFactor>2</si:coverageFactor>
+											<si:coverageProbability>0.95</si:coverageProbability>
+											<si:distribution>normal</si:distribution>
+										</si:expandedMU>
+									</si:measurementUncertaintyUnivariate>
+								</si:real>
+            </drmd:quantity>
+						</drmd:list>
+					</drmd:data>
+				</drmd:result>
+			</drmd:results>
+		</drmd:materialProperties>
+	</drmd:materialPropertiesList>
+<drmd:statements>
+			<drmd:intendedUse>
+				<dcc:name>
+					<dcc:content lang="en">Intended Use</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">The CRM is intended for establishing or checking the
+						calibration of spark optical emission and X-ray fluorescence spectrometers
+						for the analysis of samples of similar matrix composition.</dcc:content>
+			</drmd:intendedUse>
+			<drmd:storageInformation>
+				<dcc:name>
+					<dcc:content lang="en">Storage Information</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">The material should be stored in a dry and clean
+						environment at room temperature. Transport can be done under normal ambient
+						conditions.</dcc:content>
+			</drmd:storageInformation>
+			<drmd:instructionsForHandlingAndUse>
+				<dcc:name>
+					<dcc:content lang="en">Handling Instructions</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">Before use the surface of the material must be prepared
+						by milling or turning on a lathe. For wet chemical analysis chips must be
+						prepared by turning or milling of the sample surface.</dcc:content>
+			</drmd:instructionsForHandlingAndUse>
+			<drmd:metrologicalTraceability>
+				<dcc:name>
+					<dcc:content lang="en">Metrological Traceability</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">To ensure traceability of the certified mass fractions to
+						the SI (Système International d’Unités) calibration was performed using
+						standard solutions prepared from pure metals or stoichiometric compounds or
+						with traceable commercial calibration solutions.</dcc:content>
+			</drmd:metrologicalTraceability>
+			<drmd:healthAndSafetyInformation>
+				<dcc:name>
+					<dcc:content lang="en">Health and Safety Information</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">Health and safety information relevant to the reference
+						material.</dcc:content>
+			</drmd:healthAndSafetyInformation>
+			<drmd:subcontractors>
+				<dcc:name>
+					<dcc:content lang="en">Subcontractors</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">Aurubis AG Pirdop Bulgaria, Bundesanstalt für
+						Materialforschung und -prüfung (BAM) Berlin Germany, Diehl Brass Solutions
+						Stiftung &amp; Co KG Röthenbach Germany, Forschungsinstitut Edelmetalle +
+						Metallchemie Schwäbisch Gmünd Germany, Institut für Materialprüfung Glörfeld
+						GmbH Willich Germany, KME Germany GmbH Osnabrück Germany, Łukasiewicz
+						Research Network – Institute of Non-Ferrous Metals Gliwice Poland,
+						Montanwerke Brixlegg Brixlegg Austria, Raghavendra Spectro Metallurgical
+						Laboratory Bangalore India, Wieland-Werke AG Vöhringen Germany</dcc:content>
+			</drmd:subcontractors>
+			<drmd:legalNotice>
+				<dcc:name>
+					<dcc:content lang="en">Legal Notice</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">Legal information and disclaimers.</dcc:content>
+			</drmd:legalNotice>
+			<drmd:referenceToCertificationReport>
+				<dcc:name>
+					<dcc:content lang="en">Reference to Certification Report</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">Links or references to certification reports.</dcc:content>
+			</drmd:referenceToCertificationReport>
+			<drmd:statement>
+				<dcc:name>
+					<dcc:content lang="en">Accreditation Statement</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">Details of accreditation relevant to the reference
+						material.</dcc:content>
+			</drmd:statement>
+			<drmd:statement>
+				<dcc:name>
+					<dcc:content lang="en">Literature</dcc:content>
+				</dcc:name>
+					<dcc:content lang="en">A detailed technical report describing the analysis
+						procedures and the treatment of the analytical data used to certify
+						BAM-M375a is available on request or can be downloaded from BAM website
+						(https://rrr.bam.de).</dcc:content>
+			</drmd:statement>
+		</drmd:statements>
+	</drmd:digitalReferenceMaterialDocument>

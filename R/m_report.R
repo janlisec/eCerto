@@ -88,7 +88,7 @@ m_reportServer <- function(id, rv) {
         )
         #browser()
         #drmd_xml <- xml2::as_xml_document(x = remove_prefix(drmd_lst))
-        drmd_xml <- xml2::as_xml_document(x = drmd_lst)
+        drmd_xml <- validate_drmd_xml(drmc = xml2::as_xml_document(x = drmd_lst))
         # write to xml file
         return(xml2::write_xml(x = drmd_xml, file = file))
       }

@@ -180,16 +180,20 @@ page_DRMDServer <- function(id, test_data = NULL) {
         D$data <- D_data()
         D$data_mod <- NULL
         D$xml_file <- input$D_input_file$name[1]
-        #D$tab_D1 <- xml2df(D_data(), type = "admin")
-        D$tab_D1 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = "^1_1")
+        #browser()
+        D_lst <- flatten_list_to_df(D_data())
+        L2_entries <- unique(sapply(strsplit(D_lst$path, "_"), function(x) { x[2] }))
+        L2_props <- grep("materialPropertiesList", L2_entries)
+        # this is everything without the "materialPropertiesList" entries
+        D$tab_D1 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_[", paste((1:length(L2_entries))[-L2_props], collapse=""), "]"))
         D$tab_D1_i <- 1
-        #D$tab_D2 <- xml2df(D_data(), type = "quant")
-        #D$all_i <- unique(D$tab_D2$L3)
-        #D$i <- unique(D$tab_D2$L3)[1]
-        D$tab_D2 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = "^1_2")
-        idx_results <- unique(sapply(strsplit(D$tab_D2[,"idx"],"_"),function(x){x[3]}))
+        # this is only the "materialPropertiesList" entries
+        D$tab_D2 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_", L2_props))
+        # this is the sub lists in "materialPropertiesList"
+        idx_results <- unique(sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[3] }))
         D$all_i <- idx_results
         D$i <- idx_results[length(idx_results)]
+        # this is the full XML for checking
         D$tab_D3 <- flatten_list_to_df(D_data())
       }
     }, ignoreNULL = FALSE)
@@ -322,7 +326,8 @@ page_DRMDServer <- function(id, test_data = NULL) {
       filename = function() { ifelse(is.null(D$xml_file), "test.xml", D$xml_file) },
       content = function(file) {
         # convert modified list back to xml structure and save to disc
-        xml_mod <- xml2::as_xml_document(x = D$data_mod)
+        #browser()
+        xml_mod <- validate_drmd_xml(drmc = xml2::as_xml_document(x = D$data_mod))
         xml2::write_xml(x = xml_mod, file = file)
       },
       contentType = "XML"

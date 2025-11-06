@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Minimal SI schema stub for offline validation: ONLY defines real and realListXMLList elements used indirectly. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://ptb.de/si"
+           xmlns:si="https://ptb.de/si"
+           elementFormDefault="qualified">
+  <xs:element name="real" type="si:realType"/>
+  <xs:element name="hybrid" type="si:hybridType"/>
+  <xs:element name="complex" type="si:complexType"/>
+  <xs:element name="constant" type="si:constantType"/>
+  <xs:element name="list" type="si:listType"/>
+  <xs:complexType name="realType">
+    <xs:sequence>
+      <xs:element name="label" type="xs:string" minOccurs="0"/>
+      <xs:element name="quantityTypeQUDT" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:double"/>
+      <xs:element name="unit" type="xs:string"/>
+      <xs:element name="measurementUncertaintyUnivariate" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="expandedMU" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="valueExpandedMU" type="xs:double" minOccurs="0"/>
+                  <xs:element name="coverageFactor" type="xs:double" minOccurs="0"/>
+                  <xs:element name="coverageProbability" type="xs:double" minOccurs="0"/>
+                  <xs:element name="distribution" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Alias used by DCC -->
+  <xs:complexType name="realQuantityType">
+    <xs:sequence>
+      <xs:element name="label" type="xs:string" minOccurs="0"/>
+      <xs:element name="quantityTypeQUDT" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:double"/>
+      <xs:element name="unit" type="xs:string"/>
+      <xs:element name="measurementUncertaintyUnivariate" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="expandedMU" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="valueExpandedMU" type="xs:double" minOccurs="0"/>
+                  <xs:element name="coverageFactor" type="xs:double" minOccurs="0"/>
+                  <xs:element name="coverageProbability" type="xs:double" minOccurs="0"/>
+                  <xs:element name="distribution" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Type used by DCC: realListXMLListType -->
+  <xs:complexType name="realListXMLListType">
+    <xs:sequence>
+      <xs:element name="valueXMLList" type="xs:double" maxOccurs="unbounded"/>
+      <xs:element name="unitXMLList" type="xs:string" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="realListXMLList" type="si:realListXMLListType"/>
+  <!-- Additional minimal complex types inside same schema -->
+  <xs:complexType name="hybridType"><xs:sequence/></xs:complexType>
+  <xs:complexType name="complexType"><xs:sequence/></xs:complexType>
+  <xs:complexType name="constantType"><xs:sequence/></xs:complexType>
+  <xs:element name="complexListXMLList" type="si:complexListType"/>
+  <xs:complexType name="complexListType"><xs:sequence/></xs:complexType>
+  <xs:complexType name="listType"><xs:sequence/></xs:complexType>
+</xs:schema>

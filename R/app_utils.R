@@ -682,3 +682,45 @@ HTML2markdown <- function(x) {
   x <- gsub("</strong>", "**", x)
   return(x)
 }
+
+#' @title format_hierarchy.
+#' @description Function to DRMD hierarchy into better format.
+#' @param x A character vector.
+#' @param ori_sep ori_sep.
+#' @param new_sep new_sep.
+#' @param replace_symbol replace_symbol.
+#' @examples
+#' \dontrun{
+#'   x <- c("1_1_1_1", "1_1_2_1", "1_2_1_1_1", "1_2_1_2_1", "1_3_1_1")
+#'   cbind(x, format_hierarchy(x = x))
+#' }
+#' @return Character.
+#' @keywords internal
+#' @noRd
+format_hierarchy <- function(x, ori_sep = "_", new_sep = ".", replace_symbol = "_") {
+  if (all(grepl("_1$", x))) { x <- gsub("_1$", "", x) }
+
+  split_vec <- strsplit(x, ori_sep)
+  result <- character(length(x))
+  prev <- character(0)
+
+  for (i in seq_along(split_vec)) {
+    current <- split_vec[[i]]
+
+    formatted <- character(length(current))
+    diff_found <- FALSE
+
+    for (j in seq_along(current)) {
+      if (!diff_found && j <= length(prev) && current[j] == prev[j]) {
+        formatted[j] <- replace_symbol
+      } else {
+        formatted[j] <- current[j]
+        diff_found <- TRUE
+      }
+    }
+    result[i] <- paste(formatted, collapse = new_sep)
+    prev <- current
+  }
+
+  return(result)
+}
