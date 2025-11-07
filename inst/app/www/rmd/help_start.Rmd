@@ -1,23 +1,23 @@
 ---
 title: "*eCerto* (Statistics for CRM production)"
 output:
-  #html_document:
-    #toc: true
-    #toc_depth: 3
-    #toc_float:
-    #  collapsed: false
-    #  smooth_scroll: false
-    #embed-resources: true
-    #standalone: true
-  html:
-    options:
-      toc:
-        depth: 3
-        number_sections: true
-      embed-resources: true
-    meta:
-      css: ["@default", "@heading-anchor"]
-      js: ["@sidenotes", "@heading-anchor"]
+  html_document:
+  toc: true
+  toc_depth: 3
+  toc_float:
+   collapsed: false
+   smooth_scroll: false
+  embed-resources: true
+  standalone: true
+  # html:
+  #   options:
+  #     toc:
+  #       depth: 3
+  #       number_sections: true
+  #     embed-resources: true
+  #   meta:
+  #     css: ["@default", "@heading-anchor"]
+  #     js: ["@sidenotes", "@heading-anchor"]
 ---
 
 
