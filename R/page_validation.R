@@ -12,8 +12,9 @@
 #'     server = function(input, output, session) {
 #'       #fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_05_22_B003_Arbeitsbereich_neu.xlsx"
 #'       #fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_06_13_B003_NG-BG.xlsx"
-#'       fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/JS1/BDE47_oberere Kali2_JL.xlsx"
-#'       td <- eCerto:::read_Vdata(file = fl, fmt = check_fmt_Vdata(fl))
+#'       #fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/JS1/BDE47_oberere Kali2_JL.xlsx"
+#'       fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
+#'       td <- eCerto:::read_Vdata(file = fl, fmt = eCerto:::check_fmt_Vdata(fl))
 #'       eCerto:::page_validationServer(id = "test", test_data = td)
 #'     }
 #'   )
@@ -606,25 +607,12 @@ page_validationServer <- function(id, test_data = NULL) {
     })
 
     # Help section ====
-    shiny::observeEvent(input$InputHelp, {
-      show_help("v_dataupload")
-    })
-    shiny::observeEvent(input$Help_tabV1, {
-      show_help("v_tab_V1")
-    })
-    shiny::observeEvent(input$Help_figV1, {
-      show_help("v_fig_V1")
-    })
-    shiny::observeEvent(input$Help_trueness, {
-      show_help("v_trueness")
-    })
-    shiny::observeEvent(input$Help_precision, {
-      show_help("v_precision")
-    })
-    shiny::observeEvent(input$Help_uncertainty, {
-      show_help("v_uncertainty")
-    })
+    shiny::observeEvent(input$InputHelp, { show_help("v_dataupload") })
+    shiny::observeEvent(input$Help_tabV1, { show_help("v_tab_V1") })
+    shiny::observeEvent(input$Help_figV1, { show_help("v_fig_V1") })
+    shiny::observeEvent(input$Help_trueness, { show_help("v_trueness") })
+    shiny::observeEvent(input$Help_precision, { show_help("v_precision") })
+    shiny::observeEvent(input$Help_uncertainty, { show_help("v_uncertainty")})
 
   })
 }
-
