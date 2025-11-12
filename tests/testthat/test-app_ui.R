@@ -1,10 +1,10 @@
 testthat::test_that(
   desc = "app ui",
   code = {
-    ui <- eCerto:::app_ui()
-    golem::expect_shinytaglist(ui)
+    ui <- eCerto:::app_ui
+    golem::expect_shinytaglist(ui())
     # Check that formals have not been removed
-    fmls <- formals(app_ui)
+    fmls <- formals(ui)
     for (i in c("request")) {
       testthat::expect_true(i %in% names(fmls))
     }
