@@ -42,10 +42,12 @@ read_zenodo <- function(id) {
     # out <- try(curl::multi_download(urls = file_urls, destfile = dest), silent = TRUE)
     if (inherits(out, "try-error")) {
       warning_or_modal(x = "Sorry, something went wrong upon download. :/")
+      return(NULL)
     } else {
       return(check_RData_with_res_object(x = dest))
     }
   } else {
     warning_or_modal(x = "Sorry, could not find this Zenodo ID. :/")
+    return(NULL)
   }
 }
