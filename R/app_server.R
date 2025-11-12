@@ -4,6 +4,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
+#' @keywords internal
 app_server <- function(input, output, session) {
   # set up new R6 object upon app start
   rv <- eCerto$new(init_rv()) # initiate persistent variables

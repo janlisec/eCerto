@@ -4,7 +4,8 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
-app_ui <- function(request) {
+#' @keywords internal
+app_ui <- function(request = NULL) {
 
   # htis is the padding definition for all panels to respect navbar and footer
   navbar_padding <- "56px"
