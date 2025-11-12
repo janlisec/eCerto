@@ -124,7 +124,7 @@ filter_flattened_list <- function(df, flt = "^1_1") {
 #'     XML based structure, one could like to remove the namespace prefix tags
 #'     which follow the structure 'prefix:name'.
 #'     This function allows to recursively modify all names of a nested list
-#'     removing a spefified pattern.#'
+#'     removing a specified pattern.
 #'
 #' @param nested_list A nested list.
 #' @param pattern A pattern to be removed from list names.
