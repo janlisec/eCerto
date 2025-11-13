@@ -72,3 +72,32 @@ testthat::test_that(
     testthat::expect_true(is.character(eCerto:::HTML2markdown(x)))
   }
 )
+
+testthat::test_that(
+  desc = "V markdown report works",
+  code = {
+    fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
+    inp_data <- eCerto:::read_Vdata(file = fl, fmt = eCerto:::check_fmt_Vdata(fl))
+    V_pars <- list(
+       "opt_figV1_anal" = "PFBA",
+       "opt_figV1_level" = c(1,8),
+       "opt_tabV1_precision" = 4,
+       "opt_tabV1_alpha" = 0.5,
+       "opt_tabV1_k" = 3,
+       "opt_tabV1_unitcali" = "",
+       "opt_tabV1_unitsmpl" = "",
+       "opt_tabV1_convfac" = 1,
+       "opt_tabV1_fltLevels" = FALSE,
+       "txt_trueness" = "txt_trueness",
+       "txt_precision" = "txt_precision",
+       "txt_uncertainty" = "txt_uncertainty",
+       "opt_tabV1_useLevels" = TRUE,
+       "opt_tabV1_useAnalytes" = TRUE
+    )
+    suppressMessages({
+      testthat::expect_error(tmp <- eCerto:::render_report_V(inp_data=inp_data, V_pars=V_pars), NA)
+    })
+    testthat::expect_true(file.exists(tmp))
+    testthat::expect_true(readLines(tmp, n=1) == "<!DOCTYPE html>")
+  }
+)

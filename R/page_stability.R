@@ -346,50 +346,25 @@ page_StabilityServer <- function(id, rv) {
     # u transfer
     m_TransferUServer(id = "s_transfer", rv = rv, type = "S")
 
-    # download outputs
+    # download report
     output$s_Report <- shiny::downloadHandler(
-      filename = function() {
-        "Stability_report.html"
-      },
+      filename = function() { "Stability_report.html" },
       content = function(file) {
-        rmdfile <- get_local_file("report_vorlage_stability.Rmd")
-        # render the markdown file
-        shiny::withProgress(
-          expr = {
-            incProgress(0.5)
-            out <- rmarkdown::render(
-              input = rmdfile,
-              output_file = file,
-              output_format = rmarkdown::html_document(),
-              params = list(
-                "Stability" = shiny::reactiveValuesToList(getValue(rv, "Stability")),
-                "Options" = list(
-                  "s_Data" = s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),],
-                  "apm" = getValue(rv, c("General", "apm")),
-                  "U_Def" = input$s_sel_dev,
-                  "mt" = getValue(rv, c("General", "materialtabelle")),
-                  "type" = as.numeric(input$plot_type),
-                  "t_cert" = input$s_shelf_life,
-                  "slope_of_means" = s_pars$slope_of_means,
-                  "show_legend" = s_pars$show_legend,
-                  "show_ids" = s_pars$show_ids
-                )
-              ),
-              envir = new.env(parent = globalenv())
-            )
-          },
-          message = "Rendering Stability Report..."
+        render_report_S(
+          file = file,
+          rv = rv,
+          s_dat = s_Data(),
+          s_pars = s_pars,
+          U_def = input$s_sel_dev,
+          t_cert = input$s_shelf_life,
+          p_type = as.numeric(input$plot_type)
         )
-        return(out)
       }
     )
 
     # help modals
-    shiny::observeEvent(input$fig1_link, {
-      show_help("stability_plot")
-    })
-    shiny::observeEvent(input$tab_link, {
-      show_help("stability_uncertainty")
-    })
+    shiny::observeEvent(input$fig1_link, { show_help("stability_plot") })
+    shiny::observeEvent(input$tab_link, { show_help("stability_uncertainty") })
+
   })
 }

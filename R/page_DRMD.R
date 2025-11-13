@@ -11,7 +11,7 @@
 #'       eCerto:::page_DRMDUI(id = "test")
 #'     ),
 #'     server = function(input, output, session) {
-#'       fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/DRMD/drmc-007.xml"
+#'       fl <- system.file("extdata", "drmd", "BAM-M375a.xml", package = "eCerto")
 #'       eCerto:::page_DRMDServer(id = "test", test_data = fl)
 #'     }
 #'   )
@@ -157,7 +157,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
       }
     })
 
-    # observers
+    # observers ====
     # upload info used in UI part
     output$D_fileUploaded <- shiny::reactive({
       return(!is.null(input$D_input_file$datapath) | !is.null(test_data))
@@ -237,11 +237,10 @@ page_DRMDServer <- function(id, test_data = NULL) {
       L3 <- sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[3] })
       L6 <- sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[6] })
       txt <- D$tab_D2[which(L3 == D$i & L6 == 1),"value"]
-      #browser()
       if (length(txt)>=1 && !all(is.na(txt))) shinyjs::html(id = "Result_set_annotations", html = shiny::HTML(paste(txt, sep="<br>")))
     })
 
-    # tables
+    # tables ====
     # the admin data
     output$tab_D1 <- DT::renderDataTable({
       shiny::req(D$tab_D1)
@@ -254,6 +253,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
       styleTabD2(df = D$tab_D2, L3 = D$i)
     })
 
+    # the full XML
     output$tab_D3 <- DT::renderDataTable({
       shiny::req(D$tab_D3)
       styleTabD3(df = D$tab_D3)
@@ -286,33 +286,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
     output$Report <- shiny::downloadHandler(
       filename = paste0("DRMD_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".html"),
       content = function(file) {
-        # ensure that logo file and font files are in the same folder as the Rmd.
-        rmdfile <- get_local_file("report_vorlage_drmd.Rmd")
-        logofile <- "BAMLogo2015.png"
-        # font files: "BAMKlavika-Light.ttf", "BAMKlavika-Medium.ttf", "BAMKlavika-LightItalic.ttf", "BAMKlavika-MediumItalic.ttf"
-
-        # Set up parameters to pass to Rmd document
-        D <- shiny::reactiveValuesToList(D)
-        params <- list(
-          "D" = D,
-          "logo_file" = logofile
-        )
-        # Knit the document, passing in the `params` list, and eval it in a
-        # child of the global environment (this isolates the code in the document
-        # from the code in this app).
-        shiny::withProgress(
-          expr = {
-            incProgress(0.5)
-            rmarkdown::render(
-              input = rmdfile,
-              output_file = file,
-              output_format = "html_document",
-              params = params,
-              envir = new.env(parent = globalenv())
-            )
-          },
-          message = "Rendering DRMD Report.."
-        )
+        render_report_D(file = file, D = shiny::reactiveValuesToList(D))
       }
     )
 
@@ -326,7 +300,6 @@ page_DRMDServer <- function(id, test_data = NULL) {
       filename = function() { ifelse(is.null(D$xml_file), "test.xml", D$xml_file) },
       content = function(file) {
         # convert modified list back to xml structure and save to disc
-        #browser()
         xml_mod <- validate_drmd_xml(drmc = xml2::as_xml_document(x = D$data_mod))
         xml2::write_xml(x = xml_mod, file = file)
       },
@@ -334,14 +307,9 @@ page_DRMDServer <- function(id, test_data = NULL) {
     )
 
     # Help Files
-    shiny::observeEvent(input$InputHelp, {
-      show_help("drmd_dataupload")
-    })
-    shiny::observeEvent(input$TabD1_link, {
-      show_help("drmd_tab_D1")
-    })
-    shiny::observeEvent(input$TabD2_link, {
-      show_help("drmd_tab_D2")
-    })
+    shiny::observeEvent(input$InputHelp, { show_help("drmd_dataupload") })
+    shiny::observeEvent(input$TabD1_link, { show_help("drmd_tab_D1") })
+    shiny::observeEvent(input$TabD2_link, { show_help("drmd_tab_D2") })
+
   })
 }

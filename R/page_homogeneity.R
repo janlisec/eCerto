@@ -295,53 +295,19 @@ page_HomogeneityServer <- function(id, rv) {
     # U transfer button module
     m_TransferUServer(id = "h_transfer", rv = rv, type = "H")
 
-    # download outputs
+    # download reports
     output$h_Report <- shiny::downloadHandler(
-      # filename = function() { "Homogeneity_report.pdf" },
-      filename = function() {
-        "Homogeneity_report.html"
-      },
+      filename = function() { "Homogeneity_report.html" },
       content = function(file) {
-        rmdfile <- get_local_file("report_vorlage_homogeneity.Rmd")
-        # render the markdown file
-        shiny::withProgress(
-          expr = {
-            incProgress(0.5)
-            out <- rmarkdown::render(
-              input = rmdfile,
-              output_file = file,
-              # output_format = rmarkdown::pdf_document(),
-              output_format = rmarkdown::html_document(),
-              params = list(
-                "Homogeneity" = shiny::reactiveValuesToList(getValue(rv, "Homogeneity")),
-                "xlab" = input$FigH1_xlab,
-                "precision" = rv$a_p("precision"),
-                "adjust" = input$h_adjust
-              ),
-              envir = new.env(parent = globalenv())
-            )
-          },
-          message = "Rendering Homogeneity Report..."
-        )
-        return(out)
+        render_report_H(file = file, rv = rv, xlab = input$FigH1_xlab, adjust = input$h_adjust)
       }
     )
 
     # help modals
-    shiny::observeEvent(input$hom_help_modal, {
-      show_help("homogeneity_uncertainty")
-    })
+    shiny::observeEvent(input$hom_help_modal, { show_help("homogeneity_uncertainty") })
+    shiny::observeEvent(input$tab1_link, { show_help("homogeneity_uncertainty") })
+    shiny::observeEvent(input$tab2_link, { show_help("homogeneity_specimen_stats") })
+    shiny::observeEvent(input$fig1_link, { show_help("homogeneity_boxplot") })
 
-    shiny::observeEvent(input$tab1_link, {
-      show_help("homogeneity_uncertainty")
-    })
-
-    shiny::observeEvent(input$tab2_link, {
-      show_help("homogeneity_specimen_stats")
-    })
-
-    shiny::observeEvent(input$fig1_link, {
-      show_help("homogeneity_boxplot")
-    })
   })
 }
