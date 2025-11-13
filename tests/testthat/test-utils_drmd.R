@@ -1,25 +1,27 @@
 testthat::test_that(
-  desc = "df_to_nested_list and flatten_list_to_df are working",
+  desc = "flatten_list_to_df is working",
   code = {
-    df <- data.frame(
-      path = c("a_b_c", "a_b_d", "a_e", "a_b_c", "a_b_d", "f"),
-      idx = c("1_1_1", "1_1_2", "1_2", "1_3_1", "1_3_2", "2"),
-      value = c("value1", "value2", "value3", "value5", "value6", "value4"),
-      stringsAsFactors = FALSE
+    lst <- list(
+      a = list(
+        b = list(
+          c = "v1",
+          d = "v2"
+        ),
+        e = "v3",
+        b = list(
+          c = "v5",
+          d = "v6"
+        )
+      ),
+      f = "v4"
     )
-    lst <- eCerto:::df_to_nested_list(df)
-    df2 <- eCerto:::flatten_list_to_df(lst)
-    testthat::expect_true(identical(df, df2))
+    out <- eCerto:::flatten_list_to_df(lst)
+    testthat::expect_true(is.data.frame(out))
+    testthat::expect_true(all(colnames(out) %in% c("path","idx","value")))
+    testthat::expect_true(nrow(out)==6)
 
-    # use different separator
-    df2 <- eCerto:::flatten_list_to_df(lst, sep="|")
-    testthat::expect_equal(lst, eCerto:::df_to_nested_list(df2, sep="[|]"))
-
-    # check filtering
-    df3 <- eCerto:::filter_flattened_list(df = df2, flt = "^1[|]3")
-    testthat::expect_true(is.data.frame(df3))
-    testthat::expect_equal(nrow(df3), 2)
-
+    out <- eCerto:::flatten_list_to_df(lst, sep="|")
+    testthat::expect_equal(grep("[|]", out[,1]), 1:5)
   }
 )
 

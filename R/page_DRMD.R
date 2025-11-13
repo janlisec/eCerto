@@ -50,14 +50,7 @@ page_DRMDUI <- function(id) {
       shiny::actionLink(inputId = ns("TabD2_link"), label = "Tab.D2 - Quant data"),
       shiny::div(
         shiny::div(id = ns("Result_set_annotations"), style = "float: left; margin-left: 15px; text-align: right; width: 420px;", "Result set annotations"),
-        # "D_sel_i" will hold all available 'Results' nodes
         shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::pickerInput(inputId = ns("D_sel_i"), label = NULL, choices = "", width = "200px"))
-        # shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::dropdownButton(
-        #   inputId = ns("btn_Comment"), label = "Comment or Filter", circle = FALSE, width = "300px", inline = TRUE, right=FALSE,
-        #   shinyjs::disabled(shiny::textInput(inputId = ns("datacomment"), label = "Comment text", value = "", placeholder = "Select point in Fig.L1 or row in Tab.L1 and modify comment")),
-        #   shiny::checkboxInput(inputId = ns("dataflt"), label = "Filter datapoint", value = FALSE)
-        #   #shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment")
-        # )),
       )
     ),
     bslib::card_body(

@@ -3,9 +3,9 @@
 #' @details tbd.
 #' @param df The data.frame of values.
 #' @examples
-#' inp <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/DRMD/drmc-007.xml"
-#' tab <- eCerto:::read_drmd_xml(inp)
-#' tab <- eCerto:::xml2df(tab, type = "full")
+#' fl <- system.file("extdata", "drmd", "BAM-M375a.xml", package = "eCerto")
+#' lst <- eCerto:::read_drmd_xml(fl)
+#' tab <- eCerto:::flatten_list_to_df(lst)
 #' out_dt <- eCerto:::styleTabD3(df = tab)
 #' out_dt
 #' @return A datatable object.

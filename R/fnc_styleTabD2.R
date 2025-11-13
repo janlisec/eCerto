@@ -5,9 +5,9 @@
 #' @param selected Currently selected row.
 #' @param interact_ele Show interactive elements (ordering and buttons), respectively use FALSE to hide them for Word export.
 #' @examples
-#' inp <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/DRMD/drmc-007.xml"
-#' tab <- eCerto:::read_drmd_xml(inp)
-#' tab <- eCerto:::xml2df(tab, type = "quant")
+#' fl <- system.file("extdata", "drmd", "BAM-M375a.xml", package = "eCerto")
+#' lst <- eCerto:::read_drmd_xml(fl)
+#' tab <- eCerto:::flatten_list_to_df(lst)
 #' out_dt <- eCerto:::styleTabD2(df = tab, selected = NULL, interact_ele = FALSE)
 #' out_dt
 #' @return A datatable object.

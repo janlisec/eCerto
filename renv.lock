@@ -958,11 +958,11 @@
     },
     "eCerto": {
       "Package": "eCerto",
-      "Version": "0.8.7",
+      "Version": "0.8.8",
       "Source": "GitHub",
       "Type": "Package",
       "Title": "Statistical Tests for the Production of Reference Materials",
-      "Date": "2025-11-06",
+      "Date": "2025-11-07",
       "Authors@R": "c( person(\"Jan\", \"Lisec\", , \"jan.lisec@bam.de\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0003-1220-2286\")), person(\"Frederik\", \"Kre\\u00df\", role = \"ctb\") )",
       "Maintainer": "Jan Lisec <jan.lisec@bam.de>",
       "Description": "The production of certified reference materials (CRMs) requires  various statistical tests depending on the task and recorded data to ensure  that reported values of CRMs are appropriate.  Often these tests are performed according to the procedures described in  'ISO GUIDE 35:2017'. The 'eCerto' package contains a 'Shiny' app which  provides functionality to load, process, report and backup data recorded  during CRM production and facilitates following the recommended procedures. It is described in Lisec et al (2023) <doi:10.1007/s00216-023-05099-3> and can also be accessed online <https://apps.bam.de/shn00/eCerto/> without  package installation.",
@@ -1017,7 +1017,7 @@
       "RemoteUsername": "janlisec",
       "RemoteRepo": "eCerto",
       "RemoteRef": "main",
-      "RemoteSha": "af76663452cb05db67b400af6631d5d242639545"
+      "RemoteSha": "790c255b701faf1d8d90f67fbf7e0e96ffe1bc40"
     },
     "evaluate": {
       "Package": "evaluate",
