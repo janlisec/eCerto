@@ -683,44 +683,205 @@ HTML2markdown <- function(x) {
   return(x)
 }
 
-#' @title format_hierarchy.
-#' @description Function to DRMD hierarchy into better format.
-#' @param x A character vector.
-#' @param ori_sep ori_sep.
-#' @param new_sep new_sep.
-#' @param replace_symbol replace_symbol.
-#' @examples
-#' \dontrun{
-#'   x <- c("1_1_1_1", "1_1_2_1", "1_2_1_1_1", "1_2_1_2_1", "1_3_1_1")
-#'   cbind(x, format_hierarchy(x = x))
-#' }
-#' @return Character.
+#' @title render_report
+#' @description generic render function
+#' @param file output file.
+#' @param fmt output format of render.
+#' @param rmd_template rmd_template.
+#' @param params parameter list provided to rmd_template.
+#' @param quiet Set FALSE to get rmarkdown messages printed to the console.
 #' @keywords internal
 #' @noRd
-format_hierarchy <- function(x, ori_sep = "_", new_sep = ".", replace_symbol = "_") {
-  if (all(grepl("_1$", x))) { x <- gsub("_1$", "", x) }
-
-  split_vec <- strsplit(x, ori_sep)
-  result <- character(length(x))
-  prev <- character(0)
-
-  for (i in seq_along(split_vec)) {
-    current <- split_vec[[i]]
-
-    formatted <- character(length(current))
-    diff_found <- FALSE
-
-    for (j in seq_along(current)) {
-      if (!diff_found && j <= length(prev) && current[j] == prev[j]) {
-        formatted[j] <- replace_symbol
-      } else {
-        formatted[j] <- current[j]
-        diff_found <- TRUE
-      }
-    }
-    result[i] <- paste(formatted, collapse = new_sep)
-    prev <- current
+render_report <- function(file = "filename", fmt = NULL, rmd_template, params = list(), quiet = TRUE) {
+  if (is.character(fmt) && length(fmt)==1) {
+    fmt <- switch(
+      fmt,
+      "html" = rmarkdown::html_document(),
+      "docx" = rmarkdown::word_document(),
+      "pdf" = rmarkdown::pdf_document(),
+      fmt)
   }
-
-  return(result)
+  do_render <- function() {
+    rmarkdown::render(
+      input = rmd_template,
+      output_file = file,
+      output_format = fmt,
+      params = params,
+      envir = new.env(parent = globalenv()),
+      quiet = quiet
+    )
+  }
+  if (!is.null(shiny::getDefaultReactiveDomain())) {
+    shiny::withProgress(expr = {
+        shiny::incProgress(0.5)
+        do_render()
+      }, message = "Rendering Report.."
+    )
+  } else {
+    do_render()
+  }
+  return(file)
 }
+
+#' @title render_report_V
+#' @param file description
+#' @param inp_data description
+#' @param V_pars description
+#' @examples
+#' \dontrun{
+#'   # the following code will generate a Validation report from a template in a temporary file
+#'   fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
+#'   inp_data <- eCerto:::read_Vdata(file = fl, fmt = eCerto:::check_fmt_Vdata(fl))
+#'     V_pars <- list(
+#'       "opt_figV1_anal" = "PFBA",
+#'       "opt_figV1_level" = c(1,8),
+#'       "opt_tabV1_precision" = 4,
+#'       "opt_tabV1_alpha" = 0.5,
+#'       "opt_tabV1_k" = 3,
+#'       "opt_tabV1_unitcali" = "",
+#'       "opt_tabV1_unitsmpl" = "",
+#'       "opt_tabV1_convfac" = 1,
+#'       "opt_tabV1_fltLevels" = FALSE,
+#'       "txt_trueness" = "txt_trueness",
+#'       "txt_precision" = "txt_precision",
+#'       "txt_uncertainty" = "txt_uncertainty",
+#'       "opt_tabV1_useLevels" = TRUE,
+#'       "opt_tabV1_useAnalytes" = TRUE
+#'     )
+#'     rep_fl <- render_report_V(inp_data=inp_data, V_pars=V_pars)
+#'     readLines(rep_fl, n=10)
+#' }
+#' @keywords internal
+#' @noRd
+render_report_V <- function(file = tempfile(fileext = ".html"), inp_data, V_pars) {
+  fmt <- tolower(tools::file_ext(file))
+  params <- list(
+    "inp_data" = inp_data,
+    "logo_file" = "BAMLogo2015.png",
+    "V_pars" = V_pars,
+    "helptext_v_fig_V1" = readLines(get_local_file("v_fig_V1.[Rr][Mm][Dd]$")),
+    "helptext_v_tab_V1" = readLines(get_local_file("v_tab_V1.[Rr][Mm][Dd]$")),
+    "helptext_v_formula_collection" = readLines(get_local_file("v_formula_collection.[Rr][Mm][Dd]$"))
+  )
+  rmd_template <- get_local_file("report_vorlage_validation.[Rr][Mm][Dd]$")
+  render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+}
+
+#' @title render_report_M.
+#' @param file filename.
+#' @param mt materialtabelle.
+#' @param gen General parameters.
+#' @keywords internal
+#' @noRd
+render_report_M <- function(file = tempfile(fileext = ".html"), mt, gen) {
+  fmt <- tolower(tools::file_ext(file))
+  params = list(
+    "materialtabelle" = mt,
+    "General" = gen,
+    "logo_file" = "BAMLogo2015.png"
+  )
+  rmd_template <- get_local_file("report_vorlage_material.[Rr][Mm][Dd]$")
+  render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+}
+
+#' @title render_report_A.
+#' @param file filename.
+#' @param rv rv.
+#' @keywords internal
+#' @noRd
+render_report_A <- function(file = tempfile(fileext = ".html"), rv) {
+  fmt <- tolower(tools::file_ext(file))
+  params = list(
+    "General" = shiny::reactiveValuesToList(getValue(rv, "General")),
+    "Certification" = shiny::reactiveValuesToList(getValue(rv, "Certification")),
+    "Certification_processing" = shiny::reactiveValuesToList(getValue(rv, "Certification_processing")),
+    "selected_tab" = rv$cur_an,
+    "logo_file" = "BAMLogo2015.png"
+  )
+  rmd_template <- get_local_file("report_vorlage_analyt.[Rr][Mm][Dd]$")
+  render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+}
+
+#' @title render_report_H.
+#' @param file filename.
+#' @param rv rv.
+#' @param xlab xlab.
+#' @param adjust adjust.
+#' @keywords internal
+#' @noRd
+render_report_H <- function(file = tempfile(fileext = ".html"), rv, xlab, adjust) {
+  fmt <- tolower(tools::file_ext(file))
+  params = list(
+    "Homogeneity" = shiny::reactiveValuesToList(getValue(rv, "Homogeneity")),
+    "xlab" = xlab,
+    "precision" = rv$a_p("precision"),
+    "adjust" = adjust
+  )
+  rmd_template <- get_local_file("report_vorlage_homogeneity.[Rr][Mm][Dd]$")
+  render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+}
+
+#' @title render_report_S.
+#' @param file filename.
+#' @param rv rv.
+#' @param s_dat s_dat.
+#' @param s_pars s_pars.
+#' @param U_def U_def.
+#' @param t_cert t_cert.
+#' @param p_type p_type.
+#' @keywords internal
+#' @noRd
+render_report_S <- function(file = tempfile(fileext = ".html"), rv, s_dat, s_pars, U_def, t_cert, p_type) {
+  fmt <- tolower(tools::file_ext(file))
+  params = list(
+    "Stability" = shiny::reactiveValuesToList(getValue(rv, "Stability")),
+    "Options" = list(
+      "s_Data" = s_dat[!(rownames(s_dat) %in% s_pars$s_samples_filtered),],
+      "apm" = getValue(rv, c("General", "apm")),
+      "U_Def" = U_def,
+      "mt" = getValue(rv, c("General", "materialtabelle")),
+      "type" = p_type,
+      "t_cert" = t_cert,
+      "slope_of_means" = s_pars$slope_of_means,
+      "show_legend" = s_pars$show_legend,
+      "show_ids" = s_pars$show_ids
+    )
+  )
+  rmd_template <- get_local_file("report_vorlage_stability.[Rr][Mm][Dd]$")
+  render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+}
+
+#' @title render_report_L.
+#' @param file filename.
+#' @param x x.
+#' @keywords internal
+#' @noRd
+render_report_L <- function(file = tempfile(fileext = ".pdf"), x) {
+  # this needs to be "pdf_document", so that render will switch to lualatex as specified in Rmd template
+  fmt <- "pdf_document"
+  # remove filtered values from report (if any)
+  if (any(x[[1]][["val"]][,"Filter"])) {
+    x[[1]][["val"]] <- x[[1]][["val"]][!x[[1]][["val"]][,"Filter"],]
+  }
+  params <- list(
+    "dat" = x
+  )
+  rmd_template <- get_local_file("report_vorlage_lts.[Rr][Mm][Dd]$")
+  render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+}
+
+#' @title render_report_D.
+#' @param file filename.
+#' @param D D.
+#' @keywords internal
+#' @noRd
+render_report_D <- function(file = tempfile(fileext = ".pdf"), D) {
+  fmt <- tolower(tools::file_ext(file))
+  params <- list(
+    "D" = D,
+    "logo_file" = "BAMLogo2015.png"
+  )
+  rmd_template <- get_local_file("report_vorlage_drmd.[Rr][Mm][Dd]$")
+  render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+}
+

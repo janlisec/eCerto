@@ -237,62 +237,6 @@ page_validationUI <- function(id) {
 page_validationServer <- function(id, test_data = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
 
-    # Reports & Backup ====
-    output$v_report <- shiny::downloadHandler(
-      filename = function() {
-        paste0("Validation Report.", input$v_report_fmt)
-      },
-      content = function(file) {
-        # Copy the report file to a temporary directory before processing it
-        rmdfile <- get_local_file("report_vorlage_validation.[Rr][Mm][Dd]$")
-        logofile <- "BAMLogo2015.png"
-        # render the markdown file
-        shiny::withProgress(
-          expr = {
-            incProgress(0.5)
-            rmarkdown::render(
-              input = rmdfile,
-              output_file = file,
-              output_format = {
-                if (input$v_report_fmt=="html") rmarkdown::html_document() else rmarkdown::word_document()
-              },
-              params = list(
-                "inp_data" = tab(),
-                "logo_file" = logofile,
-                "V_pars" = shiny::reactiveValuesToList(V_pars),
-                "helptext_v_fig_V1" = readLines(get_local_file("v_fig_V1.[Rr][Mm][Dd]$")),
-                "helptext_v_tab_V1" = readLines(get_local_file("v_tab_V1.[Rr][Mm][Dd]$")),
-                "helptext_v_formula_collection" = readLines(get_local_file("v_formula_collection.[Rr][Mm][Dd]$"))
-              ),
-              envir = new.env(parent = globalenv())
-            )
-          },
-          message = "Rendering Validation Report.."
-        )
-      }
-    )
-
-    output$v_backup_save <- shiny::downloadHandler(
-      filename = function() {
-        paste0("eCerto_V_backup.RData", "")
-      },
-      content = function(file) {
-        eCerto_V_backup <- list(
-          "tab" = tab(),
-          "V_pars" = reactiveValuesToList(V_pars)
-        )
-        # store backup
-        shiny::withProgress(
-          expr = {
-            incProgress(0.5)
-            save(eCerto_V_backup, file = file)
-          },
-          message = "Storing data backup.."
-        )
-      },
-      contentType = "RData"
-    )
-
     # User pars for V module ====
     V_pars <- shiny::reactiveValues(
       "opt_figV1_anal" = "",
@@ -397,13 +341,13 @@ page_validationServer <- function(id, test_data = NULL) {
     shiny::observeEvent(input$v_backup_load$datapath, {
       V_pars$input_file_path <- input$v_backup_load$datapath
     })
+
     shiny::observeEvent(input$inp_file$datapath, {
       shinyjs::html(id = "inp_file_name", html = shiny::HTML(input$inp_file$name))
       # keep name of XLSX file
       if (tolower(tools::file_ext(input$inp_file$name)) == "xlsx") V_pars$input_file_name <- input$inp_file$name
       V_pars$input_file_path <- input$inp_file$datapath
     })
-
 
     shiny::observeEvent(V_pars$par_update, {
       shiny::showModal(
@@ -455,6 +399,26 @@ page_validationServer <- function(id, test_data = NULL) {
     })
 
     current_analyte <- shiny::reactiveValues("name" = NULL, "row" = NULL)
+
+    V2_dat <- reactive({
+      req(tab(), V_pars$opt_figV1_level, input$opt_V2_vals, current_analyte$name %in% tab()[,"Analyte"])
+      # $$ check if prepDataV1 function can be extended to generate the same output as this function
+      x <- tab()
+      x <- split(x, x$Analyte)[[current_analyte$name]]
+      x <- split(x, x$Level)[V_pars$opt_figV1_level]
+      x <- lapply(x, function(y) {
+        y[,"Value"] <- NA
+        if (input$opt_V2_vals == "Area_Analyte") { y[,"Value"] <- y[,"Area_Analyte"] }
+        if (input$opt_V2_vals == "Area_IS") { y[,"Value"] <- y[,"Area_IS"] }
+        if (input$opt_V2_vals == "Analyte/IS") { y[,"Value"] <- y[,"Area_Analyte"]/y[,"Area_IS"] }
+        if (input$opt_V2_vals == "relative(Analyte/IS)") {
+          y[,"Value"] <- y[,"Area_Analyte"]/y[,"Area_IS"]
+          y[,"Value"] <- y[,"Value"]/mean(y[,"Value"], na.rm=TRUE)
+        }
+        return(y)
+      })
+      return(x)
+    })
 
     # Tables ====
     # Table V1 ====
@@ -580,31 +544,40 @@ page_validationServer <- function(id, test_data = NULL) {
       prepFigV2(tab = tab_flt(), a = current_analyte$name, flt_outliers = V_pars$opt_tabV1_fltLevels)
     })
 
-    V2_dat <- reactive({
-      req(tab(), tab_V1(), V_pars$opt_figV1_level, input$opt_V2_vals, current_analyte$name %in% tab()[,"Analyte"])
-      # $$ check if prepDataV1 function can be extended to generate the same output as this function
-      x <- tab()
-      x <- split(x, x$Analyte)[[current_analyte$name]]
-      x <- split(x, x$Level)[V_pars$opt_figV1_level]
-      x <- lapply(x, function(y) {
-        y[,"Value"] <- NA
-        if (input$opt_V2_vals == "Area_Analyte") { y[,"Value"] <- y[,"Area_Analyte"] }
-        if (input$opt_V2_vals == "Area_IS") { y[,"Value"] <- y[,"Area_IS"] }
-        if (input$opt_V2_vals == "Analyte/IS") { y[,"Value"] <- y[,"Area_Analyte"]/y[,"Area_IS"] }
-        if (input$opt_V2_vals == "relative(Analyte/IS)") {
-          y[,"Value"] <- y[,"Area_Analyte"]/y[,"Area_IS"]
-          y[,"Value"] <- y[,"Value"]/mean(y[,"Value"], na.rm=TRUE)
-        }
-        return(y)
-      })
-      return(x)
-    })
-
     # Figure V3 ====
     output$fig_V3 <- shiny::renderPlot({
       req(tab(), current_analyte$name, V_pars$opt_figV1_level)
       prepFigV3(x = flt_Vdata(x = tab(), l = V_pars$opt_figV1_level, a = current_analyte$name, rng = FALSE))
     })
+
+    # Reports & Backup ====
+    # Report ====
+    output$v_report <- shiny::downloadHandler(
+      filename = function() { paste0("Validation Report.", input$v_report_fmt) },
+      content = function(file) {
+        render_report_V(file = file, "inp_data" = tab(), "V_pars" = shiny::reactiveValuesToList(V_pars))
+      }
+    )
+
+    # Backup ====
+    output$v_backup_save <- shiny::downloadHandler(
+      filename = function() { paste0("eCerto_V_backup.RData", "") },
+      content = function(file) {
+        eCerto_V_backup <- list(
+          "tab" = tab(),
+          "V_pars" = reactiveValuesToList(V_pars)
+        )
+        # store backup
+        shiny::withProgress(
+          expr = {
+            incProgress(0.5)
+            save(eCerto_V_backup, file = file)
+          },
+          message = "Storing data backup.."
+        )
+      },
+      contentType = "RData"
+    )
 
     # Help section ====
     shiny::observeEvent(input$InputHelp, { show_help("v_dataupload") })

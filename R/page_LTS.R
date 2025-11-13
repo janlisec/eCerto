@@ -385,42 +385,9 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
 
     # REPORT LTS
     output$Report <- shiny::downloadHandler(
-      filename = paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf"),
+      filename = function() { paste0("LTS_Report_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".pdf") },
       content = function(file) {
-        # ensure that logo file and font files are in the same folder as the Rmd.
-        rmdfile <- get_local_file("report_vorlage_lts.Rmd")
-        # logofile <- "BAMLogo2015.png"
-        # font files: "BAMKlavika-Light.ttf", "BAMKlavika-Medium.ttf", "BAMKlavika-LightItalic.ttf", "BAMKlavika-MediumItalic.ttf"
-
-        # Set up parameters to pass to Rmd document
-        x <- lts[["data"]][i()]
-        # remove filtered values from report (if any)
-        if (any(x[[1]][["val"]][,"Filter"])) {
-          x[[1]][["val"]] <- x[[1]][["val"]][!x[[1]][["val"]][,"Filter"],]
-        }
-        #dat <- lts[["data"]]
-        #if (length(dat) >= 2 & i() >= 2) for (j in rev(1:(i() - 1))) dat[j] <- NULL
-        params <- list(
-          "dat" = x#,
-          #"logo_file" = logofile,
-          #"fnc" = list("plot_lts_data" = plot_lts_data)
-        )
-        # Knit the document, passing in the `params` list, and eval it in a
-        # child of the global environment (this isolates the code in the document
-        # from the code in this app).
-        shiny::withProgress(
-          expr = {
-            incProgress(0.5)
-            rmarkdown::render(
-              input = rmdfile,
-              output_file = file,
-              output_format = "pdf_document",
-              params = params,
-              envir = new.env(parent = globalenv())
-            )
-          },
-          message = "Rendering LTS Report.."
-        )
+        render_report_L(file = file, x = lts[["data"]][i()])
       }
     )
 
@@ -438,14 +405,9 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     )
 
     # Help Files
-    shiny::observeEvent(input$TabL1_link, {
-      show_help("lts_tab_L1")
-    })
-    shiny::observeEvent(input$FigL1_link, {
-      show_help("lts_fig_L1")
-    })
-    shiny::observeEvent(input$InputHelp, {
-      show_help("lts_dataupload")
-    })
+    shiny::observeEvent(input$TabL1_link, { show_help("lts_tab_L1") })
+    shiny::observeEvent(input$FigL1_link, { show_help("lts_fig_L1") })
+    shiny::observeEvent(input$InputHelp, { show_help("lts_dataupload") })
+
   })
 }

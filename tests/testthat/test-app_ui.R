@@ -23,17 +23,3 @@ testthat::test_that(
     }
   }
 )
-
-testthat::test_that(
-  desc = "page_validationUI",
-  code = {
-    ui <- eCerto:::page_validationUI
-    golem::expect_shinytaglist(ui(id = "test"))
-    # Check that formals have not been removed
-    fmls <- formals(ui)
-    for (i in c("id")) {
-      testthat::expect_true(i %in% names(fmls))
-    }
-  }
-)
-
