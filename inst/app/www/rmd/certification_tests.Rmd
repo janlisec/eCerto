@@ -104,8 +104,8 @@ eCerto:::dixon.test
 
 <br> In ***eCerto*** the one-sided version of the Dixon test is applied consecutively
 at the lower and upper end. Critical values are stored in tabulated form internally 
-(`eCerto::cvals_Dixon`) and have been combined in a single table from 
-[this source](http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html).
+(`eCerto::cvals_Dixon`) and have been combined in a single table from <a href="http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html" target="_blank" rel="noopener noreferrer">this source</a>.
+
 <details>
   <summary>Show Dixon critical values table</summary>
 
@@ -205,8 +205,7 @@ round(out[rownames(out)%in%ns, colnames(out)%in%ps], 4)
 </details> 
 
 <br> ***Note!*** Critical values for double Grubbs are obtained from the `outliers` package 
-for 4≤n≤30 and are estimated for 31≤n≤100 based on the approximation described in
-[this paper](https://link.springer.com/article/10.1007/s10182-011-0185-y).
+for 4≤n≤30 and are estimated for 31≤n≤100 based on the approximation described in <a href="https://link.springer.com/article/10.1007/s10182-011-0185-y" target="_blank" rel="noopener noreferrer">this paper</a>.
 
 The test is originally based on:  
 "Grubbs, F.E. (1950). Sample Criteria for testing outlying observations. Ann. Math. Stat. 21, 1, 27-58".

@@ -2,13 +2,13 @@
 title: "*eCerto* (Statistics for CRM production)"
 output:
   html_document:
-  toc: true
-  toc_depth: 3
-  toc_float:
-   collapsed: false
-   smooth_scroll: false
-  embed-resources: true
-  standalone: true
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    embed-resources: true
+    standalone: true
   # html:
   #   options:
   #     toc:
@@ -21,7 +21,7 @@ output:
 ---
 
 
-```{css, eval = FALSE, echo = FALSE}
+```{css, eval = TRUE, echo = FALSE}
 
 .tocify-header {
   text-indent: initial;

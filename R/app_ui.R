@@ -7,12 +7,12 @@
 #' @keywords internal
 app_ui <- function(request = NULL) {
 
-  # htis is the padding definition for all panels to respect navbar and footer
+  # this is the padding definition for all panels to respect navbar and footer
   navbar_padding <- "56px"
   footer_padding <- "48px"
   nps <- paste0("padding-top: ", navbar_padding, "; padding-bottom: ", footer_padding)
 
-  # here a bslin them can be defined; however, they all fail at some point with the eCerto layout
+  # here a bslib them can be defined; however, they all fail at some point with the eCerto layout
   # and are not used in the app
   eCerto_theme <- bslib::bs_theme(
     preset = "shiny",
@@ -114,7 +114,7 @@ app_ui <- function(request = NULL) {
           style = nps,
           # don't render Help page in testing mode
           if (getOption("eCerto.renderHelp", default = TRUE)) {
-            shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = c("auto", "shiny", "shinyrmd", "shiny_prerendered")[2], quiet = TRUE)))
+            shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = "static", quiet = TRUE)))
           } else {
             shiny::div("No help page because App is in testing mode currently.")
           }
