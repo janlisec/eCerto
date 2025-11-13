@@ -1,7 +1,6 @@
 testthat::test_that(
   desc = "flatten_list_to_df is working",
   code = {
-
     lst <- list(
       a = list(
         b = list(
@@ -16,14 +15,13 @@ testthat::test_that(
       ),
       f = "v4"
     )
-    out <- flatten_list_to_df(lst)
+    out <- eCerto:::flatten_list_to_df(lst)
     testthat::expect_true(is.data.frame(out))
     testthat::expect_true(all(colnames(out) %in% c("path","idx","value")))
     testthat::expect_true(nrow(out)==6)
 
-    out <- flatten_list_to_df(lst, sep="|")
+    out <- eCerto:::flatten_list_to_df(lst, sep="|")
     testthat::expect_equal(grep("[|]", out[,1]), 1:5)
-
   }
 )
 
