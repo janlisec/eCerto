@@ -9,8 +9,9 @@ Sys.setenv("GOLEM_CONFIG_ACTIVE"="default")
 
 ## check for the code covered by test functions
 # x <- covr::package_coverage(quiet = FALSE, function_exclusions = "page_*")
+# x <- covr::package_coverage(quiet = FALSE)
 # covr::zero_coverage(x = x)
-# covr::function_coverage(fun = eCerto:::app_server)
+# covr::function_coverage(fun = eCerto:::m_longtermstabilityServer)
 # covr::function_coverage(fun = eCerto:::list2rv, code = source("tests/testthat/test-list2rv.R"))
 
 ## tests with snaps fail upon "RCHECK" while being successful in "test_check"
