@@ -14,7 +14,6 @@
 #' @param sheet Number of the sheet to preview.
 #' @param file Number of the file to preview.
 #' @param excelformat Selected sub format as reactive string.
-#' @param check TRUE/FALSE indicating if already data of this type are present.
 #'
 #' @return A reactiveValues list with \code{start_col}, \code{end_col}, \code{tab_flt}
 #'
@@ -22,6 +21,7 @@
 #' if (interactive()) {
 #'   shiny::shinyApp(
 #'     ui = shiny::fluidPage(
+#'       shinyjs::useShinyjs(),
 #'       shiny::fluidRow(
 #'         shiny::column(3, shiny::fileInput(inputId = "x", label = "Modul parameter: x", accept = "xlsx", multiple = TRUE)),
 #'         shiny::column(3, shiny::numericInput(inputId = "sheet", label = "Modul parameter: sheet", value = 1)),
@@ -55,34 +55,30 @@
 m_xlsx_range_select_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
+    # [JL] calling useShinyjs() here is required because shinyjs::hidden statements do not work otherwise
     shinyjs::useShinyjs(),
-    shinyjs::hidden(
-      bslib::card(
-        id = ns("range_select_card"),
-        #height = "100%",
-        bslib::card_header(shiny::uiOutput(outputId = ns("uitxt"))),
-        shinyjs::hidden(shiny::div(
-          style = "width: 420px; float: left; color: red; background: rgba(0,0,0,0.04); border: 4px; padding: 16px;",
-          id = ns("info_msg")
-        )),
-        shiny::div(DT::DTOutput(outputId = ns("uitab")))
-      )
+    bslib::card(
+      id = ns("range_select_card"),
+      bslib::card_header(shiny::uiOutput(outputId = ns("uitxt"))),
+      shiny::div(DT::DTOutput(outputId = ns("uitab")))
     )
   )
 }
 
 #' @noRd
 #' @keywords internal
-m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive({NULL}), sheet = shiny::reactive({1}), file = shiny::reactive({1}), excelformat = shiny::reactive({"Certification"}), check = shiny::reactive({FALSE})) {
+m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive({NULL}), sheet = shiny::reactive({1}), file = shiny::reactive({1}), excelformat = shiny::reactive({"Certification"})) {
 
   stopifnot(shiny::is.reactive(current_file_input))
   stopifnot(shiny::is.reactive(sheet))
   stopifnot(shiny::is.reactive(file))
-  stopifnot(shiny::is.reactive(check))
 
   ns <- shiny::NS(id)
 
   shiny::moduleServer(id, function(input, output, session) {
+
+    shinyjs::hide(id = "range_select_card")
+    #shinyjs::hide(id = "info_msg")
 
     getRngTxt <- function(sc = 1, sr = 1, ec = 1, er = 1) {
       paste0(LETTERS[sc], sr, ":", LETTERS[ec], er)
@@ -152,71 +148,6 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
     })
 
     # table Proxy to ensure that only 2 cells are selected at any time
-    uitab_proxy <- DT::dataTableProxy("uitab")
-
-    # if rows and columns in the DT() have been selected
-    # shiny::observeEvent(input$uitab_cells_selected, {
-    #   cs <- input$uitab_cells_selected
-    #   if (nrow(cs) >= 2) {
-    #     check_cs <- function(x, exc_fmt = "Certification") {
-    #       min_rows <- switch(exc_fmt, "Certification" = 0, 1)
-    #       min_cols <- switch(exc_fmt, "Certification" = 2, 1)
-    #       diff(range(x[, 1])) >= min_rows &&
-    #         diff(range(x[, 2])) >= min_cols &&
-    #         any(tab_param$start_col != min(x[, 2]), tab_param$end_col != max(x[, 2]), tab_param$start_row != min(cs[, 1]), tab_param$end_row != max(cs[, 1]))
-    #     }
-    #     check_new_point <- function(x) {
-    #       x[3, 1] >= min(x[-3, 1]) & x[3, 1] <= max(x[-3, 1]) & x[3, 2] >= min(x[-3, 2]) & x[3, 2] <= max(x[-3, 2])
-    #     }
-    #     update_cs <- function() {
-    #       tab_param$start_col <- min(cs[, 2])
-    #       tab_param$end_col <- max(cs[, 2])
-    #       tab_param$start_row <- min(cs[, 1])
-    #       tab_param$end_row <- max(cs[, 1])
-    #       if (is.list(tab())) {
-    #         tab_param$tab <- lapply(tab(), function(x) {
-    #           x[min(cs[, 1]):max(cs[, 1]), min(cs[, 2]):max(cs[, 2]), drop = FALSE]
-    #         })
-    #       } else {
-    #         tab_param$tab <- tab()[min(cs[, 1]):max(cs[, 1]), min(cs[, 2]):max(cs[, 2]), drop = FALSE]
-    #       }
-    #       tab_param$rng <- getRngTxt(tab_param$start_col, tab_param$start_row, tab_param$end_col, tab_param$end_row)
-    #       DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
-    #     }
-    #     # the final row is the cell selected last by the user
-    #     if (nrow(cs) == 2 && check_cs(x = cs, exc_fmt = excelformat())) {
-    #       update_cs()
-    #     }
-    #     # did the user select a third point ?
-    #     if (nrow(cs) > 2) {
-    #       # is this third point outside or inside the current range
-    #       if (check_new_point(x = cs)) {
-    #         # when inside --> open a modal to inform the user that he needs to deselect another cell first
-    #         shiny::showModal(shiny::modalDialog(
-    #           shiny::HTML("You selected a cell within the current range.<br>Please deselect one of the two outer cells first.")
-    #         ))
-    #         DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
-    #       } else {
-    #         # when outside --> increase selected range automatically
-    #         if (check_cs(x = cs)) {
-    #           update_cs()
-    #         }
-    #       }
-    #       DT::selectCells(proxy = uitab_proxy, selected = matrix(c(tab_param$start_row, tab_param$end_row, tab_param$start_col, tab_param$end_col), ncol = 2))
-    #     }
-    #   }
-    # })
-
-    shiny::observeEvent(check(), {
-      if (check()) {
-        shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", excelformat(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
-        shinyjs::show(id = "info_msg")
-      } else {
-        shinyjs::html(id = "info_msg", html = "")
-        shinyjs::hide(id = "info_msg")
-      }
-    })
-
     uitab_proxy <- DT::dataTableProxy("uitab")
     output$uitab <- DT::renderDT(
       {

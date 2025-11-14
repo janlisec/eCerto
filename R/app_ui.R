@@ -7,27 +7,6 @@
 #' @keywords internal
 app_ui <- function(request = NULL) {
 
-  # this is the padding definition for all panels to respect navbar and footer
-  navbar_padding <- "56px"
-  footer_padding <- "48px"
-  nps <- paste0("padding-top: ", navbar_padding, "; padding-bottom: ", footer_padding)
-
-  # here a bslib them can be defined; however, they all fail at some point with the eCerto layout
-  # and are not used in the app
-  eCerto_theme <- bslib::bs_theme(
-    preset = "shiny",
-    base_font = bslib::font_google(c("Assistant", "Inter", "Open Sans")[3]),
-    #heading_font = bslib::font_google(c("Assistant", "Inter", "Open Sans")[3]),
-    #"--_sidebar-bg" = "#86cecb",
-    #"navbar-bg" = "#000000",
-    #"body-bg" = "#EEEEEE",
-    #"font-family-base" = "monospace",
-    #"font-size-base" = "1.4rem",
-    #"btn-padding-y" = ".16rem",
-    #"btn-padding-x" = "2rem"
-    font_scale = 1
-  )
-
   shiny::tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
@@ -39,16 +18,31 @@ app_ui <- function(request = NULL) {
 
     bslib::page_navbar(
       id = "navbarpage",
-      #theme = eCerto_theme,
       title = list(
         shiny::img(src = "www/bam_logo_200px_transparent.png", height = "40px", position = "absolute", margin = "auto", alt = "BAM Logo"),
         shiny::strong("BAM", style = "color: rgb(210,0,30);"),
         shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
       selected = "Start",
-      navbar_options = list(
+      navbar_options = bslib::navbar_options(
         bg = "black",
         position = "fixed-top"
+      ),
+      fillable = TRUE,
+      header = tags$head(
+        # ensuring that header and footer are respected by the nav_panels
+        tags$style(HTML("
+          html, body {
+            height: calc(100vh-56pxpx) !important;
+            padding-top: 56px;
+            padding-bottom: 24px;
+          }
+          /* This would cause the scroll bars to be in the tab-pane only, however it disrupts TOC linking on the help page
+          /* .tab-pane {
+             /* flex: 1;
+             /* overflow-y: auto !important; /* Scroll only within Panel */
+          /*}
+        "))
       ),
       footer = shiny::div(
         style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: white; width: 100%",
@@ -64,61 +58,57 @@ app_ui <- function(request = NULL) {
         id = "start",
         title = "Start",
         icon = shiny::icon("angle-right"),
-        shiny::div(style = nps, page_startUI("Start"))
+        page_startUI("Start")
       ),
       bslib::nav_panel(
         id = "homog_tab",
         title = "Homogeneity",
         icon = shiny::icon("angle-right"),
         value = "tP_homogeneity",
-        shiny::div(style = nps, page_HomogeneityUI("Homogeneity"))
+        page_HomogeneityUI("Homogeneity")
       ),
       bslib::nav_panel(
         id = "stab_tab",
         title = "Stability",
         icon = shiny::icon("angle-right"),
         value = "tP_stability",
-        shiny::div(style = nps, page_StabilityUI("Stability"))
+        page_StabilityUI("Stability")
       ),
       bslib::nav_panel(
         id = "certif_tab",
         title = "Certification",
         value = "tP_certification",
         icon = shiny::icon("angle-right"),
-        shiny::div(style = nps, page_CertificationUI("certification"))
+        page_CertificationUI("certification")
       ),
       # Long term stability
       bslib::nav_panel(
         title = "LTS",
         icon = shiny::icon("angle-right"),
         value = "tP_LTS",
-        shiny::div(style = nps, m_longtermstabilityUI("lts"))
+        m_longtermstabilityUI("lts")
       ),
       bslib::nav_panel(
         title = "Validation",
         icon = shiny::icon("angle-right"),
         value = "tP_Validation",
-        shiny::div(style = nps, page_validationUI("Validation"))
+        page_validationUI("Validation")
       ),
       bslib::nav_panel(
         title = "DRMD",
         icon = shiny::icon("angle-right"),
         value = "tP_DRDM",
-        shiny::div(style = nps, page_DRMDUI("DRMD"))
+        page_DRMDUI("DRMD")
       ),
       bslib::nav_panel(
         title = "Help",
         icon = shiny::icon("angle-right"),
         value = "tP_help",
-        shiny::div(
-          style = nps,
-          # don't render Help page in testing mode
-          if (getOption("eCerto.renderHelp", default = TRUE)) {
-            shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = "static", quiet = TRUE)))
-          } else {
-            shiny::div("No help page because App is in testing mode currently.")
-          }
-        )
+        if (getOption("eCerto.renderHelp", default = TRUE)) {
+          shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = "static", quiet = TRUE)))
+        } else {
+          shiny::div("No help page because App is in testing mode currently.")
+        }
       )
     )
   )
