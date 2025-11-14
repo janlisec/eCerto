@@ -23,6 +23,19 @@
       "deps": [
 
       ]
+    },
+    "test-excelfile-rng_select-uitab": [
+      "",
+      "NULL",
+      "c(\"shiny.silent.error\", \"validation\")"
+    ],
+    "test-excelfile-rng_select-uitxt": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
     }
   },
   "export": {
