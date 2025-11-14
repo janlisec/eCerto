@@ -1,0 +1,66 @@
+name: Gate Auto Merge and Docker Build
+
+on:
+  workflow_run:
+  workflows: ["R-CMD-check", "test-coverage"]
+types:
+  - completed
+
+jobs:
+  gate-check:
+  runs-on: ubuntu-latest
+steps:
+  - name: Check both workflows status
+uses: actions/github-script@v7
+with:
+  script: |
+  const { owner, repo } = context.repo;
+const sha = context.payload.workflow_run.head_sha;
+
+// Get all workflow runs for this commit
+const runs = await github.rest.actions.listWorkflowRunsForRepo({
+  owner,
+  repo,
+  per_page: 100
+});
+
+const ciWorkflows = ["R-CMD-check", "test-coverage"];
+const statuses = ciWorkflows.map(name => {
+  const run = runs.data.workflow_runs.find(r => r.name === name && r.head_sha === sha);
+  return run ? run.conclusion : null;
+});
+
+if (statuses.includes(null) || statuses.includes("failure")) {
+  core.setFailed(`Not all workflows succeeded: ${statuses}`);
+} else {
+  console.log("All CI workflows succeeded.");
+}
+
+merge-and-build:
+  needs: gate-check
+runs-on: ubuntu-latest
+if: ${{ success() }}
+steps:
+  - name: Checkout repository
+uses: actions/checkout@v4
+
+- name: Configure Git
+run: |
+  git config user.name "github-actions[bot]"
+git config user.email "github-actions[bot]@users.noreply.github.com"
+
+- name: Fetch all branches
+run: git fetch --all
+
+- name: Merge devel into main
+run: |
+  git checkout main
+git merge origin/devel --no-ff -m "Auto-merge devel into main after successful CI"
+git push origin main
+
+
+docker-build:
+    needs: merge-and-build
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      image_tag: latest
