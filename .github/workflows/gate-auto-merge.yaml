@@ -38,30 +38,30 @@ jobs:
               console.log("Alle CI-Workflows erfolgreich.");
             }
 
-merge-and-build:
-  needs: gate-check
-  runs-on: ubuntu-latest
-  if: ${{ success() }}
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+  merge-and-build:
+    needs: gate-check
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Configure Git
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-    - name: Fetch all branches
-      run: git fetch --all
+      - name: Fetch all branches
+        run: git fetch --all
 
-    - name: Merge devel into main
-      run: |
-        git checkout main
-        git merge origin/devel --no-ff -m "Auto-merge devel into main after successful CI"
-        git push origin main
+      - name: Merge devel into main
+        run: |
+          git checkout main
+          git merge origin/devel --no-ff -m "Auto-merge devel into main after successful CI"
+          git push origin main
 
-docker-build:
-  needs: merge-and-build
-  uses: ./.github/workflows/docker-build.yaml
-  with:
-    image_tag: latest
+  docker-build:
+    needs: merge-and-build
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      image_tag: latest
