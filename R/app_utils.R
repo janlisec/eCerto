@@ -490,8 +490,6 @@ welcome_screen <- function(id = id) {
             col_widths = c(2, 10),
             shiny::img(src = "www/hex-eCerto.png", alt = "eCerto Hex-Logo", margin = "auto", width = "90%"),
             shiny::div(
-              # shiny::div(style = "font-size: large;", "Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
-              # shiny::div(style = "font-size: xx-large;", "Welcome to eCerto!")
               shiny::h3("Are you looking for a software to compute statistical tests on data generated in Reference Material production?"),
               shiny::h1(shiny::HTML("Welcome to <i>eCerto</i>!"))
             )

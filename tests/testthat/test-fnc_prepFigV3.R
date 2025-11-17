@@ -1,6 +1,8 @@
 testthat::test_that(
   desc = "prepFigV3 works",
   code = {
+    skip_if_not_linux_ci()
+
     inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
     tab <- eCerto:::read_Vdata(file = inp)
     x <- eCerto:::flt_Vdata(x = tab, l = c(2,4), a = "PFBA")

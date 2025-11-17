@@ -35,19 +35,16 @@
 m_ExcelUpload_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
-    # [JL] calling useShinyjs() here is required because ???
-    shinyjs::useShinyjs(),
-    shiny::tagList(
-      #shiny::fluidRow(
-      bslib::card(
+    # show welcome screen if no range select is needed
+    div(id = ns("welcome_screen"), welcome_screen(id = id)),
+    # show upload options
+    bslib::card(
         #style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
-        style = "background-color: var(--_sidebar-bg);",
+        style = "background-color: var(--_sidebar-bg); min-height: 148px; max-height: 148px;",
         shiny::div(
           shiny::div(
             style = "width: 130px; float: left; margin-bottom: -12px; margin-right: var(--bs-card-spacer-y);",
-            #style = "float: left; margin-bottom: -12px;",
             shiny::radioButtons(
-            #shinyWidgets::prettyRadioButtons(
               inputId = ns("moduleSelect"),
               label = "File format",
               choices = "dummy"
@@ -68,14 +65,15 @@ m_ExcelUpload_UI <- function(id) {
           shiny::div(
             style = "width: 160px; float: left; margin-right: var(--bs-card-spacer-y); margin-top: 31px;",
             shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range", style = "background-color: rgb(140,180,15)"))
-          )
+          ),
+          shiny::div(
+            style = "width: 420px; float: left; color: red; background: rgba(0,0,0,0.04); border: 4px; padding: 16px;",
+            id = ns("info_msg")
+          ),
         )
-      )
     ),
     # preview Excel table
     m_xlsx_range_select_UI(ns("rng_select")),
-    # show welcome screen if no range select is needed
-    div(id = ns("welcome_screen"), welcome_screen(id = id))
   )
 }
 
@@ -92,6 +90,17 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     exl_fmt <- shiny::reactive({
       input$moduleSelect
     })
+
+    shiny::observeEvent(check(), {
+      if (check()) {
+        shinyjs::html(id = "info_msg", html = shiny::HTML("Note! You have uploaded <strong>", exl_fmt(), "</strong> data already. If you upload a different file, all your selected parameters may be lost."))
+        shinyjs::show(id = "info_msg")
+      } else {
+        shinyjs::html(id = "info_msg", html = "")
+        shinyjs::hide(id = "info_msg")
+      }
+    })
+
 
     # monitor the status of the file selector
     current_file_input <- shiny::reactiveVal(NULL)
@@ -148,8 +157,13 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
     })
 
     check <- shiny::reactive({
-      req(any(rv$e_present()), exl_fmt() %in% names(rv$e_present()))
-      rv$e_present()[exl_fmt()]
+      # req(any(rv$e_present()), exl_fmt() %in% names(rv$e_present()))
+      # rv$e_present()[exl_fmt()]
+      if (any(rv$e_present()) && exl_fmt() %in% names(rv$e_present())) {
+        rv$e_present()[exl_fmt()]
+      } else {
+        FALSE
+      }
     })
 
     # Show file preview to select rows and columns
@@ -158,8 +172,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       current_file_input = current_file_input,
       sheet = shiny::reactive({ as.numeric(input$sheet_number) }),
       file = file_number,
-      excelformat = exl_fmt,
-      check = check
+      excelformat = exl_fmt
     )
 
     # initialize return object 'out'
