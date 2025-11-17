@@ -5,6 +5,8 @@ on:
     workflows: ["R-CMD-check", "test-coverage"]
     types:
       - completed
+    branches: [main,devel]
+  workflow_dispatch:
 
 jobs:
   gate-check:
