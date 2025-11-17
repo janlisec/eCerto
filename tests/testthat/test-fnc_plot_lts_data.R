@@ -14,6 +14,8 @@ testthat::test_that(
     out <- eCerto:::plot_lts_data(x = x_prep, type = 0, slope_of_means = TRUE)
     testthat::expect_equal(unname(out), 2076)
 
+    skip_if_not_linux_ci()
+
     x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm=apm, U_Def="U", mt=mt)
     vdiffr::expect_doppelganger(
       title = "FigS1 type1",
@@ -65,6 +67,9 @@ testthat::test_that(
 testthat::test_that(
   desc = "plot_lts_data type=3 works with legend",
   code = {
+
+    skip_if_not_linux_ci()
+
     x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm=apm, U_Def="U", mt=mt)
     vdiffr::expect_doppelganger(
       title = "FigS1 type3 with Legend",

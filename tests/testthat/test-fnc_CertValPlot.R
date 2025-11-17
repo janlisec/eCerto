@@ -8,6 +8,8 @@ testthat::test_that("CertValPlot works on expected data frame format", {
 })
 
 testthat::test_that("CertValPlot produces an expected figure", {
+  skip_if_not_linux_ci()
+
   set.seed(0)
   data <- data.frame("ID"=1:20, "value"=rnorm(20), "analyte"="X", "Lab"=gl(2,10), "L_flt"=FALSE)
   # avoid creating a Rplots.pdf in testthat folder

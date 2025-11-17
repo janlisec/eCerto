@@ -28,6 +28,8 @@ testthat::test_that(
     testthat::expect_true(inherits(out_styled, "datatables"))
 
     # check generation of Fig.V1
+    skip_if_not_linux_ci()
+
     ab <- eCerto:::prepDataV1(tab = tab)
     testthat::expect_true(length(ab)==8)
     ab <- eCerto:::prepDataV1(tab = tab, fmt = "norm")
