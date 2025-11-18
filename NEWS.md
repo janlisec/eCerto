@@ -1,4 +1,7 @@
-# eCerto 0.8.7 [06.11.2025]
+# eCerto 0.8.9 [18.11.2025]
+* set up a 'devel' branch on GitHub to keep 'main' branch non-failing
+
+# eCerto 0.8.8 [06.11.2025]
 * DRMD v0.3.0 now supported
 * XML validation implemented
 * DRMD schema incorporated as external data
