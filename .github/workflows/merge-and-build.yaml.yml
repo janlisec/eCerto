@@ -4,7 +4,7 @@ on:
     types: [completed]
     branches: [devel]
 
-name: gate-auto-merge
+name: merge-and-build
 
 jobs:
   merge-and-build:
@@ -32,9 +32,3 @@ jobs:
           git pull origin main
           git merge origin/devel --no-ff -m "Auto-merge devel into main after successful CI"
           git push origin main
-
-  docker-build:
-    needs: merge-and-build
-    uses: ./.github/workflows/docker-build.yaml
-    with:
-      image_tag: latest
