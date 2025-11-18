@@ -2,7 +2,7 @@ on:
   workflow_run:
     workflows: ["merge-and-build"]
     types: [completed]
-
+    branches: [devel]
 
 permissions:
   contents: read
