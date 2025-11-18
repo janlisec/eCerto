@@ -38,12 +38,16 @@ jobs:
           covr::to_cobertura(cov)
         shell: Rscript {0}
 
+      - name: Install gpg
+        run: sudo apt-get update && sudo apt-get install -y gnupg
+
       - uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: ${{ github.event_name != 'pull_request' && true || false }}
           files: ./cobertura.xml
           plugins: noop
           disable_search: true
+          #skip_validation: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Show testthat output
