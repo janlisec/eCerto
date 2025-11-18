@@ -1,14 +1,14 @@
 on:
   workflow_run:
     workflows: ["R-CMD-check"]
-    types:
-      - completed
+    types: [completed]
     branches: [devel]
 
 name: gate-auto-merge
 
 jobs:
   gate-check:
+    if: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Check workflows status
@@ -46,6 +46,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configure Git
         run: |
@@ -58,6 +60,7 @@ jobs:
       - name: Merge devel into main
         run: |
           git checkout main
+          git pull origin main
           git merge origin/devel --no-ff -m "Auto-merge devel into main after successful CI"
           git push origin main
 
