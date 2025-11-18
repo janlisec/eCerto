@@ -1,17 +1,18 @@
 on:
-  workflow_call:
-    inputs:
-      image_tag:
-        required: true
-        type: string
+  workflow_run:
+    workflows: ["merge-and-build"]
+    types: [completed]
+
+
+permissions:
+  contents: read
 
 name: docker-build
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    environment: production
 
     steps:
       - name: Debug secrets
