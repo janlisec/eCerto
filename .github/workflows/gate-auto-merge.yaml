@@ -7,42 +7,9 @@ on:
 name: gate-auto-merge
 
 jobs:
-  gate-check:
-    if: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check workflows status
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const sha = context.payload.workflow_run.head_sha;
-
-            // Hole alle Workflow-Runs für dieses Commit
-            const runs = await github.rest.actions.listWorkflowRunsForRepo({
-              owner,
-              repo,
-              per_page: 50
-            });
-
-            const ciWorkflows = ["R-CMD-check"];
-            const statuses = ciWorkflows.map(name => {
-              const run = runs.data.workflow_runs.find(r => r.name === name && r.head_sha === sha);
-              return run ? run.conclusion : null;
-            });
-
-            if (statuses.includes(null) || statuses.includes("failure")) {
-              core.setFailed(`Nicht alle Workflows erfolgreich: ${statuses}`);
-            } else {
-              console.log("Alle CI-Workflows erfolgreich.");
-            }
-
   merge-and-build:
-    needs: gate-check
     runs-on: ubuntu-latest
-    if: ${{ success() }}
+    if: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
