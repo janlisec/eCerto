@@ -1,6 +1,6 @@
 on:
   workflow_run:
-    workflows: ["R-CMD-check", "test-coverage"]
+    workflows: ["R-CMD-check"]
     types:
       - completed
     branches: [devel]
@@ -11,7 +11,7 @@ jobs:
   gate-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Check both workflows status
+      - name: Check workflows status
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -27,7 +27,7 @@ jobs:
               per_page: 50
             });
 
-            const ciWorkflows = ["R-CMD-check", "test-coverage"];
+            const ciWorkflows = ["R-CMD-check"];
             const statuses = ciWorkflows.map(name => {
               const run = runs.data.workflow_runs.find(r => r.name === name && r.head_sha === sha);
               return run ? run.conclusion : null;

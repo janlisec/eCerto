@@ -4,7 +4,7 @@ on:
   push:
     branches: [devel]
   pull_request:
-    branches: [devel]
+    branches: [main,devel]
 
 name: test-coverage
 
@@ -38,6 +38,7 @@ jobs:
           covr::to_cobertura(cov)
         shell: Rscript {0}
 
+# [JL] gpg based identfication in codecov-action@v5 would need gpg but is not working 2025-11-18
 #      - name: Install gpg
 #        run: sudo apt-get update && sudo apt-get install -y gnupg
 
