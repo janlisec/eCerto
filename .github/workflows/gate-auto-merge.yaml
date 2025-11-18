@@ -4,7 +4,6 @@ on:
     types:
       - completed
     branches: [devel]
-  workflow_dispatch:
 
 name: gate-auto-merge
 
