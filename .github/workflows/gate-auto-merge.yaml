@@ -13,11 +13,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Debug secrets
-        run: |
-          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then echo "DOCKER_USERNAME is missing"; fi
-          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then echo "DOCKER_PASSWORD is missing"; fi
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
