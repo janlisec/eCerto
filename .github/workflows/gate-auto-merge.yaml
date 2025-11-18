@@ -3,7 +3,7 @@ on:
     workflows: ["R-CMD-check", "test-coverage"]
     types:
       - completed
-    branches: [main,devel]
+    branches: [devel]
   workflow_dispatch:
 
 name: gate-auto-merge
