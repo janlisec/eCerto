@@ -4,10 +4,12 @@ on:
     types: [completed]
     branches: [devel]
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
 name: docker-build
+
+permissions: read-all
 
 jobs:
   build:
