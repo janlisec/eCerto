@@ -2,12 +2,12 @@ on:
   workflow_run:
     workflows: ["merge-and-build"]
     types: [completed]
-    branches: [devel]
+    branches: [main,devel]
+
+name: docker-build
 
 # permissions:
 #   contents: read
-
-name: docker-build
 
 permissions: read-all
 
