@@ -22,7 +22,7 @@ Scheffe <- function(data = NULL) {
 #' @noRd
 #' @examples
 #' test <- shiny::isolate(eCerto:::test_rv("SR3")$c_lab_means())
-#' plyr::ldply(c("alpha", "pval", "cval", "cval05", "cval01"), function(x) {
+#' ldply_base(c("alpha", "pval", "cval", "cval05", "cval01"), function(x) {
 #'   t(Dixon(lab_means = test, fmt = x))
 #' })
 Dixon <- function(lab_means = NULL, fmt = c("alpha", "pval", "cval", "cval05", "cval01")) {

@@ -15,9 +15,9 @@
 #' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
 #' tab <- eCerto:::read_Vdata(file = inp)
 #' eCerto:::prepTabV1(tab = tab, a = "PFOA", alpha = 0.01)
-#' plyr::ldply(levels(tab[,"Analyte"]), function(a) {
+#' ldply_base(levels(tab[,"Analyte"]), function(a) {
 #'     eCerto:::prepTabV1(tab = tab, a = a)
-#' })
+#' }, .id=NULL)
 #' @return A data frame with attributes.
 #' @keywords internal
 #' @noRd
@@ -31,7 +31,7 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
   alpha <- as.numeric(alpha)
   k <- as.numeric(k)
 
-  plyr::ldply(a, function(a) {
+  ldply_base(a, function(a) {
 
     # extract the data
     l <- levels(tab[,"Level"])

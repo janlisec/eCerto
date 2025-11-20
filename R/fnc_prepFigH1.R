@@ -22,8 +22,7 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
   h_dat <- x
   if (is.null(sa)) {
     # normalize all analytes and modify df internally to work for boxplot
-    tmp <- plyr::ldply(split(h_dat, interaction(h_dat[, "analyte"], h_dat[, "H_type"])), function(df) {
-      # df[,"value"] <- log2(df[,"value"]/median(df[,"value"], na.rm=TRUE))
+    tmp <- ldply_base(split(h_dat, interaction(h_dat[, "analyte"], h_dat[, "H_type"])), function(df) {
       df[, "value"] <- (df[, "value"] - mean(df[, "value"], na.rm = TRUE)) / stats::sd(df[, "value"], na.rm = TRUE)
       return(df)
     }, .id = NULL)

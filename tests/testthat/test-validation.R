@@ -16,7 +16,7 @@ testthat::test_that(
     testthat::expect_true(all(sapply(tab[,c("Analyte", "Level")], is.factor)))
 
     # check if statistics on import data works
-    out <- plyr::ldply(levels(tab[,"Analyte"]), function(a) {
+    out <- ldply_base(levels(tab[,"Analyte"]), function(a) {
         eCerto:::prepTabV1(tab = tab, a = a)
     })
     testthat::expect_true(is.data.frame(out))

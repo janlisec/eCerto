@@ -49,7 +49,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   # calculate means per Date if specified in parameters
   if (slope_of_means) {
     com_exist <- "Comment" %in% colnames(x[["val"]])
-    x[["val"]] <- plyr::ldply(split(x[["val"]], x[["val"]][, "Date"]), function(y) {
+    x[["val"]] <- ldply_base(split(x[["val"]], x[["val"]][, "Date"]), function(y) {
       data.frame(
         "Value" = mean(y[, "Value"]),
         "Date" = y[1, "Date"],

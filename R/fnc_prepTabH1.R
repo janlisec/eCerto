@@ -14,8 +14,8 @@ prepTabH1 <- function(x, adjust = FALSE) {
   e_msg("perform statistics on imported homogeneity data")
   stopifnot(all(c("analyte", "H_type", "Flasche", "value") %in% colnames(x)))
   if (!is.factor(x[, "Flasche"])) x[, "Flasche"] <- factor(x[, "Flasche"])
-  out <- plyr::ldply(split(x, x[, "analyte"]), function(y) {
-    plyr::ldply(split(y, y[, "H_type"]), function(z) {
+  out <- ldply_base(split(x, x[, "analyte"]), function(y) {
+    ldply_base(split(y, y[, "H_type"]), function(z) {
       if (nrow(z) >= 2) {
         anm <- stats::anova(stats::lm(value ~ Flasche, data = z))
         M_between <- anm[1, "Mean Sq"]

@@ -125,10 +125,14 @@ check_stability_Server <- function(id, rv = NULL) {
         # split at "\t" and ensure equal length
         tmp <- strsplit(tmp, "\t")
         Err_Msg(test = length(unique(sapply(tmp, length))) == 1, message = "The clipboard content appears to have differing number of columns")
-        # convert to numeric (what is expected by downstream functions)
-        tmp <- plyr::laply(tmp, function(x) {
-          x <- try(as.numeric(x))
-        }, .drop = FALSE)
+        tmp <- sapply(tmp, function(x) {
+          y <- try(as.numeric(x))
+          if (!inherits(y, "try-error") && length(y)==1) {
+            return(y)
+          } else {
+            return(NA)
+          }
+        })
         Err_Msg(test = all(is.finite(tmp)), message = "The clipboard content did contain missing values or non-numeric cells<br>(now converted to NA)", type = "Info")
         out$d <- tmp
         out$counter <- out$counter + 1

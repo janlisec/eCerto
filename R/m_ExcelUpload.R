@@ -224,7 +224,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         if (ncol(test_format) < 4) {
           # (1) as simple two column format (Date, Value) with separate tables for each analyte
           sheetnames <- xlsxSheetNames(input$excel_file$datapath[1])
-          s_dat <- plyr::ldply(1:length(sheetnames), function(x) {
+          s_dat <- ldply_base(1:length(sheetnames), function(x) {
             cbind("analyte" = sheetnames[x], tab_flt[[x]])
           })
         } else {

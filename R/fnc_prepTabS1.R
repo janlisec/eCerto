@@ -17,10 +17,10 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
   time_fmt <- match.arg(time_fmt)
   stopifnot(all(c("analyte", "Value", "Date") %in% colnames(x)))
   if (!is.numeric(t_cert) | (is.numeric(t_cert) && !(t_cert > 0))) t_cert <- as.numeric(NA)
-  out <- plyr::ldply(split(x, x[, "analyte"]), function(x) {
+  out <- ldply_base(split(x, x[, "analyte"]), function(x) {
     if (slope_of_means) {
       # compute mean values by Date
-      x <- plyr::ldply(split(x, x[, "Date"]), function(y) {
+      x <- ldply_base(split(x, x[, "Date"]), function(y) {
         data.frame(
           "analyte" = y[1, "analyte"],
           "Value" = mean(y[, "Value"]),
