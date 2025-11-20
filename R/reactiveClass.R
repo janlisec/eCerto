@@ -142,7 +142,7 @@ eCerto <- R6::R6Class(
       if (missing(data)) {
         data <- private$..cFltData
       }
-      out <- plyr::ldply(split(data$value, data$Lab), function(x) {
+      out <- ldply_base(split(data$value, data$Lab), function(x) {
         data.frame(
           "mean" = mean(x, na.rm = T),
           "sd" = stats::sd(x, na.rm = T),

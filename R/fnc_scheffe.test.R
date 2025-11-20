@@ -35,7 +35,7 @@ scheffe.test <- function(y, trt, alpha = 0.05) {
   name.y <- names(A)[1]
   df <- subset(data.frame("value" = y, "Lab" = trt), is.na(y) == FALSE)
   # JL
-  means <- plyr::ldply(split(df$value, df$Lab), function(x) {
+  means <- ldply_base(split(df$value, df$Lab), function(x) {
     data.frame(
       "mean" = mean(x, na.rm = T),
       "sd" = stats::sd(x, na.rm = T),

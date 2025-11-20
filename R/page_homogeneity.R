@@ -200,7 +200,7 @@ page_HomogeneityServer <- function(id, rv) {
       h_dat <- h_dat[interaction(h_dat[, "analyte"], h_dat[, "H_type"]) == input$h_sel_analyt, , drop = FALSE]
       validate(need(expr = nrow(h_dat) >= 1, message = "Not enough data."))
       h_dat[, "Flasche"] <- factor(h_dat[, "Flasche"])
-      out <- plyr::ldply(split(h_dat[, "value"], h_dat[, "Flasche"]), function(x) {
+      out <- ldply_base(split(h_dat[, "value"], h_dat[, "Flasche"]), function(x) {
         data.frame("mean" = mean(x, na.rm = T), "sd" = stats::sd(x, na.rm = T), "n" = sum(is.finite(x)))
       }, .id = "Flasche")
       rownames(out) <- out[, "Flasche"]

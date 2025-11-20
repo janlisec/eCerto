@@ -31,7 +31,7 @@
 #' @noRd
 
 CertValPlot <- function(data = NULL, annotate_id = FALSE, filename_labels = FALSE, show_legend = TRUE, dp = 4) {
-  ds <- plyr::ldply(split(data[, "value"], data[, "Lab"]), function(x) {
+  ds <- ldply_base(split(data[, "value"], data[, "Lab"]), function(x) {
     data.frame(
       "MW" = mean(x, na.rm = T),
       "Median" = stats::median(x, na.rm = T),

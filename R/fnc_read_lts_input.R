@@ -9,7 +9,11 @@
 #'     single data frame if simplify = TRUE.
 #'
 #' @importFrom openxlsx read.xlsx getSheetNames
-#' @importFrom plyr ldply
+#'
+#' @examples
+#' fl <- system.file("extdata", "eCerto_LTS_example_input.xlsx", package = "eCerto")
+#' read_lts_input(file = fl)
+#' read_lts_input(file = fl, simplify = TRUE)
 #'
 #' @noRd
 #' @keywords internal
@@ -22,14 +26,14 @@ read_lts_input <- function(file = NULL, simplify = FALSE) {
     # fix Date format already here, although it is checked in app as well
     if ("Date" %in% colnames(out[[i]][["val"]])) {
       if (!inherits(out[[i]][["val"]][, "Date"], "Date")) {
-        out[[i]][["val"]][, "Date"] <- plyr::ldply(out[[i]][["val"]][, "Date"], function(x) {
+        out[[i]][["val"]][, "Date"] <- ldply_base(out[[i]][["val"]][, "Date"], function(x) {
           as.Date.character(x, tryFormats = c("%Y-%m-%d", "%d.%m.%Y", "%Y/%m/%d"))
         })
       }
     }
   }
   if (simplify) {
-    out <- plyr::ldply(out, function(x) {
+    out <- ldply_base(out, function(x) {
       cbind(x[["val"]], x[["def"]])
     })
   }

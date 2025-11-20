@@ -190,7 +190,7 @@ m_arrheniusServer <- function(id, rv) {
         time <- round(tmp[, "time"] * 12 / 365, 2)
       }
       val <- log(tmp[, "Value"])
-      out <- plyr::ldply(levels(tf)[-1], function(k) {
+      out <- ldply_base(levels(tf)[-1], function(k) {
         # the linear model shall include the reference data
         flt <- tmp[, "Temp"] == k | tmp[, "Temp"] == levels(tf)[1]
         a <- stats::coef(stats::lm(val[flt] ~ time[flt]))[2]

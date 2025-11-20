@@ -38,7 +38,7 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {
       # get analyte names
       tab_hd <- unname(unlist(openxlsx::read.xlsx(xlsxFile = file, sheet = 1, rows = 1, colNames = FALSE)))[-1]
       a_names <- gsub(" Method", "", tab_hd[((1:n)-1)*n_cols+1])
-      tab_out <- plyr::ldply(1:n, function(i) {
+      tab_out <- ldply_base(1:n, function(i) {
         tmp <- tab_anal[,(i-1)*n_cols+1:n_cols]
         colnames(tmp)[1:2] <- c("Concentration", "Area_Analyte")
         tmp[,1] <- auto_fill(tmp[,1])
