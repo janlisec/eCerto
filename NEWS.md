@@ -1,3 +1,6 @@
+# eCerto 0.8.10 [07.01.2026]
+* fix error in LTS modul (error upon new value entry)
+
 # eCerto 0.8.9 [18.11.2025]
 * set up a 'devel' branch on GitHub to keep 'main' branch non-failing
 
