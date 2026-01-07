@@ -49,7 +49,7 @@ m_longtermstabilityUI <- function(id) {
         shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::pickerInput(inputId = ns("LTS_sel_KW"), label = NULL, choices = "", width = "200px")),
         shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::dropdownButton(
           inputId = ns("btn_Comment"), label = "Comment or Filter", circle = FALSE, width = "300px", inline = TRUE, right=FALSE,
-          shinyjs::disabled(shiny::textInput(inputId = ns("datacomment"), label = "Comment text", value = "", placeholder = "Select point in Fig.L1 or row in Tab.L1 and modify comment")),
+          shinyjs::disabled(shiny::textInput(inputId = ns("datacomment"), label = "Comment text", value = "", placeholder = "enter comment for selected point")),
           shiny::checkboxInput(inputId = ns("dataflt"), label = "Filter datapoint", value = FALSE)
           #shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment")
         )),
@@ -204,7 +204,9 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       "Value" = 0.0,
       "Date" = as.Date(format(Sys.time(), "%Y-%m-%d")),
       "File" = as.character("filename"),
-      "Comment" = as.character(NA), stringsAsFactors = FALSE
+      "Comment" = as.character(NA),
+      "Filter" = FALSE,
+      stringsAsFactors = FALSE
     )
 
     # Data Tables
@@ -240,26 +242,34 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       data.frame(mon, vals)
     })
 
+    update_info_div <- function(sr = NULL) {
+      if (!is.null(sr)) {
+        if (!is.na(sr[, "Comment"])) txt <- paste("<br>Comment:", sr[,"Comment"]) else txt <- ""
+        txt <- paste0(ifelse(txt=="", "<br>", paste0(txt, "; ")), "Filter: ", ifelse(sr[,"Filter"], "yes", "no"))
+        shinyjs::html(id = "LTS_selected_point", html = paste0("Selected data point: month ", sr[, "mon"], " and value ", round(sr[, "Value"],4), txt))
+      } else {
+        shinyjs::html(id = "LTS_selected_point", html = "Selected data point: none")
+      }
+    }
+
     # when a row in table was selected (either by user clicking the table or clicking in the plot)
     shiny::observeEvent(input$tab_L1_rows_selected, {
       shiny::req(lts$data)
       if (!is.null(input$tab_L1_rows_selected)) {
         # when a row is selected in table or plot change title and value
-        sr <- input$tab_L1_rows_selected # selected row
-        comm <- lts[["data"]][[i()]][["val"]][[sr, "Comment"]]
+        sr <- cbind(lts[["data"]][[i()]][["val"]][input$tab_L1_rows_selected,,drop=FALSE], d()[input$tab_L1_rows_selected,"mon",drop=FALSE]) # selected row
         shinyjs::enable(id = "datacomment")
         shinyjs::enable(id = "dataflt")
-        shiny::updateTextInput(session = session, inputId = "datacomment", value = comm)
-        shiny::updateCheckboxInput(inputId = "dataflt", value = lts[["data"]][[i()]][["val"]][sr, "Filter"])
-        if (!is.na(comm)) comm <- paste("<br>Comment:", comm) else comm <- ""
-        shinyjs::html(id = "LTS_selected_point", html = paste0("Selected data point: month ", d()[sr, "mon"], " and value ", round(d()[sr, "vals"],4), comm))
+        shiny::updateTextInput(session = session, inputId = "datacomment", value = sr[, "Comment"])
+        shiny::updateCheckboxInput(inputId = "dataflt", value = sr[, "Filter"])
+        update_info_div(sr = sr)
       } else {
         # when row gets deselected/ no row is selected
         shinyjs::disable(id = "datacomment")
-        shiny::updateTextInput(session = session, inputId = "datacomment", value = NA)
         shinyjs::disable(id = "dataflt")
+        shiny::updateTextInput(session = session, inputId = "datacomment", value = NA)
         shiny::updateCheckboxInput(inputId = "dataflt", value = FALSE)
-        shinyjs::html(id = "LTS_selected_point", html = "Selected data point: none")
+        update_info_div()
       }
     }, ignoreNULL = FALSE)
 
@@ -294,45 +304,6 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     proxy <- DT::dataTableProxy("tab_L1")
 
     #  when clicking on a point in the plot, select Rows in data table proxy
-    # shiny::observeEvent(input$plot1_hover, {
-    #   p <- input$plot1_hover
-    #   #bslib::tooltip()
-    #   # print(shiny::nearPoints(d(), p, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10))
-    # })
-
-    # output$hover_info <- renderUI({
-    #   #browser()
-    #   hover <- input$plot1_hover
-    #   point <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 10)
-    #   if (nrow(point) == 0) return(NULL)
-    #
-    #   # calculate point position INSIDE the image as percent of total dimensions
-    #   # from left (horizontal) and from top (vertical)
-    #   left_pct <- (hover$x - hover$domain$left) / (hover$domain$right - hover$domain$left)
-    #   top_pct <- (hover$domain$top - hover$y) / (hover$domain$top - hover$domain$bottom)
-    #
-    #   # calculate distance from left and bottom side of the picture in pixels
-    #   left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
-    #   top_px <- hover$range$top + top_pct * (hover$range$bottom - hover$range$top)
-    #
-    #   # create style property fot tooltip
-    #   # background color is set so tooltip is a bit transparent
-    #   # z-index is set so we are sure are tooltip will be on top
-    #   style <- paste0("position:absolute; z-index:100; background-color: rgba(245, 245, 245, 0.85); ", "left:", left_px + 2, "px; top:", top_px + 2, "px;")
-    #
-    #   # actual tooltip created as wellPanel
-    #   wellPanel(
-    #     style = style,
-    #     shiny::p(shiny::HTML(paste0("<b> oint: </b>", rownames(point), "<br/>",
-    #                   "<b> month: </b>", point$mon, "<br/>",
-    #                   "<b> value: </b>", point$vals, "<br/>",
-    #                   "<b> Distance from left: </b>", left_px, "<b>, from top: </b>", top_px)))
-    #   )
-    # })
-
-
-
-    #  when clicking on a point in the plot, select Rows in data table proxy
     shiny::observeEvent(input$plot1_click, {
       # 1/3 nearest point to click location
       a <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 5)
@@ -356,6 +327,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
         nval[1,"Date"] <- input$LTS_newPoint_Date
         nval[1,"File"] <- input$LTS_newPoint_File
         nval[1,"Comment"] <- ifelse(input$LTS_newPoint_Comment=="", as.character(NA), input$LTS_newPoint_Comment)
+        nval[1,"Filter"] <- FALSE
         if (nval$Date < max(tmp$Date)) {
           shinyWidgets::show_alert(title = "Warning", text = "You added a data point for an earlier date. Resorting the table accordingly.", type = "warning")
           ord <- order(c(tmp$Date, nval$Date))
@@ -373,12 +345,11 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
         # dont do anything while button is still open
       } else {
         if (any(input$tab_L1_rows_selected)) {
-          lts[["data"]][[i()]][["val"]][input$tab_L1_rows_selected, "Comment"] <- ifelse(input$datacomment == "", NA, input$datacomment)
+          # store new comment and filter status
           sr <- input$tab_L1_rows_selected # selected row
-          comm <- lts[["data"]][[i()]][["val"]][sr, "Comment"]
-          if (!is.na(comm)) comm <- paste("<br>Comment:", comm) else comm <- ""
-          shinyjs::html(id = "LTS_selected_point", html = paste0("Selected data point: month ", d()[sr, "mon"], " and value ", round(d()[sr, "vals"],4), comm))
+          lts[["data"]][[i()]][["val"]][sr, "Comment"] <- ifelse(input$datacomment == "", NA, input$datacomment)
           lts[["data"]][[i()]][["val"]][sr, "Filter"] <- input$dataflt
+          update_info_div(sr = cbind(lts[["data"]][[i()]][["val"]][sr,,drop=FALSE], d()[sr,"mon",drop=FALSE]))
         }
       }
     })
