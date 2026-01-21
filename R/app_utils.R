@@ -861,9 +861,7 @@ render_report_L <- function(file = tempfile(fileext = ".pdf"), x) {
   if (any(x[[1]][["val"]][,"Filter"])) {
     x[[1]][["val"]] <- x[[1]][["val"]][!x[[1]][["val"]][,"Filter"],]
   }
-  params <- list(
-    "dat" = x
-  )
+  params <- list("dat" = x)
   rmd_template <- get_local_file("report_vorlage_lts.[Rr][Mm][Dd]$")
   render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
 }

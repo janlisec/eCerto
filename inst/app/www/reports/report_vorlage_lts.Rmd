@@ -33,20 +33,24 @@ if (testing) {
 } else {
   d <- params[["dat"]][[i]][["def"]]
   v <- params[["dat"]][[i]][["val"]]
+  # remove filtered data points as these should not be part of a report
+  # this check is redundant, because filtered points are removed in the app already
+  if ("Filter" %in% colnames(v) && any(v$Filter)) {
+    v <- v[which(!v[,"Filter"]),]
+  }
 }
 plot_lts_data <- eCerto:::plot_lts_data
 ```
 
 ```{r logo, echo=FALSE, fig.align='right', fig.height = 0.5}
 # show BAM Logo topright
-logo_raster <- eCerto::BAMlogo_raster
 graphics::par(mar=c(1,0,0,0))
-layout(mat = matrix(1:2,ncol = 2), widths = c(0.8,0.2))
+layout(mat = matrix(1:2, ncol = 2), widths = c(0.8, 0.2))
 plot(1,1,axes=F,ann=F, type="n")
 mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)
 mtext(side = 3, line = -2.25, text = paste("Material:", d[,"RM"]), adj = 0)
 mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), '%Y-%m-%d')), adj = 0.75)
-plot(logo_raster)
+plot(eCerto::BAMlogo_raster)
 
 ```
 
