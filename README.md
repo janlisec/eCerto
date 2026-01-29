@@ -107,5 +107,5 @@ This is a list of the implemented statistical tests and functionality:
     - LOD/LOQ
     - Trueness, Precision, Measurement uncertainty as statement boxes for reference
     - downloadable HTML/Word report
-    
-
+- DRMD handling
+    - export **eCerto** result to DRMD format (current DRMD XML schema version: 0.3.1)
