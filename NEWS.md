@@ -1,3 +1,6 @@
+# eCerto 0.8.11 [28.01.2026]
+* rewrite read_zenodo() to comply with CRAN rules to 'exit gracefully'
+
 # eCerto 0.8.10 [07.01.2026]
 * fix error in LTS modul (error upon new value entry)
 
