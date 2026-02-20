@@ -28,19 +28,19 @@ testthat::test_that(
       x <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
       o1 <- eCerto:::styleTabH1(x = x)
       testthat::expect_equal(
-        as.character(o1[,"style_analyte"]),
+        as.character(o1$x$data[,"style_analyte"]),
         rep("red", each=4)
       )
       mt <- data.frame("analyte"="Fe")
       o2 <- eCerto:::styleTabH1(x = x, mt = mt)
       testthat::expect_equal(
-        as.character(o2[,"style_analyte"]),
+        as.character(o2$x$data[,"style_analyte"]),
         rep(c("","red"), each=2)
       )
       prec <- unlist(list("Fe"=2))
       o3 <- eCerto:::styleTabH1(x = x, prec = prec)
       testthat::expect_equal(
-        o3[,"mean"],
+        o3$x$data[,"mean"],
         c("0.29","0.29","0.2905","0.2935")
       )
     })

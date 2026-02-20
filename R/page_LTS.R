@@ -274,7 +274,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     }, ignoreNULL = FALSE)
 
     # Data Figures
-    output$LTS_plot1_1 <- shiny::renderPlot({
+    output$LTS_plot1_1 <- renderPlotHD({
       shiny::req(lts[["data"]], i(), d())
       input$LTS_newPoint_Apply
       e_msg("Render LTS_plot1_1")
@@ -288,7 +288,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       }
     })
 
-    output$LTS_plot1_2 <- shiny::renderPlot({
+    output$LTS_plot1_2 <- renderPlotHD({
       shiny::req(lts[["data"]], i())
       input$LTS_newPoint_Apply
       e_msg("Render LTS_plot1_2")

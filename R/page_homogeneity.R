@@ -51,8 +51,6 @@ page_HomogeneityUI <- function(id) {
   )
 
   tab_H2_panel <- bslib::card(
-    #min_height = 500
-    #fill = FALSE,
     bslib::card_header(
       shiny::strong(shiny::actionLink(inputId = ns("tab2_link"), label = "Tab.H2 - specimen stats")),
     ),
@@ -67,7 +65,10 @@ page_HomogeneityUI <- function(id) {
     bslib::card_header(
       class = "d-flex justify-content-between",
       shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.H1 - boxplot of specimen values")),
-      shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("h_Report"), label = "Download Report"))
+      shiny::div(
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("h_Report"), label = "Download Report")),
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML"="html", "DOCX"="docx"), width = 70))
+      ),
     ),
     bslib::card_body(
       fill = TRUE,
@@ -227,7 +228,7 @@ page_HomogeneityServer <- function(id, rv) {
         x = h_vals(),
         mt = getValue(rv, c("General", "materialtabelle")),
         prec = rv$a_p("precision"),
-        output = "dt", cr = h_tab1_current$row
+        output = "DT", cr = h_tab1_current$row
       )
       return(dt)
     })
@@ -260,22 +261,20 @@ page_HomogeneityServer <- function(id, rv) {
       calc_bxp_width(n = length(levels(factor(x[interaction(x[, 1], x[, 2]) == input$h_sel_analyt, 3]))))
     })
 
-    output$h_FigH1 <- shiny::renderPlot(
+    output$h_FigH1 <- renderPlotHD(
       {
         shiny::req(h_Data(), input$h_sel_analyt, precision())
         prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab, showIDs = "show_repID" %in% input$FigH1_opt)
       },
       # [JL] height and width needs to be fixed as long as we render the figure as inline
-      #height = 500,
       width = shiny::reactive({ fig_width() })
     )
 
-    output$h_FigH2 <- shiny::renderPlot(
+    output$h_FigH2 <- renderPlotHD(
       {
         shiny::req(h_Data(), precision())
         prepFigH1(x = h_Data(), sa = NULL, prec = 2, xlab = input$FigH1_xlab)
       },
-      #height = 500,
       width = shiny::reactive({ fig_width() })
     )
 
@@ -297,7 +296,7 @@ page_HomogeneityServer <- function(id, rv) {
 
     # download reports
     output$h_Report <- shiny::downloadHandler(
-      filename = function() { "Homogeneity_report.html" },
+      filename = function() { paste0("Homogeneity_Report.", input$ReportFormat) },
       content = function(file) {
         render_report_H(file = file, rv = rv, xlab = input$FigH1_xlab, adjust = input$h_adjust)
       }

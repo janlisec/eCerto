@@ -37,7 +37,7 @@ pn <- function(n = NULL, p = 4L) {
   # n : numeric vector
   # p : precision after the decimal sign
   # output : numbers formatted in identical width as character using scientific notation for numbers < p and rounding to p otherwise
-  if (any(is.finite(n))) {
+  if (is.numeric(n) && any(is.finite(n))) {
     w <- max(nchar(round(n)), na.rm = TRUE) + p + 1 # determine maximum width required
     o <- rep(paste(rep(" ", w), collapse = ""), length(n))
     o[is.finite(n)] <- sprintf(paste0("%*.", p, "f"), w, n[is.finite(n)])
@@ -679,6 +679,171 @@ HTML2markdown <- function(x) {
   x <- gsub("<strong>", "**", x)
   x <- gsub("</strong>", "**", x)
   return(x)
+}
+
+#' @title HTML2markdown.
+#' @description Function to convert HTML tags into the markdown equivalent.
+#' @param x A character vector.
+#' @examples
+#' \dontrun{
+#'   x <- data.frame("ft"=c("x<sub>i</sub>", "This is <i>formatted</i> <b>HTM<sup>L</sup></b>"))
+#'   ft <- flextable::flextable(x)
+#'   x_ft <- lapply(x[,1], HTML2ft)
+#'   for (i in 1:2) {
+#'     ft <- flextable::compose(x = ft, i = i, j = 1, value = x_ft[[i]], part = "body")
+#'   }
+#'   ft
+#' }
+#' @return Numeric.
+#' @keywords internal
+#' @noRd
+HTML2ft <- function(x) {
+  stopifnot(is.character(x), length(x) == 1)
+  tokens <- regmatches(x, gregexpr("(<[^>]+>|[^<]+)", x, perl = TRUE))[[1]]
+  stack <- list()
+  output_runs <- list()
+  apply_format_stack <- function(text, stack) {
+    run <- text
+    for (fmt in rev(stack)) {
+      if (fmt == "sub") run <- flextable::as_sub(run)
+      else if (fmt == "sup") run <- flextable::as_sup(run)
+      else if (fmt == "i")  run <- flextable::as_i(run)
+      else if (fmt == "b")  run <- flextable::as_b(run)
+    }
+    run
+  }
+  for (tok in tokens) {
+    if (tok %in% c("<sub>", "<sup>", "<i>", "<b>", "<strong>")) {
+      fmt <- switch(tok,
+                    "<sub>"    = "sub",
+                    "<sup>"    = "sup",
+                    "<i>"      = "i",
+                    "<b>"      = "b",
+                    "<strong>" = "b"
+      )
+      stack <- c(stack, fmt)
+      next
+    }
+    if (tok %in% c("</sub>", "</sup>", "</i>", "</b>", "</strong>")) {
+      fmt <- switch(tok,
+                    "</sub>"    = "sub",
+                    "</sup>"    = "sup",
+                    "</i>"      = "i",
+                    "</b>"      = "b",
+                    "</strong>" = "b"
+      )
+      if (any(stack == fmt)) {
+        last_idx <- utils::tail(which(stack == fmt), 1L)
+        stack <- stack[-last_idx]
+      }
+      next
+    }
+    if (nzchar(tok)) {
+      output_runs <- append(output_runs, list(apply_format_stack(tok, stack)))
+    }
+  }
+  do.call(flextable::as_paragraph, output_runs)
+}
+
+#' @title ft_formatter_fixed_digits.
+#' @description flextable column formatter function.
+#' @param digits number of digits post decimal seperator to show (nor rounding).
+#' @param predicate predicate function of column type to act on, here: is.numeric.
+#' @keywords internal
+#' @noRd
+ft_formatter_fixed_digits <- function(digits, predicate = is.numeric) {
+  force(digits); force(predicate)
+  fun <- function(x) sprintf(paste0("%.", digits, "f"), x)
+  attr(fun, "predicate") <- predicate
+  fun
+}
+
+#' @title ft_set_formatter.
+#' @description Function to apply a flextable column formatter function to an ft using col indices instead of col_keys.
+#' @param ft ft.
+#' @param j_idx The column indices.
+#' @param fmt formatter function.
+#' @param ... arguments to formatter function.
+#' @param verbose verbose.
+#' @keywords internal
+#' @noRd
+ft_set_formatter <- function(ft, j_idx, fmt, ..., predicate = is.numeric, verbose = TRUE) {
+  stopifnot(!is.null(ft$body$dataset))
+  keys_all <- ft$col_keys[j_idx]
+  ds       <- ft$body$dataset
+
+
+  fmt_fun  <- fmt(...)
+  predicate <- attr(fmt_fun, "predicate", exact = TRUE)
+  if (!is.null(predicate)) {
+    # check column type
+    is_ok <- vapply(keys_all, function(k) predicate(ds[[k]]), logical(1))
+    keys  <- keys_all[is_ok]
+  } else {
+    is_ok <- TRUE
+  }
+
+  if (verbose && any(!is_ok)) {
+    message("set_formatter: omit formatting columns with wrong type: ", paste(keys_all[!is_ok], collapse = ", "))
+  }
+  if (length(keys) == 0L) return(ft)
+
+  mapping <- stats::setNames(rep(list(fmt_fun), length(keys)), keys)
+  ft <- do.call(flextable::set_formatter, c(list(ft), mapping))
+  return(ft)
+}
+
+#' @title ft_default.
+#' @description flextable eCerto default output.
+#' @param df df to format as flextable.
+#' @param caption caption text.
+#' @param id table id (to prepend in caption.
+#' @keywords internal
+#' @noRd
+ft_default <- function(df, caption = NULL, id = NULL) {
+  eCerto_flextable_defaults()
+  ft <- flextable::flextable(df)
+  ft <- eCerto_flextable_defaults(ft = ft)
+  if (!is.null(caption)) {
+    if (is.null(id)) {
+      ft <- flextable::set_caption(ft, caption = caption)
+    } else {
+      ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b(id), " ", caption))
+    }
+  }
+  return(ft)
+}
+
+#' @title eCerto_flextable_defaults.
+#' @description Function to ensure consistent table layout defaults in eCerto for flextables.
+#' @return NULL.
+#' @keywords internal
+#' @noRd
+eCerto_flextable_defaults <- function(ft = NULL) {
+  flextable::set_flextable_defaults(
+    table_align = "left",
+    font.size = 9,
+    line_spacing = 1,
+    padding = 2,
+    table.layout = "autofit"
+  )
+  if (!is.null(ft)) {
+    ft <- flextable::fontsize(ft, size = 9, part = "header")
+    ft <- flextable::bold(ft, part = "header")
+    ft <- flextable::bg(ft, bg = grDevices::grey(0.85), part = "header")
+    if (nrow(ft$body$dataset)>=3) ft <- flextable::bg(ft, i = seq(2, nrow(ft$body$dataset), 2), bg = grDevices::grey(0.95), part = "body")
+  }
+  return(ft)
+}
+
+
+#' @title renderPlotHD.
+#' @description Wrapper function to improve readability of plots.
+#' @return NULL.
+#' @keywords internal
+#' @noRd
+renderPlotHD <- function(expr, res = 72*1.25, env = parent.frame(), ...) {
+  shiny::renderPlot(substitute(expr), res = res, env = env, quoted = TRUE, ...)
 }
 
 #' @title render_report

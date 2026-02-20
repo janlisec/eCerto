@@ -8,7 +8,6 @@
 #'   #filename = system.file("app/www/rmd/start_gethelp.Rmd", package = "eCerto"),
 #'   #filename = system.file("app/www/rmd/stability_plot.Rmd", package = "eCerto"),
 #'   #filename = system.file("app/www/rmd/help_start.Rmd", package = "eCerto"),
-#'   filename = system.file("app/www/rmd/help_test.Rmd", package = "eCerto"),
 #'   show_modal = FALSE
 #' )
 #' str(foo)
@@ -16,7 +15,6 @@
 
 #' @noRd
 #' @keywords internal
-#' @importFrom markdown mark_html
 show_help <- function(filename, show_modal = TRUE) {
   # check if valid path was provided and look up file in 'www' otherwise
   if (!file.exists(filename)) {
@@ -29,11 +27,17 @@ show_help <- function(filename, show_modal = TRUE) {
   help_text <- NULL
   if (length(file_in) == 1 && file.exists(file_in)) {
     e_msg(paste("Rendering Rmd file:", file_in))
+    tmp_html <- tempfile(fileext = ".html")
+    on.exit(unlink(tmp_html))
+    rmarkdown::render(
+      input = file_in,
+      output_file = tmp_html,
+      output_format = rmarkdown::html_fragment(),  # important!
+      quiet = TRUE
+    )
     help_text <- shiny::withMathJax(
       shiny::HTML(
-        # markdown::mark_html(file = file_in, options = "+tables+autolink+latex_math-standalone")
-        markdown::markdownToHTML(file = file_in, fragment.only = TRUE)
-        #litedown::fuse(input = file_in, output = NA)
+        paste(readLines(tmp_html, encoding = "UTF-8"), collapse = "\n")
       )
     )
     if (show_modal) {

@@ -7,28 +7,22 @@ params:
 output:
   html_document:
     df_print: paged
+  word_document:
+    reference_docx: template.docx
 ---
 
-***Note!*** 
-This is a general report template. Specific layouts can be generated on demand.
-
----
-
-## ***eCerto*** Report
-
-**Date: `r format(Sys.time(), '%d %B, %Y')`**
-
-### Modul: Stability
+### ***eCerto*** Report - Stability
 
 ```{r data, echo=FALSE}
 # get a local representation of all data provided by Shiny
 testing <- length(params$Stability)==1L && (is.na(params$Stability) | params$Stability=="NA")
 if (testing) {
-  S <- eCerto::CRM001[["Stability"]]
+  res <- eCerto::CRM001
+  S <- res[["Stability"]]
   O <- list(
     "apm" = NULL,
-    "U_Def" = input$s_sel_dev,
-    "mt" = getValue(rv, c("General", "materialtabelle")),
+    "U_Def" = "2s",
+    "mt" = res$General$materialtabelle,
     "type" = 1,
     "t_cert" = 60,
     "slope_of_means" = FALSE,
@@ -41,21 +35,20 @@ if (testing) {
 an <- as.character(S[["s_vals"]][,"analyte"])
 ```
 
-This is the table of uncertainties associated with Stability:
+```{r Tab.S1, echo=FALSE, comment=NA, message=FALSE, warning=FALSE, results='asis'}
+cat(paste0(
+  "Date: ", format(Sys.time(), '%d %B, %Y'), "  \n"
+  #"User: ", G$user, "  \n", 
+  #"Material: ", G$study_id
+), "\n\n")
 
-```{r Tab.S1, echo=FALSE, comment=NA, message=FALSE, warning=FALSE}
-eCerto:::styleTabS1(x = S[["s_vals"]], mt = data.frame("analyte"=an))
-```
+eCerto:::styleTabS1(x = S[["s_vals"]], mt = data.frame("analyte"=an), output="ft")
 
-`r ifelse(length(an)>=2, "These are the individual Stability boxplots:", "This is the Stability boxplot:")`
-
-```{r Fig.S1, echo=FALSE, comment=NA, message=FALSE}
 # make individual plots to allow separate inclusion in i.e. Word reports
 for (i in 1:length(an)) {
   try(
     eCerto:::plot_lts_data(
       x = eCerto:::prepFigS1(
-        #s = S[["data"]],
         s = O[["s_Data"]],
         an = an[i],
         apm = O[["apm"]],
@@ -69,12 +62,7 @@ for (i in 1:length(an)) {
     )
   )
 }
+
+# show input data
+eCerto:::ft_default(S[["data"]], caption = paste0("Imported analyte data from stability assay (file ", S[["input_files"]], ")"), id = "Tab.S0")
 ```
-
-This is the table of (non rounded) input data from the original file ***`r S[["input_files"]]`***:
-
-```{r FullData, echo=FALSE, comment=NA}
-DT::datatable(data = S[["data"]], rownames = NULL, options = list(dom = "t", paging = FALSE))
-```
-
-End of Report.

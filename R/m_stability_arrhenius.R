@@ -165,7 +165,7 @@ m_arrheniusServer <- function(id, rv) {
       return(tmp)
     })
 
-    output$FigS2 <- shiny::renderPlot({
+    output$FigS2 <- renderPlotHD({
       req(df())
       prepFigS2(
         tmp = df(),
@@ -326,7 +326,7 @@ m_arrheniusServer <- function(id, rv) {
       shiny::HTML("At the specified temperature of", input$user_temp, " the analyte <strong>", input$analyte, "</strong> is expected to be stable for", m, "month (mean) or <strong>", m_CIup, " month</strong> (CI<sub>upper</sub>) respectively.")
     })
 
-    output$FigS3 <- shiny::renderPlot({
+    output$FigS3 <- renderPlotHD({
       shiny::req(tab1exp())
       prepFigS3(tab = tab1exp())
     })

@@ -57,7 +57,10 @@ page_StabilityUI <- function(id) {
     bslib::card_header(
       class = "d-flex justify-content-between",
       shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot")),
-      shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("s_Report"), label = "Download Report"))
+      shiny::div(
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("s_Report"), label = "Download Report")),
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML"="html", "DOCX"="docx"), width = 70))
+      ),
     ),
     bslib::card_body(
       bslib::layout_sidebar(
@@ -324,7 +327,7 @@ page_StabilityServer <- function(id, rv) {
     }, ignoreNULL = TRUE, ignoreInit = FALSE)
 
     # Fig.S1
-    output$s_plot <- shiny::renderPlot({
+    output$s_plot <- renderPlotHD({
       shiny::req(s_Data(), S_analyte())
       s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
       plot_lts_data(
@@ -348,7 +351,7 @@ page_StabilityServer <- function(id, rv) {
 
     # download report
     output$s_Report <- shiny::downloadHandler(
-      filename = function() { "Stability_report.html" },
+      filename = function() { paste0("Stability_Report.", input$ReportFormat) },
       content = function(file) {
         render_report_S(
           file = file,

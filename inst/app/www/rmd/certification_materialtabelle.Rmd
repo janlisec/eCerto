@@ -4,7 +4,13 @@ The table of certified values (**Tab.C3**) combines all data collected within a
 certification trial to provide for each measured entity within the certified 
 material the certified mean $\mu_c$ and the certified uncertainty $U_{abs}$.
 
-![**Tab.C3** Table of certified values](fig/C_Modul_Tab3.png)
+```{r TabC3, echo=FALSE, message=FALSE, resize.width="100%", results='asis'}
+res <- eCerto::CRM001
+M <- res$General$materialtabelle
+G <- res$General
+flt <- sapply(G[["apm"]], function(x) { x$confirmed })
+eCerto:::styleTabC3(x = M[flt,], apm = G[["apm"]][flt], output = "ft")
+```
 
 ***Note!*** 
 Only for analytes which have been visually inspected by the user certified values 

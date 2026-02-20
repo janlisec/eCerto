@@ -283,7 +283,7 @@ page_CertificationServer <- function(id, rv) {
       # this solution using renderUI allows to reproducibly ensure width and height to be respected by bslib
       shiny::plotOutput(session$ns("fig_C1_pre"), width = paste0(input$Fig01_width, "px"), height = paste0(input$Fig01_height, "px"))
     })
-    output$fig_C1_pre <- shiny::renderPlot({
+    output$fig_C1_pre <- renderPlotHD({
       shiny::req(dat())
       CertValPlot(
         data = dat(),
@@ -381,7 +381,7 @@ page_CertificationServer <- function(id, rv) {
         )
       )
     })
-    output$qqplot <- shiny::renderPlot(
+    output$qqplot <- renderPlotHD(
       {
         y <- TabC1_pre()[, "mean"]
         stats::qqnorm(y = y, main = paste("QQ plot for analyte", C_analyte()))
