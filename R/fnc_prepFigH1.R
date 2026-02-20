@@ -46,9 +46,9 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
     expr = any(is.finite(h_dat[, "value"])),
     message = "Not enough finite values to generate a plot."
   ))
-  opar <- graphics::par(no.readonly = TRUE)
-  on.exit(graphics::par(opar))
-  graphics::par(mar = c(5, 4, 2.5, 0) + 0.1)
+  opar <- graphics::par("mar")
+  on.exit(graphics::par("mar" = opar))
+  graphics::par(mar = c(4, 4, 2.5, 0) + 0.1)
   graphics::plot(
     x = c(0.6, 0.4 + length(levels(h_dat[, "Flasche"]))),
     y = range(h_dat[, "value"], na.rm = T),
@@ -57,14 +57,14 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
   graphics::abline(h = omn, lty = 2)
   graphics::abline(h = omn + c(-1, 1) * osd, lty = 2, col = grDevices::grey(0.8))
   graphics::boxplot(h_dat[, "value"] ~ h_dat[, "Flasche"], add = TRUE)
-  graphics::mtext(text = paste("Overall mean =", omn), side = 3, line = 1.5, adj = 1)
-  graphics::mtext(text = paste("Overall sd =", osd), side = 3, line = 0.25, adj = 1)
+  graphics::mtext(text = paste("Overall mean =", omn), side = 3, line = 1.5, adj = 1, cex = NULL)
+  graphics::mtext(text = paste("Overall sd =", osd), side = 3, line = 0.25, adj = 1, cex = NULL)
   if (showIDs) {
     h_dat[, "Rep"] <- NA
     for (l in 1:length(levels(h_dat[, "Flasche"]))) {
       h_dat[h_dat[, "Flasche"] == levels(h_dat[, "Flasche"])[l], "Rep"] <- 1:sum(h_dat[, "Flasche"] == levels(h_dat[, "Flasche"])[l])
     }
-    graphics::text(x = as.numeric(h_dat[, "Flasche"]), y = h_dat[, "value"], labels = h_dat[, "Rep"], col = 4, cex = 2)
+    graphics::text(x = as.numeric(h_dat[, "Flasche"]), y = h_dat[, "value"], labels = h_dat[, "Rep"], col = 4, cex = 1.5)
   }
   invisible(NULL)
 }

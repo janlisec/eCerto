@@ -1,6 +1,6 @@
 ---
 title: "&nbsp;"
-title-meta: Analyt-Report
+title-meta: "Analyt-Report"
 params:
   General: NA
   Certification: NA
@@ -8,130 +8,104 @@ params:
   selected_tab: NA
   logo_file: NA
 output:
-  html_document:
-    df_print: paged
   word_document: 
     reference_docx: template.docx
-  pdf_document:
-    latex_engine: lualatex
-fontsize: 11pt
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
-  knitr::opts_chunk$set(echo = FALSE)
-  testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
-  if (testing) {
-    report_file <- "report_vorlage_analyt.Rmd"
-    logo_file <- "BAMLogo2015.png"
-    fnc_get_local_file <- function(x=NULL) {
-      pkg_path <- system.file(package = "eCerto")
-      file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-      return(file.path(pkg_path, file_path, fsep="/"))
-    }
-    res <- eCerto::CRM001
-    G <- res$General
-    C <- res$Certification
-    CP <- res$Certification_processing
-    A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
-    D <- G$apm[[A]]
-    if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
-      warning(paste(logo_file, "is not in same folder as", report_file))
-    }
-    L <- logo_file
-  } else {
-    G <- params$General
-    C <- params$Certification
-    CP <- params$Certification_processing
-    A <- ifelse(params$selected_tab %in% names(G$apm), params$selected_tab, names(G$apm)[1])
-    D <- G$apm[[A]]
-    L <- params[["logo_file"]]
+knitr::opts_chunk$set(echo = FALSE)
+testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
+if (testing) {
+  report_file <- "report_vorlage_analyt.Rmd"
+  logo_file <- "BAMLogo2015.png"
+  fnc_get_local_file <- function(x=NULL) {
+    pkg_path <- system.file(package = "eCerto")
+    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
+    return(file.path(pkg_path, file_path, fsep="/"))
   }
-```
-
-***Note!*** 
-This is a Report template for demonstration purpose. Specific layouts can be generated on demand.
-
----
-
-```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
-  knitr::include_graphics(L)
-```
-
-## *eCerto* Analyte Report
-
-### Meta Data
-
-|               |                |              |                                     |
-|--------------:|:---------------|-------------:|:------------------------------------|
-| **Study ID:** | `r G$study_id` |    **Date:** | `r format(Sys.time(), '%d %B, %Y')` |
-|     **User:** | `r G$user`     | **Analyte:** | `r A`                               |
-
-### Data Import
-
-These files have been provided to the tool by `r G$user`:
-
-```{r data_files, echo=FALSE, comment=NA}
-if (length(C$input_files)>1) {
-  cat(paste(C$input_files, collapse=",\n"))
+  res <- eCerto::CRM001
+  G <- res$General
+  C <- res$Certification
+  CP <- res$Certification_processing
+  A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
+  D <- G$apm[[A]]
+  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
+    warning(paste(logo_file, "is not in same folder as", report_file))
+  }
+  L <- logo_file
 } else {
-  if ("File" %in% colnames(C$data)) cat(paste(unique(as.character(C$data[,"File"])), collapse=",\n"))
+  G <- params$General
+  C <- params$Certification
+  CP <- params$Certification_processing
+  A <- ifelse(params$selected_tab %in% names(G$apm), params$selected_tab, names(G$apm)[1])
+  D <- G$apm[[A]]
+  L <- params[["logo_file"]]
+}
+# helper function for paragraph text in HTML and Word from within R chunks
+p <- function(...) {
+  txt <- paste0(..., collapse = "")
+  txt <- gsub("\n", "  \n", txt, fixed = TRUE)
+  if (trimws(txt) == "") {
+    cat("<p>&nbsp;</p>\n")
+  } else {
+    cat(txt, "\n\n")
+  }
 }
 ```
 
-This is the imported data which was basis for all further calculations:
+### ***eCerto*** Report - Analyte Data
 
-```{r data_table, echo=FALSE}
-  df <- C$data[C$data[,"analyte"]==A,1:7,drop=FALSE]
-  if (knitr::is_html_output()) {
+```{r analyte, echo=FALSE, results='asis', message=FALSE, fig.width=CP$CertValPlot$Fig01_width/(72*1.5), fig.height=CP$CertValPlot$Fig01_height/(72*1.5), fig.retina=4, fig.dpi=72}
+# meta data
+p(
+  "Date: ", format(Sys.time(), '%d %B, %Y'), "\n", 
+  "User: ", G$user, "\n", 
+  "Material: ", G$study_id, "\n",
+  "Analyte: ", A
+)
+
+# show imported data
+df <- C$data[C$data[,"analyte"]==A,1:7,drop=FALSE]
+if (knitr::is_html_output()) {
+  htmltools::tagList(
+    htmltools::tags$caption("Tab.C0 Imported analyte data from inter laboratory trial"),
     eCerto:::styleTabC0(x = df[, c("ID", "Lab", "value", "unit", "replicate", "File")], ap = D, type = "standard")
-  } else if (knitr::is_latex_output()) {
-    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
-  } else {
-    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
-  }
-```
+  )
+} else {
+  eCerto:::ft_default(df, caption = "Imported analyte data from inter laboratory trial", id = "Tab.C0")
+}
 
-### Statistics regarding lab means, lab variances and outlier detection
+p("")
 
-```{r Outlier_Stats, echo=FALSE, comment=NA}
-  df <- CP$stats
-  if (knitr::is_html_output()) {
-    eCerto:::styleTabC1(x = df, n = D[["precision"]])
-  } else if (knitr::is_latex_output()) {
-    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
-  } else {
-    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
-  }
-```
+# show lab stats
+df <- CP$stats
+if (knitr::is_html_output()) {
+  htmltools::tagList(
+    htmltools::tags$caption("Tab.C1 Statistics regarding lab means, lab variances and outlier detection"),
+    eCerto:::styleTabC1(x = df, n = D[["precision"]], output = "DT")
+  )
+} else {
+  eCerto:::styleTabC1(x = df, n = D[["precision"]], output = "ft")
+}
 
-`r ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been removed by the user upon inspection of the oulier statistics:", "")`
+p(ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been removed by the user upon inspection of the oulier statistics:", ""), paste(D$sample_filter, collapse=", "))
 
-```{r S_flt, echo=FALSE, comment=NA}
-cat(paste(D$sample_filter, collapse=", ")) 
-```
-
-### Statistics regarding overall mean distribution and variance testing
-
-```{r lab_means, eval=TRUE, echo=FALSE, comment=NA}
+# show stats on averages
 df <- CP$mstats
-  if (knitr::is_html_output()) {
-    eCerto:::styleTabC2(x = df, n = D[["precision"]])
-  } else if (knitr::is_latex_output()) {
-    knitr::kable(df, row.names=FALSE, format="latex", format.args = list(decimal.mark = "."))
-  } else {
-    knitr::kable(df, row.names=FALSE, format="pipe", format.args = list(decimal.mark = "."))
-  }
-```
+if (knitr::is_html_output()) {
+  htmltools::tagList(
+    htmltools::tags$caption("Tab.C2 Statistics regarding overall mean distribution and variance testing"),
+    eCerto:::styleTabC2(x = df, n = D[["precision"]], output = "DT")
+  )
+} else {
+  eCerto:::styleTabC2(x = df, n = D[["precision"]], output = "ft")
+}
 
-`r ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics:", "")`
+p(ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics:", ""), paste(D$lab_filter, collapse=", "))
 
-```{r L_flt, echo=FALSE, comment=NA}
-cat(paste(D$lab_filter, collapse=", ")) 
-```
-
-### Certified Values Plot
-
-```{r CertValPlot, eval=TRUE, echo=FALSE, comment=NA, fig.width=CP$CertValPlot$Fig01_width/72, fig.height=CP$CertValPlot$Fig01_height/72}
+# show plot
   # The eval(parse(...)) construct allowed to store the plot function in the RData backup as it was at the moment of data save and thus
   # ensuring that it is compatible with the complete function call /parameters
   # However, this caused problems on the server, because an internal function (ldply_base) could not be found this way, as markdown processing
@@ -146,7 +120,3 @@ cat(paste(D$lab_filter, collapse=", "))
   data[,"Lab"] <- factor(data[,"Lab"])
   eval(CP$CertValPlot$call)
 ```
-
-### Certified Value and uncertainty contributions
-
-Here we could include the Tab.3 from the App including the certified values. However, this might be better done in the Material Report/Certificate.

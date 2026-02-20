@@ -44,10 +44,17 @@ m_reportUI <- function(id) {
       shiny::tagList(
         shiny::div(
           style = "float: left; padding-bottom: 0.5em;",
-          sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download HTML Report")),
-          shiny::downloadButton(outputId = ns("AnalyteReport"), label = "Analyte", style = "width: 135px;"),
-          shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM", style = "width: 135px;"),
-          shiny::downloadButton(outputId = ns("DRMDSnippet"), label = "DRMD", style = "width: 135px;")
+          sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download Report")),
+          bslib::layout_columns(
+            col_widths = c(6,6),
+            shiny::downloadButton(outputId = ns("AnalyteReport"), label = "Analyte", style = "width: 135px;"),
+            shiny::downloadButton(outputId = ns("DRMDSnippet"), label = "DRMD", style = "width: 135px;"),
+            shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM", style = "width: 135px;"),
+            shiny::HTML(""),
+            shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML"="html", "DOCX"="docx"), width = 135),
+            shiny::HTML("")
+          )
+
         )
       )
     )
@@ -93,14 +100,14 @@ m_reportServer <- function(id, rv) {
     )
 
     output$AnalyteReport <- shiny::downloadHandler(
-      filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", rv$cur_an, ".", "html") },
+      filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", rv$cur_an, ".", input$ReportFormat) },
       content = function(file) {
         render_report_A(file = file, rv = rv)
       }
     )
 
     output$MaterialReport <- shiny::downloadHandler(
-      filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", "Material", ".", "html") },
+      filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", "Material", ".", input$ReportFormat) },
       content = function(file) {
         render_report_M(file = file, "mt" = shiny::isolate(getValue(rv, c("General", "materialtabelle"))), "gen" = shiny::reactiveValuesToList(getValue(rv, "General")))
       }

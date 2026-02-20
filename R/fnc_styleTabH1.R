@@ -4,7 +4,7 @@
 #' @param x The Hom data from an session R6 object.
 #' @param mt The mt from an session R6 object.
 #' @param prec The precision of all analytes from x (names vector).
-#' @param output Return either the dataframe with styling information in columns or the corresponding datatable object.
+#' @param output Return either a formatted Datatable (DT) or flextable (ft) object.
 #' @param cr Current row selected (relevant if output = 'dt').
 #' @examples
 #' \donttest{
@@ -15,13 +15,14 @@
 #' eCerto:::styleTabH1(x = x, mt = mt)
 #' prec <- unlist(list("Fe" = 2))
 #' eCerto:::styleTabH1(x = x, prec = prec)
-#' eCerto:::styleTabH1(x = x, output = "dt", prec = prec)
+#' eCerto:::styleTabH1(x = x, output = "ft", prec = prec)
 #' }
 #' @return A data frame or a datatable object depending on parameter 'output'.
 #' @keywords internal
 #' @noRd
-styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr = 1) {
+styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("DT", "ft"), cr = 1) {
   e_msg("styling Tab.H1")
+  output <- match.arg(output)
   P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
   style_x <- x
   for (i in 1:nrow(style_x)) {
@@ -43,9 +44,27 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("df", "dt")[1], cr 
   }
   style_x[, "style_s_bb"] <- c("bold", "normal")[1 + as.numeric(style_x[, "s_bb"] < style_x[, "s_bb_min"])]
   style_x[, "style_s_bb_min"] <- c("bold", "normal")[1 + as.numeric(style_x[, "s_bb"] >= style_x[, "s_bb_min"])]
-
-  if (output == "df") {
-    return(style_x)
+  if (output == "ft") {
+    x <- style_x[,-grep("^style_", colnames(style_x))]
+    if (length(unique(x[, "H_type"])) == 1) x <- x[,colnames(x)!="H_type"]
+    eCerto_flextable_defaults()
+    ft <- flextable::flextable(x)
+    ft <- flextable::align(ft, j = "analyte", align = "left", part = "all")
+    ft <- flextable::align(ft, j = !(colnames(x) %in% "analyte"), align = "right", part = "all")
+    if ("H_type" %in% colnames(x)) ft <- flextable::compose(x = ft, j = "H_type", value = flextable::as_paragraph("H", flextable::as_sub("type")), part = "header")
+    if ("P_adj" %in% colnames(x)) ft <- flextable::compose(x = ft, j = "P_adj", value = flextable::as_paragraph("P", flextable::as_sub("adj")), part = "header")
+    ft <- flextable::compose(x = ft, j = which(colnames(x)=="M_between"), value = flextable::as_paragraph("M", flextable::as_sub("between")), part = "header")
+    ft <- flextable::compose(x = ft, j = which(colnames(x)=="M_within"), value = flextable::as_paragraph("M", flextable::as_sub("within")), part = "header")
+    ft <- flextable::compose(x = ft, j = which(colnames(x)=="s_bb"), value = flextable::as_paragraph("s", flextable::as_sub("bb")), part = "header")
+    ft <- flextable::compose(x = ft, j = which(colnames(x)=="s_bb_min"), value = flextable::as_paragraph("s", flextable::as_sub("bb,min")), part = "header")
+    for (i in which(style_x$style_s_bb=="bold")) ft <- flextable::bold(ft, i = i, j = "s_bb", part = "body")
+    for (i in which(style_x$style_s_bb_min=="bold")) ft <- flextable::bold(ft, i = i, j = "s_bb_min", part = "body")
+    for (i in which(style_x$style_analyte=="red")) ft <- flextable::color(ft, i = i, j = "analyte", color = "red", part = "body")
+    for (i in which(x[,P_col]<0.05)) ft <- flextable::color(ft, i = i, j = P_col, color = "red", part = "body")
+    ft <- flextable::bold(ft, part = "header")
+    ft <- eCerto_flextable_defaults(ft = ft)
+    ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.H1"), " Analyte homogeneities and accociated uncertainties"))
+    return(ft)
   } else {
     x <- style_x
     # set invisible cols

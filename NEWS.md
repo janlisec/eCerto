@@ -1,3 +1,9 @@
+# eCerto 0.8.12 [20.02.2026]
+* alternative flextable output supported for most tables
+* H, S and C Reports are now possible to Word format (using flextables)
+* help RMD files are rendered via a temp file, allowing to omit markdown dependency
+* new internal renderPlotHD() to be able to increase plot font size throughout the app
+
 # eCerto 0.8.11 [28.01.2026]
 * rewrite read_zenodo() to comply with CRAN rules to 'exit gracefully'
 

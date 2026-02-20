@@ -533,19 +533,19 @@ page_validationServer <- function(id, test_data = NULL) {
       calc_bxp_width(n = length(V_pars$opt_figV1_anal)*length(V_pars$opt_figV1_level), w_point = 28, w_axes = 120)
     })
 
-    output$fig_V1 <- shiny::renderPlot({
+    output$fig_V1 <- renderPlotHD({
       req(ab(), any(nchar(V_pars$opt_figV1_anal)>=1), any(nchar(V_pars$opt_figV1_level)>=1))
       prepFigV1(ab = ab())
     }, width = fig_V1_width)
 
     # Figure V2 ====
-    output$fig_V2 <- shiny::renderPlot({
+    output$fig_V2 <- renderPlotHD({
       req(tab_flt(), current_analyte$name %in% tab_flt()[,"Analyte"])
       prepFigV2(tab = tab_flt(), a = current_analyte$name, flt_outliers = V_pars$opt_tabV1_fltLevels)
     })
 
     # Figure V3 ====
-    output$fig_V3 <- shiny::renderPlot({
+    output$fig_V3 <- renderPlotHD({
       req(tab(), current_analyte$name, V_pars$opt_figV1_level)
       prepFigV3(x = flt_Vdata(x = tab(), l = V_pars$opt_figV1_level, a = current_analyte$name, rng = FALSE))
     })
