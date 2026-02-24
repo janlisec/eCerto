@@ -205,8 +205,10 @@ page_validationUI <- function(id) {
         placeholder = "xlsx",
         accept = c("xlsx", "RData")
       ),
-      shiny::p(shiny::helpText("Example Table (Agilent MassHunter Export format)")),
-      shiny::img(src = "www/rmd/fig/V_Modul_Import.png")
+      shiny::div(
+        shiny::p(shiny::helpText("Example Table (Agilent MassHunter Export format)")),
+        shiny::img(src = "www/rmd/fig/V_Modul_Import.png", style = "max-width: 800px; height: auto;")
+      )
     ),
     shiny::conditionalPanel(
       condition = "output.V_fileUploaded == true",

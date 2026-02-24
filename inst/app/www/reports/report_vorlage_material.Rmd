@@ -48,17 +48,17 @@ cat(paste0(
   "Material: ", G$study_id
 ), "\n\n")
 
-if (FALSE) {
+#if (FALSE) {
 ## testing
-  M[2,1] <- "This is a very long analyte name"
-  source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/app_config.R")
-  source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/app_utils.R")
-  source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/statistic_helper.R")
-  source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/fnc_round_DIN1333.R")
-  source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/fnc_styleTabC3.R")
-  styleTabC3(x = M, apm = G[["apm"]], output = ifelse(knitr::is_html_output(), "DT", "flextable"))
-} else {
+#   M[2,1] <- "This is a very long analyte name"
+#   source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/app_config.R")
+#   source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/app_utils.R")
+#   source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/statistic_helper.R")
+#   source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/fnc_round_DIN1333.R")
+#   source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/fnc_styleTabC3.R")
+#   styleTabC3(x = M, apm = G[["apm"]], output = ifelse(knitr::is_html_output(), "DT", "flextable"))
+# } else {
   eCerto:::styleTabC3(x = M, apm = G[["apm"]], output = ifelse(knitr::is_html_output(), "DT", "ft"))
-}
+# }
 ```
 
