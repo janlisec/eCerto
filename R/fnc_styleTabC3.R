@@ -7,7 +7,7 @@
 #' @examples
 #' x <- shiny::isolate(eCerto::getValue(eCerto:::test_rv(type = "SR3"), c("General", "materialtabelle")))
 #' eCerto:::styleTabC3(x)
-#' eCerto:::styleTabC3(x, output="flextable")
+#' eCerto:::styleTabC3(x, output="ft")
 #' @return A data table object.
 #' @keywords internal
 #' @noRd

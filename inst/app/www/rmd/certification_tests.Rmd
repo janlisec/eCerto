@@ -82,6 +82,16 @@ lapply(out, function(x) {
   rownames(x) <- paste0("k=", ks)
   round(x, 4)
 })
+# for (i in 1:2) {
+# x <- as.data.frame(out[[i]])
+# colnames(x) <- paste0("n=", ns)
+# rownames(x) <- paste0("k=", ks)
+# x <- round(x, 4)
+# x <- cbind(" "= rownames(x), x)
+# ft <- eCerto:::ft_default(x, caption = names(out)[i])
+# flextable::bg(ft, bg = grDevices::grey(0.85), j=1)
+# ft
+# }
 ```
 
 </details> 

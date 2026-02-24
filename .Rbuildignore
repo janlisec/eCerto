@@ -11,6 +11,6 @@
 ^app\.R$
 ^rsconnect$
 ^tests/testthat/_snaps$
-dev
+^dev$
 R/_disable_autoload.R
 ^Dockerfile$

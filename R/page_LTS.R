@@ -90,8 +90,10 @@ m_longtermstabilityUI <- function(id) {
         multiple = FALSE,
         accept = c("xls", "xlsx", "RData")
       ),
-      shiny::p(shiny::helpText("Example Table")),
-      shiny::img(src = "www/rmd/fig/L_Modul_Import.png")
+      shiny::div(
+        shiny::p(shiny::helpText("Example Table (for initial data upload)")),
+        shiny::img(src = "www/rmd/fig/L_Modul_Import.png", style = "max-width: 800px; height: auto;")
+      )
     ),
     shiny::conditionalPanel(
       condition = "output.LTS_fileUploaded == true",
