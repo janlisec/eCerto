@@ -12,7 +12,7 @@
 # rsconnect::deployApp(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto", appName = c("test","eCerto")[1], forceUpdate = TRUE)
 
 # To check for errors in shinyapps.io:
-# rsconnect::showLogs(appName = c("test","eCerto")[2], account = "jali")
+# rsconnect::showLogs(appName = c("test","eCerto")[1], account = "jali")
 
 # to switch between CRAN and BAM-Server version upon compile modify
 # the option 'bam_server' in 'golem-config.yml'
