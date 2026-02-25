@@ -1,20 +1,42 @@
 testthat::test_that(
-  desc = "Module page_validationServer works",
+  desc = "page_ValidationServer works on package testdata",
   code = {
-  fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
-  td <- eCerto:::read_Vdata(file = fl, fmt = eCerto:::check_fmt_Vdata(fl))
-  shiny::testServer(
-    app = eCerto:::page_validationServer, args = list("test_data" = td), expr = {
+    # set up eCerto R6 object containing data from an arrhenius style experiment
+    fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
+    td <- eCerto:::read_Vdata(file = fl, fmt = eCerto:::check_fmt_Vdata(fl))
 
-      session$flushReact()
+    # provide this test data to the server function and test if the expected outputs are generated
+    shiny::testServer(
+      app = eCerto:::page_validationServer,
+      args = list(
+        id = "test",
+        test_data = td
+      ),
+      expr = {
+        # check data upload and processing
+        session$setInputs(
+          opt_V2_vals = "Area_Analyte"
+        )
+        V_pars$opt_figV1_level <- "1"
+        current_analyte$name <- "PFBA"
+        x <- V2_dat()
+        testthat::expect_true(is.list(x))
+        testthat::expect_true(length(x)==1L)
+        testthat::expect_true(all(c("Level", "Analyte") %in% colnames(x[[1]])))
 
-      # V_pars list is created
-      testthat::expect_true(all(c("opt_figV1_anal", "inp_file_name", "txt_trueness") %in% names(V_pars)))
+        V_pars$opt_tabV1_useLevels <- FALSE
+        x <- tab_V1()
+        testthat::expect_true(is.data.frame(x))
+        testthat::expect_true(nrow(x)==4L)
+        # V_pars$opt_tabV1_alpha
+        # V_pars$opt_tabV1_k
+        # V_pars$opt_tabV1_fltLevels
+        # V_pars$opt_tabV1_unitcali
+        # V_pars$opt_tabV1_unitsmpl
+        # V_pars$opt_tabV1_convfac
+        # V_pars$opt_figV1_level
+        #browser()
 
-      # passing of arguments from inputs to pars list works
-      session$setInputs(txt_trueness = "A")
-      testthat::expect_equal(input$txt_trueness, "A")
-      testthat::expect_equal(V_pars$txt_trueness, "A")
-
+      }
+    )
   })
-})

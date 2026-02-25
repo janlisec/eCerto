@@ -613,7 +613,7 @@ warning_or_modal <- function(x, type = c("warning", "info", "success", "error"))
   if (!is.null(shiny::getDefaultReactiveDomain())) {
     shinyWidgets::show_alert(
       title = NULL,
-      type = "error",
+      type = type,
       text = x,
       closeOnClickOutside = TRUE
     )
