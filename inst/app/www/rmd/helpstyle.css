@@ -1,0 +1,50 @@
+/* CSS for R Markdown help pages */
+
+/* format TOC */
+.tocify-header {
+  text-indent: initial;
+}
+
+.tocify-subheader > .tocify-item {
+  text-indent: initial;
+  padding-left: 25px;
+}
+
+.tocify-subheader .tocify-subheader > .tocify-item {
+  text-indent: initial;
+  padding-left: 50px;
+}
+
+.tocify-subheader .tocify-subheader .tocify-subheader > .tocify-item {
+  text-indent: initial;
+  padding-left: 60px;
+}
+
+
+/* format captions */
+/* markdown captions for i.e. pictures, tables, etc. */
+div.figcaption {
+  font-size: 0.8em;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 2px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+/* Pandoc/knitr Standard (html_fragment, html_document) */
+div.figure > p.caption {
+  font-size: 0.8em;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 2px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+/* HTML5-version (figure/figcaption) */
+figure > figcaption {
+  font-size: 0.8em;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 2px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}

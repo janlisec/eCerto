@@ -11,14 +11,14 @@
 #'   shinyApp(
 #'     ui = shiny::fluidPage(
 #'       shinyjs::useShinyjs(),
-#'       shiny:::modify_FUcols_UI(id = "test")
+#'       eCerto:::modify_FUcols_UI(id = "test")
 #'     ),
 #'     server = function(input, output, session) {
 #'       # rv <- eCerto:::test_rv()
 #'       rv <- eCerto:::test_rv("SR3")
 #'       mt <- shiny::reactiveVal()
 #'       shiny::isolate(mt(eCerto::getValue(rv, c("General", "materialtabelle"))))
-#'       shiny:::modify_FUcols_Server(id = "test", mt = mt)
+#'       eCerto:::modify_FUcols_Server(id = "test", mt = mt)
 #'       shiny::observeEvent(mt(), {
 #'         print(mt)
 #'       })
@@ -39,8 +39,11 @@ modify_FUcols_UI <- function(id) {
       circle = FALSE,
       shiny::tagList(
         bslib::layout_columns(
-          shiny::selectInput(inputId = ns("selinp"), label = "Create/modify column", choices = c("<new F>", "<new U>")),
-          shiny::textInput(inputId = ns("txtinp"), label = "Edit column name", value = "")
+          shinyWidgets::pickerInput(
+            inputId = ns("selinp"), label = "Create/select column",
+            choices = list("new"=c("F-type", "U-type"))
+          ),
+          shiny::textInput(inputId = ns("txtinp"), label = "Edit/delete column", value = "")
         ),
         bslib::layout_columns(
           shiny::div(
@@ -61,20 +64,23 @@ modify_FUcols_UI <- function(id) {
 #' @noRd
 modify_FUcols_Server <- function(id, mt = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-    new_cols <- c("<new U>", "<new F>")
+    new_cols <- c("U-type", "F-type")
 
     observeEvent(mt(), {
-      cc <- attr(mt(), "col_code")
-      choices <- c(cc[, "Name"], new_cols)
-      shiny::updateSelectInput(inputId = "selinp", choices = choices)
+      e_cols <- attr(mt(), "col_code")[,"Name"]
+      n <- length(e_cols)
+      if (n==0) choices <- list("create new" = new_cols)
+      if (n==1) choices <- list(e_cols, "create new" = new_cols)
+      if (n>=2) choices <- list("modify" = e_cols,  "create new" = new_cols)
+      shinyWidgets::updatePickerInput(inputId = "selinp", choices = choices)
     })
 
     col_type <- shiny::reactiveVal()
     observeEvent(input$selinp, {
       cc <- attr(mt(), "col_code")
       type <- switch(input$selinp,
-        "<new F>" = "F",
-        "<new U>" = "U",
+        "F-type" = "F",
+        "U-type" = "U",
         substr(cc[cc[, "Name"] == input$selinp, "ID"], 1, 1)
       )
       col_type(type)

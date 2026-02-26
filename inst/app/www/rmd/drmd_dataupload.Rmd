@@ -1,3 +1,6 @@
 ### DRMD data upload (XML)
 
-Please prepare a valid DRMD XML file for upload. 
+Please prepare a valid DRMD XML file for upload. If you used ***eCerto*** to
+calculate the statistics for a CRM and have a  valid Tab.C3 in module 
+Certification, you can use the export function in the module Certification to 
+create a DRMD XML file containing the certification data.

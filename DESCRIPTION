@@ -1,8 +1,8 @@
 Type: Package
 Package: eCerto
 Title: Statistical Tests for the Production of Reference Materials
-Version: 0.8.14
-Date: 2026-02-25
+Version: 0.8.15
+Date: 2026-02-26
 Authors@R: c(
     person("Jan", "Lisec", , "jan.lisec@bam.de", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0003-1220-2286")),
@@ -49,6 +49,7 @@ Suggests:
     covr,
     curl,
     fs,
+    htmltools,
     jsonlite,
     rlang,
     testthat (>= 3.0.0),

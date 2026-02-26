@@ -6,7 +6,11 @@ and `H_type` (if specified during upload) independently. The `P`-value of each A
 in **Tab.H1** together with the variance within bottles $s_w$ (`M_within`) and the variance between 
 bottles $s_a$ (`M_between`).
 
-![**Tab.H1** Calculation of uncertainty contribution from homogeneity assay](fig/H_Modul_Tab1.png)
+```{r TabH1, echo=FALSE, message=FALSE, results='asis'}
+x <- eCerto::CRM001$Homogeneity$h_vals
+mt <- data.frame("analyte" = c("X","Z"))
+eCerto:::styleTabH1(x = x, mt = mt, output = "ft", prec=setNames(c(4,0,2), c("X","Y","Z")))
+```
 
 A significant ANOVA P-value indicates non homogeneous specimen and is highlighted in red color 
 in **Tab.H1**. P-values are adjusted for multiple testing in case of several analytes being

@@ -37,11 +37,6 @@ app_ui <- function(request = NULL) {
             padding-top: 56px;
             padding-bottom: 24px;
           }
-          /* This would cause the scroll bars to be in the tab-pane only, however it disrupts TOC linking on the help page
-          /* .tab-pane {
-             /* flex: 1;
-             /* overflow-y: auto !important; /* Scroll only within Panel */
-          /*}
         "))
       ),
       footer = shiny::div(
@@ -149,7 +144,9 @@ golem_add_external_resources <- function() {
     shiny::tags$head(
       shiny::HTML('<noscript><p><img src="https://agw1.bam.de/piwik/matomo.php?idsite=24&amp;rec=1" style="border:0;" alt="" /></p></noscript>'),
       shiny::HTML('<script type="text/javascript" src="https://agw1.bam.de/piwik/piwik.js" async defer></script>'),
-      shiny::includeScript(app_sys("app/www/js/tracking-live.js"))
+      shiny::includeScript(app_sys("app/www/js/tracking-live.js")),
+      shiny::includeCSS(app_sys("app/www/app.css"))
+      #tags$link(rel = "stylesheet", type = "text/css", href = "ecerto/app.css")
     )
   }
 }

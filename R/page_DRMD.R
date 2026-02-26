@@ -132,7 +132,6 @@ page_DRMDServer <- function(id, test_data = NULL) {
       if (!is.null(input$D_input_file) | !is.null(test_data)) {
         fl_path <- ifelse(!is.null(test_data), test_data, input$D_input_file$datapath[1])
         file.type <- tools::file_ext(fl_path)
-        #browser()
         if (!tolower(file.type) %in% c("xml")) {
           shinyWidgets::show_alert(title = "Wrong Filetype?", text = "Please select an XML file.", type = "warning")
           return(NULL)
@@ -173,7 +172,6 @@ page_DRMDServer <- function(id, test_data = NULL) {
         D$data <- D_data()
         D$data_mod <- NULL
         D$xml_file <- input$D_input_file$name[1]
-        #browser()
         D_lst <- flatten_list_to_df(D_data())
         L2_entries <- unique(sapply(strsplit(D_lst$path, "_"), function(x) { x[2] }))
         L2_props <- grep("materialPropertiesList", L2_entries)

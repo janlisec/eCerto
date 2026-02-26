@@ -1,0 +1,13 @@
+.card,
+.card-header {
+  overflow: visible !important;
+  position: relative !important;
+}
+.header-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: visible !important;
+  white-space: nowrap;
+}
+.sw-dropdown-content {
+  z-index: 3000 !important;
+}

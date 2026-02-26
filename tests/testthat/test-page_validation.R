@@ -28,14 +28,6 @@ testthat::test_that(
         x <- tab_V1()
         testthat::expect_true(is.data.frame(x))
         testthat::expect_true(nrow(x)==4L)
-        # V_pars$opt_tabV1_alpha
-        # V_pars$opt_tabV1_k
-        # V_pars$opt_tabV1_fltLevels
-        # V_pars$opt_tabV1_unitcali
-        # V_pars$opt_tabV1_unitsmpl
-        # V_pars$opt_tabV1_convfac
-        # V_pars$opt_figV1_level
-        #browser()
 
       }
     )
