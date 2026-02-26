@@ -41,31 +41,43 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
     fill = FALSE,
     bslib::card_header(
       id = ns("tab_C3_panel_body"),
-      class = "d-flex justify-content-between",
+      class = "d-flex justify-content-between align-items-center gap-2",
+
+      # ------------------------------------------------------
+      # left
+      # ------------------------------------------------------
       shiny::div(
-        shiny::strong(shiny::actionLink(inputId = ns("tabC3head"), label = "Tab.C3 - Certified values within material")),
-        shiny::actionButton(inputId = ns("btn"), label = NULL, icon = shiny::icon("compress-arrows-alt"), style = "border: none; padding-left: 5px; padding-right: 5px; padding-top: 0px; padding-bottom: 0px;")
+        class = "d-flex align-items-center gap-2",
+        shiny::strong(
+          shiny::actionLink(
+            inputId = ns("tabC3head"),
+            label = "Tab.C3 - Certified values within material"
+          )
+        ),
+        shiny::actionButton(
+          inputId = ns("btn"),
+          label = NULL,
+          icon = shiny::icon("compress-arrows-alt"),
+          class = "btn btn-sm",
+          style = "border:none;"
+        )
       ),
+
+      # ------------------------------------------------------
+      # right
+      # ------------------------------------------------------
       shiny::div(
-        shiny::div(
-          style = "float: right; margin-left: 15px;",
-          check_stability_UI(id = ns("post_cert_stab"))
-        ),
-        shiny::div(
-          style = "float: right; margin-left: 15px;",
-          modify_FUcols_UI(id = ns("FUcols"))
-        ),
-        shiny::div(
-          style = "float: right; margin-left: 15px;",
-          # Report-Section
-          m_reportUI(ns("report"))
-        ),
-        shiny::div(
-          style = "float: right; margin-left: 15px;",
-          # Analyte-Options
-          m_analyteUI(ns("analyteModule"))
-        ),
-        shiny::actionButton(inputId = ns("clear_FU_cols"), label = "Remove F/U cols without effect")
+        class = "d-flex align-items-center gap-2 flex-nowrap",
+        style = "overflow-y: visible; max-width:100%;",
+        m_analyteUI(ns("analyteModule")),
+        m_reportUI(ns("report")),
+        modify_FUcols_UI(id = ns("FUcols")),
+        check_stability_UI(id = ns("post_cert_stab")),
+        shiny::actionButton(
+          inputId = ns("clear_FU_cols"),
+          label = "Remove F/U cols without effect",
+          class = "btn btn-sm"
+        )
       )
     ),
     bslib::card_body(

@@ -8,10 +8,10 @@ params:
   selected_tab: NA
   logo_file: NA
 output:
-  word_document: 
-    reference_docx: template.docx
   html_document:
     df_print: paged
+  word_document: 
+    reference_docx: template.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -69,8 +69,8 @@ p(
 # show imported data
 df <- C$data[C$data[,"analyte"]==A,1:7,drop=FALSE]
 if (knitr::is_html_output()) {
-  htmltools::tagList(
-    htmltools::tags$caption("Tab.C0 Imported analyte data from inter laboratory trial"),
+  shiny::tagList(
+    shiny::tags$caption("Tab.C0 Imported analyte data from inter laboratory trial"),
     eCerto:::styleTabC0(x = df[, c("ID", "Lab", "value", "unit", "replicate", "File")], ap = D, type = "standard")
   )
 } else {
@@ -82,8 +82,8 @@ p("")
 # show lab stats
 df <- CP$stats
 if (knitr::is_html_output()) {
-  htmltools::tagList(
-    htmltools::tags$caption("Tab.C1 Statistics regarding lab means, lab variances and outlier detection"),
+  shiny::tagList(
+    shiny::tags$caption("Tab.C1 Statistics regarding lab means, lab variances and outlier detection"),
     eCerto:::styleTabC1(x = df, n = D[["precision"]], output = "DT")
   )
 } else {
@@ -95,8 +95,8 @@ p(ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been remov
 # show stats on averages
 df <- CP$mstats
 if (knitr::is_html_output()) {
-  htmltools::tagList(
-    htmltools::tags$caption("Tab.C2 Statistics regarding overall mean distribution and variance testing"),
+  shiny::tagList(
+    shiny::tags$caption("Tab.C2 Statistics regarding overall mean distribution and variance testing"),
     eCerto:::styleTabC2(x = df, n = D[["precision"]], output = "DT")
   )
 } else {

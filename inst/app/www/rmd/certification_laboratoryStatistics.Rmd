@@ -12,37 +12,42 @@ P-values for both independent tests are displayed within the same column of **Ta
 However, it allows to keep the output compact. Please always use results of **Tab.C1** 
 in parallel with **Fig.C1** to decide on the removal of Labs.
 
-![**Tab.C1** Laboratory statistics](fig/C_Modul_Tab1.png)
+```{r TabC1, echo=FALSE, message=FALSE, results='asis'}
+rv <- eCerto:::test_rv(type = "SR3")
+shiny::isolate(dat <- rv$c_fltData())
+shiny::isolate(lab_means <- rv$c_lab_means(data = dat))
+x <- eCerto:::prepTabC1(dat = dat, lab_means = lab_means)
+eCerto:::styleTabC1(x = x, output="ft")
+```
 
-Except for `Cochran`, which tests for outliers with respect to variance, all other columns 
-indicate potential outliers regarding lab means.
+Except for `Cochran`, which tests for outliers with respect to variance, all other 
+columns indicate potential outliers regarding lab means.
 
-To compute the statistical tests *eCerto* uses functions from different packages available 
-for **R**. Details regarding the conducted statistical test (implementation, parameters) 
-can be found using the following links:
-  
-* <a href="https://rdrr.io/cran/agricolae/man/scheffe.test.html" target="_blank" rel="noopener noreferrer">Scheffe</a>
-***Note!*** 
+```{r, echo=FALSE, message=FALSE}
+ sl <- eCerto::save_link
+```
+
+To compute the statistical tests *eCerto* uses functions from different packages 
+available for **R**. Details regarding the conducted statistical test (implementation, 
+parameters) can be found using the following links:
+
+* `r sl("Scheffe", "https://rdrr.io/cran/agricolae/man/scheffe.test.html")` ***Note!*** 
 Similar letters indicate similar group and hence no difference. The test is performed at 
 two $\alpha$ levels (.01 and .05) and re-implemented following the code provided in the
 `agricolae` package.
-* <a href="https://rdrr.io/cran/outliers/man/dixon.test.html" target="_blank" rel="noopener noreferrer">Dixon</a>
-***Note!*** 
+* `r sl("Dixon", "https://rdrr.io/cran/outliers/man/dixon.test.html")` ***Note!*** 
 The Dixon-Test was originally developed for small sample sizes of $3 \le n \le 30$. We use
 tabulated critical values for Dixon up to $n=100$ obtained from different tables in
-<a href="http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html" target="_blank" rel="noopener noreferrer">this</a>
-website. Different tables are used according to $n$.
-* <a href="https://rdrr.io/cran/outliers/man/grubbs.test.html" target="_blank" rel="noopener noreferrer">Grubbs</a>
-***Note!*** 
+`r sl("this", "http://www.statistics4u.com/fundstat_eng/cc_outlier_tests_dixon.html")` website. 
+Different tables are used according to $n$.
+* `r sl("Grubbs", "https://rdrr.io/cran/outliers/man/grubbs.test.html")` ***Note!*** 
 Test is performed as single (only the most extreme value at each end of the distribution 
 is tested) as well as double version (the two most extreme values are tested against the 
 rest). In accordance with ISO 17025 the double Grubbs Test is only conducted in case that
 the single Grubbs Test is not significant. Critical values for double Grubbs are obtained
 from the provided link for $4 \le n \le 30$ and are estimated for $31 \le n \le 100$ based
-on <a href="https://doi.org/10.1007/s10182-011-0185-y" target="_blank" rel="noopener noreferrer">this</a> 
-paper.
-* <a href="https://rdrr.io/cran/outliers/man/cochran.test.html" target="_blank" rel="noopener noreferrer">Cochran</a> 
-***Note!*** 
+on `r sl("this", "https://doi.org/10.1007/s10182-011-0185-y")` paper.
+* `r sl("Cochran", "https://rdrr.io/cran/outliers/man/cochran.test.html")` ***Note!*** 
 The Cochran test is performed consecutively, *i.e.* the Lab showing the highest variance is tested 
 first. If significant, it is removed and the procedure is repeated. `excl` indicates that 
 the `sd` of a lab was too low and the lab was removed from the testing procedure.

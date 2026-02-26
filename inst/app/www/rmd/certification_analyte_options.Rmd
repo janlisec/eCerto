@@ -3,7 +3,7 @@
 For analytes under inspection (*i.e.* which are selected in **Tab.C3**), several analyte specific
 parameters can be set and will be stored also in the backup file.
 
-![**User Options** Possible options which can be set per individual analyte](fig/C_Modul_AnalyteOptions.png)
+![**User Options** Possible options which can be set per individual analyte](fig/m_analyteUI.png)
 
 #### Pooling
 
@@ -25,7 +25,7 @@ right after import. However, information of this filtering step is preserved and
 mean and variance outliers (in **Tab.C1** and **Tab.C2**). Filtered labs are depicted in **Fig.C1** 
 (using grey color), but excluded from calculating the certified value of the analyte in **Tab.C3**.
 
-#### Rounding
+#### Rounding Precision
 
 ***Note!***
 Internally, *all calculations are performed on non-rounded values* (as imported). Only the visual output to

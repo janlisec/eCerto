@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' if (interactive()) {
-#'   shiny::shinyApp(
+#'   app <- shiny::shinyApp(
 #'     ui = bslib::page_fluid(
 #'       shinyjs::useShinyjs(),
 #'       eCerto:::page_CertificationUI(id = "test")
@@ -27,6 +27,18 @@
 #'       eCerto:::page_CertificationServer(id = "test", rv = rv)
 #'     }
 #'   )
+#'   app
+#'   \dontrun{
+#'   # generate screenshot of Fig.C1 and options panel for documentation purposes
+#'   webshot2::appshot(
+#'     app = app,
+#'     file = "inst/app/www/rmd/fig/C_Modul_Fig1.png",
+#'     vwidth = 1800,
+#'     vheight = 1400,
+#'     delay = 15,
+#'     selector = "#test-fig_C1_panel"
+#'    )
+#'   }
 #' }
 #'
 #' @noRd
@@ -180,7 +192,6 @@ page_CertificationServer <- function(id, rv) {
 
     # observer to move Fig_C1 to left column when many metabolites are in CRM
     shiny::observeEvent(input$shift_test, {
-      #browser()
       #shiny::removeUI(selector = "#fig_C1_panel")
       ns <- session$ns
       shinyjs::runjs(sprintf("

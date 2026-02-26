@@ -38,7 +38,6 @@ styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, L3 = NULL) {
   }
 
   tmp <- df[df$L3==L3,]
-  # browser()
   # df <- dplyr::bind_rows(lapply(split(tmp, as.numeric(tmp$L8)), function(x) {
   #   stats::setNames(x$value, apply(x[,-ncol(x),drop=FALSE], 1, function(y) {
   #     rev(stats::na.omit(y))[1]

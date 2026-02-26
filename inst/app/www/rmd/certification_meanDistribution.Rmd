@@ -2,40 +2,45 @@
 
 The distribution of lab means is evaluated using a variety of recommended tests. 
 Normality of the distribution is tested using the KS-Test. Besides `mean` and `sd` 
-the robust alternatives `median` and `MAD`are provided. Columns which end on `_p` 
+the robust alternatives `median` and `MAD`are provided. Columns of the form *testname~p~*
 provide P-values of the respective tests. Skewness and Kurtosis are computed 
 additionally and grouped with their respective tests (Agostino and Anscombe).
 
-![**Tab.C2** Statistics on the lab mean distribution](fig/C_Modul_Tab2.png)
+```{r TabC2, echo=FALSE, message=FALSE, results='asis'}
+x <- eCerto::CRM001$Certification$data
+eCerto:::styleTabC2(eCerto:::prepTabC2(dat = x[x[,"analyte"]=="Z",]), output="ft")
+```
 
 To compute the statistical tests *eCerto* uses functions from different packages 
 available for **R**. Details regarding the conducted statistical test can be found 
 using the following links:
 
-* <a href="https://rdrr.io/r/stats/bartlett.test.html" target="_blank" rel="noopener noreferrer">Bartlett</a>
-s-test of the null hypothesis that the variances in each of the labs is the same.
-* <a href="https://rdrr.io/r/stats/anova.html" target="_blank" rel="noopener noreferrer">ANOVA</a>
-tests if labs are significantly different from each other (which is almost always the case).
-***Note!*** Should the ANOVA P-value be not significant you can select the `pooling` option
-for this analyte.
-* <a href="https://rdrr.io/r/stats/ks.test.html" target="_blank" rel="noopener noreferrer">KS</a>
--test performs a one-sample (Kolmogorov) test, which is carried out of the null that the distribution 
-of lab means is similar to a normal distribution with parameters $\mu$ and $\sigma$ estimated from
-the analyte data.
-* <a href="https://rdrr.io/cran/moments/man/skewness.html" target="_blank" rel="noopener noreferrer">Skewness</a>
-computes the skewness of the distribution.
-* <a href="https://rdrr.io/cran/moments/man/agostino.test.html" target="_blank" rel="noopener noreferrer">Agostino</a>
+```{r, echo=FALSE, message=FALSE}
+sl <- eCerto::save_link
+```
+
+* `r sl("Bartlett", "https://rdrr.io/r/stats/bartlett.test.html")`s-test of the 
+null hypothesis that the variances in each of the labs is the same.
+* `r sl("ANOVA", "https://rdrr.io/r/stats/anova.html")` tests if labs are 
+significantly different from each other (which is almost always the case).
+***Note!*** It is ok to select the `pooling` option (Tab.C3) for this analyte if 
+the ANOVA P-value be not significant.
+* `r sl("KS", "https://rdrr.io/r/stats/ks.test.html")`-test performs a one-sample 
+(Kolmogorov) test, which is carried out of the null that the distribution of lab 
+means is similar to a normal distribution with parameters $\mu$ and $\sigma$ 
+estimated from the analyte data.
+* `r sl("Skewness", "https://rdrr.io/cran/moments/man/skewness.html")` computes 
+the skewness of the distribution.
+* `r sl("Agostino", "https://rdrr.io/cran/moments/man/agostino.test.html")`
 performs the D'Agostino test for skewness in normally distributed data.
-* <a href="https://rdrr.io/cran/moments/man/kurtosis.html" target="_blank" rel="noopener noreferrer">Kurtosis</a>
-computes the estimator of Pearson's measure of kurtosis.
-* <a href="https://rdrr.io/cran/moments/man/anscombe.test.html" target="_blank" rel="noopener noreferrer">Anscombe</a>
-performs the Anscombe-Glynn test of kurtosis for normal distributed samples.
+***Note!*** Some tests (*i.e.* Agostino) need a minimum number of replicates and 
+will not yield a result if this criteria is not met.
+* `r sl("Kurtosis", "https://rdrr.io/cran/moments/man/kurtosis.html")` computes 
+the estimator of Pearson's measure of kurtosis.
+* `r sl("Anscombe", "https://rdrr.io/cran/moments/man/anscombe.test.html")` performs 
+the Anscombe-Glynn test of kurtosis for normal distributed samples.
 ***Note!*** `Skewness` and `Kurtosis` are computed using a two-sided alternative.
 
-***Note!*** 
-Some tests need a minimum number of replicates and will not yield a result if this 
-criteria is not met (*i.e.* Agostino).
-
-The is used to compare the distribution of Lab means against a normal distribution.
-Besides the `KS` test P-value, deviation of the data from a normal distribution can also 
-be visually investigated by opening a QQ-plot using the respective link.
+Additionally to checking the `KS` test P-value, deviation of the data from a 
+normal distribution can also be visually investigated by opening a QQ-plot using 
+the respective link.

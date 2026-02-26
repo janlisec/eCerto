@@ -98,6 +98,7 @@ testthat::test_that(
       testthat::expect_error(tmp <- eCerto:::render_report_V(inp_data=inp_data, V_pars=V_pars), NA)
     })
     testthat::expect_true(file.exists(tmp))
+    #testthat::expect_snapshot(tmp, "V_report.html")
     testthat::expect_true(readLines(tmp, n=1) == "<!DOCTYPE html>")
   }
 )

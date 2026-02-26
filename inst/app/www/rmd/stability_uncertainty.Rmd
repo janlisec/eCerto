@@ -15,14 +15,20 @@ ISO GUIDE 35:2017 and valid in the absence of a significant trend.
 To determine if the slope $b_1$ is significantly different from $b_1=0$ we 
 perform a t-test by calculating the t-statistic $t_m = |b_1| / s(b_1)$ and 
 compare the result with the two-tailed critical value of Student's $t$ 
-for $n - 2$ degrees of freedom to obtain the P-values in column `P`.
+for $n - 2$ degrees of freedom to obtain the P-values in column P~b1~.
 
-![**Tab.S1** Calculation of uncertainty contributions from stability assay](fig/S_Modul_Tab1.png)
+```{r TabS1, echo=FALSE, message=FALSE, resize.width="100%", results='asis'}
+x <- eCerto:::prepTabS1(x = eCerto:::test_Stability_Excel())
+eCerto:::styleTabS1(x = x, mt = NULL, sr = 1, output = "ft")
+```
 
 ***Note!***
-Clicking on a table row will display the analysis for the analyte specified in 
-this row.
+Selecting a table row in Tab.S1 will display the detailed analysis for the
+respective analyte.
 
 Values from column `u_stab_` can be transferred to a user defined column of the 
 material table **Tab.C3** in the certification module for matching analyte names. 
 Analytes of **Tab.S1** which can not be matched to **Tab.C3** are depicted in red.
+
+Also $P_{b1}$ values lower than 0.05 are highlighted in red to indicate a slope
+significantly different from 0.

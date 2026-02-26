@@ -10,10 +10,14 @@ The red line indicates the certified value $\mu_c$ and the two green dashed line
 the standard deviation $2s$ of the data or $U_{abs}$ from the table of certified values, based on 
 availability and user choice.
 
+```{r FigS1, echo=FALSE, message=FALSE, fig.cap="**Fig.S1** Linear model plot visualizing stability data", out.width="100%"}
+x <- eCerto::LTS001[[1]]
+x$def$KW <- NA
+plot_lts_data(x = x, type = 1, t_cert = 60, show_legend = TRUE)
+```
+
 ***Note!*** If no table of certified values is present or the analyte is yet unconfirmed, than red 
 and green lines represent mean and standard deviation of the currently depicted stability data.
 
 The dashed blue line indicates the linear model. It's parameter $b_1$ is reported in **Tab.S1** and 
 used to calculate `u_stab`.
-
-![**Fig.S1** Linear model plot visualizing stability data](fig/S_Modul_Fig1.png)

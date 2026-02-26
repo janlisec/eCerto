@@ -4,7 +4,7 @@ The table of certified values (**Tab.C3**) combines all data collected within a
 certification trial to provide for each measured entity within the certified 
 material the certified mean $\mu_c$ and the certified uncertainty $U_{abs}$.
 
-```{r TabC3, echo=FALSE, message=FALSE, resize.width="100%", results='asis'}
+```{r TabC3, echo=FALSE, message=FALSE, results='asis'}
 res <- eCerto::CRM001
 M <- res$General$materialtabelle
 G <- res$General

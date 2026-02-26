@@ -1123,3 +1123,44 @@ ldply_base <- function(.data, .fun = identity, .progress = "none", .id = NA, ...
 
   return(df)
 }
+
+#' @title save_link.
+#' @description Provide save link tag
+#' @param link link.
+#' @param text text.
+#' @examples
+#' save_link("KS", "https://rdrr.io/r/stats/ks.test.html")
+#' @export
+save_link <- function(text, link) {
+  paste0('<a href="', link, '" target="_blank" rel="noopener noreferrer">', text, '</a>')
+}
+
+#' @title capture_module_ui_png.
+#' @description Capture a png of a module UI for documentation purposes.
+#' @param ui_fun ui_fun.
+#' @param text text.
+#' @examples
+#' \dontrun{
+#'   capture_module_ui_png(ui_fun = eCerto:::m_analyteUI, width = 800, height = 560)
+#' }
+#' @return
+#' Character with path to saved png file. The default location used is app/www/rmd/fig
+#' and the default file name is derived from the name of the ui_fun argument. The default width and height are 900 and 600 pixels, respectively.
+#' @keywords internal
+#' @noRd
+capture_module_ui_png <- function(
+    ui_fun,
+    width = 900, height = 600
+) {
+  stopifnot(is.function(ui_fun))
+  fn <- as.character(match.call()$ui_fun)
+  fn <- fn[length(fn)]
+  file <- fs::path(system.file("app/www/rmd/fig", package = "eCerto"), fn, ext = "png")
+  ui <- ui_fun(id = "documentation")
+  page <- bslib::page_fluid(ui)
+  html_file <- tempfile(fileext = ".html")
+  on.exit(unlink(html_file), TRUE)
+  htmltools::save_html(page, file = html_file, background = "white", libdir = "libs")
+  webshot2::webshot(html_file, file = file, vwidth = width, vheight = height, delay = 0.3)
+  normalizePath(file)
+}

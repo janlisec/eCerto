@@ -1,3 +1,8 @@
+# eCerto 0.8.15 [26.02.2026]
+* improved Docker file (thanks to JR)
+* some figures in help are now generated programatically (instead of screen shot)
+* css files for help files and reports are now included in the package
+
 # eCerto 0.8.12 [20.02.2026]
 * alternative flextable output supported for most tables
 * H, S and C Reports are now possible to Word format (using flextables)

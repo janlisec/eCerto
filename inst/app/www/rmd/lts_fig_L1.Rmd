@@ -2,12 +2,12 @@
 
 The Tool calculates the expected life time of a reference material in several steps:
 
-1. calculating a linear model for the measurement data $y = b_1 \times x + b_2$, where $y$ represents
-measured values and $x$ represents time (expressed in month)
-2. correcting the intercept $b_2$ for the difference between the mean obtained from LTS data and 
-the mean reported as certified value on import $b_2' = b_2 + \mu_\mathit{LTS} - \mu_c$
-3. using the corrected $b_2'$ and $b_1$ to estimate the time point when the value of the certified 
-analyte is expected to exceed the interval of $\mu_c \pm U$
+1. calculating a linear model for the measurement data $y = b_1 \times x + b_2$, 
+where $y$ represents measured values and $x$ represents time (expressed in month)
+2. correcting the intercept $b_2$ for the difference between the mean obtained 
+from LTS data and the mean reported as certified value on import $b_2' = b_2 + \mu_\mathit{LTS} - \mu_c$
+3. using the corrected $b_2'$ and $b_1$ to estimate the time point when the value 
+of the certified analyte is expected to exceed the interval of $\mu_c \pm U$
 
 ![**Fig.L1** LTS data as imported (top) and after adjustment for the certified value (bottom). Selecting a data point by mouse click allows to edit its comment value.](fig/L_Modul_FigL1.png)
 
