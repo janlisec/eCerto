@@ -11,10 +11,18 @@
 #' x <- eCerto:::prepTabC1(dat = dat, lab_means = lab_means)
 #' eCerto:::styleTabC1(x = x)
 #' eCerto:::styleTabC1(x = x, output="ft")
+#' eCerto:::styleTabC1(x = x, output="ft_HTML")
+#' htmltools::html_print(bslib::card(bslib::card_body(
+#'   fillable = FALSE, fill = FALSE,
+#'   div(
+#'     style = "display: inline-block; width: auto; max-width: 100%; min-width: 400px; min-height: 3rem;",
+#'     eCerto:::styleTabC1(x = x)
+#'   )
+#' )))
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
-styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cval01"), output = c("DT", "ft")) {
+styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cval01"), output = c("DT", "ft", "ft_HTML")) {
   fmt <- match.arg(fmt)
   output <- match.arg(output)
   if (fmt %in% c("pval", "cval", "cval05", "cval01")) {
@@ -27,15 +35,14 @@ styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cva
   colnames(x) <- gsub("_05", "<sub>.05</sub>", colnames(x))
   colnames(x) <- gsub("1$", "<sub>1</sub>", colnames(x))
   colnames(x) <- gsub("2$", "<sub>2</sub>", colnames(x))
-  if (output == "ft") {
-    eCerto_flextable_defaults()
+  if (output %in% c("ft", "ft_HTML")) {
+    eCerto_flextable_defaults(output=output)
     x[,c("mean","sd")] <- round(x[,c("mean","sd")], n)
     ft <- flextable::flextable(x)
     for (j in grep("<.+>.+</.+>", colnames(x))) {
       ft <- flextable::compose(x = ft, j = j, value = HTML2ft(colnames(x)[j]), part = "header")
     }
-
-    ft <- eCerto_flextable_defaults(ft = ft)
+    ft <- eCerto_flextable_defaults(ft = ft, output=output)
     ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.C1"), " Statistics regarding lab means, lab variances and outlier detection"))
     return(ft)
   } else {

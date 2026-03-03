@@ -11,7 +11,7 @@
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
-styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft")) {
+styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft", "ft_HTML")) {
   output <- match.arg(output)
   e_msg("Styling Tab.C3")
   precision_U <- 4
@@ -87,7 +87,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft")) 
     x[,"U_abs"] <- as.character(x[,"U_abs"])
     x[,"mean"] <- as.character(x[,"mean"])
     x[,"sd"] <- as.character(x[,"sd"])
-    eCerto_flextable_defaults()
+    eCerto_flextable_defaults(output = output)
     ft <- flextable::flextable(x)
     ft <- flextable::align(ft, j = c("analyte","unit"), align = "left", part = "all")
     ft <- flextable::align(ft, j = !(colnames(x) %in% c("analyte","unit")), align = "right", part = "all")
@@ -104,7 +104,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft")) 
     ft <- flextable::width(ft, j = c("n","k"), width = 0.6, unit = "cm")
     ft <- flextable::width(ft, j = !(colnames(x) %in% c("analyte","n","k","unit")), width = 1.2, unit = "cm")
     ft <- flextable::width(ft, j = "analyte", width = fw-2*0.6-0.9-sum(!(colnames(x) %in% c("analyte","n","k","unit")))*1.2, unit = "cm")
-    ft <- eCerto_flextable_defaults(ft = ft)
+    ft <- eCerto_flextable_defaults(ft = ft, output = output)
     ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.C3"), " Material properties and accociated uncertainties"))
     return(ft)
   }

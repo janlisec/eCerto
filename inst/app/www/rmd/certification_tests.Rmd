@@ -233,5 +233,5 @@ eCerto:::scheffe.test
 
 </details> 
 
-The test is originally based on:  
+<br> The test is originally based on:  
 "Steel, R.; Torri, J.; Dickey, D. (1997) Principles and Procedures of Statistics: A Biometrical Approach. pp189"

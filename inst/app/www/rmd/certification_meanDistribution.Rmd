@@ -8,7 +8,7 @@ additionally and grouped with their respective tests (Agostino and Anscombe).
 
 ```{r TabC2, echo=FALSE, message=FALSE, results='asis'}
 x <- eCerto::CRM001$Certification$data
-eCerto:::styleTabC2(eCerto:::prepTabC2(dat = x[x[,"analyte"]=="Z",]), output="ft")
+eCerto:::styleTabC2(eCerto:::prepTabC2(dat = x[x[,"analyte"]=="Z",]), output="ft_HTML")
 ```
 
 To compute the statistical tests *eCerto* uses functions from different packages 

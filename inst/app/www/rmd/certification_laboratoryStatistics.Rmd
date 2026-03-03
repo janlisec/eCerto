@@ -17,7 +17,7 @@ rv <- eCerto:::test_rv(type = "SR3")
 shiny::isolate(dat <- rv$c_fltData())
 shiny::isolate(lab_means <- rv$c_lab_means(data = dat))
 x <- eCerto:::prepTabC1(dat = dat, lab_means = lab_means)
-eCerto:::styleTabC1(x = x, output="ft")
+eCerto:::styleTabC1(x = x, output="ft_HTML")
 ```
 
 Except for `Cochran`, which tests for outliers with respect to variance, all other 

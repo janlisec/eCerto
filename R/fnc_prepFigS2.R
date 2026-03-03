@@ -8,6 +8,7 @@
 #' @param plot_ln_relative plot_ln_relative.
 #' @param round_time Round the month time to quarter month precision to be consistent with previous analyses.
 #' @param show_ids Overlay sample IDs to identify outlier samples.
+#' @param cex_plot cex_plot.
 #' @examples
 #' x <- eCerto:::test_Stability_Arrhenius(3)
 #' x$Value <- x$Value / mean(x$Value[x$time == 0])
@@ -20,7 +21,7 @@
 #' @return A data frame.
 #' @noRd
 #' @keywords internal
-prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE, round_time = FALSE, show_ids = FALSE) {
+prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRUE, plot_in_month = TRUE, plot_ln_relative = TRUE, round_time = FALSE, show_ids = FALSE, cex_plot = 1.5) {
   stopifnot(is.data.frame(tmp))
   stopifnot(all(c("time", "Value", "Temp") %in% colnames(tmp)))
   stopifnot(is.numeric(tmp[, "time"]))
@@ -47,7 +48,6 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
   xlim <- range(as.numeric(time), na.rm = TRUE)
   ylim <- range(c(mns - sds, mns + sds, val), na.rm = TRUE)
   ylim <- ifelse(plot_ln_relative, 0, 1) + c(-1, 1) * max(abs(ylim - ifelse(plot_ln_relative, 0, 1)))
-  cex_plot <- 1.5
   opar <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(opar))
   graphics::par(mar = c(5.5, 4.5, 1, 1))
@@ -86,7 +86,7 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
     if (plot_ln_relative & plot_in_month) {
       flt_lm <- tmp[, "Temp"] == k | tmp[, "Temp"] == levels(tf)[1]
       lm_res <- stats::coef(stats::lm(val[flt_lm] ~ as.numeric(as.character(time[flt_lm]))))
-      graphics::mtext(text = paste("slope =", round(lm_res[2], 6)), side = 3, line = -1.8, adj = 0.98, col = ifelse(lm_res[2] < 0, 3, 2), cex = cex_plot)
+      graphics::mtext(text = bquote(k[eff]==.(round(lm_res[2], 6))), side = 3, line = -1.8*cex_plot, adj = 0.98, col = ifelse(lm_res[2] < 0, 3, 2), cex = cex_plot)
     }
   }
   invisible(NULL)

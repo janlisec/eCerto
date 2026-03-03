@@ -19,16 +19,16 @@ for $n - 2$ degrees of freedom to obtain the P-values in column P~b1~.
 
 ```{r TabS1, echo=FALSE, message=FALSE, resize.width="100%", results='asis'}
 x <- eCerto:::prepTabS1(x = eCerto:::test_Stability_Excel())
-eCerto:::styleTabS1(x = x, mt = NULL, sr = 1, output = "ft")
+eCerto:::styleTabS1(x = x, mt = NULL, sr = 1, output = "ft_HTML" )
 ```
 
 ***Note!***
 Selecting a table row in Tab.S1 will display the detailed analysis for the
 respective analyte.
 
-Values from column `u_stab_` can be transferred to a user defined column of the 
+Values from column u~stab~ can be transferred to a user defined column of the 
 material table **Tab.C3** in the certification module for matching analyte names. 
 Analytes of **Tab.S1** which can not be matched to **Tab.C3** are depicted in red.
 
-Also $P_{b1}$ values lower than 0.05 are highlighted in red to indicate a slope
+Also P~b1~ values lower than 0.05 are highlighted in red to indicate a slope
 significantly different from 0.

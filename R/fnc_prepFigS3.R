@@ -5,11 +5,11 @@
 #' @examples
 #' \donttest{
 #' x <- data.frame(
-#'   "dummy_name" = c("0", "2", "4"),
-#'   "1/K" = 1 / (c(0, 2, 4) + 273.15),
-#'   "log(-k_eff)" = 1:3,
-#'   "CI_upper" = 2:4,
-#'   "CI_lower" = 0:2,
+#'   "dummy_name" = c("4", "23", "60"),
+#'   "1/K" = 1 / (c(4, 23, 60) + 273.15),
+#'   "log(-k_eff)" = c(-6,-5,-4),
+#'   "CI_upper" = c(-6,-5,-4)-c(0.2,0.1,0.3),
+#'   "CI_lower" = c(-6,-5,-4)+c(0.2,0.1,0.3),
 #'   "log(k)_calc" = 1:3,
 #'   check.names = FALSE
 #' )
