@@ -66,6 +66,7 @@ page_CertificationUI <- function(id) {
     bslib::card_body(
       id = ns("body_tab_C1"),
       shiny::div(DT::dataTableOutput(ns("TabC1")))
+      #DTtable(ns("TabC1"))
     )
   )
 

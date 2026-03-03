@@ -11,7 +11,7 @@
 #' @return A datatable object.
 #' @keywords internal
 #' @noRd
-styleTabS1 <- function(x, mt = NULL, sr = 1, output = c("DT", "ft")) {
+styleTabS1 <- function(x, mt = NULL, sr = 1, output = c("DT", "ft", "ft_HTML")) {
   e_msg("styling Tab.S1")
   output <- match.arg(output)
   P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
@@ -36,9 +36,9 @@ styleTabS1 <- function(x, mt = NULL, sr = 1, output = c("DT", "ft")) {
   colnames(x) <- gsub("mean", "\u00B5<sub>s</sub>", colnames(x))
   colnames(x) <- gsub("^P$", "P<sub>b1</sub>", colnames(x))
   colnames(x) <- gsub("^P_adj$", "P<sub>adj,b1</sub>", colnames(x))
-  if (output == "ft") {
+  if (output %in% c("ft", "ft_HTML")) {
     #eCerto:::ft_default(x, caption = "Analyte stabilities and accociated uncertainties", id = "Tab.S1")
-    eCerto_flextable_defaults()
+    eCerto_flextable_defaults(output = output)
     ft <- flextable::flextable(x[,colnames(x)!="style_analyte"])
     for (j in grep("<.+>.+</.+>", colnames(x))) {
       ft <- flextable::compose(x = ft, j = j, value = HTML2ft(colnames(x)[j]), part = "header")
@@ -46,7 +46,7 @@ styleTabS1 <- function(x, mt = NULL, sr = 1, output = c("DT", "ft")) {
     ft <- flextable::align(ft, j = which(!colnames(x) %in% c("analyte","style_analyte")), align = "right", part = "all")
     if (any(x[,"style_analyte"]=="red")) for (i in which(x[,"style_analyte"]=="red")) ft <- flextable::color(ft, i = i, j = "analyte", color = "red", part = "body")
     if (any(p_cols_sign)) for (i in which(p_cols_sign)) ft <- flextable::color(ft, i = i, j = p_col_idx, color = "red", part = "body")
-    ft <- eCerto_flextable_defaults(ft = ft)
+    ft <- eCerto_flextable_defaults(ft = ft, output = output)
     ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.S1"), " Analyte stabilities and accociated uncertainties"))
     return(ft)
 

@@ -9,7 +9,7 @@ bottles $s_a$ (`M_between`).
 ```{r TabH1, echo=FALSE, message=FALSE, results='asis'}
 x <- eCerto::CRM001$Homogeneity$h_vals
 mt <- data.frame("analyte" = c("X","Z"))
-eCerto:::styleTabH1(x = x, mt = mt, output = "ft", prec=setNames(c(4,0,2), c("X","Y","Z")))
+eCerto:::styleTabH1(x = x, mt = mt, prec=setNames(c(4,0,2), c("X","Y","Z")), output = "ft_HTML")
 ```
 
 A significant ANOVA P-value indicates non homogeneous specimen and is highlighted in red color 

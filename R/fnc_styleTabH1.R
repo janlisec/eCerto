@@ -20,7 +20,7 @@
 #' @return A data frame or a datatable object depending on parameter 'output'.
 #' @keywords internal
 #' @noRd
-styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("DT", "ft"), cr = 1) {
+styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("DT", "ft", "ft_HTML"), cr = 1) {
   e_msg("styling Tab.H1")
   output <- match.arg(output)
   P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
@@ -44,10 +44,10 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("DT", "ft"), cr = 1
   }
   style_x[, "style_s_bb"] <- c("bold", "normal")[1 + as.numeric(style_x[, "s_bb"] < style_x[, "s_bb_min"])]
   style_x[, "style_s_bb_min"] <- c("bold", "normal")[1 + as.numeric(style_x[, "s_bb"] >= style_x[, "s_bb_min"])]
-  if (output == "ft") {
+  if (output %in% c("ft", "ft_HTML")) {
     x <- style_x[,-grep("^style_", colnames(style_x))]
     if (length(unique(x[, "H_type"])) == 1) x <- x[,colnames(x)!="H_type"]
-    eCerto_flextable_defaults()
+    eCerto_flextable_defaults(output = output)
     ft <- flextable::flextable(x)
     ft <- flextable::align(ft, j = "analyte", align = "left", part = "all")
     ft <- flextable::align(ft, j = !(colnames(x) %in% "analyte"), align = "right", part = "all")
@@ -62,7 +62,7 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("DT", "ft"), cr = 1
     for (i in which(style_x$style_analyte=="red")) ft <- flextable::color(ft, i = i, j = "analyte", color = "red", part = "body")
     for (i in which(x[,P_col]<0.05)) ft <- flextable::color(ft, i = i, j = P_col, color = "red", part = "body")
     ft <- flextable::bold(ft, part = "header")
-    ft <- eCerto_flextable_defaults(ft = ft)
+    ft <- eCerto_flextable_defaults(ft = ft, output = output)
     ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.H1"), " Analyte homogeneities and accociated uncertainties"))
     return(ft)
   } else {

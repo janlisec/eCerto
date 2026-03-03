@@ -13,7 +13,7 @@
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
-styleTabC2 <- function(x, n = 3, precision = 4, output = c("DT", "ft")) {
+styleTabC2 <- function(x, n = 3, precision = 4, output = c("DT", "ft", "ft_HTML")) {
   output <- match.arg(output)
   p_cols <- grep("_p", colnames(x))
   p_cols_sign <- p_cols[which(x[,p_cols]<0.05)]
@@ -25,8 +25,8 @@ styleTabC2 <- function(x, n = 3, precision = 4, output = c("DT", "ft")) {
       x[, i] <- formatC(x[, i], format = "E", digits = 2)
     }
   }
-  if (output == "ft") {
-    eCerto_flextable_defaults()
+  if (output %in% c("ft", "ft_HTML")) {
+    eCerto_flextable_defaults(output = output)
     ft <- flextable::flextable(x)
     for (j in grep("<.+>.+</.+>", colnames(x))) {
       ft <- flextable::compose(x = ft, j = j, value = HTML2ft(colnames(x)[j]), part = "header")
@@ -35,7 +35,7 @@ styleTabC2 <- function(x, n = 3, precision = 4, output = c("DT", "ft")) {
     ft <- ft_set_formatter(ft, c(8,10), ft_formatter_fixed_digits, 2)
     ft <- ft_set_formatter(ft, p_cols, ft_formatter_fixed_digits, precision)
     if (length(p_cols_sign)>=1) for (j in p_cols_sign) ft <- flextable::color(ft, i = 1, j = j, color = "red", part = "body")
-    ft <- eCerto_flextable_defaults(ft = ft)
+    ft <- eCerto_flextable_defaults(ft = ft, output = output)
     ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.C2"), " Statistics regarding overall mean distribution and variance testing"))
     return(ft)
   } else {

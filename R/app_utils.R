@@ -816,19 +816,22 @@ ft_default <- function(df, caption = NULL, id = NULL) {
 
 #' @title eCerto_flextable_defaults.
 #' @description Function to ensure consistent table layout defaults in eCerto for flextables.
+#' @param ft Optional flextable object to apply default styling to.
+#' @param output Output type to set defaults for.
 #' @return NULL.
 #' @keywords internal
 #' @noRd
-eCerto_flextable_defaults <- function(ft = NULL) {
+eCerto_flextable_defaults <- function(ft = NULL, output = "ft") {
   flextable::set_flextable_defaults(
     table_align = "left",
-    font.size = 9,
-    line_spacing = 1,
+    font.size = ifelse(output == "ft", 9, 11),
+    line_spacing = ifelse(output == "ft", 1, 1.25),
     padding = 2,
     table.layout = "autofit"
   )
   if (!is.null(ft)) {
-    ft <- flextable::fontsize(ft, size = 9, part = "header")
+    ft <- flextable::fontsize(ft, size = ifelse(output == "ft", 9, 11), part = "all")
+    ft <- flextable::line_spacing(ft, space = ifelse(output == "ft", 1, 1.25), part = "all")
     ft <- flextable::bold(ft, part = "header")
     ft <- flextable::bg(ft, bg = grDevices::grey(0.85), part = "header")
     if (nrow(ft$body$dataset)>=3) ft <- flextable::bg(ft, i = seq(2, nrow(ft$body$dataset), 2), bg = grDevices::grey(0.95), part = "body")
@@ -844,6 +847,28 @@ eCerto_flextable_defaults <- function(ft = NULL) {
 #' @noRd
 renderPlotHD <- function(expr, res = 72*1.25, env = parent.frame(), ...) {
   shiny::renderPlot(substitute(expr), res = res, env = env, quoted = TRUE, ...)
+}
+
+#' @title DTtable.
+#' @description Wrapper function to improve readability of plots.
+#' @return NULL.
+#' @keywords internal
+#' @noRd
+DTtable <- function(id) {
+  css <- shiny::tags$style(
+    "
+    .ecerto-dt table.dataTable {
+      width: auto !important;
+    }
+    .ecerto-dt .dataTables_wrapper {
+      width: auto !important;
+    }
+    "
+  )
+  shiny::tagList(
+    css,
+    shiny::div(class = "ecerto-dt", DT::dataTableOutput(outputId = id))
+  )
 }
 
 #' @title render_report

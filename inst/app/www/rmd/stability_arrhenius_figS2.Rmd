@@ -1,11 +1,23 @@
 #### Determining temperature-dependent reaction rates
 
-The analyte values measured at $T_{min}$ are considered as stable and their mean is used as 
-reference time point \($t=0$\) for each temperature level $T_i$. When measured values are depicted 
-relative to this mean, *eCerto* calculates and annotates the recovery and RSD for each $T_i$.
+The analyte values measured at $T_{min}$ are considered as stable and their mean 
+is used as reference time point $t=0$ for each temperature level $T_i$. 
+When measured values are depicted relative to this mean, *eCerto* calculates and 
+annotates the recovery and RSD for each $T_i$.
 
-When the above ratios are log-transformed and the x-axis (time) is set to month, *eCerto* 
-calculates the temperature-dependent reaction rates $k_{\mathit{eff}}(T)$ as the slope for each 
-linear model of $T_i$.
+When the above ratios are log-transformed and the x-axis (time) is set to month, 
+*eCerto* calculates the temperature-dependent reaction rates $k_{\mathit{eff}}(T)$ 
+as the slope for each linear model of $T_i$.
 
-![**Fig.S2** Calculation of degradation constant $k_{\mathit{eff}}$ for tested temperature levels](fig/S_Modul_Fig2.png)
+```{r FigS2, echo=FALSE, message=FALSE, fig.cap="**Fig.S2** Calculation of degradation constants k~eff~ for tested temperature levels", out.width="100%", fig.height=3}
+x <- eCerto:::test_Stability_Arrhenius(3)
+x$Value <- x$Value / mean(x$Value[x$time == 0])
+eCerto:::prepFigS2(tmp = x, round_time = TRUE, show_ids = FALSE, cex_plot = 1, plot_nominal_scale = FALSE)
+```
+
+Temperature levels in Fig.S2 are color coded with data points at t=0 in dark blue
+(indicative of T=-20°C) and tested levels of 4, 23 and 60°C in light blue, yellow 
+and red, respectively. Grey horizontal lines indicate mean and standard deviation
+of the replicates at t=0 while colored lines indicate these values for each time
+point per $T_i$. Note that the calculated slope of the linear model k~eff~ is 
+depicted in red, indicating no degradation at the tested $T_i$.
