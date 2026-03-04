@@ -2,7 +2,25 @@
 
 #### Option 1
 
-Please prepare data in a single Excel file using the Agilent MassHunter Software.
+Please prepare your data in an Excel file with the same format as shown below.
+
+```{r V_upload_format1, echo=FALSE, message=FALSE}
+x <- eCerto:::read_Vdata(file = system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx"))[1:23,2:8]
+ft <- eCerto:::show_upload_example_table(x=x, max_char = 15, optional = c(1,2))
+flextable::set_caption(ft, caption = flextable::as_paragraph(
+  flextable::as_b("Info"), " Example table layout for validation data upload"))
+```
+
+The optional columns `Name` and `Type` are recommende for later reference. All measurement
+values used in calculations will be of Type **Cal**, i.e. originating from a 
+calibration sample with a defined concentration for each analyte. The observed
+peak area values of analytes and their internal standards (IS) are used to
+perform calculations of method validation.
+
+#### Option 2
+
+Alternatively you can provide data in a single Excel file exported by Agilent 
+MassHunter Software.
 
 ![**Info** Excel format for Validation data. Cell background indicates imported information (green and red).](fig/V_Modul_Import.png)
 
@@ -19,12 +37,6 @@ figures and tables.
 Empty cells in the columns `Level` and `Exp. Conc.` will be filled with the
 closest finite value above, i.e. it is assumed that all samples in rows 4 to 12
 in the example are replicates of calibration level 1 (as defined in row 3).
-
-#### Option 2
-
-Alternatively you can set up your data similar to the following layout.
-
-![**Info** Alternative Excel format for Validation data.](fig/V_Modul_Import2.png)
 
 *eCerto* will try to determine the used format upon upload automatically.
 

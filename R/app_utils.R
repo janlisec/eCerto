@@ -839,7 +839,6 @@ eCerto_flextable_defaults <- function(ft = NULL, output = "ft") {
   return(ft)
 }
 
-
 #' @title renderPlotHD.
 #' @description Wrapper function to improve readability of plots.
 #' @return NULL.
@@ -869,6 +868,84 @@ DTtable <- function(id) {
     css,
     shiny::div(class = "ecerto-dt", DT::dataTableOutput(outputId = id))
   )
+}
+
+#' @title show_upload_example_table.
+#' @description Will generate a flextable object resembling an Excel table.
+#' @param x data.frame to be shown as example table.
+#' @param max_char Maximum number of characters to show per cell (default: 10, use Inf for no limit).
+#' @param optional Optional column indices to be shown in italic and grey color (e.g. to indicate optional columns in the upload template).
+#' @param continued Logical indicating whether to add a final row with "..." to indicate that the table can be longer.
+#' @return flextable.
+#' @examples
+#' x <- eCerto:::test_homog()$data[1:15,1:4]
+#' show_upload_example_table(x=x)
+#' show_upload_example_table(x=x, optional=2)
+#' @keywords internal
+#' @noRd
+show_upload_example_table <- function(x, max_char = 10, optional = NULL, continued = TRUE) {
+  stopifnot(is.data.frame(x))
+  n_rows <- nrow(x)
+  n_cols <- ncol(x)
+  col_letters <- LETTERS[1:n_cols]
+  has_header <- !all(colnames(x) %in% LETTERS)
+  df_disp <- data.frame(" " = seq_len(max(n_rows+has_header, 1L)), check.names = FALSE)
+  to_disp_chr <- function(x) {
+    sapply(x, function(v) {
+      z <- ifelse(is.na(v), "", as.character(v))
+      if (is.infinite(max_char)) z else substr(z, 1L, max_char)
+    }, USE.NAMES=FALSE)
+  }
+  icon_file <- get_local_file("excel-icon-32x32.png")
+  if (is.na(icon_file)) icon_file <- system.file("app/www/excel-icon-32x32.png", package = "eCerto")
+  excel_icon <- flextable::as_paragraph(flextable::as_image(src = icon_file))
+  if (n_cols > 0L) {
+    vals <- x
+    x_type <- sapply(1:n_cols, function(i) { class(x[,i]) })
+    if (has_header) vals <- rbind(colnames(vals), apply(vals,2,as.character))
+    colnames(vals) <- col_letters
+    df_disp <- cbind(df_disp, apply(vals, 2, to_disp_chr), stringsAsFactors = FALSE)
+    if (continued) df_disp <- rbind(df_disp, "...")
+  }
+  ft <- flextable::flextable(df_disp)
+  ft <- flextable::compose(ft, i = 1, j = 1, part = "head", value = excel_icon)
+  grey_bg   <- "#F2F2F2"
+  grid_col  <- "#D9D9D9"
+  bd <- list(color = grid_col, width = 0.75, style = "solid")
+  ft <- flextable::border_outer(ft, part = "all", border = bd)
+  ft <- flextable::border_inner_h(ft, part = "all", border = bd)
+  ft <- flextable::border_inner_v(ft, part = "all", border = bd)
+  ft <- flextable::bg(ft, part = "header", bg = grey_bg)
+  ft <- flextable::align(ft, part = "header", align = "center")
+  if (nrow(df_disp) > 0) {
+    ft <- flextable::bg(ft, j = 1, i = seq_len(nrow(df_disp)), part = "body", bg = grey_bg)
+    ft <- flextable::align(ft, j = 1, part = "body", align = "center")
+  }
+  if (n_cols > 0) {
+    for (j in seq_len(n_cols)) {
+      x_type[j]
+      if (x_type[j]=="numeric") {
+        ft <- flextable::align(ft, j = j+1, part = "body", align = "right")
+      } else if (x_type[j]=="logical") {
+        ft <- flextable::align(ft, j = j+1, part = "body", align = "center")
+      } else if (x_type[j]=="Date") {
+        ft <- flextable::align(ft, j = j+1, part = "body", align = "center")
+      } else {
+        ft <- flextable::align(ft, j = j+1, part = "body", align = "left")
+      }
+    }
+  }
+  ft <- flextable::padding(ft, padding = 2, part = "all")
+  if (has_header) ft <- flextable::bold(ft, i = 1, j= -1, part = "body")
+  if (!is.null(optional) && is.numeric(optional) && all(optional %in% 1:n_cols)) {
+    for (j in optional) {
+      ft <- flextable::italic(ft, j = j+1, part = "body")
+      ft <- flextable::color(ft,  j = j+1, part = "body", color = "grey50")
+    }
+  }
+  ft <- flextable::padding(ft, padding = 0, i = 1, j = 1, part = "header")
+  ft <- flextable::autofit(ft)
+  return(ft)
 }
 
 #' @title render_report

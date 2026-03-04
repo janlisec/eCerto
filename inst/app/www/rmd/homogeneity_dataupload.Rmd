@@ -1,12 +1,17 @@
-### Homogeneity data upload (Excel)
+### Homogeneity data upload
 
-Please prepare all data in a single Excel file on the first table (other tables will be neglected). 
-Please stick to the column order as given in the below example. 
+Please prepare all data in a single Excel file on the first table (other tables 
+will be neglected). Please stick to the column order and naming scheme as given 
+in the example below.
+
+```{r H_upload_format, echo=FALSE, message=FALSE}
+x <- cbind(eCerto:::test_homog()$data[1:12,1:4], "unit" = "mg/kg")
+ft <- eCerto:::show_upload_example_table(x=x, optional=c(2,5))
+flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Info"), " Example table layout for homogeneity data upload"))
+```
 
 ***Note!*** 
-You may omit column `H_type` in your Excel input file if not needed.
-
-![**Info** Excel format for Homogeneity data](fig/H_Modul_Import.png)
+You may omit column `H_type` (and also `unit`) in your Excel input file if not needed.
 
 The `analyte` column has to contain values that match the corresponding data from the certification 
 module. `H_type` can be used to define different homogeneity traits for each analyte which can yield 
