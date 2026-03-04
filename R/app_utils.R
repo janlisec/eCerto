@@ -898,7 +898,7 @@ show_upload_example_table <- function(x, max_char = 10, optional = NULL, continu
   }
   icon_file <- get_local_file("excel-icon-32x32.png")
   if (is.na(icon_file)) icon_file <- system.file("app/www/excel-icon-32x32.png", package = "eCerto")
-  excel_icon <- flextable::as_paragraph(flextable::as_image(src = icon_file))
+  excel_icon <- flextable::as_paragraph(flextable::as_image(src = icon_file, width = 32/96, height = 32/96, unit = "in", guess_size = FALSE))
   if (n_cols > 0L) {
     vals <- x
     x_type <- sapply(1:n_cols, function(i) { class(x[,i]) })
