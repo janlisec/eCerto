@@ -1,13 +1,21 @@
-### Stability data upload (Excel)
-
-#### Option 1
+### Stability data upload
 
 Stability data can be uploaded from an Excel file containing a single table
-including columns `analyte`, `Date`, `Value` and `unit`. An additional column 
-`Temp` can be included to allow shelf life calculations based on the Arrhenius 
-model.
+including columns `analyte`, `Date`, `Value` and (optionally) `unit`. 
+An additional column `Temp` can be included. If present, *eCerto* will try to 
+perform shelf life calculations based on the Arrhenius model.
 
-![**Info** Excel import format including temperature information for arrhenius calculations](fig/S_Modul_Import_Arrhenius.png)
+*eCerto* will internally use the format "yyyy-mm-dd" for date values. It will try
+hard to convert other formats like "dd.mm.yyyy" from Excel correctly. Specifying 
+a date instead of a relative time information is required to calculate shelf time 
+and allows to continue using this data for long term stability monitoring.
+
+```{r S_upload_format, echo=FALSE, message=FALSE}
+x <- cbind(eCerto:::test_Stability_Arrhenius()[1:12,c(1,2,4,5)], "unit" = "mg/kg")
+ft <- eCerto:::show_upload_example_table(x=x, optional=c(4,5))
+flextable::set_caption(ft, caption = flextable::as_paragraph(
+  flextable::as_b("Info"), " Example table layout for stability data upload, including (optional) temperature information to perform Arrhenius calculations"))
+```
 
 The `Temp` column obviously should contain temperature levels in °C at which 
 samples were stored before measurement. The lowest temperature level will be 
@@ -20,23 +28,6 @@ point will be computed to represent the storage time at this temperature.
 Using dates instead of specifying storage time directly allows to compute 
 stability and potential shelf life in both, relative (month) and absolute (date)
 values.
-
-#### Option 2
-
-***Note!***
-This option (simple Excel layout) might be discarded in the future. If you are
-new to *eCerto* please use *Option 1*.
-
-Prepare data in a single Excel file, using separate tables for each analyte 
-as shown in the below example.
-
-![**Info** Simple Excel import format for stability data](fig/S_Modul_Import.png)
-
-Table names will be used as analyte names and should match analyte names from 
-the Certification module. Column names need to be exactly `Value` and `Date` 
-with Excel column formats set to *numeric* and *date* respectively.
-
-#### Option 3
 
 Upload can be also achieved from a previously created backup file. If a backup 
 file does not contain any stability data, the Excel upload option will remain 

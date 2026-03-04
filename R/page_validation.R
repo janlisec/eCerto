@@ -206,7 +206,9 @@ page_validationUI <- function(id) {
         accept = c("xlsx", "RData")
       ),
       shiny::div(
-        shiny::p(shiny::helpText("Example Table (Agilent MassHunter Export format)")),
+        shiny::p(shiny::helpText("[Option 1] Example Table (generic format)")),
+        shiny::uiOutput(outputId = ns("example_table_generic")),
+        shiny::p(shiny::helpText("[Option 2] Example Table (Agilent MassHunter Export format)")),
         shiny::img(src = "www/rmd/fig/V_Modul_Import.png", style = "max-width: 800px; height: auto;")
       )
     ),
@@ -309,10 +311,15 @@ page_validationServer <- function(id, test_data = NULL) {
 
     trueness_template_spike <- "The trueness was determined by testing the recovery rate **W [%]** at 3 different concentration levels covering the working area range and using *n=6* replicates at each level. We determined **W=...%** which is within the acceptable range of 80..100%."
 
-
     shiny::observeEvent(input$opt_trueness_template, {
       if (input$opt_trueness_template=="none") { shiny::updateTextAreaInput(inputId = "txt_trueness", value = "") }
       if (input$opt_trueness_template=="spike") { shiny::updateTextAreaInput(inputId = "txt_trueness", value = trueness_template_spike) }
+    })
+
+    output$example_table_generic <- renderUI({
+      x <- eCerto:::read_Vdata(file = system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx"))[1:23,2:8]
+      ft <- eCerto:::show_upload_example_table(x=x, max_char = 15, optional = c(1,2))
+      flextable::htmltools_value(ft, ft.align = "left")
     })
 
     # Upload & Data preparation ====
