@@ -11,7 +11,8 @@ flextable::set_caption(ft, caption = flextable::as_paragraph(
   flextable::as_b("Info"), " Example table layout for validation data upload"))
 ```
 
-The optional columns `Name` and `Type` are recommende for later reference. All measurement
+The optional columns `Name` and `Type` are recommended for later reference. They
+will be filled with dummy data if not present. All measurement
 values used in calculations will be of Type **Cal**, i.e. originating from a 
 calibration sample with a defined concentration for each analyte. The observed
 peak area values of analytes and their internal standards (IS) are used to

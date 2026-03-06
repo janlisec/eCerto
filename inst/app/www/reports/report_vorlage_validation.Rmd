@@ -47,7 +47,6 @@ tab_v1 <- eCerto:::prepTabV1(
 )
 ```
 
-
 <!-- In HTML the logo is right aligned. Unfortunately the option fig.align is not supported in Word -->
 ```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
   knitr::include_graphics(params$logo_file)
@@ -75,8 +74,10 @@ tab_V1_wr <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL
 if (knitr::is_html_output()) {
   tab_V1_wr
 } else {
-  colnames(tab_V1_wr$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_wr$x$data))
-  knitr::kable(tab_V1_wr$x$data, digits = prec)
+  #colnames(tab_V1_wr$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_wr$x$data))
+  # knitr::kable(tab_V1_wr$x$data, digits = prec)
+  #eCerto:::eCerto_flextable_defaults(flextable::flextable(tab_V1_wr$x$data), digits = prec)
+  eCerto:::ft_default(df = tab_V1_wr$x$data, caption = "Working range results", id = "Tab.V1", output = "ft", HTML2ft = TRUE)
 }
 ```
 
@@ -118,8 +119,12 @@ tab_V1_lm <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL
 if (knitr::is_html_output()) {
   tab_V1_lm
 } else {
-  colnames(tab_V1_lm$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_lm$x$data))
-  knitr::kable(tab_V1_lm$x$data, digits = prec, caption = tab_V1_lm$x$caption)
+  #colnames(tab_V1_lm$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_lm$x$data))
+  #knitr::kable(tab_V1_lm$x$data, digits = prec, caption = tab_V1_lm$x$caption)
+  # ft <- eCerto:::eCerto_flextable_defaults(flextable::flextable(tab_V1_lm$x$data))
+  # flextable::set_caption(x = ft, caption = tab_V1_lm$x$caption)
+  capt <- gsub("<.+>", "", strsplit(tab_V1_lm$x$caption, "Tab.V1 ")[[1]][2])
+  eCerto:::ft_default(df = tab_V1_lm$x$data, caption = capt, id = "Tab.V2", output = "ft", HTML2ft = TRUE, prec = prec)
 }
 ```
 
@@ -161,7 +166,9 @@ determined for all analytes.
   if (knitr::is_html_output()) {
     tab_V1_lox
   } else {
-    knitr::kable(tab_V1_lox$x$data, digits = prec)
+    #knitr::kable(tab_V1_lox$x$data, digits = prec)
+    eCerto:::ft_default(df = tab_V1_lox$x$data, digits = prec)
+    eCerto:::ft_default(df = tab_V1_lox$x$data, caption = "Method LOD/LOQ", id = "Tab.V3", output = "ft", HTML2ft = TRUE, prec = prec)
   }
 ```
 
@@ -215,6 +222,7 @@ if (knitr::is_html_output()) {
     options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL)))
   )
 } else {
-  knitr::kable(inp, row.names = FALSE, digits = prec+1)
+  #knitr::kable(inp, row.names = FALSE, digits = prec+1)
+  eCerto:::eCerto_flextable_defaults(flextable::flextable(inp), digits = prec+1)
 }
 ```

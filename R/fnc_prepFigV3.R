@@ -10,7 +10,7 @@
 #' @return A figure.
 #' @keywords internal
 #' @noRd
-prepFigV3 <- function(x, cex = 1.5) {
+prepFigV3 <- function(x, cex = 1) {
   stopifnot(all(c("Analyte", "Level", "Area_Analyte", "Area_IS", "rel_norm") %in% colnames(x)))
   opar <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(opar))

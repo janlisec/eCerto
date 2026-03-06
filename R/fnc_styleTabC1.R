@@ -36,14 +36,8 @@ styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cva
   colnames(x) <- gsub("1$", "<sub>1</sub>", colnames(x))
   colnames(x) <- gsub("2$", "<sub>2</sub>", colnames(x))
   if (output %in% c("ft", "ft_HTML")) {
-    eCerto_flextable_defaults(output=output)
     x[,c("mean","sd")] <- round(x[,c("mean","sd")], n)
-    ft <- flextable::flextable(x)
-    for (j in grep("<.+>.+</.+>", colnames(x))) {
-      ft <- flextable::compose(x = ft, j = j, value = HTML2ft(colnames(x)[j]), part = "header")
-    }
-    ft <- eCerto_flextable_defaults(ft = ft, output=output)
-    ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.C1"), " Statistics regarding lab means, lab variances and outlier detection"))
+    ft <- ft_default(df = x, caption = "Statistics regarding lab means, lab variances and outlier detection", id = "Tab.C1", output = output, HTML2ft = TRUE)
     return(ft)
   } else {
     dt <- DT::datatable(

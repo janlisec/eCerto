@@ -90,8 +90,10 @@ page_HomogeneityUI <- function(id) {
             shiny::textInput(inputId = ns("FigH1_xlab"), label = "Edit x-axis label", value = "Flasche")
           )
         ),
-        bslib::card_body(min_height = 400, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH1"))),
-        bslib::card_body(min_height = 0, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH2")))
+        #bslib::card_body(min_height = 400, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH1"))),
+        bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH1_ui"))),
+        bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH2_ui"))),
+        #bslib::card_body(id = ns("h_FigH2_wrap"), min_height = 0, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH2")))
       )
     ),
     bslib::card_footer(
@@ -260,26 +262,44 @@ page_HomogeneityServer <- function(id, rv) {
       x <- h_Data()[, c("analyte", "H_type", "Flasche")]
       calc_bxp_width(n = length(levels(factor(x[interaction(x[, 1], x[, 2]) == input$h_sel_analyt, 3]))))
     })
+    fig_width_d <- shiny::debounce(fig_width, millis = 75)
 
-    output$h_FigH1 <- renderPlotHD(
-      {
-        shiny::req(h_Data(), input$h_sel_analyt, precision())
+    output$h_FigH1_ui <- renderUI({
+      req(fig_width())
+      shiny::req(h_Data(), input$h_sel_analyt, precision())
+      div(
+        style = sprintf("width:%dpx; display:block;", fig_width()),
+        plotOutput(ns("h_FigH1"))
+      )
+    })
+
+    output$h_FigH1 <- renderPlotHD({
         prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab, showIDs = "show_repID" %in% input$FigH1_opt)
-      },
-      # [JL] height and width needs to be fixed as long as we render the figure as inline
-      width = shiny::reactive({ fig_width() })
+      }, width = function() fig_width_d()
     )
 
-    output$h_FigH2 <- renderPlotHD(
-      {
-        shiny::req(h_Data(), precision())
-        prepFigH1(x = h_Data(), sa = NULL, prec = 2, xlab = input$FigH1_xlab)
-      },
-      width = shiny::reactive({ fig_width() })
-    )
+    fig_width2 <- shiny::reactive({
+      shiny::req(h_Data())
+      calc_bxp_width(n = length(unique(h_Data()[, "Flasche"])))
+    })
+
+    output$h_FigH2_ui <- renderUI({
+      req("show_H2" %in% input$FigH1_opt)
+      req(h_Data(), precision())
+      req(fig_width2())
+      div(
+        style = sprintf("width:%dpx; display:block;", fig_width2()),
+        plotOutput(ns("h_FigH2"))
+      )
+    })
+
+    output$h_FigH2 <- renderPlotHD({
+      prepFigH1(x = h_Data(), sa = NULL, prec = 2, xlab = input$FigH1_xlab)
+    }, width = function() fig_width2())
+
 
     shiny::observeEvent(input$FigH1_opt, {
-      shinyjs::toggle(id = "h_FigH2", condition = "show_H2" %in% input$FigH1_opt)
+      shinyjs::toggle(id = "h_FigH2_wrap", condition = "show_H2" %in% input$FigH1_opt)
     }, ignoreNULL = FALSE, ignoreInit = FALSE)
 
     output$h_txt <- shiny::renderUI({
