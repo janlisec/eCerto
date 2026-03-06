@@ -22,7 +22,7 @@ Values for `u_bb` can be transferred to **Tab.C3** in case that matching analyte
 
 ### Homogeneity report
 
-Figures and tables can currently be exported in HTML format. 
+Figures and tables can currently be exported in HTML or DOCX format. 
 
 ***Note!***
 Report layout and format are currently under debate and might change in the future depending on user demand.

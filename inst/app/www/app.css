@@ -9,5 +9,5 @@
   white-space: nowrap;
 }
 .sw-dropdown-content {
-  z-index: 3000 !important;
+  z-index: 1000 !important;
 }

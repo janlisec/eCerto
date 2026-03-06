@@ -50,6 +50,8 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {
     if (fmt == "eCerto") {
       tab_out <- openxlsx::read.xlsx(xlsxFile = file, sheet = 1, colNames = TRUE, rowNames = FALSE)
       shiny::validate(shiny::need(!any(grep("xml:space", colnames(tab_out))), message = "Please re-save your Excel file and try again."))
+      if (!("Name" %in% colnames(tab_out))) tab_out[,"Name"] <- paste0("Sample_", formatC(1:nrow(tab_out), digits=nchar(nrow(tab_out)), flag = "0"))
+      if (!("Type" %in% colnames(tab_out))) tab_out[,"Type"] <- "Cal"
     }
     if (!all(c("Name", "Type", "Level", "Analyte", "Concentration", "Area_Analyte", "Area_IS") %in% colnames(tab_out))) e_msg("Column in input Excel file missing")
     if (!is.factor(tab_out[,"Analyte"])) tab_out[,"Analyte"] <- factor(tab_out[,"Analyte"], levels=unique(tab_out[,"Analyte"]))

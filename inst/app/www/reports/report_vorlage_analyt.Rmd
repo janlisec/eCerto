@@ -8,10 +8,10 @@ params:
   selected_tab: NA
   logo_file: NA
 output:
-  html_document:
-    df_print: paged
   word_document: 
     reference_docx: template.docx
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -74,7 +74,10 @@ if (knitr::is_html_output()) {
     eCerto:::styleTabC0(x = df[, c("ID", "Lab", "value", "unit", "replicate", "File")], ap = D, type = "standard")
   )
 } else {
-  eCerto:::ft_default(df, caption = "Imported analyte data from inter laboratory trial", id = "Tab.C0")
+  # type <- ifelse(length(unique(df[,"replicate"]))>6, "standard", "compact")
+  # x <- eCerto:::get_input_data(rv = rv, type = type, excl_file = FALSE)
+  # eCerto:::styleTabC0(x = x, ap = D, type = type, output = "ft")
+  eCerto:::styleTabC0(x = df[, c("ID", "Lab", "value", "unit", "replicate", "File")], ap = D, type = "standard", output = "ft")
 }
 
 p("")
@@ -90,7 +93,7 @@ if (knitr::is_html_output()) {
   eCerto:::styleTabC1(x = df, n = D[["precision"]], output = "ft")
 }
 
-p(ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been removed by the user upon inspection of the oulier statistics:", ""), paste(D$sample_filter, collapse=", "))
+p(ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been removed by the user upon inspection of the oulier statistics: ", ""), paste(D$sample_filter, collapse=", "))
 
 # show stats on averages
 df <- CP$mstats
@@ -103,7 +106,7 @@ if (knitr::is_html_output()) {
   eCerto:::styleTabC2(x = df, n = D[["precision"]], output = "ft")
 }
 
-p(ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics:", ""), paste(D$lab_filter, collapse=", "))
+p(ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics: ", ""), paste(D$lab_filter, collapse=", "))
 
 # show plot
   # The eval(parse(...)) construct allowed to store the plot function in the RData backup as it was at the moment of data save and thus

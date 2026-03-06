@@ -24,6 +24,7 @@ app_ui <- function(request = NULL) {
         shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
       ),
       selected = "Start",
+      #theme = bslib::bs_theme(base_font = bslib::font_google("Montserrat")),
       navbar_options = bslib::navbar_options(
         bg = "black",
         position = "fixed-top"

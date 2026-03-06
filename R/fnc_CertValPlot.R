@@ -82,7 +82,17 @@ CertValPlot <- function(data = NULL, annotate_id = FALSE, filename_labels = FALS
   graphics::symbols(x = 1:nrow(ds), y = ds$MW, circles = rep(lw, nrow(ds)), bg = c(3, grDevices::grey(0.8))[1 + ds[, "Filter"]], add = T, inches = FALSE)
   # graphics::points(x=1:nrow(ds), y=ds$MW, pch=21, bg=c(3, grDevices::grey(0.8))[1+ds[,"Filter"]], cex=2)
   if (show_legend) {
-    graphics::legend(x = "topleft", bty = "n", lty = c(1, 2), col = c(3, grDevices::grey(0.8)), legend = paste0(c("mean", "sd"), " (", round(c(mean(dsfm), stats::sd(dsfm)), dp), ")"))
+    # JL modified 20260306
+    if (nrow(ds)>=5) {
+      graphics::legend(x = "topleft", bty = "n", lty = c(1, 2), col = c(3, grDevices::grey(0.8)), legend = paste(c("\u00B5 =", "s ="), round(c(mean(dsfm), stats::sd(dsfm)), dp)))
+    } else {
+      graphics::mtext(text = paste("\u00B5 =", round(mean(dsfm), dp)), side = 3, adj = 0.15, line = -1.2)
+      graphics::mtext(text = paste("s =", round(stats::sd(dsfm), dp)), side = 3, adj = 0.15, line = -2.4)
+    }
+    # graphics::mtext(text = "\u00B5 =", side = 2, at = mean(dsfm), adj = 1.15, line = -1.1)
+    # graphics::mtext(text = round(mean(dsfm), dp), side = 2, at = mean(dsfm), adj = -0.1, line = -1.1)
+    # graphics::mtext(text = "s =", side = 4, at = mean(dsfm)-stats::sd(dsfm), adj = 1.15, line = -1.1)
+    # graphics::mtext(text = round(stats::sd(dsfm), dp), side = 4, at = mean(dsfm)-stats::sd(dsfm), adj = -0.1, line = -1.1)
     graphics::mtext(text = paste("n =", length(dsfm)), side = 1, adj = 0.98, line = -1.2)
   }
   if (annotate_id & "ID" %in% colnames(data)) {

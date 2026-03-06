@@ -10,6 +10,7 @@
 #' eCerto:::styleTabC2(x = x)
 #' x[, "KS_p"] <- 10^-6
 #' eCerto:::styleTabC2(x = x)
+#' eCerto:::styleTabC2(x = x, output = "ft")
 #' @return A data table object.
 #' @keywords internal
 #' @noRd
@@ -26,17 +27,11 @@ styleTabC2 <- function(x, n = 3, precision = 4, output = c("DT", "ft", "ft_HTML"
     }
   }
   if (output %in% c("ft", "ft_HTML")) {
-    eCerto_flextable_defaults(output = output)
-    ft <- flextable::flextable(x)
-    for (j in grep("<.+>.+</.+>", colnames(x))) {
-      ft <- flextable::compose(x = ft, j = j, value = HTML2ft(colnames(x)[j]), part = "header")
-    }
+    ft <- ft_default(df = x, caption = "Statistics regarding overall mean distribution and variance testing", id = "Tab.C2", output = output, HTML2ft = TRUE)
     ft <- ft_set_formatter(ft, 1:4, ft_formatter_fixed_digits, n)
     ft <- ft_set_formatter(ft, c(8,10), ft_formatter_fixed_digits, 2)
     ft <- ft_set_formatter(ft, p_cols, ft_formatter_fixed_digits, precision)
     if (length(p_cols_sign)>=1) for (j in p_cols_sign) ft <- flextable::color(ft, i = 1, j = j, color = "red", part = "body")
-    ft <- eCerto_flextable_defaults(ft = ft, output = output)
-    ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.C2"), " Statistics regarding overall mean distribution and variance testing"))
     return(ft)
   } else {
     dt <- DT::datatable(

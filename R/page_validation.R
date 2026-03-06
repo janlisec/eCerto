@@ -131,20 +131,14 @@ page_validationUI <- function(id) {
 
   v_report_card <- bslib::card(
     bslib::card_header("Method Validation Report and Data Backup"),
-    bslib::card_body(
-      bslib::layout_columns(
-        shiny::radioButtons(inputId = ns("v_report_fmt"), label = "Validation Report Format", choices = list("HTML"="html", "docx"="docx")),
-        shiny::div(style = "margin-top: 32px; width: 100%", shiny::downloadButton(outputId = ns("v_report"), label = "Validation Report"))
+    bslib::card_body(gap = "8px",
+      shiny::div(
+        shiny::div(style = "float: left;", shiny::downloadButton(ns("v_report"), label = "Validation Report")),
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("v_report_fmt"), label = NULL, choices = list("HTML"="html", "DOCX"="docx"), width = 90))
       ),
-      bslib::layout_columns(
-        shiny::div(style = "margin-top: 32px; width: 100%", shiny::downloadButton(outputId = ns("v_backup_save"), label = "Save data backup")),
-        shiny::fileInput(
-          inputId = ns("v_backup_load"),
-          label = "Load data backup",
-          multiple = F,
-          placeholder = "RData",
-          accept = c("RData", "rda")
-        )
+      shiny::div(
+        shiny::div(style = "float: left;", shiny::downloadButton(outputId = ns("v_backup_save"), label = "Save Rdata backup")),
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::fileInput(inputId = ns("v_backup_load"), label = NULL, multiple = F, placeholder = "Load Rdata backup", accept = c("RData", "rda"))),
       ),
       shiny::div(id = ns("inp_file_name"), "This div will show the original Excel File name used upon import.")
     )
@@ -317,8 +311,8 @@ page_validationServer <- function(id, test_data = NULL) {
     })
 
     output$example_table_generic <- renderUI({
-      x <- eCerto:::read_Vdata(file = system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx"))[1:23,2:8]
-      ft <- eCerto:::show_upload_example_table(x=x, max_char = 15, optional = c(1,2))
+      x <- read_Vdata(file = system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx"))[1:23,2:8]
+      ft <- show_upload_example_table(x=x, max_char = 15, optional = c(1,2))
       flextable::htmltools_value(ft, ft.align = "left")
     })
 
@@ -550,7 +544,7 @@ page_validationServer <- function(id, test_data = NULL) {
     # Figure V2 ====
     output$fig_V2 <- renderPlotHD({
       req(tab_flt(), current_analyte$name %in% tab_flt()[,"Analyte"])
-      prepFigV2(tab = tab_flt(), a = current_analyte$name, flt_outliers = V_pars$opt_tabV1_fltLevels)
+      prepFigV2(tab = tab_flt(), a = current_analyte$name, flt_outliers = V_pars$opt_tabV1_fltLevels, cex=1)
     })
 
     # Figure V3 ====

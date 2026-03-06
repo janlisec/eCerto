@@ -798,12 +798,19 @@ ft_set_formatter <- function(ft, j_idx, fmt, ..., predicate = is.numeric, verbos
 #' @param df df to format as flextable.
 #' @param caption caption text.
 #' @param id table id (to prepend in caption.
+#' @examples
+#' x <- data.frame("X<sub>i</sub>"=c(1.2, 1.234, 1234.56789), check.names = FALSE)
+#' ft_default(df = x)
+#' ft_default(df = x, output = "ft_HTML")
+#' ft_default(df = x, id = "Tab.1", caption = "This is a caption")
+#' ft_default(df = x, HTML2ft = FALSE)
+#' ft_default(df = x, prec = 2)
 #' @keywords internal
 #' @noRd
-ft_default <- function(df, caption = NULL, id = NULL) {
-  eCerto_flextable_defaults()
+ft_default <- function(df, caption = NULL, id = NULL, output = "ft", HTML2ft = TRUE, prec = NULL, ...) {
+  eCerto_flextable_defaults(...)
   ft <- flextable::flextable(df)
-  ft <- eCerto_flextable_defaults(ft = ft)
+  ft <- eCerto_flextable_defaults(ft = ft, output = output, HTML2ft = HTML2ft, prec = prec)
   if (!is.null(caption)) {
     if (is.null(id)) {
       ft <- flextable::set_caption(ft, caption = caption)
@@ -818,20 +825,31 @@ ft_default <- function(df, caption = NULL, id = NULL) {
 #' @description Function to ensure consistent table layout defaults in eCerto for flextables.
 #' @param ft Optional flextable object to apply default styling to.
 #' @param output Output type to set defaults for.
+#' @param HTML2ft Convert HTML formatting in header automatically.
 #' @return NULL.
 #' @keywords internal
 #' @noRd
-eCerto_flextable_defaults <- function(ft = NULL, output = "ft") {
+eCerto_flextable_defaults <- function(ft = NULL, output = "ft", HTML2ft = TRUE, prec = NULL, ...) {
   flextable::set_flextable_defaults(
     table_align = "left",
     font.size = ifelse(output == "ft", 9, 11),
     line_spacing = ifelse(output == "ft", 1, 1.25),
     padding = 2,
-    table.layout = "autofit"
+    table.layout = "autofit",
+    ...
   )
   if (!is.null(ft)) {
     ft <- flextable::fontsize(ft, size = ifelse(output == "ft", 9, 11), part = "all")
     ft <- flextable::line_spacing(ft, space = ifelse(output == "ft", 1, 1.25), part = "all")
+    if (HTML2ft) {
+      for (j in grep("<.+>.+</.+>", colnames(ft$body$dataset))) {
+        ft <- flextable::compose(x = ft, j = j, value = HTML2ft(colnames(ft$body$dataset)[j]), part = "header")
+      }
+    }
+    if (!is.null(prec) && is.numeric(prec)) {
+      num_cols <- sapply(1:ncol(ft$body$dataset), function(i) {is.numeric(ft$body$dataset[,i])})
+      ft <- ft_set_formatter(ft, num_cols, ft_formatter_fixed_digits, prec)
+    }
     ft <- flextable::bold(ft, part = "header")
     ft <- flextable::bg(ft, bg = grDevices::grey(0.85), part = "header")
     if (nrow(ft$body$dataset)>=3) ft <- flextable::bg(ft, i = seq(2, nrow(ft$body$dataset), 2), bg = grDevices::grey(0.95), part = "body")
@@ -896,15 +914,18 @@ show_upload_example_table <- function(x, max_char = 10, optional = NULL, continu
       if (is.infinite(max_char)) z else substr(z, 1L, max_char)
     }, USE.NAMES=FALSE)
   }
-  icon_file <- get_local_file("excel-icon-32x32.png")
-  if (is.na(icon_file)) icon_file <- system.file("app/www/excel-icon-32x32.png", package = "eCerto")
+  if (!is.na(shiny::resourcePaths()["www"])) {
+    icon_file <- get_local_file("excel-icon-32x32.png")
+  } else {
+    icon_file <- system.file("app/www/excel-icon-32x32.png", package = "eCerto")
+  }
   excel_icon <- flextable::as_paragraph(flextable::as_image(src = icon_file, width = 32/96, height = 32/96, unit = "in", guess_size = FALSE))
   if (n_cols > 0L) {
     vals <- x
     x_type <- sapply(1:n_cols, function(i) { class(x[,i]) })
     if (has_header) vals <- rbind(colnames(vals), apply(vals,2,as.character))
     colnames(vals) <- col_letters
-    df_disp <- cbind(df_disp, apply(vals, 2, to_disp_chr), stringsAsFactors = FALSE)
+    df_disp <- cbind(df_disp, apply(vals, 2, to_disp_chr, simplify = FALSE), stringsAsFactors = FALSE)
     if (continued) df_disp <- rbind(df_disp, "...")
   }
   ft <- flextable::flextable(df_disp)

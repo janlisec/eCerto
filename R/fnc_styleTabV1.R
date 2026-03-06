@@ -13,7 +13,7 @@
 #' out <- plyr::ldply(levels(tab[,"Analyte"]), function(a) {
 #'     eCerto:::prepTabV1(tab = tab, a = a)
 #' })
-#' out_dt <- eCerto:::style_tabV1(df = out, selected = NULL, ordering = FALSE)
+#' out_dt <- eCerto:::style_tabV1(df = out, selected = NULL)
 #' out_dt
 #' @return A datatable object.
 #' @keywords internal
@@ -94,7 +94,7 @@ style_tabV1 <- function(df, precision = 3, selected = 1, interact_ele = TRUE, fo
     container = second_header_row
   )
 
-  # column formaters
+  # column formatters
   round_cols <- c("b<sub>0</sub>", "b<sub>1</sub>", "P<sub>KS,e</sub>", "P<sub>Neu,e</sub>", "P<sub>Mandel</sub>", "LOD", "LOQ", "s<sub>y,x</sub>", "s<sub>x0</sub>", "V<sub>x0</sub>")
   round_cols <- round_cols[round_cols %in% colnames(df)]
   dt <- DT::formatCurrency(table = dt, columns = round_cols, currency = "", digits = precision)

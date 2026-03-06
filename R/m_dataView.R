@@ -59,11 +59,6 @@ m_DataViewServer <- function(id, rv) {
       x <- get_input_data(rv = rv, type = input$data_view_select, excl_file = !input$data_view_file)
       styleTabC0(x = x, ap = getValue(rv, c("General", "apm"))[[rv$cur_an]], type = input$data_view_select)
     })
-
-    #   cardBody.style.display = 'none';
-    #   card.style.maxHeight = '40px';
-
-    # Minimierung des Card-Body nach Initialisierung
     shinyjs::hideElement(id = "body")
     shiny::observeEvent(input$btn, {
       x <- input$btn %% 2 == 1

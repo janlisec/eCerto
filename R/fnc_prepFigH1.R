@@ -57,8 +57,8 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
   graphics::abline(h = omn, lty = 2)
   graphics::abline(h = omn + c(-1, 1) * osd, lty = 2, col = grDevices::grey(0.8))
   graphics::boxplot(h_dat[, "value"] ~ h_dat[, "Flasche"], add = TRUE)
-  graphics::mtext(text = paste("Overall mean =", omn), side = 3, line = 1.5, adj = 1, cex = NULL)
-  graphics::mtext(text = paste("Overall sd =", osd), side = 3, line = 0.25, adj = 1, cex = NULL)
+  graphics::mtext(text = paste("\u00B5 =", omn), side = 3, line = 1.5, adj = 1, cex = NULL)
+  graphics::mtext(text = paste("s =", osd), side = 3, line = 0.25, adj = 1, cex = NULL)
   if (showIDs) {
     h_dat[, "Rep"] <- NA
     for (l in 1:length(levels(h_dat[, "Flasche"]))) {

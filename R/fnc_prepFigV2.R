@@ -16,7 +16,7 @@
 #' @return A figure.
 #' @keywords internal
 #' @noRd
-prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = FALSE, cex = 1.5) {
+prepFigV2 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = FALSE, cex = 1) {
   opar <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(opar))
   vals <- prepTabV1(tab = tab, a = a, alpha = alpha, k = k, flt_outliers = flt_outliers)

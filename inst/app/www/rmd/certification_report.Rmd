@@ -1,7 +1,7 @@
 ### Analyte and material reports
 
 A report of the above analysis (single analyte) or for the material (all analytes) 
-can be generated and exported in HTML format.
+can be generated and exported in HTML or DOCX format.
 
 ![**User Option** Export Analyte Data or Certification Report](fig/C_Modul_Report.png)
 

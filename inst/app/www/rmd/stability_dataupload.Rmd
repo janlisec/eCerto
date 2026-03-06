@@ -29,6 +29,4 @@ Using dates instead of specifying storage time directly allows to compute
 stability and potential shelf life in both, relative (month) and absolute (date)
 values.
 
-Upload can be also achieved from a previously created backup file. If a backup 
-file does not contain any stability data, the Excel upload option will remain 
-active (and will become deactivated if stability data are contained).
+Upload can be also achieved from a previously created backup file.
