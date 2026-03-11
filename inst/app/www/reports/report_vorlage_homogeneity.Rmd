@@ -7,10 +7,10 @@ params:
   precision: NA
   adjust: NA
 output:
-  word_document:
-    reference_docx: template.docx
   html_document:
     df_print: paged
+  word_document:
+    reference_docx: template.docx
 ---
 
 ### ***eCerto*** Report - Homogeneity
@@ -40,6 +40,7 @@ sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"], drop = TRUE)
 prec2 <- sapply(levels(sa), function(lsa) {
   unname(prec[sapply(names(prec), function(x) { substr(lsa, 1, nchar(x))==x })])
 })
+
 # get figure width in pixel and convert to inch on screen
 figs_w <- sapply(levels(sa), function(a) {
   eCerto:::calc_bxp_width(n = length(levels(factor(H[["data"]][sa==a,"Flasche"]))), w_axes = 48, w_point = 40)

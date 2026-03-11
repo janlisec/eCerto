@@ -49,7 +49,6 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft", "
       colnames(x)[colnames(x) == cc[k, "ID"]] <- cc[k, "Name"]
     }
   }
-
   if (output == "DT") {
     colnames(x) <- gsub("^U_abs$", "U<sub>abs</sub>", colnames(x))
     colnames(x) <- gsub("^u_char$", "u<sub>char</sub>", colnames(x))
@@ -57,10 +56,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft", "
     colnames(x) <- gsub("^cert_val$", "\u00B5<sub>c</sub>", colnames(x))
     dt <- DT::datatable(
       data = x,
-      editable = list(
-        target = "cell",
-        disable = non_edit_cols
-      ),
+      editable = list(target = "cell", disable = non_edit_cols),
       options = list(
         dom = "t", paging = FALSE, scrollX = TRUE, ordering = FALSE,
         columnDefs = list(

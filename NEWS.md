@@ -1,4 +1,8 @@
-# eCerto 0.8.16 [06.03.2026]
+# eCerto 0.8.18 [11.03.2026]
+* single report file for C module combining Tab.C3 and analyte data
+* more automatic capturing of UI elements for documentation
+
+# eCerto 0.8.17 [06.03.2026]
 * plot annotation modified ('Overall mean' to 'µ')
 * V data upload allows optional columns for `Name` and `Type`
 * V report now uses flextable objects as well

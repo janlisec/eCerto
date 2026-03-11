@@ -29,7 +29,7 @@ m_RDataExport_UI <- function(id) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shinyWidgets::dropdown(
-      up = TRUE,
+      up = FALSE,
       id = ns("savepanel"),
       label = "Save Current Analysis",
       shiny::tagList(

@@ -42,19 +42,19 @@ m_reportUI <- function(id) {
       width = "335px",
       circle = FALSE,
       shiny::tagList(
-        shiny::div(
-          style = "float: left; padding-bottom: 0.5em;",
-          sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download Report")),
-          bslib::layout_columns(
-            col_widths = c(6,6),
-            shiny::downloadButton(outputId = ns("AnalyteReport"), label = "Analyte", style = "width: 135px;"),
-            shiny::downloadButton(outputId = ns("DRMDSnippet"), label = "DRMD", style = "width: 135px;"),
-            shiny::downloadButton(outputId = ns("MaterialReport"), label = "CRM", style = "width: 135px;"),
-            shiny::HTML(""),
-            shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML"="html", "DOCX"="docx"), width = 135),
-            shiny::HTML("")
+        bslib::layout_columns(
+          shiny::div(
+            style = "display: flex; flex-direction: column; gap: 8px;",
+            sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download Report")),
+            shiny::downloadButton(ns("AnalyteReport"), label = shiny::HTML("CRM<br>Analytes")),
+            #shiny::downloadButton(ns("MaterialReport"), label = "CRM"),
+            shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML" = "html", "DOCX" = "docx"), inline = FALSE)
+          ),
+          shiny::div(
+            style = "display: flex; flex-direction: column; gap: 8px;",
+            sub_header("DRMD (XML)"),
+            shiny::downloadButton(outputId = ns("DRMDSnippet"), label = "DRMD")
           )
-
         )
       )
     )
@@ -100,18 +100,19 @@ m_reportServer <- function(id, rv) {
     )
 
     output$AnalyteReport <- shiny::downloadHandler(
-      filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", rv$cur_an, ".", input$ReportFormat) },
+      #filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", rv$cur_an, ".", input$ReportFormat) },
+      filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", "Material", ".", input$ReportFormat) },
       content = function(file) {
-        render_report_A(file = file, rv = rv)
+        render_report_C(file = file, rv = rv)
       }
     )
 
-    output$MaterialReport <- shiny::downloadHandler(
-      filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", "Material", ".", input$ReportFormat) },
-      content = function(file) {
-        render_report_M(file = file, "mt" = shiny::isolate(getValue(rv, c("General", "materialtabelle"))), "gen" = shiny::reactiveValuesToList(getValue(rv, "General")))
-      }
-    )
+    # output$MaterialReport <- shiny::downloadHandler(
+    #   filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", "Material", ".", input$ReportFormat) },
+    #   content = function(file) {
+    #     render_report_M(file = file, "mt" = shiny::isolate(getValue(rv, c("General", "materialtabelle"))), "gen" = shiny::reactiveValuesToList(getValue(rv, "General")))
+    #   }
+    # )
 
     shiny::observeEvent(input$help_link, { show_help("certification_report") })
   })
