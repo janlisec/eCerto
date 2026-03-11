@@ -1,0 +1,107 @@
+---
+title: "&nbsp;"
+title-meta: "Certification-Report"
+params:
+  rv: NA
+output:
+  word_document: 
+    reference_docx: template.docx
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = FALSE)
+testing <- length(params$rv)==1L && (is.na(params$rv) | params$rv=="NA")
+if (testing) {
+  rv <- eCerto::CRM001
+} else {
+  rv <- params$rv
+}
+G <- rv$General
+C <- rv$Certification
+CP <- rv$Certification_processing
+M <- rv$General$materialtabelle
+
+# helper function for paragraph text in HTML and Word from within R chunks
+p <- function(...) {
+  txt <- paste0(..., collapse = "")
+  txt <- gsub("\n", "  \n", txt, fixed = TRUE)
+  if (trimws(txt) == "") {
+    cat("<p>&nbsp;</p>\n")
+  } else {
+    cat(txt, "\n\n")
+  }
+}
+```
+
+### ***eCerto*** Report - Certification
+
+```{r analyte, echo=FALSE, results='asis', message=FALSE, fig.width=CP$CertValPlot$Fig01_width/96, fig.height=CP$CertValPlot$Fig01_height/96, fig.retina=4, fig.dpi=96}
+confirmed_analytes <- which(sapply(G$apm, function(x) {x[["confirmed"]]}))
+
+if (!any(confirmed_analytes)) {
+  
+  p("None of the analytes have been labeled as 'confirmed' yet. Omitting report")
+  
+} else {
+  
+  # meta data report
+  p(
+    "Date: ", format(Sys.time(), '%d %B, %Y'), "\n",
+    "User: ", G$user, "\n",
+    "Material: ", G$study_id, "\n"
+  )
+  
+  o <- ifelse(knitr::is_html_output(), "ft_HTML", "ft")
+  
+  p("This is Tab.C3 including the certified values and uncertainties.")
+  
+  # include Tab.C3
+  flextable::flextable_to_rmd(eCerto:::styleTabC3(x = M, apm = G[["apm"]], output = o))
+  
+  p("This is The imported data and individual statistics for each analyte.")
+
+  for (A in names(confirmed_analytes)) {
+
+    D <- G$apm[[A]]
+    
+    # meta data analyte
+    p("---")
+    p("Analyte: ", A)
+    p("---")
+    
+    # show imported data
+    df <- C$data[C$data[,"analyte"]==A, 1:7, drop=FALSE]
+    flextable::flextable_to_rmd(eCerto:::styleTabC0(x = df[, c("ID", "Lab", "value", "unit", "replicate", "File")], ap = D, type = "standard", output = o))
+    if (!is.null(D$sample_filter)) {
+      p("Samples (IDs) removed from the analyses: ", paste(D$sample_filter, collapse=", "))
+    }
+    if (!is.null(D$lab_filter)) {
+      p("Labs removed from the analyses: ", paste(D$lab_filter, collapse=", "))
+    }
+
+    # show lab stats
+    tmp <- eCerto:::list2rv(rv)
+    shiny::isolate(tmp$cur_an <- A)
+    df <- eCerto:::prepTabC1(dat = tmp$c_fltData(), lab_means = tmp$c_lab_means(), excl_labs = TRUE)
+    flextable::flextable_to_rmd(eCerto:::styleTabC1(x = df, n = D[["precision"]], output = o))
+    p("")
+    
+    # show stats on averages
+    df <- eCerto:::prepTabC2(dat = tmp$c_fltData(), excl_labs = TRUE)
+    flextable::flextable_to_rmd(eCerto:::styleTabC2(x = df, n = D[["precision"]], output = o))
+    p("")
+    
+    # show plot
+    CertValPlot <- eCerto:::CertValPlot
+    data <- C$data[C$data[,"analyte"]==A,,drop=FALSE]
+    data[,"L_flt"] <- data[,"Lab"] %in% D$lab_filter
+    data <- data[!(data[,"ID"] %in% D$sample_filter),]
+    # re-factor Lab to ensure that only Labs with data are depicted
+    data[,"Lab"] <- factor(data[,"Lab"])
+    eval(CP$CertValPlot$call)
+    p("")
+  }
+}
+```

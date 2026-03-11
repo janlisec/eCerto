@@ -8,10 +8,10 @@ params:
   selected_tab: NA
   logo_file: NA
 output:
-  word_document: 
-    reference_docx: template.docx
   html_document:
     df_print: paged
+  word_document: 
+    reference_docx: template.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -57,7 +57,7 @@ p <- function(...) {
 
 ### ***eCerto*** Report - Analyte Data
 
-```{r analyte, echo=FALSE, results='asis', message=FALSE, fig.width=CP$CertValPlot$Fig01_width/(72*1.5), fig.height=CP$CertValPlot$Fig01_height/(72*1.5), fig.retina=4, fig.dpi=72}
+```{r analyte, echo=FALSE, results='asis', message=FALSE, fig.width=CP$CertValPlot$Fig01_width/96, fig.height=CP$CertValPlot$Fig01_height/96, fig.retina=4, fig.dpi=96}
 # meta data
 p(
   "Date: ", format(Sys.time(), '%d %B, %Y'), "\n", 

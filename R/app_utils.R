@@ -1075,16 +1075,30 @@ render_report_M <- function(file = tempfile(fileext = ".html"), mt, gen) {
 #' @param rv rv.
 #' @keywords internal
 #' @noRd
-render_report_A <- function(file = tempfile(fileext = ".html"), rv) {
+# render_report_A <- function(file = tempfile(fileext = ".html"), rv) {
+#   fmt <- tolower(tools::file_ext(file))
+#   params = list(
+#     "General" = shiny::reactiveValuesToList(getValue(rv, "General")),
+#     "Certification" = shiny::reactiveValuesToList(getValue(rv, "Certification")),
+#     "Certification_processing" = shiny::reactiveValuesToList(getValue(rv, "Certification_processing"))
+#   )
+#   rmd_template <- get_local_file("report_vorlage_analyt.[Rr][Mm][Dd]$")
+#   render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
+# }
+
+#' @title render_report_C.
+#' @param file filename.
+#' @param rv rv.
+#' @keywords internal
+#' @noRd
+render_report_C <- function(file = tempfile(fileext = ".html"), rv) {
   fmt <- tolower(tools::file_ext(file))
-  params = list(
+  params = list(rv = list(
     "General" = shiny::reactiveValuesToList(getValue(rv, "General")),
     "Certification" = shiny::reactiveValuesToList(getValue(rv, "Certification")),
-    "Certification_processing" = shiny::reactiveValuesToList(getValue(rv, "Certification_processing")),
-    "selected_tab" = rv$cur_an,
-    "logo_file" = "BAMLogo2015.png"
-  )
-  rmd_template <- get_local_file("report_vorlage_analyt.[Rr][Mm][Dd]$")
+    "Certification_processing" = shiny::reactiveValuesToList(getValue(rv, "Certification_processing"))
+  ))
+  rmd_template <- get_local_file("report_vorlage_certification.[Rr][Mm][Dd]$")
   render_report(file = file, fmt = fmt, rmd_template = rmd_template, params = params)
 }
 
@@ -1261,20 +1275,35 @@ save_link <- function(text, link) {
 #' @title capture_module_ui_png.
 #' @description Capture a png of a module UI for documentation purposes.
 #' @param ui_fun ui_fun.
-#' @param text text.
+#' @param ... further arguments to webshot.
 #' @examples
 #' \dontrun{
-#'   capture_module_ui_png(ui_fun = eCerto:::m_analyteUI, width = 800, height = 560)
+#'   # the following code will capture a png of the m_analyteUI for documentation purposes
+#'   capture_module_ui_png(ui_fun = eCerto:::m_analyteUI, vwidth = 800, vheight = 560, cliprect = c(0, 0, 760, 180))
+#'
+#'   # the following code will capture a png of a custom import/export UI for documentation purposes
+#'   M_data_import <- function(id) {
+#'     ns <- shiny::NS(id)
+#'     bslib::card(bslib::layout_sidebar(sidebar=bslib::sidebar(
+#'         width = 360,
+#'         shiny::div(
+#'           m_RDataImport_UI(ns("Rdatain")),
+#'           hr(),
+#'           m_RDataExport_UI(ns("Rdataex"))
+#'         )
+#'     )))
+#'   }
+#'   capture_module_ui_png(ui_fun = M_data_import, cliprect = c(24, 36, 336, 546))
+#'
+#'   # the following code will capture a png of the report UI
+#'   capture_module_ui_png(ui_fun = m_reportUI, cliprect = c(10, 0, 340, 280))
 #' }
 #' @return
 #' Character with path to saved png file. The default location used is app/www/rmd/fig
 #' and the default file name is derived from the name of the ui_fun argument. The default width and height are 900 and 600 pixels, respectively.
 #' @keywords internal
 #' @noRd
-capture_module_ui_png <- function(
-    ui_fun,
-    width = 900, height = 600
-) {
+capture_module_ui_png <- function(ui_fun, ...) {
   stopifnot(is.function(ui_fun))
   fn <- as.character(match.call()$ui_fun)
   fn <- fn[length(fn)]
@@ -1284,6 +1313,6 @@ capture_module_ui_png <- function(
   html_file <- tempfile(fileext = ".html")
   on.exit(unlink(html_file), TRUE)
   htmltools::save_html(page, file = html_file, background = "white", libdir = "libs")
-  webshot2::webshot(html_file, file = file, vwidth = width, vheight = height, delay = 0.3)
+  webshot2::webshot(html_file, file = file, ..., delay = 0.3)
   normalizePath(file)
 }

@@ -195,7 +195,7 @@ m_materialtabelleServer <- function(id, rv) {
       # check if the option to remove F/U columns without effect should be displayed
       if (ncol(mt) != ncol(remove_unused_cols(mt = mt))) {
         n <- ncol(mt)-ncol(remove_unused_cols(mt = mt))
-        shiny::updateActionButton(inputId = "clear_FU_cols", label = paste0("Remove ", n, " column", ifelse(n>1, "s", ""), "<br>without effect"))
+        shiny::updateActionButton(inputId = "clear_FU_cols", label = shiny::HTML(paste0("Remove ", n, " column", ifelse(n>1, "s", ""), "<br>without effect")))
         shinyjs::showElement(id = "clear_FU_cols")
       } else {
         shinyjs::hideElement(id = "clear_FU_cols")
