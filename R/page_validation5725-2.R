@@ -5,55 +5,14 @@
 #' @param test_data Provide test_data to module.
 #' @examples
 #' if (interactive()) {
-#' testdata <- function() {
-#'   # this function returns a dataframe containing Example B1 from DIN ISO 5725-2
-#'   # DIN ISO 5725-2
-#'   n_p <- 8
-#'   n_q <- 4
-#'   n_k <- 3
-#'   n <- n_p*n_q*n_k
-#'   inp <- data.frame(
-#'     "Property" = rep("S_content", n),
-#'     "Unit" = rep("% (m/m)", n),
-#'     "Lab" = rep(1:n_p, each=n_q*n_k),
-#'     "Level" = rep(rep(1:n_q, each=n_k), n_p),
-#'     "Replicate" = rep(1:n_k, times=n_p*n_q),
-#'     "Value" = c(
-#'       0.71, 0.71, 0.7, 1.2, 1.18, 1.23, 1.68, 1.7, 1.68, 3.26, 3.26, 3.2,
-#'       0.69, 0.67, 0.68, 1.22, 1.21, 1.22, 1.64, 1.64, 1.65, 3.2, 3.2, 3.2,
-#'       0.66, 0.65, 0.69, 1.28, 1.31, 1.3, 1.61, 1.61, 1.62, 3.37, 3.36, 3.38,
-#'       0.67, 0.65, 0.66, 1.23, 1.18, 1.2, 1.68, 1.66, 1.66, 3.16, 3.22, 3.23,
-#'       0.7, 0.69, 0.66, 1.31, 1.22, 1.22, 1.64, 1.67, 1.6, 3.2, 3.19, 3.18,
-#'      0.73, 0.74, 0.73, 1.39, 1.36, 1.37, 1.7, 1.73, 1.73, 3.27, 3.31, 3.29,
-#'      0.71, 0.71, 0.69, 1.2, 1.26, 1.26, 1.69, 1.7, 1.68, 3.27, 3.24, 3.23,
-#'       0.7, 0.65, 0.68, 1.24, 1.22, 1.3, 1.67, 1.68, 1.67, 3.25, 3.26, 3.26
-#'     )
-#'   )
-#'   inp <- rbind(inp, data.frame(
-#'     "Property" = rep("S_content", 11),
-#'     "Unit" = rep("% (m/m)", 11),
-#'     "Lab" = rep(c(1,5), times=c(4,7)),
-#'     "Level" = c(1:4,1:4,1,3,4),
-#'     "Replicate" = c(4,4,4,4,4,4,4,4,5,5,5),
-#'     "Value" = c(
-#'       0.71,1.21,1.69,3.24,0.71,1.24,1.66,3.27,0.69,1.68,3.24
-#'     )
-#'   ))
-#'   return(inp)
-#' }
 #'   shiny::shinyApp(
 #'     ui = bslib::page_fluid(
 #'       eCerto:::page_validation57252UI(id = "test")
 #'     ),
 #'     server = function(input, output, session) {
-#'       #fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_05_22_B003_Arbeitsbereich_neu.xlsx"
-#'       #fl <- "C:/Users/jlisec/Documents/Projects/Thomas Sommerfeld/Validierung_Excel/2024_06_13_B003_NG-BG.xlsx"
-#'       #fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/JS1/BDE47_oberere Kali2_JL.xlsx"
-#'       #fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
-#'       #td <- eCerto:::read_Vdata(file = fl, fmt = eCerto:::check_fmt_Vdata(fl))
-#'       td <- testdata()
-#'       #td <- openxlsx::read.xlsx(xlsxFile = "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Validierung/DIN5725-2/testdata.xlsx", sheet = 1)
-#'       #td <- NULL
+#'       #fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Validierung/DIN5725-2/testdata.xlsx"
+#'       #td <- openxlsx::read.xlsx(xlsxFile = fl, sheet = 1)
+#'       td <- NULL
 #'       eCerto:::page_validation57252Server(id = "test", test_data = td)
 #'     }
 #'   )
@@ -93,7 +52,7 @@ page_validation57252UI <- function(id) {
             sidebar = bslib::sidebar(
               position = "left", open = "open", width = "280px",
               shiny::div(id = ns("ori_inp_file_name"), "This div will show the original Excel File name used upon import."),
-              shiny::numericInput(inputId = ns("opt_tab_precision"), value = 3, step = 1, min = 0, max = 6, label = "digits precision"),
+              shiny::numericInput(inputId = ns("opt_tab_precision"), value = 3, step = 1, min = 0, max = 6, label = "Table digits precision"),
               shiny::uiOutput(ns("TabV0")),
             ),
             shiny::uiOutput(ns("TabV1")),
@@ -293,7 +252,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
       return(h)
     }
     qmandel_h <- function(p, alpha = 0.05) {
-      ((p - 1)/sqrt(p)) * (2 * qbeta((1-alpha/2), (p - 2)/2, (p - 2)/2, lower.tail = TRUE, log.p = FALSE) - 1)
+      ((p - 1)/sqrt(p)) * (2 * stats::qbeta((1-alpha/2), (p - 2)/2, (p - 2)/2, lower.tail = TRUE, log.p = FALSE) - 1)
     }
     mandel_k <- function(s) {
       # Vergleicht die Labor‑Standardabweichung mit der durchschnittlichen Standardabweichung aller Labore.
@@ -303,22 +262,22 @@ page_validation57252Server <- function(id, test_data = NULL) {
       return(k)
     }
     qmandel_k <- function(k, p, alpha = 0.05) {
-      sqrt(p * qbeta((1-alpha), (k - 1)/2, (p - 1) * (k - 1)/2, lower.tail = TRUE, log.p = FALSE))
+      sqrt(p * stats::qbeta((1-alpha), (k - 1)/2, (p - 1) * (k - 1)/2, lower.tail = TRUE, log.p = FALSE))
     }
 
     # tabulate original data like in DIN Annex B
     prepTabV0 <- function(inp, ...) {
       nms_level <- unique(inp[,"Level"])
-      tab0 <- eCerto:::ldply_base(unique(inp[,"Lab"]), function(p) {
+      tab0 <- ldply_base(unique(inp[,"Lab"]), function(p) {
         x <- inp[inp[,"Lab"]==p,]
-        eCerto:::ldply_base(unique(sort(x[,"Replicate"])), function(k) {
+        ldply_base(unique(sort(x[,"Replicate"])), function(k) {
           y <- x[x[,"Replicate"]==k,]
-          out <- data.frame(t((setNames(rep(NA, length(nms_level)), nms_level))), check.names = FALSE)
+          out <- data.frame(t((stats::setNames(rep(NA, length(nms_level)), nms_level))), check.names = FALSE)
           out[,y[,"Level"]] <- y[,"Value"]
           cbind("Lab"=p, "Rep"=k, out)
         })
       })
-      ft <- eCerto:::ft_default(df = tab0, ...)
+      ft <- ft_default(df = tab0, ...)
       ft <- flextable::vline(x = ft, j = 1:ncol(tab0), part = "all")
       ft <- flextable::hline(x = ft, i = (which(!duplicated(tab0[,"Lab"]))-1)[-1])
       ft <- flextable::align(x = ft, j = 1:2, align = "center")
@@ -338,10 +297,10 @@ page_validation57252Server <- function(id, test_data = NULL) {
         }
       }
       mns_print <- cbind("Lab <i>i</i>"=rownames(mns_print), mns_print)
-      ft <- eCerto:::ft_default(df = mns_print, ...)
+      ft <- ft_default(df = mns_print, ...)
       ft <- flextable::add_header_row(x = ft, values = c("", 1:n_q), colwidths = c(1,rep(3,n_q)))
       ft <- flextable::compose(x = ft, i = 1, j = 1, value = flextable::as_paragraph("Level ", flextable::as_i("j")), part = "header")
-      ft <- eCerto:::ft_set_formatter(ft = ft, j_idx = which(substr(ft$col_keys,1,1)%in%c("y","s")), fmt = eCerto:::ft_formatter_fixed_digits, digits = prec)
+      ft <- ft_set_formatter(ft = ft, j_idx = which(substr(ft$col_keys,1,1)%in%c("y","s")), fmt = ft_formatter_fixed_digits, digits = prec)
       ft <- flextable::align(x = ft, i = 1, align = "center", part = "header")
       ft <- flextable::align(x = ft, j = 1, align = "center", part = "all")
       ft <- flextable::vline(x = ft, j = 1+c(0,cumsum(rep(3,n_q))))
@@ -355,23 +314,23 @@ page_validation57252Server <- function(id, test_data = NULL) {
       tmp <- inp[inp[,"Level"]==q, c("Lab","Value"), drop=FALSE]
       colnames(tmp) <- gsub("Value", "value", colnames(tmp))
       mns <- V_calc_stats(inp)
-      out <- cbind(mns[mns[,"Level"]==q,], eCerto:::Grubbs(lab_means = mns[mns[,"Level"]==q, "mean", drop=FALSE], fmt=fmt), eCerto:::Cochran(data = tmp, fmt=fmt))
+      out <- cbind(mns[mns[,"Level"]==q,], Grubbs(lab_means = mns[mns[,"Level"]==q, "mean", drop=FALSE], fmt=fmt), Cochran(data = tmp, fmt=fmt))
       out <- out[order(out[,"mean"]),]
       colnames(out) <- gsub("1$", "<sub>1</sub>", colnames(out))
       colnames(out) <- gsub("2$", "<sub>2</sub>", colnames(out))
       colnames(out) <- gsub("_h$", "<i> h</i>", colnames(out))
       colnames(out) <- gsub("_k$", "<i> k</i>", colnames(out))
-      ft <- eCerto:::ft_default(df = out, ...)
+      ft <- ft_default(df = out, ...)
       ft <- flextable::align(x = ft, j = 1:2, align = "center")
-      ft <- eCerto:::ft_set_formatter(ft = ft, j_idx = which(colnames(out) %in% c("mean", "sd")), fmt = eCerto:::ft_formatter_fixed_digits, digits = prec)
-      ft <- eCerto:::ft_set_formatter(ft = ft, j_idx = grep("Mandel", colnames(out)), fmt = eCerto:::ft_formatter_fixed_digits, digits = 4)
+      ft <- ft_set_formatter(ft = ft, j_idx = which(colnames(out) %in% c("mean", "sd")), fmt = ft_formatter_fixed_digits, digits = prec)
+      ft <- ft_set_formatter(ft = ft, j_idx = grep("Mandel", colnames(out)), fmt = ft_formatter_fixed_digits, digits = 4)
       return(ft)
     }
 
     # tabulate relevant repeatability values
     prepTabV3 <- function(mns) {
       n_q <- unique(mns[,"Level"])
-      eCerto:::ldply_base(n_q, function(q) {
+      ldply_base(n_q, function(q) {
         x <- mns[mns[,"Level"]==q,]
         x_n <- sum(is.finite(x[,"mean"]))
         x_mn <- sum(x[,"n"]*x[,"mean"])/sum(x[,"n"])
@@ -399,17 +358,17 @@ page_validation57252Server <- function(id, test_data = NULL) {
       colnames(x) <- gsub("m_j$", "m<sub>j</sub>", colnames(x))
       colnames(x) <- gsub("s_rj$", "s<sub>rj</sub>", colnames(x))
       colnames(x) <- gsub("s_Rj$", "s<sub>Rj</sub>", colnames(x))
-      ft <- eCerto:::ft_default(df = x, ...)
-      ft <- eCerto:::ft_set_formatter(ft = ft, j_idx = 2:4, fmt = eCerto:::ft_formatter_fixed_digits, digits = prec)
+      ft <- ft_default(df = x, ...)
+      ft <- ft_set_formatter(ft = ft, j_idx = 2:4, fmt = ft_formatter_fixed_digits, digits = prec)
       return(ft)
     }
 
     # calculation of means and sds as well as Mandel tests
     V_calc_stats <- function(inp) {
-      mns <- eCerto:::ldply_base(unique(sort(inp[,"Lab"])), function(p) {
-        eCerto:::ldply_base(unique(sort(inp[,"Level"])), function(q) {
+      mns <- ldply_base(unique(sort(inp[,"Lab"])), function(p) {
+        ldply_base(unique(sort(inp[,"Level"])), function(q) {
           x <- inp[inp[,"Lab"]==p & inp[,"Level"]==q,"Value"]
-          data.frame("Lab"=p, "Level"=q, "mean"=mean(x, na.rm=TRUE), "sd"=sd(x, na.rm=TRUE), "n"=sum(is.finite(x)))
+          data.frame("Lab"=p, "Level"=q, "mean"=mean(x, na.rm=TRUE), "sd"=stats::sd(x, na.rm=TRUE), "n"=sum(is.finite(x)))
         })
       })
       mns[,"Mandel_h"] <- NA
@@ -424,25 +383,32 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # plot of raw data per level and lab
     plotV1 <- function(inp) {
-      opar <- par(no.readonly = TRUE)
+      opar <- graphics::par(no.readonly = TRUE)
       n_q <- length(unique(inp[,"Level"]))
       n_p <- length(unique(inp[,"Lab"]))
-      par(mfrow=c(1, n_q))
-      par(mar=c(3,4,3,0)+0.5)
+      graphics::par(mfrow=c(1, n_q))
+      graphics::par(mar=c(3.5,2,1,0)+0.5)
       for (q in 1:n_q) {
         flt <- inp[,"Level"]==unique(inp[,"Level"])[q]
         y_num <- as.numeric(factor(inp[flt,"Lab"], levels=unique(inp[,"Lab"])))
-        plot(x = inp[flt,"Value"], y = y_num, type="n", ylim = rev(range(y_num)), las=1, main=unique(inp[,"Level"])[q], ylab=ifelse(q==1, "Lab", ""), xlab="")
-        abline(v = mean(inp[flt,"Value"], na.rm=TRUE), lwd=2)
+        plot(x = inp[flt,"Value"], y = y_num, type="n", axes = FALSE, ann = FALSE, ylim = rev(range(y_num)))
+        graphics::abline(h = y_num, col=grDevices::grey(0.9))
+        graphics::abline(v = mean(inp[flt,"Value"], na.rm=TRUE), lwd=2)
+        graphics::axis(1)
+        graphics::axis(2, at = 1:n_p, las=1)
+        graphics::box()
+        graphics::mtext(text = "Lab", side = 3, line = 0.15, at = graphics::par("usr")[1], adj = 1.15)
+        graphics::mtext(text = unique(inp[,"Level"])[q], side = 3, line = 0.15, at = graphics::par("usr")[2], adj = 1)
+        graphics::mtext(text = "[unit]", side = 1, line = 2.3, at = stats::median(graphics::par("usr")[1:2]), adj = 0.5)
         for (p in 1:n_p) {
           flt2 <- flt & inp[,"Lab"]==unique(inp[,"Lab"])[p]
           x <- inp[flt2, "Value"]
           y <- rep(p, length(x))
           y[duplicated(x)] <- y[duplicated(x)] + 0.2*c(-1,1,-2,2)[sum(duplicated(x))]
-          points(y = y, x = x, pch = c(21:25)[inp[flt2,"Replicate"]], bg = c(2:6)[inp[flt2,"Replicate"]], cex = 2)
+          graphics::points(y = y, x = x, pch = c(21:25)[inp[flt2,"Replicate"]], bg = c(2:6)[inp[flt2,"Replicate"]], cex = 2)
         }
       }
-      par(opar)
+      graphics::par(opar)
     }
 
     # Mandel h plot
@@ -450,23 +416,31 @@ page_validation57252Server <- function(id, test_data = NULL) {
       type <- match.arg(type)
       n_p <- length(unique(mns[,"Lab"]))
       n_q <- length(unique(mns[,"Level"]))
-      n_k <- floor(median(mns[,"n"]))
+      n_k <- floor(stats::median(mns[,"n"]))
       if (type == "h") {
         m_crit <- qmandel_h(p = n_p, alpha = c(0.01, 0.05))
         idx <- "Mandel_h"
         ylab <- expression("Mandel's statistic, " * italic(h))
-        fac <- c(-1,-1,1,1)
+        fac <- c(1,1,-1,-1)
       } else {
         m_crit <- qmandel_k(k = n_k, p = n_p, alpha = c(0.01, 0.05))
         idx <- "Mandel_k"
         ylab <- expression("Mandel's statistic, " * italic(k))
-        fac <- 1
+        fac <- c(1,1)
       }
+      graphics::par(mar=c(1,3.5,1,0)+0.5)
       plot(x = c(0, n_p*n_q*1.2+0.2), y = range(c(0, mns[,idx], fac*m_crit)), type="n", axes=F, ylab=ylab, xlab="", xaxs="i")
-      abline(h = fac*m_crit, lty = 2, col = grey(0.8))
-      barplot(mns[,idx] ~ interaction(mns[,"Level"],mns[,"Lab"]), las=2, col=c(grey(0.4), grey(0.8))[rep(rep(1:2, each = n_q), length.out=n_q*n_p)], add=TRUE, axisnames=FALSE)
-      box()
+      graphics::abline(h = fac*m_crit, lty = 2, col = grDevices::grey(0.8))
+      tmp_x <- graphics::barplot(mns[,idx] ~ interaction(mns[,"Level"],mns[,"Lab"]), las=2, col=c(grDevices::grey(0.4), grDevices::grey(0.8))[rep(rep(1:2, each = n_q), length.out=n_q*n_p)], add=TRUE, axisnames=FALSE)
+      graphics::text(x = 0, y = fac[1:2]*m_crit, labels = c(".01", ".05"), adj = c(-0.15,1.15))
+      graphics::text(x = n_p*n_q*1.2+0.2, y = fac[1:2]*m_crit, labels = round(m_crit, 3), adj = c(1.05,1.15))
+      graphics::mtext(text = "Lab", side = 3, line = 0.15, at = 0, adj = 1)
+      graphics::mtext(text = 1:n_p, side = 3, line = 0.15, at = sapply(1:n_p, function(x) { stats::median(tmp_x[1:n_q+(x-1)*n_q]) }))
+      graphics::mtext(text = "Level", side = 1, line = 0.15, at = 0, adj = 1)
+      graphics::mtext(text = c(rep(1:n_q, 2), "...", "j"), side = 1, line = 0.15, at = tmp_x[1:(2*n_q + 2)])
+      graphics::box()
     }
+
 
     # plot repeatability values and fit data
     plotV3 <- function(df) {
@@ -474,20 +448,20 @@ page_validation57252Server <- function(id, test_data = NULL) {
       y <- df[,2]
       xlab <- endsub(colnames(df)[1])
       ylab <- endsub(colnames(df)[2])
-      par(mar=c(5,3,0,0)+0.5)
+      graphics::par(mar=c(4.5,3.5,0,0)+0.5)
       plot(x=x, y=y, xlim=range(c(0,max(x)+0.05*max(x))), ylim=c(0, max(y)), xaxs="i", type="n", xlab=xlab, ylab=ylab)
       # fit linear model with intercept
-      abline(lm(y~x), col = "blue", lwd=2)
+      graphics::abline(stats::lm(y~x), col = "blue", lwd=2)
       # fit linear model without intercept
-      abline(lm(y~x+0), col = "lightblue", lwd=2)
+      graphics::abline(stats::lm(y~x+0), col = "lightblue", lwd=2)
       # fit log model with intercept
-      fit_lm <- lm(log(y) ~ x)
-      a <- exp(coef(fit_lm)[1])
-      b <- coef(fit_lm)[2]
+      fit_lm <- stats::lm(log(y) ~ x)
+      a <- exp(stats::coef(fit_lm)[1])
+      b <- stats::coef(fit_lm)[2]
       xx <- seq(min(x), max(x), length.out = 200)
       yy <- a * exp(b * xx)
-      lines(xx, yy, col = "orange", lwd = 2)
-      points(x=x, y=y, pch=21, bg=grey(0.8), cex=1.5)
+      graphics::lines(xx, yy, col = "orange", lwd = 2)
+      graphics::points(x=x, y=y, pch=21, bg=grDevices::grey(0.8), cex=1.5)
     }
 
 
@@ -506,7 +480,15 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # generic input table example
     output$example_table_generic <- renderUI({
-      x <- read_Vdata(file = system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx"))[1:23,2:8]
+      n <- 16
+      x <- data.frame(
+        "Property" = rep("measurand name", n),
+        "Unit" = rep("measurand unit", n),
+        "Lab" = rep(1:2, each=8),
+        "Level" = rep(rep(1:2, each=4), 2),
+        "Replicate" = rep(1:4, times=4),
+        "Value" = round(stats::rnorm(16),3)
+      )
       ft <- show_upload_example_table(x=x, max_char = 15, optional = c(1,2))
       flextable::htmltools_value(ft, ft.align = "left")
     })
@@ -519,7 +501,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
     shiny::outputOptions(output, "V_fileUploaded", suspendWhenHidden = FALSE)
 
     shiny::observeEvent(input$inp_file$datapath, {
-      shinyjs::html(id = "ori_inp_file_name", html = shiny::HTML(input$inp_file$name))
+      shinyjs::html(id = "ori_inp_file_name", html = shiny::HTML("Data imported from file: ", input$inp_file$name))
       # keep name of XLSX file
       if (tolower(tools::file_ext(input$inp_file$name)) == "xlsx") V2_pars$ori_inp_file_name <- input$inp_file$name
       V2_pars$inp_file_path <- normalizePath(input$inp_file$datapath)
@@ -558,13 +540,13 @@ page_validation57252Server <- function(id, test_data = NULL) {
     # Tables ====
     output$TabV0 <- shiny::renderUI({
       req(inp())
-      ft <- prepTabV0(inp = inp(), id = "Tab.V0", caption = "Input data, grouped per cell")
+      ft <- prepTabV0(inp = inp(), output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell")
       flextable::htmltools_value(ft, ft.align = "left")
     })
 
     output$TabV1 <- shiny::renderUI({
       req(mns(), V2_pars$opt_tab_precision)
-      ft <- prepTabV1(mns = mns(), prec = V2_pars$opt_tab_precision, id = "Tab.V1", caption = "Cell means, standard deviations and number of finite measurement replicates per cell")
+      ft <- prepTabV1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V1", caption = "Cell means, standard deviations and number of finite measurement replicates per cell")
       flextable::htmltools_value(ft, ft.align = "left")
     })
 
@@ -572,7 +554,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
       req(mns(), V2_pars$opt_tab_precision)
       n_q <- length(unique(mns()[,"Level"]))
       fts <- lapply(1:n_q, function(q) {
-        ft <- prepTabV2(inp = inp(), q = q, prec = V2_pars$opt_tab_precision, id = paste0("Tab.V2", letters[q]), caption = paste("Statistic values for Level", q))
+        ft <- prepTabV2(inp = inp(), q = q, prec = V2_pars$opt_tab_precision, output = "ftl", id = paste0("Tab.V2", letters[q]), caption = paste("Statistic values for Level", q))
         flextable::htmltools_value(ft, ft.align = "left")
       })
       bslib::layout_columns(!!!fts)
@@ -580,7 +562,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     output$TabV3 <- shiny::renderUI({
       req(res(), V2_pars$opt_tab_precision)
-      ft <- styleTabV3(x = res(), prec = V2_pars$opt_tab_precision, id = "Tab.V3", caption = "Calculated repeatability values")
+      ft <- styleTabV3(x = res(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V3", caption = "Calculated repeatability values")
       flextable::htmltools_value(ft, ft.align = "left")
     })
 
