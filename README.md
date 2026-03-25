@@ -3,6 +3,7 @@
 
 <!-- badges: start -->
 [![Static Badge](https://img.shields.io/badge/LiveApp-blue)](https://apps.bam.de/shn01/eCerto/)
+[![GitHub version](https://img.shields.io/github/r-package/v/janlisec/eCerto)
 [![CRAN status](https://www.r-pkg.org/badges/version/eCerto)](https://CRAN.R-project.org/package=eCerto)
 [![R-CMD-check](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/janlisec/eCerto/actions/workflows/test-coverage.yaml)
