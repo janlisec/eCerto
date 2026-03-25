@@ -747,7 +747,7 @@ HTML2ft <- function(x) {
 
 #' @title ft_formatter_fixed_digits.
 #' @description flextable column formatter function.
-#' @param digits number of digits post decimal seperator to show (nor rounding).
+#' @param digits number of digits post decimal separator to show (nor rounding).
 #' @param predicate predicate function of column type to act on, here: is.numeric.
 #' @keywords internal
 #' @noRd
@@ -771,7 +771,6 @@ ft_set_formatter <- function(ft, j_idx, fmt, ..., predicate = is.numeric, verbos
   stopifnot(!is.null(ft$body$dataset))
   keys_all <- ft$col_keys[j_idx]
   ds       <- ft$body$dataset
-
 
   fmt_fun  <- fmt(...)
   predicate <- attr(fmt_fun, "predicate", exact = TRUE)

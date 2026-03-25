@@ -1,5 +1,5 @@
 testthat::test_that(
-  desc = "page_ValidationServer works on package testdata",
+  desc = "page_Validation32645Server works on package testdata",
   code = {
     # set up eCerto R6 object containing data from an arrhenius style experiment
     fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
@@ -7,7 +7,7 @@ testthat::test_that(
 
     # provide this test data to the server function and test if the expected outputs are generated
     shiny::testServer(
-      app = eCerto:::page_validationServer,
+      app = eCerto:::page_validation32645Server,
       args = list(
         id = "test",
         test_data = td
