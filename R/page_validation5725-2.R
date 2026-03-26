@@ -51,22 +51,19 @@ page_validation57252UI <- function(id) {
           bslib::layout_sidebar(
             sidebar = bslib::sidebar(
               position = "left", open = "open", width = "280px",
-              shiny::div(id = ns("ori_inp_file_name"), "This div will show the original Excel File name used upon import."),
+              shiny::div(id = ns("ori_inp_file_name"), "This div will show the original Excel File name used upon import is shinyjs is active."),
               shiny::numericInput(inputId = ns("opt_tab_precision"), value = 3, step = 1, min = 0, max = 6, label = "Table digits precision"),
               shiny::uiOutput(ns("TabV0")),
             ),
             shiny::uiOutput(ns("TabV1")),
-            shiny::plotOutput(ns("FigV1")),
+            shiny::uiOutput(ns("FigV1")),
             shiny::uiOutput(ns("TabV2")),
-            bslib::layout_columns(
-              shiny::plotOutput(ns("FigV2a")),
-              shiny::plotOutput(ns("FigV2b"))
-            ),
+            shiny::uiOutput(ns("FigV2")),
             shiny::uiOutput(ns("TabV3")),
             bslib::layout_column_wrap(
-              widths = "450px",
-              shiny::plotOutput(ns("FigV3a"), width = "450px", height = "450px"),
-              shiny::plotOutput(ns("FigV3b"), width = "450px", height = "450px")
+              width = "400px", fixed_width = TRUE,
+              shiny::plotOutput(ns("FigV3a"), width = "400px", height = "400px"),
+              shiny::plotOutput(ns("FigV3b"), width = "400px", height = "400px")
             )
           )
         )
@@ -79,6 +76,8 @@ page_validation57252UI <- function(id) {
 #' @noRd
 page_validation57252Server <- function(id, test_data = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
+
+    ns <- shiny::NS(id)
 
     # DIN ISO 5725-2 R-Script
     # non reactive functions
@@ -382,14 +381,14 @@ page_validation57252Server <- function(id, test_data = NULL) {
     }
 
     # plot of raw data per level and lab
-    plotV1 <- function(inp) {
+    plotV1 <- function(inp, q = NULL) {
       opar <- graphics::par(no.readonly = TRUE)
-      n_q <- length(unique(inp[,"Level"]))
+      if (is.null(q)) q <- 1:length(unique(inp[,"Level"]))
       n_p <- length(unique(inp[,"Lab"]))
-      graphics::par(mfrow=c(1, n_q))
-      graphics::par(mar=c(3.5,2,1,0)+0.5)
-      for (q in 1:n_q) {
-        flt <- inp[,"Level"]==unique(inp[,"Level"])[q]
+      graphics::par(mfrow=c(1, length(q)))
+      graphics::par(mar=c(3.5,1.5,1,0)+0.5)
+      for (qi in q) {
+        flt <- inp[,"Level"]==unique(inp[,"Level"])[qi]
         y_num <- as.numeric(factor(inp[flt,"Lab"], levels=unique(inp[,"Lab"])))
         plot(x = inp[flt,"Value"], y = y_num, type="n", axes = FALSE, ann = FALSE, ylim = rev(range(y_num)))
         graphics::abline(h = y_num, col=grDevices::grey(0.9))
@@ -398,8 +397,11 @@ page_validation57252Server <- function(id, test_data = NULL) {
         graphics::axis(2, at = 1:n_p, las=1)
         graphics::box()
         graphics::mtext(text = "Lab", side = 3, line = 0.15, at = graphics::par("usr")[1], adj = 1.15)
-        graphics::mtext(text = unique(inp[,"Level"])[q], side = 3, line = 0.15, at = graphics::par("usr")[2], adj = 1)
-        graphics::mtext(text = "[unit]", side = 1, line = 2.3, at = stats::median(graphics::par("usr")[1:2]), adj = 0.5)
+        graphics::mtext(text = paste("Level", unique(inp[,"Level"])[qi]), side = 3, line = 0.15, at = graphics::par("usr")[2], adj = 1)
+        if ("Unit" %in% colnames(inp())) {
+          graphics::mtext(text = inp()[1,"Unit"], side = 1, line = 2.3, at = stats::median(graphics::par("usr")[1:2]), adj = 0.5)
+        }
+
         for (p in 1:n_p) {
           flt2 <- flt & inp[,"Lab"]==unique(inp[,"Lab"])[p]
           x <- inp[flt2, "Value"]
@@ -434,9 +436,9 @@ page_validation57252Server <- function(id, test_data = NULL) {
       tmp_x <- graphics::barplot(mns[,idx] ~ interaction(mns[,"Level"],mns[,"Lab"]), las=2, col=c(grDevices::grey(0.4), grDevices::grey(0.8))[rep(rep(1:2, each = n_q), length.out=n_q*n_p)], add=TRUE, axisnames=FALSE)
       graphics::text(x = 0, y = fac[1:2]*m_crit, labels = c(".01", ".05"), adj = c(-0.15,1.15))
       graphics::text(x = n_p*n_q*1.2+0.2, y = fac[1:2]*m_crit, labels = round(m_crit, 3), adj = c(1.05,1.15))
-      graphics::mtext(text = "Lab", side = 3, line = 0.15, at = 0, adj = 1)
+      graphics::mtext(text = "Lab", side = 3, line = 0.15, at = graphics::par("usr")[2], adj = 1)
       graphics::mtext(text = 1:n_p, side = 3, line = 0.15, at = sapply(1:n_p, function(x) { stats::median(tmp_x[1:n_q+(x-1)*n_q]) }))
-      graphics::mtext(text = "Level", side = 1, line = 0.15, at = 0, adj = 1)
+      graphics::mtext(text = "Level", side = 1, line = 0.15, at = graphics::par("usr")[2], adj = 1)
       graphics::mtext(text = c(rep(1:n_q, 2), "...", "j"), side = 1, line = 0.15, at = tmp_x[1:(2*n_q + 2)])
       graphics::box()
     }
@@ -540,7 +542,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
     # Tables ====
     output$TabV0 <- shiny::renderUI({
       req(inp())
-      ft <- prepTabV0(inp = inp(), output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell")
+      ft <- prepTabV0(inp = inp(), output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell (levels in columns)")
       flextable::htmltools_value(ft, ft.align = "left")
     })
 
@@ -557,7 +559,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
         ft <- prepTabV2(inp = inp(), q = q, prec = V2_pars$opt_tab_precision, output = "ftl", id = paste0("Tab.V2", letters[q]), caption = paste("Statistic values for Level", q))
         flextable::htmltools_value(ft, ft.align = "left")
       })
-      bslib::layout_columns(!!!fts)
+      bslib::layout_column_wrap(width = "520px", fixed_width = TRUE, !!!fts)
     })
 
     output$TabV3 <- shiny::renderUI({
@@ -567,9 +569,30 @@ page_validation57252Server <- function(id, test_data = NULL) {
     })
 
     # Figures ====
-    output$FigV1 <- renderPlotHD({
+    output$FigV1 <- shiny::renderUI({
       req(inp())
-      plotV1(inp = inp())
+      h <- paste0(240+20*length(unique(inp()[,"Lab"])), "px")
+      plots <- lapply(1:length(unique(inp()[,"Level"])), function(x) {
+        local({
+          local_x <- x
+          plot_output <- shiny::plotOutput(outputId = ns(paste0("plot_v1_", local_x)), height = h)
+          output[[paste0("plot_v1_", local_x)]] <- renderPlotHD({
+            plotV1(inp = inp(), q = local_x)
+          })
+          plot_output
+        })
+      })
+      do.call(bslib::layout_column_wrap, c(list(width = "520px", fixed_width = TRUE), plots))
+    })
+
+    output$FigV2 <- shiny::renderUI({
+      req(mns())
+      w <- paste0(120+nrow(mns())*20, "px")
+      bslib::layout_column_wrap(
+        width = w, fixed_width = TRUE,
+        shiny::plotOutput(ns("FigV2a"), width = w, height = "400px"),
+        shiny::plotOutput(ns("FigV2b"), width = w, height = "400px")
+      )
     })
 
     output$FigV2a <- renderPlotHD({
