@@ -1,3 +1,7 @@
+# eCerto 0.8.20 [27.03.2026]
+* DIN 5725-2 workflow can handle multiple properties in input and filterin data by user
+* new exported function markdown2expression()
+
 # eCerto 0.8.19 [25.03.2026]
 * test implementation for DIN 5725-2 workflow (Validation module)
 

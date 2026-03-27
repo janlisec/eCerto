@@ -155,3 +155,60 @@ init_apm <- function(x) {
   }, simplify = FALSE)
   return(apm)
 }
+
+#' @title init_V2_data
+#' @param n_p Number of participating Labs.
+#' @param n_q Number of tested Levels
+#' @param n_k Number of Replicates per Level (can be a range).
+#' @param seed seed. defaults to 5725.
+#' @param digits Measurement precision (can be a range).
+#' @param mn Vector of lab means to use.
+#' @param sr Expected sd within Lab.
+#' @param sL Expected bias.
+#' @return A data frame containing example data for V2 module.
+#' @keywords internal
+#' @noRd
+#' @example init_V2_data()
+init_V2_data <- function(n_p = 12, n_q = 2, n_k = 3:5, seed = 5725, digits = 3:4, mn = c(10, 50), sr = c(0.25, 1), sL = c(0.3, 1.5)) {
+  set.seed(seed)
+
+  labs  <- paste0("Lab", sprintf("%02d", 1:n_p))
+  levels <- paste0("Lev", sprintf("%02d", 1:n_q))
+
+  # means per Level
+  mn <- setNames(mn, levels)
+
+  # sd (within Lab)
+  sr <- setNames(sr, levels)
+
+  # bias (between Labs)
+  sL <- setNames(sL, levels)
+
+  out <- do.call(
+    rbind,
+    lapply(levels, function(LV) {
+      lab_bias <- rnorm(length(labs), mean = 0, sd = sL[LV])
+      names(lab_bias) <- labs
+
+      do.call(rbind, lapply(labs, function(LB) {
+        n_rep_lab <- sample(n_k, size = 1)
+        data.frame(
+          "Lab" = LB,
+          "Level" = LV,
+          "Replicate" = 1:n_rep_lab,
+          "Value" = round(rnorm(
+            n_rep_lab,
+            mean = mn[LV] + lab_bias[LB],
+            sd = sr[LV]
+          ), digits = sample(digits, 1))
+        )
+      }))
+    })
+  )
+
+  out <- cbind(out, "ID"=1:nrow(out), "Filter"="")
+  out[out[,"Lab"]=="Lab05" & out[,"Level"]=="Lev02", "Filter"] <- "removed Lab05 Lev02"
+  out[out[,"ID"]==15, "Filter"] <- "removed ID 15"
+
+  return(out)
+}

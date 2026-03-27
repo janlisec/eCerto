@@ -659,6 +659,7 @@ calc_LOQ <- function(x, y, alpha = 0.05, n = 1, k = 3) {
 #' @param res_qm Residuals of quadratic model.
 #' @param prec Precision of P-value. Default is to compute 8 digit precision.
 #' @param alpha Numeric. Significance level or alpha error probability for which KW is computed. Default is 5%.
+#'
 #' @noRd
 #' @keywords internal
 MandelTest <- function(res_lm, res_qm, prec = 8, alpha = 0.05) {
@@ -707,4 +708,83 @@ F_test_outlier <- function(x, alpha = 0.05) {
   attr(F_Test, "PW") <- PW
   attr(F_Test, "KW") <- KW
   return(F_Test)
+}
+
+#' @title mandel_h.
+#' @description Calculate Mandel's statistic h to compare (weighted) Lab‑means to total mean.
+#' @param x Numeric vector of laboratory means.
+#' @param w Weights, the number of replicates per lab, has to be numeric of length(xbar).
+#'
+#' @noRd
+#' @keywords internal
+mandel_h <- function(x, w = NULL) {
+  if (is.null(w)) w <- rep(1, length(x))
+  stopifnot(length(x) == length(w))
+  # weighted grand mean
+  grand_mean <- sum(w * x) / sum(w)
+  # between-lab SD (DIN 5725-2)
+  sL <- sqrt(sum(w * (x - grand_mean)^2) / (length(x) - 1))
+  h <- (x - grand_mean) / sL
+  return(h)
+}
+#' @noRd
+qmandel_h <- function(p, alpha = 0.05) {
+  ((p - 1)/sqrt(p)) * (2 * stats::qbeta((1-alpha/2), (p - 2)/2, (p - 2)/2, lower.tail = TRUE, log.p = FALSE) - 1)
+}
+
+#' @title mandel_k.
+#' @description Calculate Mandel's statistic k to compare Lab‑sds against average Lab-sd.
+#' @param s Numeric vector of laboratory standard deviations.
+#'
+#' @noRd
+#' @keywords internal
+mandel_k <- function(s) {
+  mean_s <- mean(s)
+  k <- s / mean_s
+  return(k)
+}
+#' @noRd
+qmandel_k <- function(k, p, alpha = 0.05) {
+  sqrt(p * stats::qbeta((1-alpha), (k - 1)/2, (p - 1) * (k - 1)/2, lower.tail = TRUE, log.p = FALSE))
+}
+
+#' @title is.removed.
+#' @description A test function for V2 data sets containing a Filter column.
+#' @param x dataframe with a character column 'Filter'.
+#' @returns A logical vector of nrow(x) giving TRUE where 'Filter'!=''
+#' @noRd
+#' @keywords internal
+is.removed <- function(x) {
+  stopifnot(is.data.frame(x))
+  if ("Filter" %in% colnames(x) && is.character(x[,"Filter"])) {
+    return(x[,"Filter"]!="")
+  } else {
+    return(rep(FALSE, nrow(x)))
+  }
+}
+
+#' @title V2_calc_stats.
+#' @description calculation of means and sds as well as Mandel tests.
+#' @param inp Numeric vector of laboratory standard deviations.
+#' @examples
+#' inp <- eCerto:::init_V2_data()
+#' eCerto:::V2_calc_stats(inp = inp)
+#' @noRd
+#' @keywords internal
+V2_calc_stats <- function(inp) {
+  mns <- ldply_base(unique(sort(inp[,"Lab"])), function(p) {
+    ldply_base(unique(sort(inp[,"Level"])), function(q) {
+      x <- inp[inp[,"Lab"]==p & inp[,"Level"]==q & !is.removed(inp), "Value"]
+      data.frame("Lab"=p, "Level"=q, "mean"=mean(x), "sd"=stats::sd(x), "n"=sum(is.finite(x)))
+    })
+  })
+  mns[,"Mandel_h"] <- NA
+  mns[,"Mandel_k"] <- NA
+  for (q in unique(sort(mns[,"Level"]))) {
+    flt1 <- mns[,"Level"]==q & is.finite(mns[,"mean"])
+    flt2 <- mns[,"Level"]==q & is.finite(mns[,"sd"])
+    mns[flt1,"Mandel_h"] <- mandel_h(x = mns[flt1,"mean"], w = mns[flt1,"n"])
+    mns[flt2,"Mandel_k"] <- mandel_k(s = mns[flt2,"sd"])
+  }
+  return(mns)
 }
