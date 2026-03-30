@@ -654,6 +654,254 @@ decimal_count <- function(x) {
   return(x)
 }
 
+#' Convert Markdown String to R Plotmath Expression
+#'
+#' Parses a character string containing markdown-style formatting syntax and
+#' converts it into an R plotmath expression suitable for use in plot labels
+#' and annotations.
+#'
+#' @param x A character vector. Only the first element is used.
+#' @param vectorize Set TRUE to process all elements of x returning a list of expressions.
+#'
+#' @details
+#' The following markdown syntax is supported:
+#' \itemize{
+#'   \item \code{**text**} — bold
+#'   \item \code{*text*} — italic
+#'   \item \code{base^sup^} — superscript
+#'   \item \code{base~sub~} — subscript
+#' }
+#' Formatting can be nested (e.g., bold inside superscript).
+#' The returned expression can be passed directly to \code{plot()} arguments
+#' such as \code{main}, \code{xlab}, or \code{ylab}, or to \code{expression()}.
+#'
+#' @return A language object (R expression) suitable for use in plotting
+#'   functions that support plotmath.
+#'
+#' @seealso \code{\link[grDevices]{plotmath}}
+#'
+#' @examples
+#' markdown2expression("**bold text**")
+#' markdown2expression("*italic text*")
+#' markdown2expression("x^2^")
+#' markdown2expression("H~2~O")
+#' markdown2expression("**H~2~O**")
+#' plot(1,1, main = markdown2expression("R^2^ = 0.99"), pch=".")
+#' text(1,1, markdown2expression("Water = **H~2~O**"))
+#'
+#' @export
+markdown2expression <- function(x, vectorize = FALSE) {
+  stopifnot(is.character(x))
+
+  if (vectorize) {
+    return(lapply(x, function(xi) markdown2expression(xi, vectorize = FALSE)))
+  }
+
+  if (length(x) > 1) {
+    warning("Only first element of x is used. Use vectorize = TRUE to process all elements.")
+  }
+
+  s <- x[[1]]
+
+  if (!nzchar(s)) return(expression("")[[1]])
+
+  # Greek letter lookup
+  greek_letters <- c(
+    "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta",
+    "iota", "kappa", "lambda", "mu", "nu", "xi", "pi", "rho", "sigma",
+    "tau", "upsilon", "phi", "chi", "psi", "omega",
+    "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta",
+    "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Pi", "Rho", "Sigma",
+    "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"
+  )
+
+  #-----------------------------------------
+  # Tokenizer
+  #-----------------------------------------
+  tokenize <- function(s) {
+    tokens <- list()
+    i <- 1
+    n <- nchar(s)
+    getc <- function(i) substr(s, i, i)
+    buffer <- ""
+
+    flush <- function() {
+      if (nzchar(buffer)) {
+        tokens[[length(tokens) + 1]] <<- list(type = "text", value = buffer)
+        buffer <<- ""
+      }
+    }
+
+    while (i <= n) {
+      ch <- getc(i)
+
+      # escape character
+      if (ch == "\\" && i < n) {
+        buffer <- paste0(buffer, getc(i + 1))
+        i <- i + 2
+        next
+      }
+
+      # Greek letters {name}
+      if (ch == "{") {
+        j <- i + 1
+        while (j <= n && getc(j) != "}") j <- j + 1
+        if (j > n) stop("Unclosed '{' for Greek letter")
+        inner <- substr(s, i + 1, j - 1)
+        if (inner %in% greek_letters) {
+          flush()
+          tokens[[length(tokens) + 1]] <- list(type = "greek", value = inner)
+          i <- j + 1
+          next
+        } else {
+          # not a greek letter, treat as normal text
+          buffer <- paste0(buffer, substr(s, i, j))
+          i <- j + 1
+          next
+        }
+      }
+
+      # bold-italic ***
+      if (ch == "*" && i + 2 <= n && getc(i + 1) == "*" && getc(i + 2) == "*") {
+        flush()
+        j <- i + 3
+        while (j + 2 <= n && !(getc(j) == "*" && getc(j + 1) == "*" && getc(j + 2) == "*")) j <- j + 1
+        if (j + 2 > n) stop("Unclosed '***' for bold-italic")
+        inner <- substr(s, i + 3, j - 1)
+        tokens[[length(tokens) + 1]] <- list(type = "bolditalic", value = tokenize(inner))
+        i <- j + 3
+        next
+      }
+
+      # bold **
+      if (ch == "*" && i < n && getc(i + 1) == "*") {
+        flush()
+        j <- i + 2
+        while (j + 1 <= n && !(getc(j) == "*" && getc(j + 1) == "*")) j <- j + 1
+        if (j + 1 > n) stop("Unclosed '**' for bold")
+        inner <- substr(s, i + 2, j - 1)
+        tokens[[length(tokens) + 1]] <- list(type = "bold", value = tokenize(inner))
+        i <- j + 2
+        next
+      }
+
+      # italic *
+      if (ch == "*") {
+        flush()
+        j <- i + 1
+        while (j <= n && getc(j) != "*") j <- j + 1
+        if (j > n) stop("Unclosed '*' for italic")
+        inner <- substr(s, i + 1, j - 1)
+        tokens[[length(tokens) + 1]] <- list(type = "italic", value = tokenize(inner))
+        i <- j + 1
+        next
+      }
+
+      # superscript ^content^
+      if (ch == "^") {
+        flush()
+        if (length(tokens) == 0) stop("Superscript '^' without base")
+        base_tok <- tokens[[length(tokens)]]
+        tokens <- tokens[-length(tokens)]
+        i <- i + 1
+        start <- i
+        while (i <= n && getc(i) != "^") i <- i + 1
+        if (i > n) stop("Unclosed '^' for superscript")
+        sup <- substr(s, start, i - 1)
+        tokens[[length(tokens) + 1]] <- list(type = "sup", base = base_tok, value = tokenize(sup))
+        i <- i + 1
+        next
+      }
+
+      # subscript ~content~
+      if (ch == "~") {
+        flush()
+        if (length(tokens) == 0) stop("Subscript '~' without base")
+        base_tok <- tokens[[length(tokens)]]
+        tokens <- tokens[-length(tokens)]
+        i <- i + 1
+        start <- i
+        while (i <= n && getc(i) != "~") i <- i + 1
+        if (i > n) stop("Unclosed '~' for subscript")
+        subtxt <- substr(s, start, i - 1)
+        tokens[[length(tokens) + 1]] <- list(type = "sub", base = base_tok, value = tokenize(subtxt))
+        i <- i + 1
+        next
+      }
+
+      # newline
+      if (ch == "\n") {
+        flush()
+        tokens[[length(tokens) + 1]] <- list(type = "newline")
+        i <- i + 1
+        next
+      }
+
+      buffer <- paste0(buffer, ch)
+      i <- i + 1
+    }
+
+    flush()
+    tokens
+  }
+
+  format_text_token <- function(txt) {
+    if (grepl("^[A-Za-z]$", txt)) return(txt)
+    if (grepl("^[0-9]+$", txt)) return(txt)
+    paste0("\"", txt, "\"")
+  }
+
+  #-----------------------------------------
+  # Renderer
+  #-----------------------------------------
+  render <- function(tokens) {
+    parts <- sapply(tokens, function(tok) {
+      if (tok$type == "text")      return(format_text_token(tok$value))
+      if (tok$type == "greek")     return(tok$value)
+      if (tok$type == "bold")      return(paste0("bold(", render(tok$value), ")"))
+      if (tok$type == "italic")    return(paste0("italic(", render(tok$value), ")"))
+      if (tok$type == "bolditalic")return(paste0("bolditalic(", render(tok$value), ")"))
+      if (tok$type == "sup")       return(paste0(render(list(tok$base)), "^", render(tok$value)))
+      if (tok$type == "sub")       return(paste0(render(list(tok$base)), "[", render(tok$value), "]"))
+      if (tok$type == "newline")   return("atop(")
+    })
+
+    # handle atop() for newlines
+    if ("atop(" %in% parts) {
+      idx <- which(parts == "atop(")
+      before <- paste(parts[seq_len(idx - 1)], collapse = "*")
+      after  <- paste(parts[(idx + 1):length(parts)], collapse = "*")
+      return(paste0("atop(", before, ",", after, ")"))
+    }
+
+    paste(parts, collapse = "*")
+  }
+
+  tokens <- tokenize(s)
+  expr_string <- render(tokens)
+  parse(text = expr_string)[[1]]
+}
+
+#' @title endmod
+#' @description Function to convert HTML tags into the markdown equivalent.
+#' @param x A character vector.
+#' @param type type.
+#' @keywords internal
+#' @noRd
+endmod <- function(x, type = c("*", "**", "~", "^"), fmt = c("md", "html")) {
+  type <- match.arg(type)
+  fmt <- match.arg(fmt)
+  sub <- sub("^.*?_(.+)$", "\\1", x)
+  main <- sub("_.+$", "", x)
+  if (identical(main, x)) return(x)
+  if (fmt == "html") {
+    htag <- switch(type, "*" = "i", "**" = "b", "~" = "sub", "^" = "sup")
+    paste0(main, "<", htag, ">", sub, "</", htag, ">")
+  } else {
+    paste0(main, type, sub, type)
+  }
+}
+
 #' @title HTML2markdown.
 #' @description Function to convert HTML tags into the markdown equivalent.
 #' @param x A character vector.
@@ -678,6 +926,27 @@ HTML2markdown <- function(x) {
   x <- gsub("</b>", "**", x)
   x <- gsub("<strong>", "**", x)
   x <- gsub("</strong>", "**", x)
+  return(x)
+}
+
+#' @title markdown2HTML.
+#' @description Function to convert markdown tags into the HTML equivalent.
+#' @param x A character vector.
+#' @examples
+#' \dontrun{
+#'   x <- c("x<sub>i</sub>", "This is <i>formatted</i> <b>HTM<sup>L</sup></b>")
+#'   HTML2markdown(x)
+#'   markdown2HTML(HTML2markdown(x))
+#' }
+#' @return Numeric.
+#' @keywords internal
+#' @noRd
+markdown2HTML <- function(x) {
+  stopifnot(is.character(x))
+  x <- gsub("\\*\\*(.+?)\\*\\*", "<b>\\1</b>", x, perl = TRUE) # bold first to avoid conflicts with italic
+  x <- gsub("\\*(.+?)\\*", "<i>\\1</i>", x, perl = TRUE) # Italic
+  x <- gsub("~(.+?)~", "<sub>\\1</sub>", x, perl = TRUE) # Subscript
+  x <- gsub("\\^(.+?)\\^", "<sup>\\1</sup>", x, perl = TRUE) # Superscript
   return(x)
 }
 
