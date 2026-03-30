@@ -13,10 +13,10 @@
 #'       #fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Validierung/DIN5725-2/testdata.xlsx"
 #'       #td <- openxlsx::read.xlsx(xlsxFile = fl, sheet = 1)
 #'       td <- init_V2_data()
-#'       #td <- rbind(
-#'        # cbind("Property" = "prop1", "Unit" = "kg/m^2^", td),
-#'        # cbind("Property" = "prop2", "Unit" = "H~2~O", td)
-#'        #)
+#'       td <- rbind(
+#'         cbind("Property" = "prop1", "Unit" = "kg/m^2^", td),
+#'         cbind("Property" = "prop2", "Unit" = "H~2~O", td)
+#'        )
 #'       #td <- NULL
 #'       eCerto:::page_validation57252Server(id = "test", test_data = td)
 #'     }
@@ -130,6 +130,11 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # Reactives ====
     inp_raw <- shiny::reactive({
+      # reset pars
+      shiny::isolate({
+        V2_pars$opt_cur_analyte <- ""
+        V2_pars$excl_ids <- integer(0)
+      })
       if (!is.null(test_data)) {
         df <- test_data
       } else {
@@ -165,7 +170,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
       return(df)
     })
 
-    inp_with_id <- shiny::reactive({
+    inp_with_pars_applied <- shiny::reactive({
       req(inp_raw())
       df <- inp_raw()
       if ("Property" %in% colnames(df)) {
@@ -181,8 +186,8 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # Filtered data for all downstream analysis ====
     inp <- shiny::reactive({
-      req(inp_with_id())
-      df <- inp_with_id()
+      req(inp_with_pars_applied())
+      df <- inp_with_pars_applied()
       if (length(V2_pars$excl_ids) > 0L) {
         df[!(df$ID %in% V2_pars$excl_ids),"Filter"] <- ""
         df[which(df$ID %in% V2_pars$excl_ids)[df[df$ID %in% V2_pars$excl_ids,"Filter"]==""], "Filter"] <- "Removed due to..."
@@ -204,9 +209,9 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # Tree-based filter UI (Lab -> Level -> ID) ====
     output$filter_tree_ui <- shiny::renderUI({
-      req(inp_with_id())
-      #message("This is the setup of the V2 filter UI. It should fire only at data upload or when a different analyte is selected!!")
-      df <- inp_with_id()[,c("Lab","Level","Replicate","ID","Filter")]
+      req(inp())
+      message("This is the setup of the V2 filter UI. It should fire only at data upload or when a different analyte is selected!!")
+      df <- inp()[,c("Lab","Level","Replicate","ID","Filter")]
       df$Lab   <- as.character(paste("Lab", df$Lab))
       df$Level <- as.character(paste("Level", df$Level))
       df$Replicate <- as.character(paste("Replicate", df$Replicate))
@@ -221,12 +226,14 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # Recompute excluded IDs when tree selection changes ====
     shiny::observeEvent(input$f_tree_excl, {
-      sel <- input$f_tree_excl
-      if (is.null(sel) || length(sel) == 0L) {
-        V2_pars$excl_ids <- integer(0)
-        return(NULL)
-      }
-      V2_pars$excl_ids <- suppressWarnings(c(na.omit(as.numeric(sel))))
+      sel <- suppressWarnings(c(stats::na.omit(as.numeric(input$f_tree_excl))))
+      cur_exc <- V2_pars$excl_ids
+      cur_ids <- shiny::isolate(inp()[,"ID"])
+      # remove all IDs from the current analyte from the global par
+      cur_exc <- cur_exc[!(cur_exc %in% cur_ids)]
+      # add all IDs from the tree object (Filter)
+      nv <- sort(c(cur_exc, sel))
+      V2_pars$excl_ids <- nv
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
     # Tables ====

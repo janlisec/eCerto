@@ -176,18 +176,18 @@ init_V2_data <- function(n_p = 12, n_q = 2, n_k = 3:5, seed = 5725, digits = 3:4
   levels <- paste0("Lev", sprintf("%02d", 1:n_q))
 
   # means per Level
-  mn <- setNames(mn, levels)
+  mn <- stats::setNames(mn, levels)
 
   # sd (within Lab)
-  sr <- setNames(sr, levels)
+  sr <- stats::setNames(sr, levels)
 
   # bias (between Labs)
-  sL <- setNames(sL, levels)
+  sL <- stats::setNames(sL, levels)
 
   out <- do.call(
     rbind,
     lapply(levels, function(LV) {
-      lab_bias <- rnorm(length(labs), mean = 0, sd = sL[LV])
+      lab_bias <- stats::rnorm(length(labs), mean = 0, sd = sL[LV])
       names(lab_bias) <- labs
 
       do.call(rbind, lapply(labs, function(LB) {
@@ -196,7 +196,7 @@ init_V2_data <- function(n_p = 12, n_q = 2, n_k = 3:5, seed = 5725, digits = 3:4
           "Lab" = LB,
           "Level" = LV,
           "Replicate" = 1:n_rep_lab,
-          "Value" = round(rnorm(
+          "Value" = round(stats::rnorm(
             n_rep_lab,
             mean = mn[LV] + lab_bias[LB],
             sd = sr[LV]
