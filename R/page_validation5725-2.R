@@ -239,7 +239,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
     # Tables ====
     output$TabV0 <- shiny::renderUI({
       req(inp())
-      ft <- prepTabV2_0(inp = inp(), output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell (levels in columns)")
+      ft <- prepTabV2_0(inp = inp(), excl_ids = V2_pars$excl_ids, output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell (levels in columns, filtered data in red)")
       flextable::htmltools_value(ft, ft.align = "left")
     })
 
