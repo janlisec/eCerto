@@ -1,5 +1,9 @@
+# eCerto 0.8.21 [31.03.2026]
+* DIN 5725-2 Tab.V0 indicates filtered data by red cell background
+* filtering of complete labs better handled in DIN 5725-2 workflow
+
 # eCerto 0.8.20 [27.03.2026]
-* DIN 5725-2 workflow can handle multiple properties in input and filterin data by user
+* DIN 5725-2 workflow can handle multiple properties in input and filtering data by user
 * new exported function markdown2expression()
 
 # eCerto 0.8.19 [25.03.2026]
