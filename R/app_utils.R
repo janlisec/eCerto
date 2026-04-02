@@ -886,9 +886,24 @@ markdown2expression <- function(x, vectorize = FALSE) {
 #' @description Function to convert HTML tags into the markdown equivalent.
 #' @param x A character vector.
 #' @param type type.
+#' @param fmt fmt.
+#' @param spacer spacer.
+#' @examples
+#' x <- paste("Text", c("1","i","min","bb,k"), sep="_")
+#' df <- ldply_base(c("*", "~", "^"), function(type) {
+#'   data.frame(
+#'     "char" = x,
+#'     "md" = endmod(x, type = type, fmt = "md"),
+#'     "html" = endmod(x, type = type, fmt = "html")
+#'    )
+#' })
+#' ft_default(df)
+#' df2 <- as.data.frame(as.list(setNames(1:12, df[,"html"])), check.names = FALSE)
+#' ft_default(df = df2)
+#'
 #' @keywords internal
 #' @noRd
-endmod <- function(x, type = c("*", "**", "~", "^"), fmt = c("md", "html")) {
+endmod <- function(x, type = c("*", "**", "~", "^"), fmt = c("md", "html"), spacer = "") {
   type <- match.arg(type)
   fmt <- match.arg(fmt)
   sub <- sub("^.*?_(.+)$", "\\1", x)
@@ -896,7 +911,7 @@ endmod <- function(x, type = c("*", "**", "~", "^"), fmt = c("md", "html")) {
   if (identical(main, x)) return(x)
   if (fmt == "html") {
     htag <- switch(type, "*" = "i", "**" = "b", "~" = "sub", "^" = "sup")
-    paste0(main, "<", htag, ">", sub, "</", htag, ">")
+    paste0(main, "<", htag, ">", spacer, sub, "</", htag, ">")
   } else {
     paste0(main, type, sub, type)
   }

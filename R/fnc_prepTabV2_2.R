@@ -17,6 +17,10 @@ prepTabV2_2 <- function(inp, q=1, prec=3, fmt="alpha", ...) {
   #tmp <- inp[inp[,"Level"]==q & !is.removed(inp), c("Lab","Value"), drop=FALSE]
   tmp <- inp[inp[,"Level"]==q & !is.removed(inp),]
   mns <- V2_calc_stats(tmp)
+  if (any(mns[,"n"]==0)) {
+    mns <- mns[mns[,"n"]>0,,drop=FALSE]
+    tmp <- tmp[tmp[,"Lab"] %in% rownames(mns),,drop=FALSE]
+  }
   out <- cbind(mns, Grubbs(lab_means = mns[, "mean", drop=FALSE], fmt=fmt))
   colnames(tmp) <- gsub("Value", "value", colnames(tmp))
   out <- cbind(out, Cochran(data = tmp, fmt=fmt))
