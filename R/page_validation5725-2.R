@@ -215,12 +215,15 @@ page_validation57252Server <- function(id, test_data = NULL) {
       df$Lab   <- as.character(paste("Lab", df$Lab))
       df$Level <- as.character(paste("Level", df$Level))
       df$Replicate <- as.character(paste("Replicate", df$Replicate))
-      # $$JL ToDo$$ ensure that filtered values of non-shown properties are maintained
-      shinyWidgets::treeInput(
-        inputId = ns("f_tree_excl"),
-        label = "Filter (Lab / Lev / Rep)",
-        choices = shinyWidgets::create_tree(data = df[,c("Lab","Level","Replicate","ID")]),
-        selected = as.character(df[df[,"Filter"]!="","ID"])
+      shiny::tags$details(
+        shiny::tags$summary("Filter (Lab / Lev / Rep)"),
+        shinyWidgets::treeInput(
+          inputId = ns("f_tree_excl"),
+          #label = "Filter (Lab / Lev / Rep)",
+          label = NULL,
+          choices = shinyWidgets::create_tree(data = df[,c("Lab","Level","Replicate","ID")]),
+          selected = as.character(df[df[,"Filter"]!="","ID"])
+        )
       )
     })
 
@@ -245,7 +248,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     output$TabV1 <- shiny::renderUI({
       req(mns(), V2_pars$opt_tab_precision)
-      ft <- prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V1", caption = "Cell means, standard deviations and number of finite measurement replicates per cell")
+      ft <- prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V1", caption = "Cell means, standard deviations (or diff for n=2) and number of finite, non-excluded measurement replicates per cell")
       flextable::htmltools_value(ft, ft.align = "left")
     })
 
@@ -304,12 +307,12 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     output$FigV3a <- renderPlotHD({
       req(res())
-      prepFigV2_3(res()[,c(2,3)])
+      prepFigV2_3(res()[,c(3,4)])
     })
 
     output$FigV3b <- renderPlotHD({
       req(res())
-      prepFigV2_3(res()[,c(2,4)])
+      prepFigV2_3(res()[,c(3,5)])
     })
 
   })

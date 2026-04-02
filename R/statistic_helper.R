@@ -775,7 +775,11 @@ V2_calc_stats <- function(inp) {
   mns <- ldply_base(unique(sort(inp[,"Lab"])), function(p) {
     ldply_base(unique(sort(inp[,"Level"])), function(q) {
       x <- inp[inp[,"Lab"]==p & inp[,"Level"]==q & !is.removed(inp), "Value"]
-      data.frame("Lab"=p, "Level"=q, "mean"=mean(x), "sd"=stats::sd(x), "n"=sum(is.finite(x)))
+      x <- x[is.finite(x)]
+      n <- length(x)
+      m <- ifelse(n>=1, mean(x), NA)
+      s <- ifelse(n>=3, stats::sd(x), ifelse(n==2, abs(diff(x)), NA))
+      data.frame("Lab"=p, "Level"=q, "mean"=m, "sd"=s, "n"=n)
     })
   })
   mns[,"Mandel_h"] <- NA
