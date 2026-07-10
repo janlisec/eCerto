@@ -1,23 +1,52 @@
-### Stability linear model plot
+### Stability linear model plot (
 
-The uncertainty contribution of the stability measurements `u_stab` is calculated for each analyte
-based on a linear model of `Value` on `Date`, or, more precisely, on the monthly difference `mon_diff`
-calculated based on the imported `Date` values.
+#### Standard version
 
-The data and linear model is visualized in **Fig.S1**. Here, in addition to the monthly difference
-plotted on the bottom axis, start and end date of the data points are depicted at the top of the plot.
-The red line indicates the certified value $\mu_c$ and the two green dashed lines provide either 
-the standard deviation $2s$ of the data or $U_{abs}$ from the table of certified values, based on 
-availability and user choice.
+The uncertainty contribution of the stability measurements `u_stab` is calculated 
+for each analyte based on a linear model of `Value` on `Date`, or, more precisely, 
+on the monthly difference `mon_diff` calculated based on the imported `Date` 
+values.
+
+The data and linear model is visualized in **Fig.S1**. Here, in addition to the 
+monthly difference plotted on the bottom axis, start and end date of the data 
+points are depicted at the top of the plot.
+The red line indicates the certified value $\mu_c$ and the two green dashed lines 
+provide either the standard deviation $2s$ of the data or $U_{abs}$ from the 
+table of certified values, based on availability and user choice.
 
 ```{r FigS1, echo=FALSE, message=FALSE, fig.cap="**Fig.S1** Linear model plot visualizing stability data", out.width="100%"}
 x <- eCerto::LTS001[[1]]
 x$def$KW <- NA
-plot_lts_data(x = x, type = 1, t_cert = 60, show_legend = TRUE)
+eCerto:::plot_lts_data(x = x, type = 1, t_cert = 160, show_legend = TRUE)
 ```
 
-***Note!*** If no table of certified values is present or the analyte is yet unconfirmed, than red 
-and green lines represent mean and standard deviation of the currently depicted stability data.
+***Note!*** If no table of certified values is present or the analyte is yet 
+unconfirmed, than red and green lines represent mean and standard deviation of 
+the currently depicted stability data.
 
-The dashed blue line indicates the linear model. It's parameter $b_1$ is reported in **Tab.S1** and 
-used to calculate `u_stab`.
+The dashed blue line indicates the linear model. It's parameter $b_1$ is reported 
+in **Tab.S1** and used to calculate `u_stab` via its Std. Error $s(b_1)$ multiplied
+by the shelf life $t_{cert}$.
+
+#### Adjusted version
+
+Alternatively, an adjusted version of the plot can be drawn. Adjusted means that
+the measured values are corrected by the differences between their mean and the
+value of $\mu_c$. Let us assume that certified values are present in **Tab.C3** 
+and provided to the Figure drawing function. In this case $\mu_c$ and $U_{abs}$ 
+are depicted together with $U_{abs}/3$.
+
+```{r FigS1_adjusted, echo=FALSE, message=FALSE, fig.cap="**Fig.S1_adj** Linear model plot visualizing stability data", out.width="100%"}
+x[["def"]][["U_Def"]] <- "U"
+eCerto:::plot_lts_data(x = x, type = 3, t_cert = 60, show_legend = TRUE)
+```
+
+Labels for constant values are depicted on the left side of the figure. On the 
+right side, $u_{LTS}$ is annotating the values calculated by $t_{cert}*SE(b_1)$.
+Similarly, $u_{CRM}$ is annotating the potential values of $U_{abs}$ given that
+a specific $u_{LTS}$, depending on the selection of $t_{cert}$, is incorporated
+in **tab.C3**, thereby expanding the uncertainty. Because the value of $u_{LTS}$
+is incorporated in its quadratic form, $u_{CRM}$ is a curve.
+
+In contrast to the standard version of the stability plot, the confidence 
+interval of the linear model slope $CI_{95}(b_1)$ is shown.

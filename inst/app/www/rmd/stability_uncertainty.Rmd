@@ -32,3 +32,12 @@ Analytes of **Tab.S1** which can not be matched to **Tab.C3** are depicted in re
 
 Also P~b1~ values lower than 0.05 are highlighted in red to indicate a slope
 significantly different from 0.
+
+An optional column t~max~ can be displayed in **Tab.S1** which will show the
+prospective maximum shelf life for each analyte (***before*** u~stab~ is 
+transferred to **Tab.C3**). This value is calculated as the intersect of the
+linear line of u~stab~ and the quadratic line representing u~CRM~/3, both of
+which are depicted in the adjusted version of **Fig.S1**. Once u~stab~ is 
+included in **Tab.C3** t~max~ will not be relevant anymore because it would be
+calculated under the assumtion that the current u~stab~ is additionally 
+transferred to **Tab.C3** (which would be redundant).

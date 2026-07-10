@@ -6,9 +6,11 @@ Please prepare your data in an Excel file with the same format as shown below.
 
 ```{r V_upload_format1, echo=FALSE, message=FALSE}
 x <- eCerto:::read_Vdata(file = system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx"))[1:23,2:8]
-ft <- eCerto:::show_upload_example_table(x=x, max_char = 15, optional = c(1,2))
-flextable::set_caption(ft, caption = flextable::as_paragraph(
-  flextable::as_b("Info"), " Example table layout for validation data upload"))
+eCerto:::show_upload_example_table(x=x, max_char = 15, optional = c(1,2)) |>
+  flextable::set_caption(flextable::as_paragraph(
+    flextable::as_b("Info"), " Example table layout for validation data upload"
+  )) |>
+  flextable::htmltools_value(ft.align = "left")
 ```
 
 The optional columns `Name` and `Type` are recommended for later reference. They

@@ -1228,7 +1228,7 @@ show_upload_example_table <- function(x, max_char = 10, optional = NULL, continu
   if (n_cols > 0) {
     for (j in seq_len(n_cols)) {
       x_type[j]
-      if (x_type[j]=="numeric") {
+      if (x_type[j] %in% c("numeric", "integer")) {
         ft <- flextable::align(ft, j = j+1, part = "body", align = "right")
       } else if (x_type[j]=="logical") {
         ft <- flextable::align(ft, j = j+1, part = "body", align = "center")
@@ -1248,6 +1248,52 @@ show_upload_example_table <- function(x, max_char = 10, optional = NULL, continu
     }
   }
   ft <- flextable::padding(ft, padding = 0, i = 1, j = 1, part = "header")
+  ft <- flextable::autofit(ft)
+  return(ft)
+}
+
+#' @title LTS_upload_example_table.
+#' @description Will generate a flextable object resembling an Excel table in LTS upload format.
+#' @return flextable.
+#' @keywords internal
+#' @noRd
+LTS_upload_example_table <- function() {
+  x <- data.frame(
+    "RM" = "CRM X1",
+    "KW" = "A<sub>BET</sub>",
+    "KW_Def" = "Surface Area",
+    "KW_Unit" = "m<sup>2</sup>/g",
+    "CertVal" = 5.41,
+    "U" = 0.24,
+    "U_Def" = "1s",
+    "Device" = "ASAP2020",
+    "Method" = "Gassorption",
+    "Coef_of_Var" = 0.0443,
+    "acc_Datasets" = 30
+  )
+  ft <- show_upload_example_table(x=x, max_char = Inf, continued = FALSE)
+  for (j in c(2,4)) {
+    ft <- flextable::compose(x = ft, i = 2, j = 1+j, value = HTML2ft(x[,j]), part = "body")
+  }
+  ft <- flextable::add_body_row(ft, values = c("3", rep("", ncol(x))), top = FALSE)
+
+  y <- data.frame("Value"=round(stats::runif(30),3), "Date"=format.Date(as.Date("2011-02-03")-30:1, format = "%d.%m.%Y"), "File"=paste0("File_", 1:30, ".smp"), "Comment"=c("", "some text", ""))
+  #eCerto:::show_upload_example_table(x=y, continued = FALSE, optional = 4)
+
+  ft <- flextable::add_body_row(ft, values = c("4", colnames(y), rep("", ncol(x)-4)), top = FALSE)
+  ft <- flextable::align(ft, i =4, j = 3, part = "body", align = "center")
+  ft <- flextable::align(ft, i =4, j = 2, part = "body", align = "right")
+  ft <- flextable::italic(ft, i = 4, j = 5, part = "body")
+  ft <- flextable::color(ft, i = 4, j = 5, part = "body", color = "grey50")
+  ft <- flextable::add_body_row(ft, values = c("5", unname(unlist(y[1,])), rep("", ncol(x)-4)), top = FALSE)
+
+  for (i in 2:3) {
+    ft <- flextable::add_body_row(ft, values = c(i+4, unname(unlist(y[i,])), rep("", ncol(x)-4)), top = FALSE)
+  }
+  ft <- flextable::add_body_row(ft, values = c(rep("...", 5), rep("", ncol(x)-4)), top = FALSE)
+  ft <- flextable::add_body_row(ft, values = c(nrow(y)+4, unname(unlist(y[nrow(y),])), rep("", ncol(x)-4)), top = FALSE)
+
+  ft <- flextable::bold(ft, i = 4, j= 2:5, part = "body")
   ft <- flextable::autofit(ft)
   return(ft)
 }

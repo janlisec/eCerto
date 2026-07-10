@@ -8,7 +8,7 @@ This decision has to be made by the user, *eCerto* will not remove any outlier
 automatically. However, *eCerto* keeps track of the removal and indicates the 
 omitted lab values in the plot as grey data points.
 
-![**Fig.C1** Certified Value Plot with filtered Lab and option panel](fig/C_Modul_Fig1.png)
+![**Fig.C1** Certified Values Plot with option panel](fig/C_Modul_Fig1.png)
 
 Besides `width` and `height` adjustment, the plot can be modified to include 
 individual measurement using their ID (`Show sample IDs`). This can be useful 

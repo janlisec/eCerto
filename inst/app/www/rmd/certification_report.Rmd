@@ -3,7 +3,7 @@
 A report of the current analysis (single analyte) or for the material (**Tab.C3**) 
 can be generated and exported in HTML or DOCX format.
 
-![**User Option** Export Analyte Data or Certification Report](fig/m_reportUI.png)
+![**User Option** Export Analyte Data/Certification results as Report or DRMD-XML file](fig/m_reportUI.png)
 
 Additionally, **Tab.C3** can be exported to Digital Reference Material Document 
 (DRMD) format, which is currently under `r eCerto::save_link("development", "https://github.com/janlisec/drmd")`.

@@ -29,7 +29,7 @@ page_StabilityUI <- function(id) {
   tab_S1_panel <- bslib::card(
     bslib::card_header(
       class = "d-flex justify-content-between",
-      shiny::strong(shiny::actionLink(inputId = ns("tab_link"), label = "Tab.S1 - calculation of uncertainty contribution")),
+      shiny::strong(shiny::actionLink(inputId = ns("tab_link"), label = shiny::HTML("Tab.S1 - calculation of<br>uncertainty contribution"))),
       shiny::div(
         shiny::div(
           style = "float: right; margin-left: 15px;",
@@ -37,7 +37,11 @@ page_StabilityUI <- function(id) {
         ),
         shiny::div(
           style = "float: left; margin-left: 15px;",
-          shiny::checkboxInput(inputId = ns("s_adjust"), width = 130, label = shiny::HTML("P-value adjust-<br>ment (bonferroni)"), value = TRUE)
+          shiny::checkboxInput(inputId = ns("s_adjust"), width = 110, label = shiny::HTML("P-val. adj.<br>(bonferroni)"), value = TRUE)
+        ),
+        shiny::div(
+          style = "float: left; margin-left: 15px;",
+          shiny::checkboxInput(inputId = ns("optimize_u_stab"), width = 90, value = FALSE, label = shiny::HTML("Show t<sub>max</sub>")),
         )
       )
     ),
@@ -76,7 +80,6 @@ page_StabilityUI <- function(id) {
             shiny::div(style = "margin-top: -12px;", shiny::radioButtons(inputId = ns("s_sel_dev"), label = NULL, choiceValues = list("2s", "U"), choiceNames = list("2s", shiny::HTML("U<sub>abs</sub>")), inline = TRUE)),
             shiny::hr(),
             shiny::sliderInput(inputId = ns("s_shelf_life"), label = shiny::HTML("Exp. shelf life t<sub>cert</sub> [Month]"), min = 0, max = 120, value = 60, step = 6),
-            shiny::checkboxInput(inputId = ns("optimize_u_stab"), value = FALSE, label = shiny::HTML("Optimize u<sub>stab</sub>")),
             shinyWidgets::pickerInput(inputId = ns("s_sel_temp"), label = "Use Temp level", choices = "", multiple = TRUE),
             shinyWidgets::pickerInput(inputId = ns("s_samples_filtered"), label = "Exclude IDs", choices = "", multiple = TRUE, options = list(container = "body"))
           )
@@ -275,7 +278,7 @@ page_StabilityServer <- function(id, rv) {
     s_vals <- shiny::reactive({
       shiny::req(s_Data(), input$s_shelf_life)
       s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
-      out <- prepTabS1(x = s_dat, time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = s_pars$slope_of_means, mt = getValue(rv, c("General", "materialtabelle")), optimize_u_stab = input$optimize_u_stab, adjust = input$s_adjust)
+      out <- prepTabS1(x = s_dat, time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = s_pars$slope_of_means, mt = getValue(rv, c("General", "materialtabelle")), adjust = input$s_adjust)
       setValue(rv, c("Stability", "s_vals"), out)
       return(out)
     })
@@ -293,7 +296,7 @@ page_StabilityServer <- function(id, rv) {
     output$s_tab1 <- DT::renderDataTable({
       shiny::req(s_vals())
       s_tab1_current$redraw
-      styleTabS1(x = s_vals(), mt = getValue(rv, c("General", "materialtabelle")), sr = s_tab1_current$row)
+      styleTabS1(x = s_vals(), mt = getValue(rv, c("General", "materialtabelle")), optimize_u_stab = input$optimize_u_stab, sr = s_tab1_current$row)
     })
     shiny::observeEvent(input$s_tab1_rows_selected, {
       if (is.null(input$s_tab1_rows_selected)) {
@@ -330,19 +333,21 @@ page_StabilityServer <- function(id, rv) {
     output$s_plot <- renderPlotHD({
       shiny::req(s_Data(), S_analyte())
       s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
+      mt <- getValue(rv, c("General", "materialtabelle"))
       plot_lts_data(
         x = prepFigS1(
           s = s_dat,
           an = S_analyte(),
           apm = getValue(rv, c("General", "apm")),
           U_Def = input$s_sel_dev,
-          mt = getValue(rv, c("General", "materialtabelle"))
+          mt = mt
         ),
         type = as.numeric(input$plot_type),
         t_cert = input$s_shelf_life,
         slope_of_means = s_pars$slope_of_means,
         show_legend = s_pars$show_legend,
-        show_ids = s_pars$show_ids
+        show_ids = s_pars$show_ids,
+        k = mt[mt$analyte==S_analyte(),"k"]
       )
     })
 
