@@ -11,7 +11,7 @@
 #' @keywords internal
 #' @noRd
 prepTabS2c <- function(x, y) {
-  e_msg("perform arrhenius statistics for Tab S2b")
+  e_msg("perform arrhenius statistics for Tab S2c")
   stopifnot(all(c("1/K", "log(-k_eff)") %in% colnames(x)))
   stopifnot(all(c("u(i)", "u(s)", "cov") %in% colnames(y)))
   ce <- stats::coef(stats::lm(x[, "log(-k_eff)"] ~ x[, "1/K"]))

@@ -6,13 +6,16 @@
 #' @param time_fmt The lm was calculated using day as time basis until 20230927 and was changed to month afterwards.
 #' @param t_cert The time of certified shelf life + time until first PCM measurements
 #' @param slope_of_means Average replicate measurements (same Date) before computing linear model and SE of slope.
+#' @param mt data.frame providing information on µ_c and U_abs for the analytes in `x``.
+#' @param adjust Adjust the P-values for the slope of the linear models for multiple testing.
+#'
 #' @examples
 #' x <- eCerto:::test_Stability_Excel()
 #' eCerto:::prepTabS1(x = x)
 #' @return A data frame.
 #' @keywords internal
 #' @noRd
-prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means = FALSE, mt = NULL, optimize_u_stab = FALSE, adjust = FALSE) {
+prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means = FALSE, mt = NULL, adjust = FALSE) {
   e_msg("perform statistics on imported stability data")
   time_fmt <- match.arg(time_fmt)
   stopifnot(all(c("analyte", "Value", "Date") %in% colnames(x)))
@@ -61,16 +64,21 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
     # s <- sqrt(sum((y-b0-b1*x)^2)/(length(y)-2))
     # SE <- s / sqrt(sum((x - mean(x))^2))
 
-    if (optimize_u_stab) {
-      # this can be used to optimize u_stab to reach a total U_abs which will fit the expected shelf life
+    u_stab <- abs(t_cert * x_coef[2])/x_mean
+    if (FALSE && !is.null(mt)) {
+      # this can be used to optimize u_stab to reach a maximum allowed U_abs while maximizing shelf life (t_cert)
+      # to this end the user can specify different t_cert which will modify u_stab
       U_abs <- mt[mt[,"analyte"]==x[1,"analyte"],"U_abs"]
       mu_c <- mt[mt[,"analyte"]==x[1,"analyte"],"cert_val"]
-      u_stab <- (abs(t_cert * x_coef[2])-ifelse(is.null(U_abs), 0, U_abs))/mu_c
-      #u_stab <- (abs(t_cert * x_coef[2])-ifelse(is.null(U_abs), 0, U_abs))/x_mean
-      u_stab <- ifelse(u_stab<0, 0, u_stab)
-    } else {
-      # this is the classic version
-      u_stab <- abs(t_cert * x_coef[2])/x_mean
+      k <- mt[mt[,"analyte"]==x[1,"analyte"],"k"]
+      u_com <- U_abs/(mu_c*k)
+      u_crm <- k*mu_c*sqrt(u_stab^2+u_com^2)
+      u_stab <- u_stab*x_mean - u_crm/3
+      u_stab <- ifelse(u_stab<0, 0, u_stab/x_mean)
+      #u_stab <- u_stab^2-u_com^2
+      #u_stab <- ifelse(u_stab<0, 0, sqrt(u_stab))
+      #u_stab <- (abs(t_cert * x_coef[2])-ifelse(is.null(U_abs), 0, U_abs))/mu_c
+      #u_stab <- ifelse(u_stab<0, 0, u_stab)
     }
 
     data.frame(

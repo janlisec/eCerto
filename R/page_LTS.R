@@ -92,7 +92,7 @@ m_longtermstabilityUI <- function(id) {
       ),
       shiny::div(
         shiny::p(shiny::helpText("Example Table (for initial data upload)")),
-        shiny::img(src = "www/rmd/fig/L_Modul_Import.png", style = "max-width: 800px; height: auto;")
+        shiny::uiOutput(outputId = ns("example_table_generic"))
       )
     ),
     shiny::conditionalPanel(
@@ -114,6 +114,11 @@ m_longtermstabilityUI <- function(id) {
 #' @keywords internal
 m_longtermstabilityServer <- function(id, test_data = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
+
+    output$example_table_generic <- renderUI({
+        ft <- LTS_upload_example_table()
+        flextable::htmltools_value(ft, ft.align = "left")
+    })
 
     lts <- shiny::reactiveValues(
       "data" = NULL,

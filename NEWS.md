@@ -1,3 +1,19 @@
+# eCerto 0.8.23 [10.07.2026]
+* stability plot got several enhancements (calculating prospective u_CRM more
+  correctly by acknowledging specified *k* from **Tab.C3**, annotating labels of 
+  constant values to the left and changing values on the to improve readability,
+  annotating only lower or upper values depending on the direction of slope)
+* **Fig.V2** now more robust in annotation in case of missing/filtered labs and also
+  annotating *k* and *h* statistics
+* **Tab.S1** received additional columns indicating the absolute U~stab~ and
+  t~max~, which is the maximum shelf life in month if the U_abs/3 criteria is 
+  used
+* L Module received a `flextable` based example table (instead of a screenshot), 
+  which allows users to copy/paste into Excel to get the format correct
+* V Modul filtering object more robust now
+* S Modul explains difference between *standard* and *adjusted* plot version in
+  more detail
+
 # eCerto 0.8.21 [31.03.2026]
 * DIN 5725-2 Tab.V0 indicates filtered data by red cell background
 * filtering of complete labs better handled in DIN 5725-2 workflow

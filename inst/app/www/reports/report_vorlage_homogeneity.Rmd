@@ -92,7 +92,7 @@ cat(paste0(
 # Tab.H1
 eCerto:::styleTabH1(x = df, mt = data.frame("analyte"=unique(as.character(df[,"analyte"]))), prec = prec, output = "ft")
 cat(paste0(
-  ifelse(any(df[,P_col]<=0.05), "Not all", "All"), "analytes are homogenous between bottles."
+  ifelse(any(df[,P_col]<=0.05), "Not all ", "All "), "analytes are homogenous between bottles."
 ), "\n\n")
 
 for (spec in plot_specs) {

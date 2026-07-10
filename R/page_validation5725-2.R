@@ -50,12 +50,12 @@ page_validation57252UI <- function(id) {
       bslib::card(
         id = ns("v2_test"),
         fillable = FALSE,
-        bslib::card_header("DIN 5725-2 output panel"),
+        #bslib::card_header("DIN 5725-2 output panel"),
         bslib::card_body(
           fill = FALSE,
           bslib::layout_sidebar(
             sidebar = bslib::sidebar(
-              position = "left", open = "open", width = "480px",
+              position = "left", open = "open", width = "880px",
               shiny::div(id = ns("ori_inp_file_name"), "This div will show the original Excel File name used upon import if shinyjs is active."),
               bslib::layout_columns(
                 shiny::numericInput(inputId = ns("opt_tab_precision"), value = 3, step = 1, min = 0, max = 6, label = "Table digits precision"),
@@ -63,19 +63,26 @@ page_validation57252UI <- function(id) {
               ),
               bslib::layout_columns(
                 shiny::uiOutput(ns("TabV0")),
+                shiny::htmlOutput(ns("TabV0x")),
                 shiny::uiOutput(ns("filter_tree_ui"))
               )
             ),
             shiny::uiOutput(ns("TabV1")),
-            shiny::uiOutput(ns("FigV1")),
+            #bslib::card(
+            #  bslib::card_header(shiny::HTML("<p><b>Fig.V1</b> Graphical representation of imported data (Tab.V0). Filtered values are depicted in grey. Replicated values are distinguished by background color (1=red, 2=green, 3=blue, 4=lightblue, 5=purple).</p>")),
+              shiny::uiOutput(ns("FigV1")),
+            #),
+            shiny::HTML("<p><b>Fig.V1</b> Graphical representation of imported data (Tab.V0). Filtered values are depicted in grey. Replicated values are distinguished by background color (1=red, 2=green, 3=blue, 4=lightblue, 5=purple).</p>"),
             shiny::uiOutput(ns("TabV2")),
             shiny::uiOutput(ns("FigV2")),
+            shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
             shiny::uiOutput(ns("TabV3")),
             bslib::layout_column_wrap(
               width = "400px", fixed_width = TRUE,
               shiny::plotOutput(ns("FigV3a"), width = "400px", height = "400px"),
               shiny::plotOutput(ns("FigV3b"), width = "400px", height = "400px")
-            )
+            ),
+            shiny::HTML("<p><b>Fig.V3</b> Repeatability over Level mean, including linear models (light blue: intercept = 0, dark blue: free intercept) and quadratic approximation (orange).</p>")
           )
         )
       )
@@ -109,9 +116,13 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # generic input table example
     output$example_table_generic <- renderUI({
-      x <- cbind("Property" = "measurand name", "Unit" = "measurand unit", init_V2_data()[1:16,])
-      ft <- show_upload_example_table(x=x, max_char = 15, optional = c(1,2,7,8))
-      flextable::htmltools_value(ft, ft.align = "left")
+      if (is.null(test_data)) {
+        x <- cbind("Property" = "measurand name", "Unit" = "measurand unit", init_V2_data()[1:16,])
+        ft <- show_upload_example_table(x=x, max_char = 15, optional = c(1,2,7,8))
+        flextable::htmltools_value(ft, ft.align = "left")
+      } else {
+        NULL
+      }
     })
 
     # Upload & Data preparation ====
@@ -130,11 +141,6 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # Reactives ====
     inp_raw <- shiny::reactive({
-      # reset pars
-      shiny::isolate({
-        V2_pars$opt_cur_analyte <- ""
-        V2_pars$excl_ids <- integer(0)
-      })
       if (!is.null(test_data)) {
         df <- test_data
       } else {
@@ -143,51 +149,62 @@ page_validation57252Server <- function(id, test_data = NULL) {
         if (tolower(tools::file_ext(x)) %in% c("rdata", "rda")) {
           v_env <- new.env()
           load(file = x, envir = v_env)
-          shiny::isolate(V2_pars$par_update <- V2_pars$par_update + 1)
           df <- get("eCerto_V_backup", envir = v_env)[["tab"]]
         } else {
           df <- openxlsx::read.xlsx(xlsxFile = x, sheet = 1)
         }
       }
-      req(df)
-      if (!"ID" %in% colnames(df) | "ID" %in% colnames(df) && any(duplicated(df[,"ID"]))) {
+      if (!"ID" %in% colnames(df) || any(duplicated(df[,"ID"]))) {
         df[,"ID"] <- seq_len(nrow(df))
       }
       if (!"Filter" %in% colnames(df)) {
-        # either assign Filter column...
         df[,"Filter"] <- ""
-      } else {
-        # .. or update Filter parameter
-        V2_pars$excl_ids <- df[df[,"Filter"]!="","ID"]
-      }
-      if ("Property" %in% colnames(df)) {
-        choices <- unique(df[,"Property"])
-        shiny::updateSelectInput(inputId = "opt_cur_analyte", choices = choices)
-        shinyjs::show(id = "opt_cur_analyte")
-      } else {
-        shinyjs::hide(id = "opt_cur_analyte")
       }
       return(df)
     })
 
-    inp_with_pars_applied <- shiny::reactive({
-      req(inp_raw())
+
+    shiny::observeEvent(inp_raw(), {
       df <- inp_raw()
-      if ("Property" %in% colnames(df)) {
-        if (V2_pars$opt_cur_analyte %in% df[,"Property"]) {
-          return(df[df[,"Property"] == V2_pars$opt_cur_analyte,])
-        } else {
-          return(NULL)
-        }
+      if (!"Property" %in% colnames(df)) {
+        shinyjs::hide(id = "opt_cur_analyte")
       } else {
-        return(df)
+        choices <- unique(df[,"Property"])
+        cur <- isolate(V2_pars$opt_cur_analyte)
+        shiny::updateSelectInput(
+          inputId = "opt_cur_analyte",
+          choices = choices,
+          selected = if (cur %in% choices) cur else choices[1L]
+        )
+        shinyjs::show(id = "opt_cur_analyte")
       }
+    }, ignoreInit = FALSE)
+
+    shiny::observeEvent(inp_raw(), {
+      V2_pars$excl_ids <- integer(0)
+    }, ignoreInit = FALSE)
+
+    shiny::observeEvent(inp_raw(), {
+      V2_pars$opt_cur_analyte <- ""
+    }, ignoreInit = FALSE)
+
+
+    inp_with_pars_applied <- shiny::reactive({
+      req(V2_pars$opt_cur_analyte)
+      df <- inp_raw()
+      req(nrow(df)>0)
+      if (!"Property" %in% colnames(df)) return(df)
+      a <- V2_pars$opt_cur_analyte
+      if (!nzchar(a) || !a %in% df[,"Property"]) {
+        return(df[0,,drop = FALSE])
+      }
+      df[df[,"Property"] == a,,drop = FALSE]
     })
 
     # Filtered data for all downstream analysis ====
     inp <- shiny::reactive({
-      req(inp_with_pars_applied())
       df <- inp_with_pars_applied()
+      req(nrow(df) > 0)
       if (length(V2_pars$excl_ids) > 0L) {
         df[!(df$ID %in% V2_pars$excl_ids),"Filter"] <- ""
         df[which(df$ID %in% V2_pars$excl_ids)[df[df$ID %in% V2_pars$excl_ids,"Filter"]==""], "Filter"] <- "Removed due to..."
@@ -198,8 +215,9 @@ page_validation57252Server <- function(id, test_data = NULL) {
     })
 
     mns <- shiny::reactive({
-      req(inp())
-      V2_calc_stats(inp = inp())
+      df <- inp()
+      req(nrow(df) > 0)
+      V2_calc_stats(inp = df)
     })
 
     res <- shiny::reactive({
@@ -207,53 +225,79 @@ page_validation57252Server <- function(id, test_data = NULL) {
       prepTabV2_3(mns = mns())
     })
 
+    filter_tree_data <- shiny::reactive({
+      req(inp_with_pars_applied())
+      inp_with_pars_applied()[,c("Lab","Level","Replicate","ID","Filter")]
+    })
+
     # Tree-based filter UI (Lab -> Level -> ID) ====
     output$filter_tree_ui <- shiny::renderUI({
-      req(inp())
-      message("This is the setup of the V2 filter UI. It should fire only at data upload or when a different analyte is selected!!")
-      df <- inp()[,c("Lab","Level","Replicate","ID","Filter")]
-      df$Lab   <- as.character(paste("Lab", df$Lab))
-      df$Level <- as.character(paste("Level", df$Level))
-      df$Replicate <- as.character(paste("Replicate", df$Replicate))
+      df <- filter_tree_data()
+      req(nrow(df) > 0)
+
+      df$Lab <- paste("Lab", df$Lab)
+      df$Level <- paste("Level", df$Level)
+      df$Replicate <- paste("Replicate", df$Replicate)
+
       shiny::tags$details(
         shiny::tags$summary("Filter (Lab / Lev / Rep)"),
         shinyWidgets::treeInput(
           inputId = ns("f_tree_excl"),
-          #label = "Filter (Lab / Lev / Rep)",
           label = NULL,
-          choices = shinyWidgets::create_tree(data = df[,c("Lab","Level","Replicate","ID")]),
-          selected = as.character(df[df[,"Filter"]!="","ID"])
+          choices = shinyWidgets::create_tree(
+            data = df[,c("Lab","Level","Replicate","ID")]
+          ),
+          selected = as.character(df[df[,"Filter"] != "","ID"])
         )
       )
     })
 
     # Recompute excluded IDs when tree selection changes ====
     shiny::observeEvent(input$f_tree_excl, {
-      sel <- suppressWarnings(c(stats::na.omit(as.numeric(input$f_tree_excl))))
-      cur_exc <- V2_pars$excl_ids
-      cur_ids <- shiny::isolate(inp()[,"ID"])
-      # remove all IDs from the current analyte from the global par
-      cur_exc <- cur_exc[!(cur_exc %in% cur_ids)]
-      # add all IDs from the tree object (Filter)
-      nv <- sort(c(cur_exc, sel))
-      V2_pars$excl_ids <- nv
-    }, ignoreNULL = FALSE, ignoreInit = TRUE)
+      req(inp_with_pars_applied())
+      sel <- suppressWarnings(as.integer(input$f_tree_excl))
+      sel <- sel[!is.na(sel)]
+
+      cur_ids <- isolate(inp_with_pars_applied()[,"ID"])
+      old <- V2_pars$excl_ids
+
+      keep <- old[!(old %in% cur_ids)]
+      nv <- sort(unique(c(keep, sel)))
+
+      if (!identical(old, nv)) {
+        V2_pars$excl_ids <- nv
+      }
+    }, ignoreInit = TRUE, ignoreNULL = FALSE)
 
     # Tables ====
     output$TabV0 <- shiny::renderUI({
-      req(inp())
-      ft <- prepTabV2_0(inp = inp(), excl_ids = V2_pars$excl_ids, output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell (levels in columns, filtered data in red)")
+      df <- inp()
+      req(nrow(df) > 0)
+      ft <- prepTabV2_0(inp = df, excl_ids = V2_pars$excl_ids, output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell (levels in columns, filtered data in red)")
       flextable::htmltools_value(ft, ft.align = "left")
+    })
+
+    output$TabV0x <- shiny::renderText({
+      df <- inp()
+      req(nrow(df) > 0)
+      ft <- prepTabV2_0(inp = df, excl_ids = V2_pars$excl_ids, output = "ftl")
+      as.character(flextable::htmltools_value(ft, ft.align = "left"))
     })
 
     output$TabV1 <- shiny::renderUI({
       req(mns(), V2_pars$opt_tab_precision)
       ft <- prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V1", caption = "Cell means, standard deviations (or diff for n=2) and number of finite, non-excluded measurement replicates per cell")
       flextable::htmltools_value(ft, ft.align = "left")
+      # bslib::card(
+      #   bslib::card_header(
+      #     shiny::HTML("<b>Tab.V1</b> Cell means, standard deviations (or diff for n=2) and number of finite, non-excluded measurement replicates per cell")
+      #   ),
+      #   flextable::htmltools_value(prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl"), ft.align = "left")
+      # )
     })
 
     output$TabV2 <- shiny::renderUI({
-      req(mns(), V2_pars$opt_tab_precision)
+      req(inp(), mns(), V2_pars$opt_tab_precision)
       n_q <- length(unique(mns()[,"Level"]))
       fts <- lapply(1:n_q, function(q) {
         ft <- prepTabV2_2(inp = inp(), q = q, prec = V2_pars$opt_tab_precision, output = "ftl", id = paste0("Tab.V2", letters[q]), caption = paste("Statistic values for Level", q))
@@ -270,14 +314,15 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     # Figures ====
     output$FigV1 <- shiny::renderUI({
-      req(inp())
-      h <- paste0(240+20*length(unique(inp()[,"Lab"])), "px")
-      plots <- lapply(1:length(unique(inp()[,"Level"])), function(x) {
+      df <- inp()
+      req(nrow(df) > 0)
+      h <- paste0(240+20*length(unique(df[,"Lab"])), "px")
+      plots <- lapply(1:length(unique(df[,"Level"])), function(x) {
         local({
           local_x <- x
           plot_output <- shiny::plotOutput(outputId = ns(paste0("plot_v1_", local_x)), height = h)
           output[[paste0("plot_v1_", local_x)]] <- renderPlotHD({
-            prepFigV2_1(inp = inp(), q = local_x)
+            prepFigV2_1(inp = df, q = local_x)
           })
           plot_output
         })

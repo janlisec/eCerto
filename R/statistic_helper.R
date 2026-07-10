@@ -712,9 +712,8 @@ F_test_outlier <- function(x, alpha = 0.05) {
 
 #' @title mandel_h.
 #' @description Calculate Mandel's statistic h to compare (weighted) Lab‑means to total mean.
-#' @param x Numeric vector of laboratory means.
-#' @param w Weights, the number of replicates per lab, has to be numeric of length(xbar).
-#'
+#' @param x Numeric vector of laboratory means at a specific level.
+#' @param w Weights, the number of replicates per lab, has to be numeric of length(x).
 #' @noRd
 #' @keywords internal
 mandel_h <- function(x, w = NULL) {
@@ -723,7 +722,8 @@ mandel_h <- function(x, w = NULL) {
   # weighted grand mean
   grand_mean <- sum(w * x) / sum(w)
   # between-lab SD (DIN 5725-2)
-  sL <- sqrt(sum(w * (x - grand_mean)^2) / (length(x) - 1))
+  #sL <- sqrt(sum(w * (x - grand_mean)^2) / (length(x) - 1))
+  sL <- sqrt(sum((x - grand_mean)^2) / (length(x) - 1))
   h <- (x - grand_mean) / sL
   return(h)
 }
@@ -732,16 +732,23 @@ qmandel_h <- function(p, alpha = 0.05) {
   ((p - 1)/sqrt(p)) * (2 * stats::qbeta((1-alpha/2), (p - 2)/2, (p - 2)/2, lower.tail = TRUE, log.p = FALSE) - 1)
 }
 
-#' @title mandel_k.
-#' @description Calculate Mandel's statistic k to compare Lab‑sds against average Lab-sd.
+#' @title mandel_k
+#' @description Calculate Mandel's k statistic according to DIN 5725-2.
 #' @param s Numeric vector of laboratory standard deviations.
-#'
+#' @param n Numeric vector of replicate counts per lab.
+#' @return Numeric vector of Mandel's k values.
+#' @examples
+#' s <- c(0.12, 0.10, 0.15, 0.11)
+#' n <- c(2, 2, 3, 2)
+#' eCerto:::mandel_k(s, n)
 #' @noRd
 #' @keywords internal
-mandel_k <- function(s) {
-  mean_s <- mean(s)
-  k <- s / mean_s
-  return(k)
+mandel_k <- function(s, n) {
+  stopifnot(length(s) == length(n))
+  stopifnot(all(n > 1))
+  ## pooled repeatability SD (DIN 5725-2)
+  sr <- sqrt(sum((n - 1) * s^2) / sum(n - 1))
+  s / sr
 }
 #' @noRd
 qmandel_k <- function(k, p, alpha = 0.05) {
@@ -788,7 +795,7 @@ V2_calc_stats <- function(inp) {
     flt1 <- mns[,"Level"]==q & is.finite(mns[,"mean"])
     flt2 <- mns[,"Level"]==q & is.finite(mns[,"sd"])
     mns[flt1,"Mandel_h"] <- mandel_h(x = mns[flt1,"mean"], w = mns[flt1,"n"])
-    mns[flt2,"Mandel_k"] <- mandel_k(s = mns[flt2,"sd"])
+    mns[flt2,"Mandel_k"] <- mandel_k(s = mns[flt2,"sd"], n = mns[flt2,"n"])
   }
   return(mns)
 }

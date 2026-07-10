@@ -15,9 +15,10 @@ The smallest possible test data file would look like this:
 
 ```{r C_upload_example1, echo=FALSE, message=FALSE}
 x <- data.frame("A"="X","B"="mg","C"=1.03,"D"=0.98,"E"=1.07)
-ft <- eCerto:::show_upload_example_table(x=x, continued = FALSE)
-flextable::set_caption(ft, caption = flextable::as_paragraph(
-  flextable::as_b("Info"), " Minimum input file"))
+eCerto:::show_upload_example_table(x=x, continued = FALSE) |>
+  flextable::set_caption(flextable::as_paragraph(
+  flextable::as_b("Info"), " Minimum input file")) |>
+  flextable::htmltools_value(ft.align = "left")
 ```
 
 It contains data for a single analyte **X**, measured in unit **mg** with three

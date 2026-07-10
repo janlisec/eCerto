@@ -145,6 +145,13 @@ m_arrheniusServer <- function(id, rv) {
       if (is.null(rv$cur_an) | !identical(rv$cur_an, input$analyte)) rv$cur_an <- input$analyte
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
+    s_flt <- shiny::reactiveVal(NULL)
+    shiny::observeEvent(getValue(rv, c("Stability", "s_pars")), {
+      req(!inherits(try(getValue(rv, c("Stability", "s_pars", "s_samples_filtered")), silent = TRUE), "try-error"))
+      x <- getValue(rv, c("Stability", "s_pars", "s_samples_filtered"))
+      if (!identical(x, s_flt())) s_flt(x)
+    }, ignoreNULL = TRUE)
+
     df <- shiny::reactive({
       shiny::req(input$analyte)
       dat <- getValue(rv, c("Stability", "data"))
@@ -152,9 +159,8 @@ m_arrheniusServer <- function(id, rv) {
       shiny::validate(shiny::need(req_col %in% colnames(dat), message = paste("These columns required for Arrhenius calculations are not available:", paste(req_col[!(req_col %in% colnames(dat))], collapse = ", "))))
       shiny::validate(shiny::need(input$analyte %in% as.character(dat[, "analyte"]), message = "How did you manage to specify a non existent analyte name?"))
       tmp <- dat[as.character(dat[, "analyte"]) == input$analyte, ]
-      # filtering step according to user selection
-      s_pars <- getValue(rv, c("Stability", "s_pars"))
-      tmp <- tmp[!rownames(tmp) %in% s_pars$s_samples_filtered,]
+      # filtering step according to user selection (Exclude IDs input in Fig.S1 options)
+      tmp <- tmp[!rownames(tmp) %in% s_flt(),]
       # normalize data to mean of t=0
       flt <- is.finite(tmp[, "Value"]) & tmp[, "Value"] > 0
       if (!all(flt)) {
