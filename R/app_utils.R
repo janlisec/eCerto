@@ -883,7 +883,7 @@ markdown2expression <- function(x, vectorize = FALSE) {
 }
 
 #' @title endmod
-#' @description Function to convert HTML tags into the markdown equivalent.
+#' @description Function to modify table header endings into HTML or markdown.
 #' @param x A character vector.
 #' @param type type.
 #' @param fmt fmt.
@@ -1031,7 +1031,7 @@ HTML2ft <- function(x) {
 
 #' @title ft_formatter_fixed_digits.
 #' @description flextable column formatter function.
-#' @param digits number of digits post decimal separator to show (nor rounding).
+#' @param digits number of digits post decimal separator to show (not rounding).
 #' @param predicate predicate function of column type to act on, here: is.numeric.
 #' @keywords internal
 #' @noRd

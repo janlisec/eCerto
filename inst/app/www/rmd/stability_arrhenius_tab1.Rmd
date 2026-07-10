@@ -3,13 +3,18 @@
 Besides `Rec`overy and `RSD` for each temperature level $T_i$, the slope `k_eff` and 
 the log-transformation of it's negative value `log(-k_eff)` are provided in **Tab.S2**.
 
-![**Tab.S2** Calculation of possible storage time](fig/S_Modul_Tab2a.png)
+```{r S_TabS2, echo=FALSE, message=FALSE}
+d_in <- eCerto:::test_Stability_Arrhenius()
+tS2a <- eCerto:::prepTabS2a(x = d_in)
+tS2b <- eCerto:::prepTabS2b(x = tS2a)
+tS2c <- eCerto:::prepTabS2c(x = tS2a, y = tS2b)
+eCerto:::styleTabS2(x = tS2c, num_coef = -1.9, output = "ft_HTML") |>
+  flextable::htmltools_value(ft.align = "left")
+```
 
 In the case that at least 3 finite values for $log(-k_{\mathit{eff}})$ exist, a linear model over 
 `1/K` is calculated (depicted in **Fig.S3**). Based on slope $m$ and intercept $n$ of this model values 
 $K_i$ (provided in `log(k)_calc`) are established using $K_i = m \times x_i + n$.
-
-![**Tab.S2** Calculation of possible storage time](fig/S_Modul_Tab2b.png)
 
 To estimate the confidence interval of the model (`CI_upper` and `CI_lower`) we need to estimate 
 some intermediate values which are shown below **Tab.S2**. First, *eCerto* calculates $a=\sum{x_i}$, $b=\sum{x_i^2}$ 
