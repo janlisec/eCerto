@@ -65,7 +65,6 @@ m_arrheniusUI <- function(id) {
   )
 
   tab_S2_panel <- bslib::card(
-    #fill = FALSE,
     bslib::card_header(
       shiny::strong(shiny::actionLink(inputId = ns("ArrheniusTab_link"), label = "Tab.S2 - calculation of possible storage time")),
     ),
@@ -81,14 +80,8 @@ m_arrheniusUI <- function(id) {
             shiny::numericInput(inputId = ns("num_coef"), label = NULL, value = NULL)
           )
         ),
-        bslib::layout_columns(
-          col_widths = c(6, 4, 2, 10),
-          #row_heights = list("auto", "120px"),
-          shiny::div(DT::DTOutput(outputId = ns("Tab1"))),
-          shiny::div(DT::DTOutput(outputId = ns("Tab1exp"))),
-          shiny::div(style = "padding-right: 16px; min-width: 200px;", DT::DTOutput(outputId = ns("outTab"))),
-          shiny::div(DT::DTOutput(outputId = ns("Tab2")))
-        )
+        shiny::div(DT::DTOutput(outputId = ns("s_tab2"))),
+        shiny::div(DT::DTOutput(outputId = ns("Tab2")))
       )
     ),
     bslib::card_footer(
@@ -201,10 +194,8 @@ m_arrheniusServer <- function(id, rv) {
       prepTabS2b(x = tab1())
     })
     output$Tab2 <- DT::renderDT({
-      out <- tab2()
-      for (i in which(colnames(out) %in% c("steyx", "u(i)", "u(s)", "cov"))) out[, i] <- round(out[, i], prec)
-      return(out)
-    }, options = list(dom = "t"), rownames = FALSE)
+      styleTabS3(tab2())
+    })
 
     tab1exp <- shiny::reactive({
       shiny::req(tab1(), tab2())
@@ -248,6 +239,11 @@ m_arrheniusServer <- function(id, rv) {
       out[, "month"] <- round(input$num_coef / (-1 * exp(out[, "CI_upper"])))
       return(out[, c(1, 10)])
     }, options = list(dom = "t"), rownames = FALSE)
+
+    output$s_tab2 <- DT::renderDT({
+      req(tab1exp(), input$num_coef)
+      styleTabS2(x = tab1exp(), num_coef = input$num_coef)
+    })
 
     output$user_month <- shiny::renderUI({
       shiny::req(input$user_temp, tab1(), input$num_coef, tab2())
