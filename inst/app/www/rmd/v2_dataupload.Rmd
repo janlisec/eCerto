@@ -1,0 +1,17 @@
+### Data upload
+
+Please prepare your data in an Excel file with the same format as shown below.
+
+```{r V2_upload, echo=FALSE, message=FALSE}
+
+x <- cbind("Property" = "measurand name", "Unit" = "measurand unit", init_V2_data()[1:16,])
+ft <- show_upload_example_table(x=x, max_char = 15, optional = c(1,2,7,8)) |>
+  flextable::set_caption(flextable::as_paragraph(
+    flextable::as_b("Info"), " Example table layout for validation data upload"
+  )) |>
+  flextable::htmltools_value(ft, ft.align = "left")
+```
+
+The optional columns are depicted in grey. Column order is not relevant but 
+column names are. 'Lab' and 'Level' can be specified as number or text, 
+'Replicate' and 'Value' have to be numbers.
