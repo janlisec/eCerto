@@ -2,10 +2,17 @@
 
 ***Note!***
 The Validation module is an add-on to *eCerto*. It is not required to compute CRM
-statistics. It is ment to quickly validate working area and linearity of a newly
-developed analytical method. As it is currently work-in-progress, available
-options and output format might change in the future.
+statistics. It is ment to:
 
+- quickly validate working area and linearity of a newly developed analytical 
+method (according to DIN 32645) or to
+- validate an analytical method based on data from a collaborative trial 
+according to (DIN 5725-2). 
+
+As it is currently work-in-progress, available options and output format might 
+change in the future.
+
+## DIN 32645
 
 ```{r child = 'v_datapreparation.Rmd'}
 ```
@@ -38,6 +45,16 @@ edited and calculated data and figures.
 
 For later reference, all data and parameters can be stored (and reimported) in an
 RData file.
+
+## DIN 5725-2
+
+```{r child = 'v2_dataupload.Rmd'}
+```
+
+Functions and output have been tested using the example data B1, B2 and B3 from 
+DIN 5725-2 and confirmed to be in accordance with the presented results.
+
+Further documentation t.b.d..
 
 <br/>
 <br/>

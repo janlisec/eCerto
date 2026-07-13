@@ -1,3 +1,6 @@
+# eCerto 0.8.24 [13.07.2026]
+* documentation for Modul V2 (DIN 5725-2) started
+
 # eCerto 0.8.23 [10.07.2026]
 * stability plot got several enhancements (calculating prospective u_CRM more
   correctly by acknowledging specified *k* from **Tab.C3**, annotating labels of 

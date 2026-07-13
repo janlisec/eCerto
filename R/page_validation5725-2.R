@@ -63,26 +63,24 @@ page_validation57252UI <- function(id) {
               ),
               bslib::layout_columns(
                 shiny::uiOutput(ns("TabV0")),
-                shiny::htmlOutput(ns("TabV0x")),
+                #shiny::htmlOutput(ns("TabV0x")),
                 shiny::uiOutput(ns("filter_tree_ui"))
               )
             ),
             shiny::uiOutput(ns("TabV1")),
-            #bslib::card(
-            #  bslib::card_header(shiny::HTML("<p><b>Fig.V1</b> Graphical representation of imported data (Tab.V0). Filtered values are depicted in grey. Replicated values are distinguished by background color (1=red, 2=green, 3=blue, 4=lightblue, 5=purple).</p>")),
-              shiny::uiOutput(ns("FigV1")),
-            #),
-            shiny::HTML("<p><b>Fig.V1</b> Graphical representation of imported data (Tab.V0). Filtered values are depicted in grey. Replicated values are distinguished by background color (1=red, 2=green, 3=blue, 4=lightblue, 5=purple).</p>"),
+            shiny::uiOutput(ns("FigV1")),
             shiny::uiOutput(ns("TabV2")),
             shiny::uiOutput(ns("FigV2")),
-            shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
+            #shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
             shiny::uiOutput(ns("TabV3")),
-            bslib::layout_column_wrap(
-              width = "400px", fixed_width = TRUE,
-              shiny::plotOutput(ns("FigV3a"), width = "400px", height = "400px"),
-              shiny::plotOutput(ns("FigV3b"), width = "400px", height = "400px")
-            ),
-            shiny::HTML("<p><b>Fig.V3</b> Repeatability over Level mean, including linear models (light blue: intercept = 0, dark blue: free intercept) and quadratic approximation (orange).</p>")
+            shiny::div(
+              bslib::layout_column_wrap(
+                width = "400px", fixed_width = TRUE,
+                shiny::plotOutput(ns("FigV3a"), width = "400px", height = "400px"),
+                shiny::plotOutput(ns("FigV3b"), width = "400px", height = "400px")
+              ),
+              shiny::HTML("<p><b>Fig.V3</b> Repeatability over Level mean, including linear models (light blue: intercept = 0, dark blue: free intercept) and quadratic approximation (orange).</p>")
+            )
           )
         )
       )
@@ -273,27 +271,28 @@ page_validation57252Server <- function(id, test_data = NULL) {
     output$TabV0 <- shiny::renderUI({
       df <- inp()
       req(nrow(df) > 0)
-      ft <- prepTabV2_0(inp = df, excl_ids = V2_pars$excl_ids, output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell (levels in columns, filtered data in red)")
-      flextable::htmltools_value(ft, ft.align = "left")
+      ft <- prepTabV2_0(inp = df, excl_ids = V2_pars$excl_ids, output = "ftl")
+      shiny::div(
+        shiny::HTML("<b>Tab.V0</b> Input data, grouped per cell (levels in columns, filtered data in red)"),
+        flextable::htmltools_value(ft, ft.align = "left")
+      )
     })
 
-    output$TabV0x <- shiny::renderText({
-      df <- inp()
-      req(nrow(df) > 0)
-      ft <- prepTabV2_0(inp = df, excl_ids = V2_pars$excl_ids, output = "ftl")
-      as.character(flextable::htmltools_value(ft, ft.align = "left"))
-    })
+    # output$TabV0x <- shiny::renderText({
+    #   df <- inp()
+    #   req(nrow(df) > 0)
+    #   ft <- prepTabV2_0(inp = df, excl_ids = V2_pars$excl_ids, output = "ftl", id = "Tab.V0", caption = "Input data, grouped per cell (levels in columns, filtered data in red)")
+    #   as.character(flextable::htmltools_value(ft, ft.align = "left"))
+    # })
 
     output$TabV1 <- shiny::renderUI({
       req(mns(), V2_pars$opt_tab_precision)
-      ft <- prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V1", caption = "Cell means, standard deviations (or diff for n=2) and number of finite, non-excluded measurement replicates per cell")
-      flextable::htmltools_value(ft, ft.align = "left")
-      # bslib::card(
-      #   bslib::card_header(
-      #     shiny::HTML("<b>Tab.V1</b> Cell means, standard deviations (or diff for n=2) and number of finite, non-excluded measurement replicates per cell")
-      #   ),
-      #   flextable::htmltools_value(prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl"), ft.align = "left")
-      # )
+      # ft <- prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V1", caption = "Cell means, standard deviations (or diff for n=2) and number of finite, non-excluded measurement replicates per cell")
+      # flextable::htmltools_value(ft, ft.align = "left")
+      shiny::div(
+        shiny::HTML("<b>Tab.V1</b> Cell means, standard deviations (or diff for n=2) and number of finite, non-excluded measurement replicates per cell"),
+        flextable::htmltools_value(prepTabV2_1(mns = mns(), prec = V2_pars$opt_tab_precision, output = "ftl"), ft.align = "left")
+      )
     })
 
     output$TabV2 <- shiny::renderUI({
@@ -308,14 +307,18 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     output$TabV3 <- shiny::renderUI({
       req(res(), V2_pars$opt_tab_precision)
-      ft <- styleTabV2_3(x = res(), prec = V2_pars$opt_tab_precision, output = "ftl", id = "Tab.V3", caption = "Calculated repeatability values")
-      flextable::htmltools_value(ft, ft.align = "left")
+      ft <- styleTabV2_3(x = res(), prec = V2_pars$opt_tab_precision, output = "ftl")
+      shiny::div(
+        shiny::HTML("<b>Tab.V3</b> Calculated repeatability values"),
+        flextable::htmltools_value(ft, ft.align = "left")
+      )
     })
 
     # Figures ====
     output$FigV1 <- shiny::renderUI({
       df <- inp()
       req(nrow(df) > 0)
+      k <- length(unique(df[,"Replicate"]))
       h <- paste0(240+20*length(unique(df[,"Lab"])), "px")
       plots <- lapply(1:length(unique(df[,"Level"])), function(x) {
         local({
@@ -327,16 +330,23 @@ page_validation57252Server <- function(id, test_data = NULL) {
           plot_output
         })
       })
-      do.call(bslib::layout_column_wrap, c(list(width = "520px", fixed_width = TRUE), plots))
+      shiny::div(
+        do.call(bslib::layout_column_wrap, c(list(width = "520px", fixed_width = TRUE), plots)),
+        shiny::HTML("<p><b>Fig.V1</b> Graphical representation of imported data (Tab.V0). Filtered values are depicted in grey. Replicated values are distinguished by background color (", paste(1:k, c("red", "green", "blue", "lightblue", "purple")[1:k], sep="=", collapse=", "), ").</p>")
+      )
+      #do.call(bslib::layout_column_wrap, c(list(width = "520px", fixed_width = TRUE), plots))
     })
 
     output$FigV2 <- shiny::renderUI({
       req(mns())
       w <- paste0(120+nrow(mns())*20, "px")
-      bslib::layout_column_wrap(
-        width = w, fixed_width = TRUE,
-        shiny::plotOutput(ns("FigV2a"), width = w, height = "400px"),
-        shiny::plotOutput(ns("FigV2b"), width = w, height = "400px")
+      shiny::div(
+        bslib::layout_column_wrap(
+          width = w, fixed_width = TRUE,
+          shiny::plotOutput(ns("FigV2a"), width = w, height = "400px"),
+          shiny::plotOutput(ns("FigV2b"), width = w, height = "400px")
+        ),
+        shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
       )
     })
 
@@ -359,6 +369,9 @@ page_validation57252Server <- function(id, test_data = NULL) {
       req(res())
       prepFigV2_3(res()[,c(3,5)])
     })
+
+    # Help section ====
+    shiny::observeEvent(input$InputHelp, { show_help("v2_dataupload") })
 
   })
 }
