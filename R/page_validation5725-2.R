@@ -32,14 +32,15 @@ page_validation57252UI <- function(id) {
     shiny::conditionalPanel(
       condition = "output.V_fileUploaded == false",
       ns = ns, # namespace of current module
-      shiny::fileInput(
-        inputId = ns("inp_file"),
-        label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),
-        multiple = FALSE,
-        placeholder = "xlsx | Rdata",
-        accept = c("xlsx", "RData")
-      ),
       shiny::div(
+        shiny::p(),
+        shiny::fileInput(
+          inputId = ns("inp_file"),
+          label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),
+          multiple = FALSE,
+          placeholder = "xlsx | Rdata",
+          accept = c("xlsx", "RData")
+        ),
         shiny::p(shiny::helpText("Example Table (generic format). Optional columns in grey. Column order is not relevant but column names are. 'Lab' and 'Level' can be specified as number or text, 'Replicate' and 'Value' have to be numbers.")),
         shiny::uiOutput(outputId = ns("example_table_generic"))
       )

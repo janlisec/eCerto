@@ -8,17 +8,14 @@
 #'
 #' @examples
 #' if (interactive()) {
-#'   shiny::shinyApp(
-#'     ui = shiny::fluidPage(
-#'       eCerto:::page_startUI(id = "test")
-#'     ),
+#'   test_nav_panel_app(
+#'     panel = app_panels()$St,
 #'     server = function(input, output, session) {
-#'       rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
-#'       eCerto:::page_startServer(id = "test", rv = rv)
+#'       rv <- eCerto::eCerto$new(eCerto:::init_rv())
+#'       eCerto:::page_startServer(id = "Start", rv = rv)
 #'     }
 #'   )
-#' }
-#'
+#' }#'
 #' @return Nothing
 #' @noRd
 
@@ -29,21 +26,21 @@ page_startUI <- function(id) {
     bslib::layout_sidebar(
       sidebar = bslib::sidebar(
         width = 360,
-        tags$style(HTML("
-          #${ns('sidebar')} .sidebar-content {
-            display: flex !important;
-            flex-direction: column;
-            height: 100%;
-          }
-        ")),
-        shiny::div(
-          m_RDataImport_UI(ns("Rdatain")),
-          hr(),
-          m_RDataExport_UI(ns("Rdataex"))
-        ),
-        shiny::div(
-          class = "mt-auto pt-3",
-          shiny::actionButton(inputId = ns("session_restart"), label = shiny::HTML("Restart<br>eCerto"), style = "width: 150px; font-weight: 700; background-color: rgb(210,0,30)")
+        div(
+          style = "display:flex; flex-direction:column; height: 80vh;",
+          div(
+            m_RDataImport_UI(ns("Rdatain")),
+            hr(),
+            m_RDataExport_UI(ns("Rdataex"))
+          ),
+          div(
+            style = "margin-top:auto; padding-top:1em",
+            actionButton(
+              inputId = ns("session_restart"),
+              label = HTML("Restart<br>eCerto"),
+              style = "width:150px;font-weight:700;background-color:rgb(210,0,30)"
+            )
+          )
         )
       ),
       m_ExcelUpload_UI(ns("excelfile"))

@@ -147,7 +147,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         shinyjs::hideElement(id = "file_name")
       }
       shinyjs::showElement(id = "btn_load")
-      shiny::updateActionButton(session = session, inputId = "btn_load", label = "Load selected<br>cell range")
+      shiny::updateActionButton(session = session, inputId = "btn_load", label = shiny::HTML("Load selected<br>cell range"))
       current_file_input(input$excel_file)
     })
 

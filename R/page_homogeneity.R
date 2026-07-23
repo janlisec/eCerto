@@ -5,21 +5,15 @@
 #' @param rv The session R6 object.
 #' @examples
 #' if (interactive()) {
-#'   shiny::shinyApp(
-#'     ui = shiny::fluidPage(
-#'       shinyjs::useShinyjs(),
-#'       eCerto:::page_HomogeneityUI(id = "test")
-#'     ),
+#'   test_nav_panel_app(
+#'     panel = app_panels()$H,
 #'     server = function(input, output, session) {
 #'       rv <- eCerto:::test_rv()
 #'       mt <- isolate(eCerto::getValue(rv, c("General", "materialtabelle")))
 #'       attr(mt, "col_code") <- data.frame("ID" = "U", "Name" = "U")
 #'       isolate(eCerto::setValue(rv, c("General", "materialtabelle"), mt))
 #'       isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
-#'       eCerto:::page_HomogeneityServer(
-#'         id = "test",
-#'         rv = rv
-#'       )
+#'       eCerto:::page_HomogeneityServer(id = "Homogeneity", rv = rv)
 #'     }
 #'   )
 #' }
@@ -101,30 +95,17 @@ page_HomogeneityUI <- function(id) {
     )
   )
 
-  shiny::tabsetPanel(
-    id = ns("HomogeneityPanel"),
-    type = "hidden", # when nothing is loaded
-    shiny::tabPanel(
-      title = "standby-Panel",
-      value = "standby",
-      "nothing has uploaded yet"
-    ),
-    # when something is loaded
-    shiny::tabPanel(
-      title = "active-Panel",
-      value = "loaded",
-      bslib::layout_columns(
-        shiny::tagList(
-          tab_H1_panel,
-          tab_H2_panel
-        ),
-        shiny::tagList(
-          fig_H1_panel
-        ),
-        col_widths =  bslib::breakpoints(
-          sm = c(12, 12),
-          xl = c(5, 7)
-        )
+  shiny::tagList(
+    bslib::layout_columns(
+      fill = FALSE,
+      shiny::tagList(
+        tab_H1_panel,
+        tab_H2_panel
+      ),
+      fig_H1_panel,
+      col_widths =  bslib::breakpoints(
+        sm = c(12, 12),
+        xl = c(5, 7)
       )
     )
   )
@@ -134,15 +115,6 @@ page_HomogeneityUI <- function(id) {
 page_HomogeneityServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- shiny::NS(id)
-
-    # this is the local version of the homology data and parameters
-    shiny::observeEvent(rv$e_present(), {
-      if (rv$e_present()["Homogeneity"]) {
-        shiny::updateTabsetPanel(session = session, "HomogeneityPanel", selected = "loaded")
-      } else {
-        shiny::updateTabsetPanel(session = session, "HomogeneityPanel", selected = "standby")
-      }
-    })
 
     # local version of input data table
     h_Data <- shiny::reactive({

@@ -9,17 +9,12 @@
 #'
 #' @examples
 #' if (interactive()) {
-#'   shiny::shinyApp(
-#'     ui = shiny::fluidPage(
-#'       shinyjs::useShinyjs(),
-#'       eCerto:::page_StabilityUI(id = "test")
-#'     ),
+#'  test_nav_panel_app(
+#'     panel = app_panels()$S,
 #'     server = function(input, output, session) {
-#'       # rv <- eCerto::eCerto$new(eCerto:::init_rv()) # initiate persistent variables
-#'       # shiny::isolate({eCerto::setValue(rv, c("Stability","data"), eCerto:::test_Stability_Excel() )})
 #'       rv <- eCerto:::test_rv(type = "SR3")
 #'       shiny::isolate(eCerto::setValue(rv, c("Stability", "data"), eCerto:::test_Stability_Arrhenius()))
-#'       eCerto:::page_StabilityServer(id = "test", rv = rv)
+#'       eCerto:::page_StabilityServer(id = "Stability", rv = rv)
 #'     }
 #'   )
 #' }
@@ -41,11 +36,10 @@ page_StabilityUI <- function(id) {
         ),
         shiny::div(
           style = "float: left; margin-left: 15px;",
-          shiny::checkboxInput(inputId = ns("optimize_u_stab"), width = 90, value = FALSE, label = shiny::HTML("Show t<sub>max</sub>")),
+          shiny::checkboxInput(inputId = ns("optimize_u_stab"), width = 90, value = FALSE, label = shiny::HTML("t<sub>max</sub>")) |> bslib::tooltip("Include a column calculating the maximum possible shelf life in Tab.S1"),
         )
       )
     ),
-    #bslib::card_body(max_height = 600,
     bslib::card_body(
       shiny::div(DT::DTOutput(ns("s_tab1"))),
       shinyjs::hidden(shiny::radioButtons(inputId = ns("time_fmt"), label = "Time format in lm", choices = c("mon", "day"), selected = "mon"))
@@ -57,7 +51,6 @@ page_StabilityUI <- function(id) {
 
   fig_S1_panel <- bslib::card(
     id = ns("fig_S1_panel"),
-    style = "resize:vertical;",
     bslib::card_header(
       class = "d-flex justify-content-between",
       shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot")),
@@ -89,34 +82,17 @@ page_StabilityUI <- function(id) {
     )
   )
 
-  shiny::tabsetPanel(
-    id = ns("StabilityPanel"),
-    type = "hidden",
-    # when nothing is loaded
-    shiny::tabPanel(
-      title = "standby-Panel",
-      value = "standby",
-      "nothing has uploaded yet"
+  shiny::tagList(
+    bslib::layout_columns(
+      fill = FALSE,
+      tab_S1_panel,
+      fig_S1_panel,
+      col_widths = bslib::breakpoints(
+        sm = c(12, 12),
+        xl = c(4, 8)
+      )
     ),
-    # when something is loaded
-    shiny::tabPanel(
-      title = "active-Panel",
-      value = "loaded",
-      bslib::layout_columns(
-        shiny::tagList(
-          tab_S1_panel
-        ),
-        shiny::tagList(
-          fig_S1_panel
-        ),
-        col_widths =  bslib::breakpoints(
-          sm = c(12, 12),
-          xl = c(4, 8)
-        )
-      ),
-      shiny::div(id = ns("arrhenius_panel"), m_arrheniusUI(id = ns("arrhenius")))
-    )
-
+    shiny::div(id = ns("arrhenius_panel"), m_arrheniusUI(id = ns("arrhenius")))
   )
 }
 
@@ -241,14 +217,6 @@ page_StabilityServer <- function(id, rv) {
     })
     shiny::observeEvent(s_pars$s_shelf_life, {
       if (!identical(s_pars$s_shelf_life, input$s_shelf_life)) shiny::updateSliderInput(inputId = "s_shelf_life", value = s_pars$s_shelf_life)
-    })
-
-    shiny::observeEvent(rv$e_present(), {
-      if (rv$e_present()["Stability"]) {
-        shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "loaded")
-      } else {
-        shiny::updateTabsetPanel(session = session, "StabilityPanel", selected = "standby")
-      }
     })
 
     # the complete data table of stability data as a local copy

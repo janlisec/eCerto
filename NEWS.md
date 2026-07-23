@@ -1,3 +1,9 @@
+# eCerto 0.8.25 [23.07.2026]
+* layout of modules unified (using app.css element .main-content)
+* app_ui converted into a shell function which allows to test individual modules
+  with all dependencies of the full app (test_nav_panel_app())
+* minor fixes, typos corrected
+
 # eCerto 0.8.24 [13.07.2026]
 * documentation for Modul V2 (DIN 5725-2) started
 

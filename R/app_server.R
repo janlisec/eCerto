@@ -26,7 +26,7 @@ app_server <- function(input, output, session) {
   page_startServer(id = "Start", rv = rv, msession = session)
 
   # Certification Modul
-  page_CertificationServer(id = "certification", rv = rv)
+  page_CertificationServer(id = "Certification", rv = rv)
 
   # Homogeneity Modul
   page_HomogeneityServer(id = "Homogeneity", rv = rv)

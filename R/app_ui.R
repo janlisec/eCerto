@@ -1,14 +1,17 @@
 #' The application User-Interface
 #'
+#' @param ... A list of bslib::nav_panel objects.
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @noRd
 #' @keywords internal
-app_ui <- function(request = NULL) {
-
+app_shell <- function(..., request = NULL) {
   shiny::tagList(
-    # Leave this function for adding external resources
+    # initializing shinyjs
+    shinyjs::useShinyjs(),
+
+    # adding external resources
     golem_add_external_resources(),
 
     # the following lines can be used to check for problems with the 'www' folder on different App places
@@ -18,94 +21,132 @@ app_ui <- function(request = NULL) {
 
     bslib::page_navbar(
       id = "navbarpage",
-      title = list(
-        shiny::img(src = "www/bam_logo_200px_transparent.png", height = "40px", position = "absolute", margin = "auto", alt = "BAM Logo"),
-        shiny::strong("BAM", style = "color: rgb(210,0,30);"),
-        shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
-      ),
-      selected = "Start",
-      #theme = bslib::bs_theme(base_font = bslib::font_google("Montserrat")),
-      navbar_options = bslib::navbar_options(
-        bg = "black",
-        position = "fixed-top"
-      ),
+      title = app_header(),
+      navbar_options = bslib::navbar_options(bg = "black", position = "fixed-top"),
       fillable = TRUE,
-      header = tags$head(
-        # ensuring that header and footer are respected by the nav_panels
-        tags$style(HTML("
-          html, body {
-            height: calc(100vh-56pxpx) !important;
-            padding-top: 56px;
-            padding-bottom: 24px;
-          }
-        "))
-      ),
-      footer = shiny::div(
-        style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: white; width: 100%",
-        shiny::HTML(
-          get_golem_config("golem_name"), "|",
-          get_golem_config("app_version"), "|",
-          get_golem_config("app_date"), "|",
-          '<a href="mailto:jan.lisec@bam.de">jan.lisec@bam.de</a>',
-          ifelse(get_golem_config("bam_server"), '| <a href="https://www.bam.de/Navigation/EN/Services/Privacy-Policy/privacy-policy.html" target="_blank" rel="noopener noreferrer">BAM Privacy Policy</a>', "")
-        )
-      ),
-      bslib::nav_panel(
-        id = "start",
-        title = "Start",
-        icon = shiny::icon("angle-right"),
+      #padding = c(56+16, 16, 24+16), # top, left/right, bottom
+      footer = app_footer(),
+      ...
+    )
+  )
+}
+
+app_header <- function() {
+  list(
+    shiny::img(src = "www/bam_logo_200px_transparent.png", height = "40px", position = "absolute", margin = "auto", alt = "BAM Logo"),
+    shiny::strong("BAM", style = "color: rgb(210,0,30);"),
+    shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
+  )
+}
+app_footer <- function() {
+  shiny::div(
+    style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: white; width: 100%",
+    shiny::HTML(
+      get_golem_config("golem_name"), "|",
+      get_golem_config("app_version"), "|",
+      get_golem_config("app_date"), "|",
+      '<a href="mailto:jan.lisec@bam.de">jan.lisec@bam.de</a>',
+      ifelse(get_golem_config("bam_server"), '| <a href="https://www.bam.de/Navigation/EN/Services/Privacy-Policy/privacy-policy.html" target="_blank" rel="noopener noreferrer">BAM Privacy Policy</a>', "")
+    )
+  )
+}
+
+app_panels <- function() {
+  list(
+    "St" = bslib::nav_panel(
+      id = "start",
+      title = "Start",
+      icon = shiny::icon("angle-right"),
+      shiny::div(
+        class = "main-content",
         page_startUI("Start")
-      ),
-      bslib::nav_panel(
-        id = "homog_tab",
-        title = "Homogeneity",
-        icon = shiny::icon("angle-right"),
-        value = "tP_homogeneity",
+      )
+    ),
+    "H" = bslib::nav_panel(
+      id = "homog_tab",
+      title = "Homogeneity",
+      icon = shiny::icon("angle-right"),
+      value = "tP_homogeneity",
+      shiny::div(
+        class = "main-content",
         page_HomogeneityUI("Homogeneity")
-      ),
-      bslib::nav_panel(
-        id = "stab_tab",
-        title = "Stability",
-        icon = shiny::icon("angle-right"),
-        value = "tP_stability",
+      )
+    ),
+    "S" = bslib::nav_panel(
+      id = "stab_tab",
+      title = "Stability",
+      icon = shiny::icon("angle-right"),
+      value = "tP_stability",
+      shiny::div(
+        class = "main-content",
         page_StabilityUI("Stability")
-      ),
-      bslib::nav_panel(
-        id = "certif_tab",
-        title = "Certification",
-        value = "tP_certification",
-        icon = shiny::icon("angle-right"),
-        page_CertificationUI("certification")
-      ),
-      # Long term stability
-      bslib::nav_panel(
-        title = "LTS",
-        icon = shiny::icon("angle-right"),
-        value = "tP_LTS",
+      )
+    ),
+    "C" = bslib::nav_panel(
+      id = "certif_tab",
+      title = "Certification",
+      value = "tP_certification",
+      icon = shiny::icon("angle-right"),
+      shiny::div(
+        class = "main-content",
+        page_CertificationUI("Certification")
+      )
+    ),
+    "L" = bslib::nav_panel(
+      title = "LTS",
+      icon = shiny::icon("angle-right"),
+      value = "tP_LTS",
+      shiny::div(
+        class = "main-content",
         m_longtermstabilityUI("lts")
-      ),
-      bslib::nav_panel(
-        title = "Validation",
-        icon = shiny::icon("angle-right"),
-        value = "tP_Validation",
+      )
+    ),
+    "V" = bslib::nav_panel(
+      title = "Validation",
+      icon = shiny::icon("angle-right"),
+      value = "tP_Validation",
+      shiny::div(
+        class = "main-content",
         page_validationUI("Validation")
-      ),
-      bslib::nav_panel(
-        title = "DRMD",
-        icon = shiny::icon("angle-right"),
-        value = "tP_DRDM",
+      )
+    ),
+    "D" = bslib::nav_panel(
+      title = "DRMD",
+      icon = shiny::icon("angle-right"),
+      value = "tP_DRDM",
+      shiny::div(
+        class = "main-content",
         page_DRMDUI("DRMD")
-      ),
-      bslib::nav_panel(
-        title = "Help",
-        icon = shiny::icon("angle-right"),
-        value = "tP_help",
+      )
+    ),
+    "Hp" = bslib::nav_panel(
+      title = "Help",
+      icon = shiny::icon("angle-right"),
+      value = "tP_help",
+      shiny::div(
+        class = "main-content",
         if (getOption("eCerto.renderHelp", default = TRUE)) {
-          shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = "static", quiet = TRUE)))
+          shiny::div(shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = "static", quiet = TRUE))))
         } else {
           shiny::div("No help page because App is in testing mode currently.")
         }
       )
+    )
+  )
+}
+
+test_nav_panel_app <- function(panel, server) {
+  shiny::shinyApp(
+    ui = app_shell(panel),
+    server = server
+  )
+}
+
+app_ui <- function(request = NULL) {
+  do.call(
+    app_shell,
+    c(
+      unname(app_panels())
     )
   )
 }
@@ -134,9 +175,7 @@ golem_add_external_resources <- function() {
       path = app_sys("app/www"),
       app_title = get_golem_config("golem_name")
     ),
-    golem::favicon(ico = "BAMLogo"),
-    # Add here other external resources
-    shinyjs::useShinyjs()
+    golem::favicon(ico = "BAMLogo")
   )
 
   # include JS for setting up tracking via Matomo

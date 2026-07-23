@@ -17,17 +17,13 @@
 #'
 #' @examples
 #' if (interactive()) {
-#'   app <- shiny::shinyApp(
-#'     ui = bslib::page_fluid(
-#'       shinyjs::useShinyjs(),
-#'       eCerto:::page_CertificationUI(id = "test")
-#'     ),
+#'   test_nav_panel_app(
+#'     panel = app_panels()$C,
 #'     server = function(input, output, session) {
 #'       rv <- eCerto:::test_rv("SR3")
-#'       eCerto:::page_CertificationServer(id = "test", rv = rv)
+#'       eCerto:::page_CertificationServer(id = "Certification", rv = rv)
 #'     }
 #'   )
-#'   app
 #'   \dontrun{
 #'   # generate screenshot of Fig.C1 and options panel for documentation purposes
 #'   webshot2::appshot(
@@ -136,32 +132,23 @@ page_CertificationUI <- function(id) {
     )
   )
 
-  shiny::tabsetPanel(
-    id = ns("certificationPanel"),
-    type = "hidden",
-    # when nothing is loaded
-    shiny::tabPanel(title = "standby-Panel", value = "standby", "empty panel content"),
-    # when something is loaded
-    shiny::tabPanel(
-      title = "active-Panel",
-      value = "loaded",
-      bslib::layout_columns(
-        id = "main_columns",
-        shiny::div(
-          id = ns("left_column"),
-          m_DataViewUI(ns("dv")),
-          tab_C1_panel,
-          tab_C2_panel
-        ),
-        shiny::div(
-          id = ns("right_column"),
-          m_materialtabelleUI(id = ns("mat_cert"), sidebar_width = sidebar_width),
-          fig_C1_panel
-        ),
-        col_widths =  bslib::breakpoints(
-          sm = c(12, 12),
-          xl = c(6, 6)
-        )
+  shiny::tagList(
+    bslib::layout_columns(
+      id = "main_columns",
+      shiny::div(
+        id = ns("left_column"),
+        m_DataViewUI(ns("dv")),
+        tab_C1_panel,
+        tab_C2_panel
+      ),
+      shiny::div(
+        id = ns("right_column"),
+        m_materialtabelleUI(id = ns("mat_cert"), sidebar_width = sidebar_width),
+        fig_C1_panel
+      ),
+      col_widths =  bslib::breakpoints(
+        sm = c(12, 12),
+        xl = c(6, 6)
       )
     )
   )
@@ -172,7 +159,7 @@ page_CertificationUI <- function(id) {
 page_CertificationServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
 
-    # observers to collaps or expand individual cards (tab and fig)
+    # observers to collapse or expand individual cards (tab and fig)
     shiny::observeEvent(input$btn_tab_C1, {
       x <- input$btn_tab_C1 %% 2 == 0
       shinyjs::toggleElement(id = "body_tab_C1", condition = x)
@@ -206,12 +193,6 @@ page_CertificationServer <- function(id, rv) {
         }
       ", ns("fig_C1_panel"), ns("left_column"), ns("right_column")))
     })
-    #shiny::removeUI(selector = "#fig_C1_panel")
-    # shiny::insertUI(selector = "#column_layout", where = "beforeEnd", ui = bslib::card(
-    #   id = "card1",
-    #   bslib::card_header("Card 1 Header"),
-    #   bslib::card_body("Content of Card 1")
-    # ))
 
     # Materialtabelle is embedded in Certification-UI, that's why it is here
     m_materialtabelleServer(id = "mat_cert", rv = rv)
@@ -234,24 +215,10 @@ page_CertificationServer <- function(id, rv) {
     # --> [ID, Lab, analyte, replicate, value, unit, S_flt, L_flt]
     dat <- shiny::reactiveVal(NULL)
 
-    # if new C data is uploaded from Excel or RData in 'rv'
-    shiny::observeEvent(getValue(rv, c("Certification", "data")),
-      {
-        if (is.null(getValue(rv, c("Certification", "data")))) {
-          shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "standby")
-        } else {
-          #dat(c_filter_data(x = getValue(rv, c("Certification", "data")), c_apm = getValue(rv, c("General", "apm"))[[C_analyte()]]))
-          shiny::updateTabsetPanel(session = session, "certificationPanel", selected = "loaded")
-        }
-      },
-      ignoreNULL = FALSE
-    )
-
     shiny::observe({
       req(C_analyte(), getValue(rv, c("General", "apm")))
-      #tmp <- c_filter_data(x = getValue(rv, c("Certification", "data")), c_apm = getValue(rv, c("General", "apm"))[[C_analyte()]])
       if (!identical(rv$c_fltData(), dat())) {
-        message("setting new dat for analyte", rv$cur_an)
+        e_msg(paste("setting new dat for analyte", rv$cur_an))
         dat(rv$c_fltData())
       }
       if (!identical(rv$a_p("precision")[C_analyte()], precision())) {
@@ -292,7 +259,7 @@ page_CertificationServer <- function(id, rv) {
 
     # CertVal Plot
     output$fig_C1 <- renderUI({
-      # this solution using renderUI allows to reproducibly ensure width and height to be respected by bslib
+      # this solution using renderUI allows to reproducible ensure width and height to be respected by bslib
       shiny::plotOutput(session$ns("fig_C1_pre"), width = paste0(input$Fig01_width, "px"), height = paste0(input$Fig01_height, "px"))
     })
     output$fig_C1_pre <- renderPlotHD({

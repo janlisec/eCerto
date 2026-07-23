@@ -31,11 +31,10 @@ testthat::test_that(
   code = {
     lz <- list(a1 = list(b1 = "Streusalz", b2 = "Andreas Scheuer"), a2 = "Wurst")
     lz_e <- eCerto::eCerto$new(do.call(shiny::reactiveValues, lz))
-    k <- c("a1", "b1") # keys
     testthat::expect_equal(class(eCerto::getValue(lz_e, NULL)), "reactivevalues")
     testthat::expect_equal(eCerto::getValue(lz, "a2"), "Wurst")
     testthat::expect_error(eCerto::getValue("x"))
-    testthat::expect_error(eCerto::setValue("x"))
+    testthat::expect_error(eCerto::setValue(value = 1, key = "x"))
   }
 )
 
@@ -78,6 +77,7 @@ testthat::test_that(
   code = {
     fl <- system.file("extdata", "eCerto_Testdata_VModule.xlsx", package = "eCerto")
     inp_data <- eCerto:::read_Vdata(file = fl, fmt = eCerto:::check_fmt_Vdata(fl))
+    testthat::expect_true(is.data.frame(inp_data))
     V_pars <- list(
        "opt_figV1_anal" = "PFBA",
        "opt_figV1_level" = c(1,8),
@@ -94,11 +94,13 @@ testthat::test_that(
        "opt_tabV1_useLevels" = TRUE,
        "opt_tabV1_useAnalytes" = TRUE
     )
+    # add the www folder from the package as resource to find the report.rmd file
+    shiny::addResourcePath("www", system.file("app", "www", package = "eCerto"))
     suppressMessages({
       testthat::expect_error(tmp <- eCerto:::render_report_V(inp_data=inp_data, V_pars=V_pars), NA)
     })
     testthat::expect_true(file.exists(tmp))
-    #testthat::expect_snapshot(tmp, "V_report.html")
     testthat::expect_true(readLines(tmp, n=1) == "<!DOCTYPE html>")
+    if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
   }
 )

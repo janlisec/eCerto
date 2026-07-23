@@ -1,6 +1,9 @@
 testthat::test_that(
   desc = "app ui",
   code = {
+    # avoid rendering of Help page in this test
+    old_val <- getOption("eCerto.renderHelp")
+    options(eCerto.renderHelp = FALSE)
     ui <- eCerto:::app_ui
     golem::expect_shinytaglist(ui())
     # Check that formals have not been removed
@@ -8,6 +11,7 @@ testthat::test_that(
     for (i in c("request")) {
       testthat::expect_true(i %in% names(fmls))
     }
+    options(eCerto.renderHelp = old_val)
   }
 )
 

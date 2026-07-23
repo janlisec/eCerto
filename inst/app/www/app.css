@@ -11,3 +11,8 @@
 .sw-dropdown-content {
   z-index: 1000 !important;
 }
+.main-content {
+  overflow-y: auto;
+  padding-top: 56px;
+  padding-bottom: 40px;
+}
