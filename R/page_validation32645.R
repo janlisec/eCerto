@@ -192,14 +192,15 @@ page_validation32645UI <- function(id) {
     shiny::conditionalPanel(
       condition = "output.V_fileUploaded == false",
       ns = ns, # namespace of current module
-      shiny::fileInput(
-        inputId = ns("inp_file"),
-        label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),
-        multiple = FALSE,
-        placeholder = "xlsx",
-        accept = c("xlsx", "RData")
-      ),
       shiny::div(
+        shiny::p(),
+        shiny::fileInput(
+          inputId = ns("inp_file"),
+          label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),
+          multiple = FALSE,
+          placeholder = "xlsx",
+          accept = c("xlsx", "RData")
+        ),
         shiny::p(shiny::helpText("[Option 1] Example Table (generic format)")),
         shiny::uiOutput(outputId = ns("example_table_generic")),
         shiny::p(shiny::helpText("[Option 2] Example Table (Agilent MassHunter Export format)")),

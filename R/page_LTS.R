@@ -15,6 +15,13 @@
 #'       eCerto:::m_longtermstabilityServer(id = "test", test_data = fl)
 #'     }
 #'   )
+#'   test_nav_panel_app(
+#'     panel = app_panels()$L,
+#'     server = function(input, output, session) {
+#'       fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Testdaten/TS5/LTS_BAM-B003.xlsx"
+#'       eCerto:::m_longtermstabilityServer(id = "lts", test_data = fl)
+#'     }
+#'   )
 #' }
 #' @noRd
 #' @keywords internal
@@ -84,15 +91,17 @@ m_longtermstabilityUI <- function(id) {
     shiny::conditionalPanel(
       condition = "output.LTS_fileUploaded == false",
       ns = ns, # namespace of current module
-      shiny::fileInput(
-        inputId = ns("LTS_input_file"),
-        label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),
-        multiple = FALSE,
-        accept = c("xls", "xlsx", "RData")
-      ),
-      shiny::div(
-        shiny::p(shiny::helpText("Example Table (for initial data upload)")),
-        shiny::uiOutput(outputId = ns("example_table_generic"))
+      bslib::card(
+        shiny::fileInput(
+          inputId = ns("LTS_input_file"),
+          label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),
+          multiple = FALSE,
+          accept = c("xls", "xlsx", "RData")
+        ),
+        shiny::div(
+          shiny::p(shiny::helpText("Example Table (for initial data upload)")),
+          shiny::uiOutput(outputId = ns("example_table_generic"))
+        )
       )
     ),
     shiny::conditionalPanel(

@@ -4,12 +4,10 @@
 #' @param id Name when called as a module in a shiny app.
 #' @examples
 #' if (interactive()) {
-#'   shiny::shinyApp(
-#'     ui = bslib::page_fluid(
-#'       eCerto:::page_validationUI(id = "test")
-#'     ),
+#'   test_nav_panel_app(
+#'     panel = app_panels()$V,
 #'     server = function(input, output, session) {
-#'       eCerto:::page_validationServer(id = "test")
+#'       eCerto:::page_validationServer(id = "Validation")
 #'     }
 #'   )
 #' }

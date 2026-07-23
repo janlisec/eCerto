@@ -83,230 +83,249 @@ if (interactive()) {
 }
 }
 \section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{cur_an}}{Set or return the current analyte (reactiveVal) via an active binding.}
-}
-\if{html}{\out{</div>}}
+  \if{html}{\out{<div class="r6-active-bindings">}}
+  \describe{
+    \item{\code{cur_an}}{Set or return the current analyte (reactiveVal) via an active binding.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-eCerto-new}{\code{eCerto$new()}}
-\item \href{#method-eCerto-get}{\code{eCerto$get()}}
-\item \href{#method-eCerto-set}{\code{eCerto$set()}}
-\item \href{#method-eCerto-c_plot}{\code{eCerto$c_plot()}}
-\item \href{#method-eCerto-c_lab_means}{\code{eCerto$c_lab_means()}}
-\item \href{#method-eCerto-c_analytes}{\code{eCerto$c_analytes()}}
-\item \href{#method-eCerto-c_lab_codes}{\code{eCerto$c_lab_codes()}}
-\item \href{#method-eCerto-a_p}{\code{eCerto$a_p()}}
-\item \href{#method-eCerto-e_present}{\code{eCerto$e_present()}}
-\item \href{#method-eCerto-c_fltData}{\code{eCerto$c_fltData()}}
-\item \href{#method-eCerto-clone}{\code{eCerto$clone()}}
-}
+  \itemize{
+    \item \href{#method-eCerto-initialize}{\code{eCerto$new()}}
+    \item \href{#method-eCerto-get}{\code{eCerto$get()}}
+    \item \href{#method-eCerto-set}{\code{eCerto$set()}}
+    \item \href{#method-eCerto-c_plot}{\code{eCerto$c_plot()}}
+    \item \href{#method-eCerto-c_lab_means}{\code{eCerto$c_lab_means()}}
+    \item \href{#method-eCerto-c_analytes}{\code{eCerto$c_analytes()}}
+    \item \href{#method-eCerto-c_lab_codes}{\code{eCerto$c_lab_codes()}}
+    \item \href{#method-eCerto-a_p}{\code{eCerto$a_p()}}
+    \item \href{#method-eCerto-e_present}{\code{eCerto$e_present()}}
+    \item \href{#method-eCerto-c_fltData}{\code{eCerto$c_fltData()}}
+    \item \href{#method-eCerto-clone}{\code{eCerto$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-eCerto-new"></a>}}
-\if{latex}{\out{\hypertarget{method-eCerto-new}{}}}
-\subsection{Method \code{new()}}{
-Write the (reactive) value of element 'keys' from list 'l'.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$new(rv)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-eCerto-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-eCerto-initialize}{}}}
+\subsection{\code{eCerto$new()}}{
+  Write the (reactive) value of element 'keys' from list 'l'.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$new(rv)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{rv}}{'reactiveValues' object.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A new 'eCerto' object.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{rv}}{'reactiveValues' object.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new 'eCerto' object.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-get"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-get}{}}}
-\subsection{Method \code{get()}}{
-Read the value of field element of R6 object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$get(keys = NULL)}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$get()}}{
+  Read the value of field element of R6 object.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$get(keys = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{keys}}{Name of list element.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    Current value of field.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{keys}}{Name of list element.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Current value of field.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-set"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-set}{}}}
-\subsection{Method \code{set()}}{
-Set element of R6 object defined by 'keys' to new value.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$set(keys = NULL, value)}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$set()}}{
+  Set element of R6 object defined by 'keys' to new value.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$set(keys = NULL, value)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{keys}}{Name(s) of list element.}
+      \item{\code{value}}{New value.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    New value of element (invisible).
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{keys}}{Name(s) of list element.}
-
-\item{\code{value}}{New value.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-New value of element (invisible).
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-c_plot"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_plot}{}}}
-\subsection{Method \code{c_plot()}}{
-Plot the certification data either provided by the user or from the private slot of self.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_plot(data, annotate_id = FALSE, filename_labels = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$c_plot()}}{
+  Plot the certification data either provided by the user or from the private slot of self.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$c_plot(data, annotate_id = FALSE, filename_labels = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{data}}{data.frame containing columns 'value', 'Lab' and 'L_flt' for a specific analyte.}
+      \item{\code{annotate_id}}{T/F to overlay the plot with ID as text if column 'ID' is present.}
+      \item{\code{filename_labels}}{T/F to use imported file names as labels on x-axes.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A plot.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{data}}{data.frame containing columns 'value', 'Lab' and 'L_flt' for a specific analyte.}
-
-\item{\code{annotate_id}}{T/F to overlay the plot with ID as text if column 'ID' is present.}
-
-\item{\code{filename_labels}}{T/F to use imported file names as labels on x-axes.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A plot.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-c_lab_means"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_lab_means}{}}}
-\subsection{Method \code{c_lab_means()}}{
-Compute the analyte means for a data set filtered for a specific analyte.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_means(data)}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$c_lab_means()}}{
+  Compute the analyte means for a data set filtered for a specific analyte.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$c_lab_means(data)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{data}}{data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A data.frame of lab means.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{data}}{data.frame containing columns 'analyte', 'value', 'Lab', 'S_flt' and 'L_flt'.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A data.frame of lab means.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-c_analytes"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_analytes}{}}}
-\subsection{Method \code{c_analytes()}}{
-Return analyte names currently in apm.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_analytes()}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$c_analytes()}}{
+  Return analyte names currently in apm.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$c_analytes()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A named character vector.
+  }
 }
 
-\subsection{Returns}{
-A named character vector.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-c_lab_codes"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_lab_codes}{}}}
-\subsection{Method \code{c_lab_codes()}}{
-Return lab codes currently in C data.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_lab_codes()}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$c_lab_codes()}}{
+  Return lab codes currently in C data.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$c_lab_codes()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A named character vector.
+  }
 }
 
-\subsection{Returns}{
-A named character vector.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-a_p"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-a_p}{}}}
-\subsection{Method \code{a_p()}}{
-Return currently specified values of a type for all analytes.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$a_p(
+\subsection{\code{eCerto$a_p()}}{
+  Return currently specified values of a type for all analytes.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$a_p(
   val = c("precision", "precision_export", "pooling", "confirmed", "unit", "name")
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{val}}{A character value indicating the item of the apm list to be extracted}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A named vector.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{val}}{A character value indicating the item of the apm list to be extracted}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A named vector.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-e_present"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-e_present}{}}}
-\subsection{Method \code{e_present()}}{
-Return modules with existing data.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$e_present()}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$e_present()}}{
+  Return modules with existing data.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$e_present()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A named logical vector.
+  }
 }
 
-\subsection{Returns}{
-A named logical vector.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-c_fltData"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-c_fltData}{}}}
-\subsection{Method \code{c_fltData()}}{
-Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$c_fltData(recalc = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$c_fltData()}}{
+  Filter the full data set for a specific analyte and remove all 'S_flt' but keep 'L_flt'.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$c_fltData(recalc = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{recalc}}{If TRUE triggers a recalculation and returns current object if FALSE..}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A data.frame with filtered data of a single analyte.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{recalc}}{If TRUE triggers a recalculation and returns current object if FALSE..}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A data.frame with filtered data of a single analyte.
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-eCerto-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-eCerto-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{eCerto$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{eCerto$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{eCerto$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }
