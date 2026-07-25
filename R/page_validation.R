@@ -16,14 +16,23 @@
 
 page_validationUI <- function(id) {
   ns <- shiny::NS(id)
-  bslib::navset_pill(
+  bslib::nav_menu(
+    title = "Validation",
+    icon = shiny::icon("angle-right"),
+    value = "tP_Validation",
     bslib::nav_panel(
       title = "DIN 32645",
-      page_validation32645UI(id = ns("V32645"))
+      shiny::div(
+        class = "main-content",
+        page_validation32645UI(id = ns("V32645"))
+      )
     ),
     bslib::nav_panel(
       title = "DIN 5725-2",
-      page_validation57252UI(id = ns("V57252"))
+      shiny::div(
+        class = "main-content",
+        page_validation57252UI(id = ns("V57252"))
+      )
     )
   )
 }
