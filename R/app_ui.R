@@ -101,15 +101,7 @@ app_panels <- function() {
         m_longtermstabilityUI("lts")
       )
     ),
-    "V" = bslib::nav_panel(
-      title = "Validation",
-      icon = shiny::icon("angle-right"),
-      value = "tP_Validation",
-      shiny::div(
-        class = "main-content",
-        page_validationUI("Validation")
-      )
-    ),
+    "V" = page_validationUI("Validation"),
     "D" = bslib::nav_panel(
       title = "DRMD",
       icon = shiny::icon("angle-right"),
