@@ -1,3 +1,7 @@
+# eCerto 0.8.26 [06.08.2026]
+* `help_start.rmd` is now rendered from app_sys()
+* `www` folder is mapped only once at start up to tempdir()
+
 # eCerto 0.8.25 [23.07.2026]
 * layout of modules unified (using app.css element .main-content)
 * app_ui converted into a shell function which allows to test individual modules

@@ -15,9 +15,9 @@ app_shell <- function(..., request = NULL) {
     golem_add_external_resources(),
 
     # the following lines can be used to check for problems with the 'www' folder on different App places
-    # message("UI, 'www': ", shiny::resourcePaths()["www"]),
-    # message("UI, app_sys: ", app_sys('app/www')),
-    # message("UI, tempdir: ", tempdir()),
+     # message("UI, 'www': ", shiny::resourcePaths()["www"]),
+     # message("UI, app_sys: ", app_sys('app/www')),
+     # message("UI, tempdir: ", tempdir()),
 
     bslib::page_navbar(
       id = "navbarpage",
@@ -117,11 +117,7 @@ app_panels <- function() {
       value = "tP_help",
       shiny::div(
         class = "main-content",
-        if (getOption("eCerto.renderHelp", default = TRUE)) {
-          shiny::div(shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = "static", quiet = TRUE))))
-        } else {
-          shiny::div("No help page because App is in testing mode currently.")
-        }
+        page_helpUI("Help")
       )
     )
   )
@@ -135,12 +131,7 @@ test_nav_panel_app <- function(panel, server) {
 }
 
 app_ui <- function(request = NULL) {
-  do.call(
-    app_shell,
-    c(
-      unname(app_panels())
-    )
-  )
+  do.call(app_shell, c(unname(app_panels())))
 }
 
 #' Add external Resources to the Application
@@ -156,10 +147,14 @@ golem_add_external_resources <- function() {
   # copy www files from app_sys() to tempdir() and map app/www folder to this temp/www
   # this is required for Report rendering to work on a ShinyServer where writing
   # permission is only granted in a temp dir
-  file.copy(from = app_sys("app/www"), to = tempdir(), recursive = TRUE)
-  golem::add_resource_path(
-    "www", paste(normalizePath(tempdir(), "/"), "www", sep = "/")
-  )
+  www_tmp <- fs::path(tempdir(), "www")
+  if (!base::dir.exists(www_tmp)) {
+    base::file.copy(from = app_sys("app/www"), to = tempdir(), recursive = TRUE)
+  }
+  rps <- shiny::resourcePaths()
+  if ("www" %in% names(rps) && !identical(fs::path(rps[["www"]]), www_tmp)) {
+    golem::add_resource_path("www", www_tmp)
+  }
 
   # add further resources to the <head> of the HTML page
   shiny::tags$head(

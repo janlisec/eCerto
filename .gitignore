@@ -40,7 +40,7 @@ vignettes/*.pdf
 source/
 inst/extdata/deprecated/
 inst/doc
-inst/rmd
+inst/app/www/rmd/help_start.html
 shiny_bookmarks
 .Rproj.user
 rsconnect/
