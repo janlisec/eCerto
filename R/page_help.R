@@ -21,7 +21,7 @@ page_helpUI <- function(id) {
   ns <- shiny::NS(id)
   if (getOption("eCerto.renderHelp", default = TRUE)) {
     #shiny::div(shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = get_local_file("help_start.Rmd"), runtime = "static", quiet = TRUE))))
-    shiny::div(shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = eCerto:::app_sys("app/www/rmd/help_start.Rmd"), runtime = "static", quiet = TRUE))))
+    shiny::div(shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = app_sys("app/www/rmd/help_start.Rmd"), runtime = "static", quiet = TRUE))))
   } else {
     shiny::div("No help page because App is in testing mode currently.")
   }

@@ -152,7 +152,7 @@ golem_add_external_resources <- function() {
     base::file.copy(from = app_sys("app/www"), to = tempdir(), recursive = TRUE)
   }
   rps <- shiny::resourcePaths()
-  if (is.null(rps[["www"]]) || !identical(rps[["www"]], www_tmp)) {
+  if ("www" %in% names(rps) && !identical(fs::path(rps[["www"]]), www_tmp)) {
     golem::add_resource_path("www", www_tmp)
   }
 
