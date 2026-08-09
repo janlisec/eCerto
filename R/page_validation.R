@@ -2,6 +2,7 @@
 #' @description \code{page_validation} is the eCerto container module for different method validation strategies.
 #' @details Not yet.
 #' @param id Name when called as a module in a shiny app.
+#' @param panel_style same style as for other app panels.
 #' @examples
 #' if (interactive()) {
 #'   test_nav_panel_app(
@@ -11,10 +12,9 @@
 #'     }
 #'   )
 #' }
-#' @return Shiny tagList.
+#' @keywords internal
 #' @noRd
-
-page_validationUI <- function(id) {
+page_validationUI <- function(id, panel_style = "padding: 72px 16px 40px; margin: 0px; overflow-y: auto;") {
   ns <- shiny::NS(id)
   bslib::nav_menu(
     title = "Validation",
@@ -22,17 +22,13 @@ page_validationUI <- function(id) {
     value = "tP_Validation",
     bslib::nav_panel(
       title = "DIN 32645",
-      shiny::div(
-        class = "main-content",
-        page_validation32645UI(id = ns("V32645"))
-      )
+      style = panel_style,
+      page_validation32645UI(id = ns("V32645"))
     ),
     bslib::nav_panel(
       title = "DIN 5725-2",
-      shiny::div(
-        class = "main-content",
-        page_validation57252UI(id = ns("V57252"))
-      )
+      style = panel_style,
+      page_validation57252UI(id = ns("V57252"))
     )
   )
 }

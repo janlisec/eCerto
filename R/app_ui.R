@@ -8,23 +8,13 @@
 #' @keywords internal
 app_shell <- function(..., request = NULL) {
   shiny::tagList(
-    # initializing shinyjs
     shinyjs::useShinyjs(),
-
-    # adding external resources
     golem_add_external_resources(),
-
-    # the following lines can be used to check for problems with the 'www' folder on different App places
-     # message("UI, 'www': ", shiny::resourcePaths()["www"]),
-     # message("UI, app_sys: ", app_sys('app/www')),
-     # message("UI, tempdir: ", tempdir()),
-
     bslib::page_navbar(
       id = "navbarpage",
       title = app_header(),
       navbar_options = bslib::navbar_options(bg = "black", position = "fixed-top"),
       fillable = TRUE,
-      #padding = c(56+16, 16, 24+16), # top, left/right, bottom
       footer = app_footer(),
       ...
     )
@@ -38,6 +28,7 @@ app_header <- function() {
     shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
   )
 }
+
 app_footer <- function() {
   shiny::div(
     style = "padding-left: var(--bslib-spacer, 1rem); font-family: var(--bs-font-monospace); position: fixed; bottom: 0; background-color: black; color: white; width: 100%",
@@ -52,73 +43,60 @@ app_footer <- function() {
 }
 
 app_panels <- function() {
+  panel_style <- "padding: 72px 16px 40px; margin: 0px; overflow-y: auto;"
   list(
     "St" = bslib::nav_panel(
       id = "start",
       title = "Start",
       icon = shiny::icon("angle-right"),
-      shiny::div(
-        class = "main-content",
-        page_startUI("Start")
-      )
+      style = panel_style,
+      page_startUI("Start")
     ),
     "H" = bslib::nav_panel(
       id = "homog_tab",
       title = "Homogeneity",
       icon = shiny::icon("angle-right"),
       value = "tP_homogeneity",
-      shiny::div(
-        class = "main-content",
-        page_HomogeneityUI("Homogeneity")
-      )
+      style = panel_style,
+      page_HomogeneityUI("Homogeneity")
     ),
     "S" = bslib::nav_panel(
       id = "stab_tab",
       title = "Stability",
       icon = shiny::icon("angle-right"),
       value = "tP_stability",
-      shiny::div(
-        class = "main-content",
-        page_StabilityUI("Stability")
-      )
+      style = panel_style,
+      page_StabilityUI("Stability")
     ),
     "C" = bslib::nav_panel(
       id = "certif_tab",
       title = "Certification",
       value = "tP_certification",
       icon = shiny::icon("angle-right"),
-      shiny::div(
-        class = "main-content",
-        page_CertificationUI("Certification")
-      )
+      style = panel_style,
+      page_CertificationUI("Certification")
     ),
     "L" = bslib::nav_panel(
       title = "LTS",
       icon = shiny::icon("angle-right"),
       value = "tP_LTS",
-      shiny::div(
-        class = "main-content",
-        m_longtermstabilityUI("lts")
-      )
+      style = panel_style,
+      m_longtermstabilityUI("lts")
     ),
-    "V" = page_validationUI("Validation"),
+    "V" = page_validationUI("Validation", panel_style = panel_style),
     "D" = bslib::nav_panel(
       title = "DRMD",
       icon = shiny::icon("angle-right"),
       value = "tP_DRDM",
-      shiny::div(
-        class = "main-content",
-        page_DRMDUI("DRMD")
-      )
+      style = panel_style,
+      page_DRMDUI("DRMD")
     ),
     "Hp" = bslib::nav_panel(
       title = "Help",
+      style = "padding: 56px 0px 24px; margin: 0px;",
       icon = shiny::icon("angle-right"),
       value = "tP_help",
-      shiny::div(
-        class = "main-content",
-        page_helpUI("Help")
-      )
+      page_helpUI("Help")
     )
   )
 }
@@ -152,8 +130,12 @@ golem_add_external_resources <- function() {
     base::file.copy(from = app_sys("app/www"), to = tempdir(), recursive = TRUE)
   }
   rps <- shiny::resourcePaths()
-  if ("www" %in% names(rps) && !identical(fs::path(rps[["www"]]), www_tmp)) {
+  if (!("www" %in% names(rps))) {
     golem::add_resource_path("www", www_tmp)
+  } else {
+    if (!identical(fs::path(rps[["www"]]), www_tmp)) {
+      golem::add_resource_path("www", www_tmp)
+    }
   }
 
   # add further resources to the <head> of the HTML page

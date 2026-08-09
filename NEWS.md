@@ -1,3 +1,8 @@
+# eCerto 0.8.27 [09.08.2026]
+* Help page now included via iframe
+* finally (!) scrolling in Help using floating tab links does respect app header 
+  and footer
+
 # eCerto 0.8.26 [06.08.2026]
 * `help_start.rmd` is now rendered from app_sys()
 * `www` folder is mapped only once at start up to tempdir()
