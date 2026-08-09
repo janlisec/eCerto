@@ -9,8 +9,8 @@ golem::detach_all_attached()
 golem::document_and_reload()
 
 # don't render help page Rmd to HTML in dev mode
-#options(eCerto.renderHelp = FALSE)
-options(eCerto.renderHelp = TRUE)
+options(eCerto.renderHelp = FALSE)
+#options(eCerto.renderHelp = TRUE)
 
 # Run the application
 run_app(appDir = "C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto")
