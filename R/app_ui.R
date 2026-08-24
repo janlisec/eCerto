@@ -16,6 +16,7 @@ app_shell <- function(..., request = NULL) {
       navbar_options = bslib::navbar_options(bg = "black", position = "fixed-top"),
       fillable = TRUE,
       footer = app_footer(),
+      #selected = "tP_help",
       ...
     )
   )
@@ -154,6 +155,7 @@ golem_add_external_resources <- function() {
       shiny::HTML('<noscript><p><img src="https://agw1.bam.de/piwik/matomo.php?idsite=24&amp;rec=1" style="border:0;" alt="" /></p></noscript>'),
       shiny::HTML('<script type="text/javascript" src="https://agw1.bam.de/piwik/piwik.js" async defer></script>'),
       shiny::includeScript(app_sys("app/www/js/tracking-live.js")),
+      shiny::includeScript(app_sys("app/www/js/re-render-help-page.js")),
       shiny::includeCSS(app_sys("app/www/app.css"))
       #tags$link(rel = "stylesheet", type = "text/css", href = "ecerto/app.css")
     )

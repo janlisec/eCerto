@@ -192,8 +192,7 @@ page_validation32645UI <- function(id) {
     shiny::conditionalPanel(
       condition = "output.V_fileUploaded == false",
       ns = ns, # namespace of current module
-      shiny::div(
-        shiny::p(),
+      bslib::card(
         shiny::fileInput(
           inputId = ns("inp_file"),
           label = shiny::actionLink(inputId = ns("InputHelp"), "Import Excel/RData File"),

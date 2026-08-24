@@ -9,6 +9,7 @@ output:
       smooth_scroll: false
     embed-resources: true
     standalone: true
+    mathjax: default
     css: "helpstyle.css"
 ---
 
@@ -26,8 +27,6 @@ output:
 
 ```{r child = 'certified_values.Rmd'}
 ```
-
----
 
 ```{r child = 'lts.Rmd'}
 ```

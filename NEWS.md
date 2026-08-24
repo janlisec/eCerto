@@ -1,3 +1,6 @@
+# eCerto 0.8.28 [24.08.2026]
+* Help page MathJax bug fixed
+
 # eCerto 0.8.27 [09.08.2026]
 * Help page now included via iframe
 * finally (!) scrolling in Help using floating tab links does respect app header 

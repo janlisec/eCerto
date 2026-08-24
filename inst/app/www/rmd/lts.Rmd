@@ -20,6 +20,3 @@ obtained and stored using the LTS module of *eCerto* as described below.
 ### LTS report
 
 The user can export a PDF report containing all imported, edited and calculated data and figures.
-
-<br/>
-<br/>
