@@ -1,4 +1,4 @@
-### Stability linear model plot (
+### Stability linear model plot
 
 #### Standard version
 

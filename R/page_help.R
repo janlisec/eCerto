@@ -16,9 +16,11 @@
 page_helpUI <- function(id) {
   if (getOption("eCerto.renderHelp", default = FALSE)) {
     # render help new
+    e_msg("Render Help page with markdown")
     rmarkdown::render(input = app_sys("app/www/rmd/help_start.Rmd"), runtime = "static", quiet = TRUE)
     #shiny::div(shiny::withMathJax(shiny::includeCSS(rmarkdown::render(input = app_sys("app/www/rmd/help_start.Rmd"), runtime = "static", quiet = TRUE))))
   }
+  e_msg("Load Help page as iframe")
   shiny::tags$iframe(src = "www/rmd/help_start.html", style = paste("width:100%;", "height:calc(100vh - 56px - 24px);", "border:none;"))
 }
 

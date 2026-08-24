@@ -85,11 +85,13 @@ page_DRMDUI <- function(id) {
     shiny::conditionalPanel(
       condition = "output.D_fileUploaded == false",
       ns = ns, # namespace of current module
-      shiny::fileInput(
-        inputId = ns("D_input_file"),
-        label = shiny::actionLink(inputId = ns("InputHelp"), "Import XML File"),
-        multiple = FALSE,
-        accept = c("xml")
+      bslib::card(
+        shiny::fileInput(
+          inputId = ns("D_input_file"),
+          label = shiny::actionLink(inputId = ns("InputHelp"), "Import XML File"),
+          multiple = FALSE,
+          accept = c("xml")
+        )
       )
     ),
     shiny::conditionalPanel(
