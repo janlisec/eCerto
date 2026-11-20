@@ -7,7 +7,7 @@ params:
   V_pars: NA
   helptext_v_fig_V1: NA
   helptext_v_tab_V1: NA
-  helptext_v_formula_collection : NA
+  helptext_v_formula_collection: NA
 output:
   word_document: default
   html_document:
