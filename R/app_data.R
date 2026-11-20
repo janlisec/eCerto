@@ -164,7 +164,11 @@ test_Certification_Excel <- function() {
         levels = c("Si", "Fe", "Cu"),
         class = "factor"
       ),
-      replicate = structure(rep(rep(c(1L, 2L, 3L, 4L), each = 3), times = 2), levels = c("1", "2", "3", "4"), class = "factor"),
+      replicate = structure(
+        .Data = rep(rep(c(1L, 2L, 3L, 4L), each = 3), times = 2),
+        levels = c("1", "2", "3", "4"),
+        class = "factor"
+      ),
       value = c(0.0504, 0.049, 4.37, 0.0512, 0.0563, 4.385, 0.0524, 0.0515, 4.34, 0.052, 0.0505, 4.388, 0.0452, 0.0529, 4.4048, 0.0435, 0.0527, 4.3802, 0.0472, 0.0482, 4.3907, 0.0456, 0.0478, 4.391),
       unit = rep(c("U", "kg/m2", "g/mL"), 8),
       S_flt = rep(FALSE, 24),
@@ -183,7 +187,9 @@ test_Stability_Excel <- function() {
   structure(
     list(
       analyte = structure(
-        .Data = rep(c(2, 1), each = 52), levels = c("Mn", "Si"), class = "factor"
+        .Data = rep(c(2L, 1L), each = 52),
+        levels = c("Mn", "Si"),
+        class = "factor"
       ),
       Value = c(
         0.234, 0.235, 0.234, 0.2341, 0.2338, 0.2344, 0.2338, 0.2348, 0.2337,
