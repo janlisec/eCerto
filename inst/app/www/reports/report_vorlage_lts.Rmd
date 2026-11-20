@@ -13,7 +13,7 @@ header-includes:
 - "\\setmainfont{BAMKlavika-Light.ttf}[BoldFont = BAMKlavika-Medium.ttf, ItalicFont = BAMKlavika-LightItalic.ttf, BoldItalicFont = BAMKlavika-MediumItalic.ttf]"
 fig_caption: yes
 params:
-  dat: NA
+  dat: !r NULL
 ---
 
 ```{r setup, include=FALSE}
@@ -24,8 +24,7 @@ l_max <- 45
 i <- 1
 
 # is the Rmd processing in testing mode (not called by the Shiny App)
-testing <- length(params$dat)==1L && (is.na(params$dat) | params$dat=="NA")
-if (testing) {
+if (is.null(params$dat)) {
   report_file <- system.file("app/www/reports/report_vorlage_lts.Rmd", package = "eCerto")
   LTS_dat <- eCerto::LTS001
   d <- LTS_dat[[i]][["def"]]
