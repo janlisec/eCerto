@@ -114,7 +114,7 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
   com <- v[,"Comment"]
   out <- v[,1:3]
   # escape special LaTeX characters in `out`
-  for (i in 1:ncol(out)) {
+  for (i in seq_len(ncol(out))) {
     if (mode(out[,i])=="character") out[,i] <- knitr:::escape_latex(x = out[,i])
   }
   if (any(!is.na(com))) {
@@ -126,7 +126,7 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
     com <- com[!is.na(com)]
     # escape special LaTeX characters in `com`
     com <- knitr:::escape_latex(x = com)
-    com <- data.frame("Comments for Tab.1"=sapply(1:length(com), function(i) { paste0("\\textsuperscript{", i, "} ", com[i]) }), check.names = FALSE)
+    com <- data.frame("Comments for Tab.1"=sapply(seq_len(length(com)), function(i) { paste0("\\textsuperscript{", i, "} ", com[i]) }), check.names = FALSE)
   } else {
     com <- NULL
   }
@@ -137,7 +137,7 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
     tab[[p]] <- vector("list", 2)
     for (i in 1:2) {
       tab[[p]][[i]] <- out[0:min(l_max, nrow(out)),]
-      out <- out[-(1:min(l_max, nrow(out))),]
+      out <- out[-(seq_len(min(l_max, nrow(out)))),]
       if (nrow(tab[[p]][[i]])==0) { tab[[p]][[i]] <- NULL }
     }
   }
@@ -145,7 +145,7 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
     # we need 'escape=FALSE' to allow superscript for comments but it might lead to problems
     print(knitr::kable(x=tab[[p]], format="latex", row.names = FALSE, escape=FALSE, caption = paste0("Tab.1 LTS measurement values", ifelse(p>1, " (continued)", "")), booktabs = TRUE))
     #, position = "!b"
-    if (p==np & !is.null(com)) {
+    if (p==np && !is.null(com)) {
       #cat('\\rowcolors{1}{white}{white}')
       print(knitr::kable(x=com, format="latex", row.names = FALSE, escape=FALSE, caption = " ", booktabs = TRUE, toprule = "", midrule = "", bottomrule = "", linesep = "", centering = FALSE, position = "!t"))
       #print(knitr::kable(x=com, format="pipe", row.names = FALSE, escape=FALSE, caption = " ", position = "t"))

@@ -132,7 +132,7 @@ m_materialtabelleServer <- function(id, rv) {
       # strip unused F and U columns from 'mater_table'
       cc <- attr(mt, "col_code")
       if (nrow(cc) >= 1) {
-        flt <- sapply(1:nrow(cc), function(i) {
+        flt <- sapply(seq_len(nrow(cc)), function(i) {
           all(mt[, cc[i, "ID"]] == 1) | all(mt[, cc[i, "ID"]] == 0)
         })
         if (any(flt)) {
@@ -170,7 +170,7 @@ m_materialtabelleServer <- function(id, rv) {
         attr(mt, "col_code") <- cc
       }
       # add a column for analyte unit if not yet present or modify column according to rv object data (stored in apm)
-      if (!("unit" %in% colnames(mt)) | ("unit" %in% colnames(mt) && all(mt[, "unit"] == "U"))) {
+      if (!("unit" %in% colnames(mt)) || ("unit" %in% colnames(mt) && all(mt[, "unit"] == "U"))) {
         cc <- attr(mt, "col_code")
         units <- rv$a_p("unit")
         if (is.list(units)) {
@@ -209,7 +209,7 @@ m_materialtabelleServer <- function(id, rv) {
 
     # helper function to update calculations
     recalc_mat_table <- function(mt = NULL) {
-      if (any(is.finite(mt[, "mean"])) & any(is.finite(mt[, "sd"]))) {
+      if (any(is.finite(mt[, "mean"])) && any(is.finite(mt[, "sd"]))) {
         e_msg("recalculate table")
 
         # recalculate all cert_mean values including correction factors
@@ -334,7 +334,7 @@ m_materialtabelleServer <- function(id, rv) {
       # rename column header for temporary display
       cc <- attr(mt, "col_code")
       if (nrow(cc) >= 1) {
-        for (k in 1:nrow(cc)) {
+        for (k in seq_len(nrow(cc))) {
           colnames(mt)[colnames(mt) == cc[k, "ID"]] <- cc[k, "Name"]
         }
       }

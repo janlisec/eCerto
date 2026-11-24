@@ -139,7 +139,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
     i <- shiny::reactiveVal(NULL)
 
     LTS_Data <- shiny::reactive({
-      if (!is.null(input$LTS_input_file) | !is.null(test_data)) {
+      if (!is.null(input$LTS_input_file) || !is.null(test_data)) {
         fl_path <- ifelse(!is.null(test_data), test_data, input$LTS_input_file$datapath[1])
         file.type <- tools::file_ext(fl_path)
         if (!tolower(file.type) %in% c("rdata", "xls", "xlsx")) {
@@ -157,8 +157,8 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
         # perform checks
         check_validity <- TRUE
         i <- 0
-        while (!is.null(LTS_dat) && check_validity & i < length(LTS_dat)) {
-          for (i in 1:length(LTS_dat)) {
+        while (!is.null(LTS_dat) && check_validity && i < length(LTS_dat)) {
+          for (i in seq_len(length(LTS_dat))) {
             def_cols <- c("RM", "KW", "KW_Def", "KW_Unit", "CertVal", "U", "U_Def", "Device", "Method", "Coef_of_Var", "acc_Datasets")
             check_def_cols <- def_cols %in% colnames(LTS_dat[[i]][["def"]])
             val_cols <- c("Value", "Date", "File")

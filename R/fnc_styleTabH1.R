@@ -25,7 +25,7 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("DT", "ft", "ft_HTM
   output <- match.arg(output)
   P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
   style_x <- x
-  for (i in 1:nrow(style_x)) {
+  for (i in seq_len(nrow(style_x))) {
     an <- as.character(style_x[i, "analyte"])
     # style_x[i,"mean"] <- pn(as.numeric(style_x[i,"mean"]), ifelse(an %in% names(apm), apm[[an]][["precision"]], 4))
     style_x[i, "mean"] <- pn(as.numeric(style_x[i, "mean"]), ifelse(an %in% names(prec), prec[an], 4))

@@ -44,7 +44,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
 
   # ensure that rownames exist if IDs are to be plotted
   if (show_ids && is.null(rownames(x[["val"]]))) {
-    rownames(x[["val"]]) <- 1:nrow(x[["val"]])
+    rownames(x[["val"]]) <- seq_len(nrow(x[["val"]]))
   }
 
   # ensure that data is ordered after time

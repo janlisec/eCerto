@@ -114,6 +114,6 @@ for (spec in plot_specs) {
 
 df <- H[["data"]]
 if (length(unique(df[,"H_type"]))==1) df <- df[,colnames(df) != "H_type"]
-if (xlab != "Flasche" & any(colnames(df)=="Flasche")) colnames(df)[colnames(df)=="Flasche"] <- xlab
+if (xlab != "Flasche" && any(colnames(df)=="Flasche")) colnames(df)[colnames(df)=="Flasche"] <- xlab
 eCerto:::ft_default(df, caption = "Imported homogeneity data", id = "Tab.H0")
 ```

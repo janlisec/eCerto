@@ -19,7 +19,7 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
   e_msg("perform statistics on imported stability data")
   time_fmt <- match.arg(time_fmt)
   stopifnot(all(c("analyte", "Value", "Date") %in% colnames(x)))
-  if (!is.numeric(t_cert) | (is.numeric(t_cert) && !(t_cert > 0))) t_cert <- as.numeric(NA)
+  if (!is.numeric(t_cert) || (is.numeric(t_cert) && !(t_cert > 0))) t_cert <- as.numeric(NA)
   out <- ldply_base(split(x, x[, "analyte"]), function(x) {
     if (slope_of_means) {
       # compute mean values by Date

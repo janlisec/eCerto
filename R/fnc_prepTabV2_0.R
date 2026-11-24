@@ -24,7 +24,7 @@ prepTabV2_0 <- function(inp, excl_ids = NULL, ...) {
     })
   })
   ft <- ft_default(df = tab0, ...)
-  ft <- flextable::vline(x = ft, j = 1:ncol(tab0), part = "all")
+  ft <- flextable::vline(x = ft, j = seq_len(ncol(tab0)), part = "all")
   ft <- flextable::hline(x = ft, i = (which(!duplicated(tab0[,"Lab"]))-1)[-1])
   ft <- flextable::align(x = ft, j = 1:2, align = "center")
   if (!is.null(excl_ids) && any(excl_ids %in% inp[,"ID"])) {

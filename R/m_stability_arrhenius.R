@@ -203,7 +203,7 @@ m_arrheniusServer <- function(id, rv) {
     })
     output$Tab1exp <- DT::renderDT({
       out <- tab1exp()[, -c(1:6)]
-      for (i in 1:ncol(out)) out[, i] <- round(out[, i], prec)
+      for (i in seq_len(ncol(out))) out[, i] <- round(out[, i], prec)
       return(out)
     }, options = list(dom = "t"), rownames = FALSE)
 

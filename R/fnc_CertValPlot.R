@@ -46,7 +46,7 @@ CertValPlot <- function(data = NULL, annotate_id = FALSE, filename_labels = FALS
   xlabs <- as.character(ds$Lab)
   xlab <- "Lab"
   mar <- c(5, 6, 0, 0) + 0.2
-  if (filename_labels & "File" %in% colnames(data)) {
+  if (filename_labels && "File" %in% colnames(data)) {
     data[, "File"] <- as.character(data[, "File"])
     xlabs <- sapply(xlabs, function(x) {
       unique(sub(pattern = "(.*?)\\..*$", replacement = "\\1", basename(data[data[, "Lab"] == x, "File"])))
@@ -65,21 +65,21 @@ CertValPlot <- function(data = NULL, annotate_id = FALSE, filename_labels = FALS
   # y range is minimized dependent if Sample-IDs are shown or not
   y_range <- range(c(ds$MW + ds$SD, ds$MW - ds$SD), na.rm = TRUE)
   if (annotate_id) y_range <- range(c(y_range, data[, "value"]), na.rm = TRUE)
-  plot(x = range(1:nrow(ds)), y = y_range, type = "n", ann = FALSE, axes = FALSE, xlim = c(0.5, nrow(ds) + 0.5))
+  plot(x = range(seq_len(nrow(ds))), y = y_range, type = "n", ann = FALSE, axes = FALSE, xlim = c(0.5, nrow(ds) + 0.5))
   graphics::title(xlab = xlab)
   # compute number of lines we need to reserve fo the axis numbers
   lh <- max(graphics::strwidth(graphics::axTicks(2), units = "inch")) / graphics::strheight("0", units = "inch")
   graphics::title(ylab = ylab, line = 1.25 + 0.75 * lh)
-  graphics::axis(1, at = 1:nrow(ds), labels = xlabs, las = ifelse(filename_labels, 2, 1))
+  graphics::axis(1, at = seq_len(nrow(ds)), labels = xlabs, las = ifelse(filename_labels, 2, 1))
   graphics::axis(2, las = 2)
   graphics::abline(h = mean(dsfm), col = 3, lwd = 2)
   graphics::abline(h = mean(dsfm) + c(-1, 1) * stats::sd(dsfm), lty = 2, col = grDevices::grey(0.8))
-  graphics::segments(x0 = 1:nrow(ds), y0 = ds$MW - ds$SD, y1 = ds$MW + ds$SD)
+  graphics::segments(x0 = seq_len(nrow(ds)), y0 = ds$MW - ds$SD, y1 = ds$MW + ds$SD)
   lw <- 0.15
   # lw <- 0.1
-  graphics::segments(x0 = 1:nrow(ds) - lw, x1 = 1:nrow(ds) + lw, y0 = ds$MW - ds$SD)
-  graphics::segments(x0 = 1:nrow(ds) - lw, x1 = 1:nrow(ds) + lw, y0 = ds$MW + ds$SD)
-  graphics::symbols(x = 1:nrow(ds), y = ds$MW, circles = rep(lw, nrow(ds)), bg = c(3, grDevices::grey(0.8))[1 + ds[, "Filter"]], add = T, inches = FALSE)
+  graphics::segments(x0 = seq_len(nrow(ds)) - lw, x1 = 1:nrow(ds) + lw, y0 = ds$MW - ds$SD)
+  graphics::segments(x0 = seq_len(nrow(ds)) - lw, x1 = 1:nrow(ds) + lw, y0 = ds$MW + ds$SD)
+  graphics::symbols(x = seq_len(nrow(ds)), y = ds$MW, circles = rep(lw, nrow(ds)), bg = c(3, grDevices::grey(0.8))[1 + ds[, "Filter"]], add = T, inches = FALSE)
   # graphics::points(x=1:nrow(ds), y=ds$MW, pch=21, bg=c(3, grDevices::grey(0.8))[1+ds[,"Filter"]], cex=2)
   if (show_legend) {
     # JL modified 20260306

@@ -1,3 +1,6 @@
+# eCerto 0.8.31 [24.11.2026]
+* fixed test rendering a markdown not in the temp folder
+
 # eCerto 0.8.30 [20.11.2026]
 * fixed deprecated structure() calls using `.Label` instead of `levels`
 

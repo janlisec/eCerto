@@ -59,9 +59,11 @@ styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, L3 = NULL) {
     data = df, rownames = FALSE, extensions = "Buttons", escape = FALSE,
     options = list(
       dom = ifelse(interact_ele, "Bt", "t"), pageLength = -1, ordering = FALSE,
-      buttons = if (interact_ele)  { list(list(extend = "excel", text = "Excel", title = NULL)) }
+      buttons = if (interact_ele)  {
+        list(list(extend = "excel", text = "Excel", title = NULL))
+      }
     ),
-    selection = list(mode = "single", selected = selected, target = 'row')
+    selection = list(mode = "single", selected = selected, target = "row")
   )
 
   return(dt)

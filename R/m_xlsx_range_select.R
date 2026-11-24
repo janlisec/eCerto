@@ -123,7 +123,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
         }
       } else if (xl_fmt == "Stability") {
         # for Stability, all sheets are loaded in Background
-        l <- lapply(1:length(xlsxSheetNames(current_file_input()$datapath)), function(x) {
+        l <- lapply(seq_len(length(xlsxSheetNames(current_file_input()$datapath))), function(x) {
           fnc_read_xlsx(filepath = current_file_input()$datapath[1], sheet = x, method = "openxlsx")
         })
       } else if (xl_fmt == "Homogeneity") {

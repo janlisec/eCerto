@@ -45,7 +45,7 @@ cat(paste0(
 eCerto:::styleTabS1(x = S[["s_vals"]], mt = data.frame("analyte"=an), output="ft")
 
 # make individual plots to allow separate inclusion in i.e. Word reports
-for (i in 1:length(an)) {
+for (i in seq_len(length(an))) {
   try(
     eCerto:::plot_lts_data(
       x = eCerto:::prepFigS1(

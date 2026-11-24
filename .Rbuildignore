@@ -13,4 +13,5 @@
 ^tests/testthat/_snaps$
 ^dev$
 R/_disable_autoload.R
+^.lintr$
 ^Dockerfile$
