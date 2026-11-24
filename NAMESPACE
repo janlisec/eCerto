@@ -11,21 +11,33 @@ export(save_link)
 export(setValue)
 export(steyx)
 import(shiny)
-importFrom(golem,activate_js)
-importFrom(golem,add_resource_path)
-importFrom(golem,bundle_resources)
-importFrom(golem,favicon)
-importFrom(golem,with_golem_options)
-importFrom(knitr,is_html_output)
-importFrom(knitr,kable)
-importFrom(moments,agostino.test)
-importFrom(moments,anscombe.test)
-importFrom(moments,kurtosis)
-importFrom(moments,skewness)
-importFrom(openxlsx,getSheetNames)
-importFrom(openxlsx,read.xlsx)
-importFrom(purrr,chuck)
-importFrom(purrr,pluck)
-importFrom(shinyWidgets,dropdownButton)
-importFrom(shinyWidgets,show_alert)
+importFrom(golem,
+  activate_js,
+  add_resource_path,
+  bundle_resources,
+  favicon,
+  with_golem_options
+)
+importFrom(knitr,
+  is_html_output,
+  kable
+)
+importFrom(moments,
+  agostino.test,
+  anscombe.test,
+  kurtosis,
+  skewness
+)
+importFrom(openxlsx,
+  getSheetNames,
+  read.xlsx
+)
+importFrom(purrr,
+  chuck,
+  pluck
+)
+importFrom(shinyWidgets,
+  dropdownButton,
+  show_alert
+)
 importFrom(shinyjs,useShinyjs)

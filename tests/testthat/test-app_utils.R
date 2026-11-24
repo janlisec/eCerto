@@ -94,8 +94,12 @@ testthat::test_that(
        "opt_tabV1_useLevels" = TRUE,
        "opt_tabV1_useAnalytes" = TRUE
     )
-    # add the www folder from the package as resource to find the report.rmd file
-    shiny::addResourcePath("www", system.file("app", "www", package = "eCerto"))
+    # copy to TEMP and add the www folder from the package as resource to find the report.rmd file
+    www_folder <- system.file("app", "www", package = "eCerto")
+    www_temp <- tempdir()
+    file.copy(from = www_folder, to = www_temp, recursive = TRUE, overwrite = TRUE)
+    on.exit(unlink(fs::path(www_temp, "www"), recursive = TRUE, force = TRUE))
+    shiny::addResourcePath("www", fs::path(www_temp, "www"))
     suppressMessages({
       testthat::expect_error(tmp <- eCerto:::render_report_V(inp_data=inp_data, V_pars=V_pars), NA)
     })
