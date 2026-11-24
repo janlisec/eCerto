@@ -16,14 +16,14 @@ styleTabC0 <- function(x, ap, type = c("compact", "standard"), output = c("DT", 
   type <- match.arg(type)
   output <- match.arg(output)
   if (type == "compact") {
-    #browser()
+    # browser()
     idx <- attr(x, "id_idx")
     if (output %in% c("ft", "ft_HTML")) {
       eCerto_flextable_defaults(output = output)
       ft <- flextable::flextable(x)
       ft <- ft_set_formatter(ft, 5, ft_formatter_fixed_digits, ap[["precision"]])
       if (!is.null(ap[["lab_filter"]])) {
-        ap[["sample_filter"]] <- unique(c(ap[["sample_filter"]], unname(unlist(idx[idx[,"Lab"] %in% ap[["lab_filter"]],-1]))))
+        ap[["sample_filter"]] <- unique(c(ap[["sample_filter"]], unname(unlist(idx[idx[, "Lab"] %in% ap[["lab_filter"]], -1]))))
       }
       if (!is.null(ap[["sample_filter"]])) {
         for (s_idx in ap[["sample_filter"]]) {
@@ -86,10 +86,10 @@ styleTabC0 <- function(x, ap, type = c("compact", "standard"), output = c("DT", 
       ft <- flextable::flextable(x)
       ft <- ft_set_formatter(ft, 5, ft_formatter_fixed_digits, ap[["precision"]])
       if (!is.null(ap[["sample_filter"]])) {
-        ft <- flextable::color(ft, i = which(x[,"ID"] %in% ap[["sample_filter"]]), j = 1, color = "red", part = "body")
+        ft <- flextable::color(ft, i = which(x[, "ID"] %in% ap[["sample_filter"]]), j = 1, color = "red", part = "body")
       }
       if (!is.null(ap[["lab_filter"]])) {
-        ft <- flextable::color(ft, i = which(x[,"Lab"] %in% ap[["lab_filter"]]), j = 2, color = "red", part = "body")
+        ft <- flextable::color(ft, i = which(x[, "Lab"] %in% ap[["lab_filter"]]), j = 2, color = "red", part = "body")
       }
       ft <- eCerto_flextable_defaults(ft = ft, output = output)
       ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.C0"), " Imported analyte data from inter laboratory trial"))

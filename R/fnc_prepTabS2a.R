@@ -30,8 +30,8 @@ prepTabS2a <- function(x, s_opt_FigS2 = TRUE) {
     flt <- tmp[, "Temp"] == k
     return(data.frame(
       "dummy" = k,
-      "Rec" = paste0(round(100 * mean(tmp[flt, "Value"], na.rm = T), 1), "%"),
-      "RSD" = paste0(round(100 * stats::sd(tmp[flt, "Value"], na.rm = T) / mean(tmp[flt, "Value"], na.rm = T), 1), "%"),
+      "Rec" = paste0(round(100 * mean(tmp[flt, "Value"], na.rm = TRUE), 1), "%"),
+      "RSD" = paste0(round(100 * stats::sd(tmp[flt, "Value"], na.rm = TRUE) / mean(tmp[flt, "Value"], na.rm = TRUE), 1), "%"),
       "1/K" = 1 / (273.15 + as.numeric(k)),
       "k_eff" = a,
       "log(-k_eff)" = ifelse(a < 0, log(-a), NA),

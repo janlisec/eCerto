@@ -9,7 +9,7 @@
 #' @examples
 #' x <- eCerto:::prepTabS1(x = eCerto:::test_Stability_Excel())
 #' eCerto:::styleTabS1(x = x)
-#' mt <- data.frame("analyte"="Mn", "cert_val"=100, "k"=2, "U_abs"=5)
+#' mt <- data.frame("analyte" = "Mn", "cert_val" = 100, "k" = 2, "U_abs" = 5)
 #' eCerto:::styleTabS1(x = x, mt = mt)
 #' @return A datatable object.
 #' @keywords internal
@@ -18,11 +18,11 @@ styleTabS1 <- function(x, mt = NULL, optimize_u_stab = FALSE, sr = 1, output = c
   e_msg("styling Tab.S1")
   output <- match.arg(output)
   P_col <- ifelse("P" %in% colnames(x), "P", "P_adj")
-  p_col_idx <- which(colnames(x)==P_col)
-  p_cols_sign <- x[,P_col]<0.05
+  p_col_idx <- which(colnames(x) == P_col)
+  p_cols_sign <- x[, P_col] < 0.05
   if (TRUE) {
     # add a column for U_stab (the absolute uncertainty values for stability), just upon output generation
-    x[,"U<sub>stab</sub>"] <- pn(x[,"u_stab"]*x[,"mean"], 4)
+    x[, "U<sub>stab</sub>"] <- pn(x[, "u_stab"] * x[, "mean"], 4)
   }
   if (optimize_u_stab) {
     # add a column for t_max (the maximum t_cert before u_stab exceeds U_abs_new/3), just upon output generation
@@ -32,18 +32,18 @@ styleTabS1 <- function(x, mt = NULL, optimize_u_stab = FALSE, sr = 1, output = c
     #   if (length(i)==1) { mt[i,"u_com"] } else { NA }
     # })
     # x[,"t<sub>max</sub>"] <- round((x[,"mean"]*u_rest)/(sqrt(8)*x[,"SE_slope"]))
-    tmp <- sapply(x[,"analyte"], function(a) {
-      i <- which(mt[,"analyte"]==a)
-      if (length(i)==1) {
+    tmp <- sapply(x[, "analyte"], function(a) {
+      i <- which(mt[, "analyte"] == a)
+      if (length(i) == 1) {
         t_max <- 0:60
-        u_stab <- x[x[,"analyte"]==a,"SE_slope"]*t_max/x[x[,"analyte"]==a,"mean"]
-        U_abs_3 <- mt[i,"k"]*mt[i,"cert_val"]*sqrt(mt[i,"u_com"]^2+u_stab^2)/3
-        max(which((u_stab*x[x[,"analyte"]==a,"mean"])<U_abs_3))
+        u_stab <- x[x[, "analyte"] == a, "SE_slope"] * t_max / x[x[, "analyte"] == a, "mean"]
+        U_abs_3 <- mt[i, "k"] * mt[i, "cert_val"] * sqrt(mt[i, "u_com"]^2 + u_stab^2) / 3
+        max(which((u_stab * x[x[, "analyte"] == a, "mean"]) < U_abs_3))
       } else {
         NA
       }
     })
-    x[,"t<sub>max</sub>"] <- tmp
+    x[, "t<sub>max</sub>"] <- tmp
   }
   for (i in c("slope", "SE_slope", "mean", "u_stab", P_col)) {
     if (i %in% colnames(x)) x[, i] <- pn(x[, i], 4)
@@ -65,14 +65,14 @@ styleTabS1 <- function(x, mt = NULL, optimize_u_stab = FALSE, sr = 1, output = c
   colnames(x) <- gsub("^P$", "P<sub>b1</sub>", colnames(x))
   colnames(x) <- gsub("^P_adj$", "P<sub>adj,b1</sub>", colnames(x))
   if (output %in% c("ft", "ft_HTML")) {
-    #eCerto:::ft_default(x, caption = "Analyte stabilities and accociated uncertainties", id = "Tab.S1")
+    # eCerto:::ft_default(x, caption = "Analyte stabilities and accociated uncertainties", id = "Tab.S1")
     eCerto_flextable_defaults(output = output)
-    ft <- flextable::flextable(x[,colnames(x)!="style_analyte"])
+    ft <- flextable::flextable(x[, colnames(x) != "style_analyte"])
     for (j in grep("<.+>.+</.+>", colnames(x))) {
       ft <- flextable::compose(x = ft, j = j, value = HTML2ft(colnames(x)[j]), part = "header")
     }
-    ft <- flextable::align(ft, j = which(!colnames(x) %in% c("analyte","style_analyte")), align = "right", part = "all")
-    if (any(x[,"style_analyte"]=="red")) for (i in which(x[,"style_analyte"]=="red")) ft <- flextable::color(ft, i = i, j = "analyte", color = "red", part = "body")
+    ft <- flextable::align(ft, j = which(!colnames(x) %in% c("analyte", "style_analyte")), align = "right", part = "all")
+    if (any(x[, "style_analyte"] == "red")) for (i in which(x[, "style_analyte"] == "red")) ft <- flextable::color(ft, i = i, j = "analyte", color = "red", part = "body")
     if (any(p_cols_sign)) for (i in which(p_cols_sign)) ft <- flextable::color(ft, i = i, j = p_col_idx, color = "red", part = "body")
     ft <- eCerto_flextable_defaults(ft = ft, output = output)
     ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.S1"), " Analyte stabilities and accociated uncertainties"))

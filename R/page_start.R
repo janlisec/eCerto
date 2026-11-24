@@ -15,7 +15,7 @@
 #'       eCerto:::page_startServer(id = "Start", rv = rv)
 #'     }
 #'   )
-#' }#'
+#' } #'
 #' @return Nothing
 #' @noRd
 
@@ -51,7 +51,6 @@ page_startUI <- function(id) {
 #' @noRd
 page_startServer <- function(id, rv, msession = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-    ns <- shiny::NS(id)
 
     # Upload Controller -------------------------------------------------------
     m_ExcelUpload_Server(id = "excelfile", rv = rv, msession = msession)

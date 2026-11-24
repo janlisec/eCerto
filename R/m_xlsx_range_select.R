@@ -73,12 +73,10 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
   stopifnot(shiny::is.reactive(sheet))
   stopifnot(shiny::is.reactive(file))
 
-  ns <- shiny::NS(id)
-
   shiny::moduleServer(id, function(input, output, session) {
 
     shinyjs::hide(id = "range_select_card")
-    #shinyjs::hide(id = "info_msg")
+    # shinyjs::hide(id = "info_msg")
 
     getRngTxt <- function(sc = 1, sr = 1, ec = 1, er = 1) {
       paste0(LETTERS[sc], sr, ":", LETTERS[ec], er)
@@ -123,7 +121,7 @@ m_xlsx_range_select_Server <- function(id, current_file_input = shiny::reactive(
         }
       } else if (xl_fmt == "Stability") {
         # for Stability, all sheets are loaded in Background
-        l <- lapply(seq_len(length(xlsxSheetNames(current_file_input()$datapath))), function(x) {
+        l <- lapply(seq_along(xlsxSheetNames(current_file_input()$datapath)), function(x) {
           fnc_read_xlsx(filepath = current_file_input()$datapath[1], sheet = x, method = "openxlsx")
         })
       } else if (xl_fmt == "Homogeneity") {

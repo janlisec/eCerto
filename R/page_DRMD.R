@@ -101,7 +101,7 @@ page_DRMDUI <- function(id) {
         tab_D1_card,
         tab_D2_card,
         tab_D3_card,
-        col_widths =  bslib::breakpoints(
+        col_widths = bslib::breakpoints(
           sm = c(12, 12, 12),
           xl = c(4, 8, 12)
         )
@@ -141,10 +141,10 @@ page_DRMDServer <- function(id, test_data = NULL) {
         D_dat <- read_drmd_xml(fl_path)
         # perform checks
         check_validity <- TRUE
-        #while (!is.null(D_dat) && check_validity) {
-          # check that DRMD format is correct
-            #e_msg("Sorry, could not...")
-        #}
+        # while (!is.null(D_dat) && check_validity) {
+        # check that DRMD format is correct
+        # e_msg("Sorry, could not...")
+        # }
         return(D_dat)
       } else {
         return(NULL)
@@ -178,12 +178,12 @@ page_DRMDServer <- function(id, test_data = NULL) {
         L2_entries <- unique(sapply(strsplit(D_lst$path, "_"), function(x) { x[2] }))
         L2_props <- grep("materialPropertiesList", L2_entries)
         # this is everything without the "materialPropertiesList" entries
-        D$tab_D1 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_[", paste((seq_len(length(L2_entries)))[-L2_props], collapse=""), "]"))
+        D$tab_D1 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_[", paste(seq_along(L2_entries)[-L2_props], collapse = ""), "]"))
         D$tab_D1_i <- 1
         # this is only the "materialPropertiesList" entries
         D$tab_D2 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_", L2_props))
         # this is the sub lists in "materialPropertiesList"
-        idx_results <- unique(sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[3] }))
+        idx_results <- unique(sapply(strsplit(D$tab_D2[, "idx"], "_"), function(x) { x[3] }))
         D$all_i <- idx_results
         D$i <- idx_results[length(idx_results)]
         # this is the full XML for checking
@@ -205,32 +205,32 @@ page_DRMDServer <- function(id, test_data = NULL) {
         # tbd
 
         # assign new value to Tab.D1
-        D$tab_D1[input$tab_D1_rows_selected,"value"] <- input$D1_current_value
+        D$tab_D1[input$tab_D1_rows_selected, "value"] <- input$D1_current_value
 
         # assign new value to modified data list
         if (is.null(D$data_mod)) D$data_mod <- D$data
         # ===
         # old version
-        #ele <- stats::na.omit(unname(unlist(D$tab_D1[input$tab_D1_rows_selected,-ncol(D$tab_D1)])))
+        # ele <- stats::na.omit(unname(unlist(D$tab_D1[input$tab_D1_rows_selected,-ncol(D$tab_D1)])))
         # new version
-        ele <- as.numeric(strsplit(D$tab_D1[input$tab_D1_rows_selected,"idx"], "_")[[1]])
+        ele <- as.numeric(strsplit(D$tab_D1[input$tab_D1_rows_selected, "idx"], "_")[[1]])
         # ===
         purrr::pluck(D$data_mod, !!!ele)[[1]] <- input$D1_current_value
       }
     }, ignoreInit = TRUE)
 
     shiny::observeEvent(input$D1_current_value, {
-      shinyjs::toggleState(id = "btn_D1_modify", condition = !identical(input$D1_current_value, D$tab_D1[input$tab_D1_rows_selected,"value"]))
+      shinyjs::toggleState(id = "btn_D1_modify", condition = !identical(input$D1_current_value, D$tab_D1[input$tab_D1_rows_selected, "value"]))
     }, ignoreInit = TRUE)
 
 
     shiny::observeEvent(D$i, {
       req(D$tab_D2)
       txt <- "new text"
-      L3 <- sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[3] })
-      L6 <- sapply(strsplit(D$tab_D2[,"idx"],"_"), function(x) { x[6] })
-      txt <- D$tab_D2[which(L3 == D$i & L6 == 1),"value"]
-      if (length(txt)>=1 && !all(is.na(txt))) shinyjs::html(id = "Result_set_annotations", html = shiny::HTML(paste(txt, sep="<br>")))
+      L3 <- sapply(strsplit(D$tab_D2[, "idx"], "_"), function(x) { x[3] })
+      L6 <- sapply(strsplit(D$tab_D2[, "idx"], "_"), function(x) { x[6] })
+      txt <- D$tab_D2[which(L3 == D$i & L6 == 1), "value"]
+      if (length(txt) >= 1 && !all(is.na(txt))) shinyjs::html(id = "Result_set_annotations", html = shiny::HTML(paste(txt, sep = "<br>")))
     })
 
     # tables ====
@@ -261,16 +261,16 @@ page_DRMDServer <- function(id, test_data = NULL) {
       shinyjs::toggle(id = "btn_D1_modify", condition = !is.null(i))
       shinyjs::toggle(id = "D_level_path", condition = !is.null(i))
       if (!is.null(i)) {
-        x <- D$tab_D1[input$tab_D1_rows_selected,]
-        shiny::updateTextAreaInput(inputId = "D1_current_value", value = unname(unlist(x[,"value"])))
+        x <- D$tab_D1[input$tab_D1_rows_selected, ]
+        shiny::updateTextAreaInput(inputId = "D1_current_value", value = unname(unlist(x[, "value"])))
         # ====
         # old Version
-        #tab_cap <- rev(unname(rev(stats::na.omit(unlist(x)))[-1]))
+        # tab_cap <- rev(unname(rev(stats::na.omit(unlist(x)))[-1]))
         # new version
-        tab_cap <- sub("^[^:]*:", "", strsplit(x[,"path"], "_")[[1]])
+        tab_cap <- sub("^[^:]*:", "", strsplit(x[, "path"], "_")[[1]])
         # ====
-        shinyjs::html(id = "D_level_path", paste(tab_cap, collapse="<br>"))
-        #shinyjs::disable(id = "btn_D1_modify")
+        shinyjs::html(id = "D_level_path", paste(tab_cap, collapse = "<br>"))
+        # shinyjs::disable(id = "btn_D1_modify")
       }
     }, ignoreNULL = FALSE)
 
@@ -284,7 +284,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
     )
 
     shiny::observeEvent(D$data_mod, {
-      #message("D$data_mod status", is.null(D$data_mod))
+      # message("D$data_mod status", is.null(D$data_mod))
       shinyjs::toggle(id = "D_Save", condition = !is.null(D$data_mod))
     }, ignoreNULL = FALSE, ignoreInit = FALSE)
 

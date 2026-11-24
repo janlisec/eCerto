@@ -10,8 +10,8 @@
 #' shiny::isolate(lab_means <- rv$c_lab_means(data = dat))
 #' x <- eCerto:::prepTabC1(dat = dat, lab_means = lab_means)
 #' eCerto:::styleTabC1(x = x)
-#' eCerto:::styleTabC1(x = x, output="ft")
-#' eCerto:::styleTabC1(x = x, output="ft_HTML")
+#' eCerto:::styleTabC1(x = x, output = "ft")
+#' eCerto:::styleTabC1(x = x, output = "ft_HTML")
 #' htmltools::html_print(bslib::card(bslib::card_body(
 #'   fillable = FALSE, fill = FALSE,
 #'   div(
@@ -36,7 +36,7 @@ styleTabC1 <- function(x, n = 4, fmt = c("alpha", "pval", "cval", "cval05", "cva
   colnames(x) <- gsub("1$", "<sub>1</sub>", colnames(x))
   colnames(x) <- gsub("2$", "<sub>2</sub>", colnames(x))
   if (output %in% c("ft", "ft_HTML")) {
-    x[,c("mean","sd")] <- round(x[,c("mean","sd")], n)
+    x[, c("mean", "sd")] <- round(x[, c("mean", "sd")], n)
     ft <- ft_default(df = x, caption = "Statistics regarding lab means, lab variances and outlier detection", id = "Tab.C1", output = output, HTML2ft = TRUE)
     return(ft)
   } else {

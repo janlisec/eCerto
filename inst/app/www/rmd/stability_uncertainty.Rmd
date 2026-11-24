@@ -19,7 +19,7 @@ for $n - 2$ degrees of freedom to obtain the P-values in column P~b1~.
 
 ```{r TabS1, echo=FALSE, message=FALSE, resize.width="100%", results='asis'}
 x <- eCerto:::prepTabS1(x = eCerto:::test_Stability_Excel())
-eCerto:::styleTabS1(x = x, mt = NULL, sr = 1, output = "ft_HTML" )
+eCerto:::styleTabS1(x = x, mt = NULL, sr = 1, output = "ft_HTML")
 ```
 
 ***Note!***

@@ -16,14 +16,14 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
+testing <- length(params$General) == 1L && (is.na(params$General) | params$General == "NA")
 if (testing) {
   report_file <- "report_vorlage_analyt.Rmd"
   logo_file <- "BAMLogo2015.png"
-  fnc_get_local_file <- function(x=NULL) {
+  fnc_get_local_file <- function(x = NULL) {
     pkg_path <- system.file(package = "eCerto")
-    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-    return(file.path(pkg_path, file_path, fsep="/"))
+    file_path <- list.files(path = pkg_path, pattern = x, recursive = TRUE)[1]
+    return(file.path(pkg_path, file_path, fsep = "/"))
   }
   res <- eCerto::CRM001
   G <- res$General
@@ -31,7 +31,7 @@ if (testing) {
   CP <- res$Certification_processing
   A <- ifelse(!is.null(res$selected_tab), res$selected_tab, names(G$apm)[1])
   D <- G$apm[[A]]
-  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
+  if (!file.exists(file.path(dirname(fnc_get_local_file(x = report_file)), logo_file))) {
     warning(paste(logo_file, "is not in same folder as", report_file))
   }
   L <- logo_file
@@ -60,14 +60,14 @@ p <- function(...) {
 ```{r analyte, echo=FALSE, results='asis', message=FALSE, fig.width=CP$CertValPlot$Fig01_width/96, fig.height=CP$CertValPlot$Fig01_height/96, fig.retina=4, fig.dpi=96}
 # meta data
 p(
-  "Date: ", format(Sys.time(), '%d %B, %Y'), "\n", 
-  "User: ", G$user, "\n", 
+  "Date: ", format(Sys.time(), "%d %B, %Y"), "\n",
+  "User: ", G$user, "\n",
   "Material: ", G$study_id, "\n",
   "Analyte: ", A
 )
 
 # show imported data
-df <- C$data[C$data[,"analyte"]==A,1:7,drop=FALSE]
+df <- C$data[C$data[, "analyte"] == A, 1:7, drop = FALSE]
 if (knitr::is_html_output()) {
   shiny::tagList(
     shiny::tags$caption("Tab.C0 Imported analyte data from inter laboratory trial"),
@@ -93,7 +93,7 @@ if (knitr::is_html_output()) {
   eCerto:::styleTabC1(x = df, n = D[["precision"]], output = "ft")
 }
 
-p(ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been removed by the user upon inspection of the oulier statistics: ", ""), paste(D$sample_filter, collapse=", "))
+p(ifelse(!is.null(D$sample_filter), "The following samples (IDs) have been removed by the user upon inspection of the oulier statistics: ", ""), paste(D$sample_filter, collapse = ", "))
 
 # show stats on averages
 df <- CP$mstats
@@ -106,20 +106,20 @@ if (knitr::is_html_output()) {
   eCerto:::styleTabC2(x = df, n = D[["precision"]], output = "ft")
 }
 
-p(ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics: ", ""), paste(D$lab_filter, collapse=", "))
+p(ifelse(!is.null(D$lab_filter), "The following Labs (IDs) have been removed by the user upon inspection of the oulier statistics: ", ""), paste(D$lab_filter, collapse = ", "))
 
 # show plot
-  # The eval(parse(...)) construct allowed to store the plot function in the RData backup as it was at the moment of data save and thus
-  # ensuring that it is compatible with the complete function call /parameters
-  # However, this caused problems on the server, because an internal function (ldply_base) could not be found this way, as markdown processing
-  # is outside of the package context. A possible solution might be to use library(eCerto) at the top of this markdown file but I guess loading 
-  # the function from the package works as well
-  #CertValPlot <- eval(parse(text=CP$CertValPlot$fnc))
-  CertValPlot <- eCerto:::CertValPlot
-  data <- C$data[C$data[,"analyte"]==A,,drop=FALSE]
-  data[,"L_flt"] <- data[,"Lab"] %in% D$lab_filter
-  data <- data[!(data[,"ID"] %in% D$sample_filter),]
-  # re-factor Lab to ensure that only Labs with data are depicted
-  data[,"Lab"] <- factor(data[,"Lab"])
-  eval(CP$CertValPlot$call)
+# The eval(parse(...)) construct allowed to store the plot function in the RData backup as it was at the moment of data save and thus
+# ensuring that it is compatible with the complete function call /parameters
+# However, this caused problems on the server, because an internal function (ldply_base) could not be found this way, as markdown processing
+# is outside of the package context. A possible solution might be to use library(eCerto) at the top of this markdown file but I guess loading
+# the function from the package works as well
+# CertValPlot <- eval(parse(text=CP$CertValPlot$fnc))
+CertValPlot <- eCerto:::CertValPlot
+data <- C$data[C$data[, "analyte"] == A, , drop = FALSE]
+data[, "L_flt"] <- data[, "Lab"] %in% D$lab_filter
+data <- data[!(data[, "ID"] %in% D$sample_filter), ]
+# re-factor Lab to ensure that only Labs with data are depicted
+data[, "Lab"] <- factor(data[, "Lab"])
+eval(CP$CertValPlot$call)
 ```

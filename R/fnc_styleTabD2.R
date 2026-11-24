@@ -19,14 +19,14 @@ styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, L3 = NULL) {
   # === new version
   if (all(c("idx", "path", "value") %in% colnames(df))) {
     # remove values containing comments
-    df <- df[df[,"value"]!="[ comment ]",]
+    df <- df[df[, "value"] != "[ comment ]", ]
     # filter for elements containing the term 'quantity' in their path
-    df <- df[grep("quantity", df[,"path"]),]
-    df$L3 <- as.numeric(sapply(strsplit(df[,"idx"],"_"),function(x){x[3]}))
-    df$L8 <- as.numeric(sapply(strsplit(df[,"idx"],"_"),function(x){x[8]}))
-    df$name <- sapply(strsplit(df[,"path"],"_"),function(x){x[length(x)]})
+    df <- df[grep("quantity", df[, "path"]), ]
+    df$L3 <- as.numeric(sapply(strsplit(df[, "idx"], "_"), function(x) {x[3]}))
+    df$L8 <- as.numeric(sapply(strsplit(df[, "idx"], "_"), function(x) {x[8]}))
+    df$name <- sapply(strsplit(df[, "path"], "_"), function(x) {x[length(x)]})
     # put 'value' column to the end and remov path
-    df <- cbind(df[,!colnames(df) %in% c("path","value")], "value" = df[,"value"])
+    df <- cbind(df[, !colnames(df) %in% c("path", "value")], "value" = df[, "value"])
   }
   # === new version
 
@@ -37,7 +37,7 @@ styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, L3 = NULL) {
     req(L3 %in% unique(df$L3))
   }
 
-  tmp <- df[df$L3==L3,]
+  tmp <- df[df$L3 == L3, ]
   # df <- dplyr::bind_rows(lapply(split(tmp, as.numeric(tmp$L8)), function(x) {
   #   stats::setNames(x$value, apply(x[,-ncol(x),drop=FALSE], 1, function(y) {
   #     rev(stats::na.omit(y))[1]
@@ -49,17 +49,17 @@ styleTabD2 <- function(df, selected = 1, interact_ele = TRUE, L3 = NULL) {
   all_names <- unique(unlist(lapply(lst, names)))
   df <- do.call(rbind, lapply(lst, function(v) { v[match(all_names, names(v))] }))
 
-  #if (selected %in% 1:now(df))
+  # if (selected %in% 1:now(df))
 
   # modify column names, using HTML formatting
-  #colnames(df) <- gsub("^value$", "value", colnames(df))
+  # colnames(df) <- gsub("^value$", "value", colnames(df))
 
   # create DT object
   dt <- DT::datatable(
     data = df, rownames = FALSE, extensions = "Buttons", escape = FALSE,
     options = list(
       dom = ifelse(interact_ele, "Bt", "t"), pageLength = -1, ordering = FALSE,
-      buttons = if (interact_ele)  {
+      buttons = if (interact_ele) {
         list(list(extend = "excel", text = "Excel", title = NULL))
       }
     ),

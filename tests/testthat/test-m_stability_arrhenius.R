@@ -4,7 +4,7 @@ testthat::test_that(
     # set up eCerto R6 object containing data from an arrhenius style experiment
     rv <- eCerto:::test_rv(type = "SR3")
     shiny::isolate(eCerto::setValue(rv, c("Stability", "data"), eCerto:::test_Stability_Arrhenius()))
-    mt <- data.frame("analyte"="a1", "cert_val"=10, "U_abs"=1)
+    mt <- data.frame("analyte" = "a1", "cert_val" = 10, "U_abs" = 1)
     shiny::isolate(eCerto::setValue(rv, c("General", "materialtabelle"), mt))
 
     # provide this test data to the server function and test if the expected outputs are generated
@@ -22,13 +22,13 @@ testthat::test_that(
         testthat::expect_equal(an(), "a1")
         x <- tab1exp()
         testthat::expect_true(is.data.frame(x))
-        testthat::expect_equal(nrow(x),3)
+        testthat::expect_equal(nrow(x), 3)
         testthat::expect_equal(ncol(x), 9)
 
         if (FALSE) {
           # this part should test for a missing value in input data but reactivity is not working
           tmp <- eCerto:::test_Stability_Arrhenius()
-          tmp[1,"Value"] <- NA
+          tmp[1, "Value"] <- NA
           eCerto::setValue(rv, c("Stability", "data"), tmp)
           session$flushReact()
           head(eCerto::getValue(rv, c("Stability", "data")))

@@ -5,9 +5,9 @@
 #' @return Returns the help text as HTML (currently produces errors when used)
 #' @examples
 #' foo <- eCerto:::show_help(
-#'   #filename = system.file("app/www/rmd/start_gethelp.Rmd", package = "eCerto"),
+#'   # filename = system.file("app/www/rmd/start_gethelp.Rmd", package = "eCerto"),
 #'   filename = system.file("app/www/rmd/stability_plot.Rmd", package = "eCerto"),
-#'   #filename = system.file("app/www/rmd/help_start.Rmd", package = "eCerto"),
+#'   # filename = system.file("app/www/rmd/help_start.Rmd", package = "eCerto"),
 #'   show_modal = FALSE
 #' )
 #' str(foo)
@@ -28,7 +28,7 @@ show_help <- function(filename, show_modal = TRUE) {
     e_msg(paste("Rendering Rmd file:", file_in))
     tmp_html <- tempfile(fileext = ".html")
     tmp_rmd <- fs::path(fs::path_dir(file_in), "tmp.rmd")
-    on.exit(unlink(x= c(tmp_html, tmp_rmd)))
+    on.exit(unlink(x = c(tmp_html, tmp_rmd)))
     # patch the input file to include an empty title to prevent rendering warnings
     # when title is missing in the Rmd file
     writeLines(text = c(
@@ -36,7 +36,7 @@ show_help <- function(filename, show_modal = TRUE) {
       'title: "&nsbp;"',
       '---',
       readLines(file_in, encoding = "UTF-8")),
-      con = tmp_rmd
+    con = tmp_rmd
     )
     rmarkdown::render(
       input = tmp_rmd,

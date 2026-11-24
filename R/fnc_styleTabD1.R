@@ -6,7 +6,7 @@
 #' @examples
 #' df <- data.frame(
 #'   path = paste0("Path", 1:5),
-#'   idx = c("1_1_1_1","1_1_2_1","1_2_1_1","1_2_2_1","1_3_1_1"),
+#'   idx = c("1_1_1_1", "1_1_2_1", "1_2_1_1", "1_2_2_1", "1_3_1_1"),
 #'   value = paste0("Value", 1:5)
 #' )
 #' eCerto:::styleTabD1(df = tab, selected = NULL)
@@ -17,10 +17,10 @@ styleTabD1 <- function(df, selected = 1) {
   e_msg("Styling Tab.D1 for HTML output")
 
   # hide first column ("path")
-  df <- df[,-1, drop=FALSE]
+  df <- df[, -1, drop = FALSE]
 
   # convert column 'idx' for better display
-  df[,"idx"] <- format_hierarchy(df[,"idx"])
+  df[, "idx"] <- format_hierarchy(df[, "idx"])
 
   # create DT object
   dt <- DT::datatable(

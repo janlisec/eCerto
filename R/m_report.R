@@ -47,7 +47,7 @@ m_reportUI <- function(id) {
             style = "display: flex; flex-direction: column; gap: 8px;",
             sub_header(shiny::actionLink(inputId = ns("help_link"), label = "Download Report")),
             shiny::downloadButton(ns("AnalyteReport"), label = shiny::HTML("CRM<br>Analytes")),
-            #shiny::downloadButton(ns("MaterialReport"), label = "CRM"),
+            # shiny::downloadButton(ns("MaterialReport"), label = "CRM"),
             shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML" = "html", "DOCX" = "docx"), inline = FALSE)
           ),
           shiny::div(
@@ -72,18 +72,18 @@ m_reportServer <- function(id, rv) {
       },
       content = function(file) {
         # Laden der XSD-Datei für SI units von der PTB URL
-        #xsd <- xml2::read_xml("https://ptb.de/si/v2.2.1/SI_Format.xsd")
-        #flatten_list_to_df(xml2::as_list(xsd))
+        # xsd <- xml2::read_xml("https://ptb.de/si/v2.2.1/SI_Format.xsd")
+        # flatten_list_to_df(xml2::as_list(xsd))
 
         mt <- styleTabC3(x = getValue(rv, c("General", "materialtabelle")), apm = getValue(rv, c("General", "apm")))$x$data
         mt_xml <- lapply(seq_len(nrow(mt)), function(i) {
           new_dcc_quantity_result(
-            name = mt[i,"analyte"],
-            label = mt[i,"analyte"],
-            value = mt[i,"\u00B5<sub>c</sub>"],
-            unit = mt[i,"unit"],
-            uncertainty = mt[i,"U<sub>abs</sub>"],
-            coverageFactor = mt[i,"k"]
+            name = mt[i, "analyte"],
+            label = mt[i, "analyte"],
+            value = mt[i, "\u00B5<sub>c</sub>"],
+            unit = mt[i, "unit"],
+            uncertainty = mt[i, "U<sub>abs</sub>"],
+            coverageFactor = mt[i, "k"]
           )
         })
 
@@ -100,7 +100,7 @@ m_reportServer <- function(id, rv) {
     )
 
     output$AnalyteReport <- shiny::downloadHandler(
-      #filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", rv$cur_an, ".", input$ReportFormat) },
+      # filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", rv$cur_an, ".", input$ReportFormat) },
       filename = function() { paste0(getValue(rv, c("General", "study_id")), "_", "Material", ".", input$ReportFormat) },
       content = function(file) {
         render_report_C(file = file, rv = rv)

@@ -25,7 +25,7 @@ i <- 1
 
 # is the Rmd processing in testing mode (not called by the Shiny App)
 if (is.null(params$dat)) {
-  report_file <- system.file("app/www/reports/report_vorlage_lts.Rmd", package = "eCerto")
+  report_file <- system.file(file.path("app","www","reports","report_vorlage_lts.Rmd"), package = "eCerto")
   LTS_dat <- eCerto::LTS001
   d <- LTS_dat[[i]][["def"]]
   v <- LTS_dat[[i]][["val"]]
@@ -35,7 +35,7 @@ if (is.null(params$dat)) {
   # remove filtered data points as these should not be part of a report
   # this check is redundant, because filtered points are removed in the app already
   if ("Filter" %in% colnames(v) && any(v$Filter)) {
-    v <- v[which(!v[,"Filter"]),]
+    v <- v[which(!v[, "Filter"]), ]
   }
 }
 plot_lts_data <- eCerto:::plot_lts_data
@@ -43,37 +43,42 @@ plot_lts_data <- eCerto:::plot_lts_data
 
 ```{r logo, echo=FALSE, fig.align='right', fig.height = 0.5}
 # show BAM Logo topright
-graphics::par(mar=c(1,0,0,0))
+graphics::par(mar = c(1, 0, 0, 0))
 layout(mat = matrix(1:2, ncol = 2), widths = c(0.8, 0.2))
-plot(1,1,axes=F,ann=F, type="n")
-mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font=2)
-mtext(side = 3, line = -2.25, text = paste("Material:", d[,"RM"]), adj = 0)
-mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), '%Y-%m-%d')), adj = 0.75)
+plot(1, 1, axes = FALSE, ann = FALSE, type = "n")
+mtext(side = 3, line = -1, text = "Long-Term Stability (LTS)", adj = 0, font = 2)
+mtext(side = 3, line = -2.25, text = paste("Material:", d[, "RM"]), adj = 0)
+mtext(side = 3, line = -2.25, text = paste("Date:", format(Sys.time(), "%Y-%m-%d")), adj = 0.75)
 plot(eCerto::BAMlogo_raster)
-
 ```
 
 ```{r plots, echo=FALSE, results='asis', dev.args = list(pointsize = 9), fig.height = 3.5}
 # 2 plots as in App version
-graphics::par(mar=c(5,4,4,2)+0.1)
-graphics::par(mfrow=c(1,2))
-  x <- list("val"=v, "def"=d)
-  plot_lts_data(x = x, type=1)
-  lts <- plot_lts_data(x = x, type=2)
-graphics::par(mfrow=c(1,1))
+graphics::par(mar = c(5, 4, 4, 2) + 0.1)
+graphics::par(mfrow = c(1, 2))
+x <- list("val" = v, "def" = d)
+plot_lts_data(x = x, type = 1)
+lts <- plot_lts_data(x = x, type = 2)
+graphics::par(mfrow = c(1, 1))
 ```
 
 ```{r stats}
-U_lts_rel <- stats::sd(v[,"Value"])/median(v[,"Value"])
-s_x <- stats::sd(v[,"Value"])/sqrt(nrow(v))
-s_xrel <- s_x/median(v[,"Value"])
-CI <- stats::sd(v[,"Value"])*qt(0.975, nrow(v)-1)/sqrt(nrow(v)-1)
-U_ilc <- round(100*d[,"U"]/d[,"CertVal"],2)
-U_lts <- round(100*switch(d[,"U_Def"], "1s"=U_lts_rel, "2s"=2*U_lts_rel, "CI"=CI/median(v[,"Value"]), "1sx"=s_xrel, "2sx"=2*s_xrel), 2)
-n_digits <- nchar(strsplit(as.character(d[,"CertVal"]), "[.]")[[1]][2])
-tab1_property_string <- paste0(d[,"KW_Def"], " (", d[,"KW"],")")
-tab1_cert_val_string <- paste(d[,"CertVal"], "±",  d[,"U"], "/", 100*d[,"Coef_of_Var"], "rel. [%] (", d[,"U_Def"], ")", d[,"KW_Unit"])
-tab2_median_val_string <- paste(round(median(v[,"Value"]), n_digits), d[,"KW_Unit"])
+U_lts_rel <- stats::sd(v[, "Value"]) / median(v[, "Value"])
+s_x <- stats::sd(v[, "Value"]) / sqrt(nrow(v))
+s_xrel <- s_x / median(v[, "Value"])
+CI <- stats::sd(v[, "Value"]) * qt(0.975, nrow(v) - 1) / sqrt(nrow(v) - 1)
+U_ilc <- round(100 * d[, "U"] / d[, "CertVal"], 2)
+U_lts <- round(100 * switch(d[, "U_Def"],
+  "1s" = U_lts_rel,
+  "2s" = 2 * U_lts_rel,
+  "CI" = CI / median(v[, "Value"]),
+  "1sx" = s_xrel,
+  "2sx" = 2 * s_xrel
+), 2)
+n_digits <- nchar(strsplit(as.character(d[, "CertVal"]), "[.]")[[1]][2])
+tab1_property_string <- paste0(d[, "KW_Def"], " (", d[, "KW"], ")")
+tab1_cert_val_string <- paste(d[, "CertVal"], "±", d[, "U"], "/", 100 * d[, "Coef_of_Var"], "rel. [%] (", d[, "U_Def"], ")", d[, "KW_Unit"])
+tab2_median_val_string <- paste(round(median(v[, "Value"]), n_digits), d[, "KW_Unit"])
 ```
 
 **RM Informations**
@@ -108,48 +113,51 @@ The long-term stability for the reference material **`r d[,"RM"]`** with its pro
 \scriptsize
 
 ```{r datatable, echo=FALSE, results='asis'}
-  opts <- options(knitr.kable.NA = "")
-#\rowcolors{2}{gray!25}{white}
-  # table of values (potentially modified)
-  com <- v[,"Comment"]
-  out <- v[,1:3]
-  # escape special LaTeX characters in `out`
-  for (i in seq_len(ncol(out))) {
-    if (mode(out[,i])=="character") out[,i] <- knitr:::escape_latex(x = out[,i])
+opts <- options(knitr.kable.NA = "")
+# \rowcolors{2}{gray!25}{white}
+# table of values (potentially modified)
+com <- v[, "Comment"]
+out <- v[, 1:3]
+# escape special LaTeX characters in `out`
+for (i in seq_len(ncol(out))) {
+  if (mode(out[, i]) == "character") out[, i] <- knitr:::escape_latex(x = out[, i])
+}
+if (any(!is.na(com))) {
+  idx <- com
+  idx[!is.na(com)] <- 1:sum(!is.na(com))
+  for (k in which(!is.na(com))) {
+    out$File[k] <- paste0(out$File[k], "\\textsuperscript{", idx[k], "}")
   }
-  if (any(!is.na(com))) {
-    idx <- com
-    idx[!is.na(com)] <- 1:sum(!is.na(com))
-    for (k in which(!is.na(com))) {
-      out$File[k] <- paste0(out$File[k], "\\textsuperscript{", idx[k], "}")
-    }
-    com <- com[!is.na(com)]
-    # escape special LaTeX characters in `com`
-    com <- knitr:::escape_latex(x = com)
-    com <- data.frame("Comments for Tab.1"=sapply(seq_len(length(com)), function(i) { paste0("\\textsuperscript{", i, "} ", com[i]) }), check.names = FALSE)
-  } else {
-    com <- NULL
-  }
-  n <- ceiling(nrow(out)/2)
-  np <- ceiling(n/l_max)
-  tab <- vector("list", np)
-  for (p in 1:np) {
-    tab[[p]] <- vector("list", 2)
-    for (i in 1:2) {
-      tab[[p]][[i]] <- out[0:min(l_max, nrow(out)),]
-      out <- out[-(seq_len(min(l_max, nrow(out)))),]
-      if (nrow(tab[[p]][[i]])==0) { tab[[p]][[i]] <- NULL }
-    }
-  }
-  for (p in 1:np) {
-    # we need 'escape=FALSE' to allow superscript for comments but it might lead to problems
-    print(knitr::kable(x=tab[[p]], format="latex", row.names = FALSE, escape=FALSE, caption = paste0("Tab.1 LTS measurement values", ifelse(p>1, " (continued)", "")), booktabs = TRUE))
-    #, position = "!b"
-    if (p==np && !is.null(com)) {
-      #cat('\\rowcolors{1}{white}{white}')
-      print(knitr::kable(x=com, format="latex", row.names = FALSE, escape=FALSE, caption = " ", booktabs = TRUE, toprule = "", midrule = "", bottomrule = "", linesep = "", centering = FALSE, position = "!t"))
-      #print(knitr::kable(x=com, format="pipe", row.names = FALSE, escape=FALSE, caption = " ", position = "t"))
+  com <- com[!is.na(com)]
+  # escape special LaTeX characters in `com`
+  com <- knitr:::escape_latex(x = com)
+  com <- data.frame("Comments for Tab.1" = sapply(seq_along(com), function(i) {
+    paste0("\\textsuperscript{", i, "} ", com[i])
+  }), check.names = FALSE)
+} else {
+  com <- NULL
+}
+n <- ceiling(nrow(out) / 2)
+np <- ceiling(n / l_max)
+tab <- vector("list", np)
+for (p in 1:np) {
+  tab[[p]] <- vector("list", 2)
+  for (i in 1:2) {
+    tab[[p]][[i]] <- out[0:min(l_max, nrow(out)), ]
+    out <- out[-(seq_len(min(l_max, nrow(out)))), ]
+    if (nrow(tab[[p]][[i]]) == 0) {
+      tab[[p]][[i]] <- NULL
     }
   }
-  
+}
+for (p in 1:np) {
+  # we need 'escape=FALSE' to allow superscript for comments but it might lead to problems
+  print(knitr::kable(x = tab[[p]], format = "latex", row.names = FALSE, escape = FALSE, caption = paste0("Tab.1 LTS measurement values", ifelse(p > 1, " (continued)", "")), booktabs = TRUE))
+  # , position = "!b"
+  if (p == np && !is.null(com)) {
+    # cat('\\rowcolors{1}{white}{white}')
+    print(knitr::kable(x = com, format = "latex", row.names = FALSE, escape = FALSE, caption = " ", booktabs = TRUE, toprule = "", midrule = "", bottomrule = "", linesep = "", centering = FALSE, position = "!t"))
+    # print(knitr::kable(x=com, format="pipe", row.names = FALSE, escape=FALSE, caption = " ", position = "t"))
+  }
+}
 ```

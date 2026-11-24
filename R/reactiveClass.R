@@ -144,8 +144,8 @@ eCerto <- R6::R6Class(
       }
       out <- ldply_base(split(data$value, data$Lab), function(x) {
         data.frame(
-          "mean" = mean(x, na.rm = T),
-          "sd" = stats::sd(x, na.rm = T),
+          "mean" = mean(x, na.rm = TRUE),
+          "sd" = stats::sd(x, na.rm = TRUE),
           "n" = sum(is.finite(x)),
           stringsAsFactors = FALSE
         )

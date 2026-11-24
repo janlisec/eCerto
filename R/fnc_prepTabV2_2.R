@@ -12,19 +12,19 @@
 #' eCerto:::prepTabV2_2(inp = inp, q = 2, prec = 5, id = "Tab2", caption = "caption")
 #' @keywords internal
 #' @noRd
-prepTabV2_2 <- function(inp, q=1, prec=3, fmt="alpha", ...) {
-  if (is.numeric(q) && !(q %in% inp[,"Level"])) q <- unique(inp[,"Level"])[q[1]]
-  #tmp <- inp[inp[,"Level"]==q & !is.removed(inp), c("Lab","Value"), drop=FALSE]
-  tmp <- inp[inp[,"Level"]==q & !is.removed(inp),]
+prepTabV2_2 <- function(inp, q = 1, prec = 3, fmt = "alpha", ...) {
+  if (is.numeric(q) && !(q %in% inp[, "Level"])) q <- unique(inp[, "Level"])[q[1]]
+  # tmp <- inp[inp[,"Level"]==q & !is.removed(inp), c("Lab","Value"), drop=FALSE]
+  tmp <- inp[inp[, "Level"] == q & !is.removed(inp), ]
   mns <- V2_calc_stats(tmp)
-  if (any(mns[,"n"]==0)) {
-    mns <- mns[mns[,"n"]>0,,drop=FALSE]
-    tmp <- tmp[tmp[,"Lab"] %in% rownames(mns),,drop=FALSE]
+  if (any(mns[, "n"] == 0)) {
+    mns <- mns[mns[, "n"] > 0, , drop = FALSE]
+    tmp <- tmp[tmp[, "Lab"] %in% rownames(mns), , drop = FALSE]
   }
-  out <- cbind(mns, Grubbs(lab_means = mns[, "mean", drop=FALSE], fmt=fmt))
+  out <- cbind(mns, Grubbs(lab_means = mns[, "mean", drop = FALSE], fmt = fmt))
   colnames(tmp) <- gsub("Value", "value", colnames(tmp))
-  out <- cbind(out, Cochran(data = tmp, fmt=fmt))
-  out <- out[order(out[,"mean"]),]
+  out <- cbind(out, Cochran(data = tmp, fmt = fmt))
+  out <- out[order(out[, "mean"]), ]
   colnames(out) <- gsub("1$", "<sub>1</sub>", colnames(out))
   colnames(out) <- gsub("2$", "<sub>2</sub>", colnames(out))
   colnames(out) <- gsub("_h$", "<i> h</i>", colnames(out))

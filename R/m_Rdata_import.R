@@ -49,7 +49,6 @@ m_RDataImport_UI <- function(id) {
 #' @keywords internal
 m_RDataImport_Server <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
-    ns <- session$ns
 
     # helper function
     load_test_data <- function(x = NULL) {

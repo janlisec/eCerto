@@ -2,7 +2,7 @@ library(testthat)
 library(eCerto)
 
 # setting this variable will suppress most eCerto message calls
-Sys.setenv("GOLEM_CONFIG_ACTIVE"="default")
+Sys.setenv("GOLEM_CONFIG_ACTIVE" = "default")
 
 ## run all tests similar to Ctrl+Shift+T in RStudio
 # testthat::test_check(package = "eCerto", reporter=c("minimal", "location"))
@@ -16,7 +16,7 @@ Sys.setenv("GOLEM_CONFIG_ACTIVE"="default")
 
 ## tests with snaps fail upon "RCHECK" while being successful in "test_check"
 ## setting R_TESTS avoids this problem
-Sys.setenv(R_TESTS="")
+Sys.setenv(R_TESTS = "")
 
 ## run all tests
 # testthat::test_dir(path = "./tests/testthat")

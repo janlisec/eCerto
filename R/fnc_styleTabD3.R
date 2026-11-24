@@ -15,10 +15,10 @@ styleTabD3 <- function(df, interact_ele = TRUE) {
   e_msg("Styling Tab.D3 for HTML output")
 
   # hide first column ("path")
-  df <- df[,-1, drop=FALSE]
+  df <- df[, -1, drop = FALSE]
 
   # convert column 'idx' for better display
-  df[,"idx"] <- format_hierarchy(df[,"idx"])
+  df[, "idx"] <- format_hierarchy(df[, "idx"])
 
   # create DT object
   dt <- DT::datatable(

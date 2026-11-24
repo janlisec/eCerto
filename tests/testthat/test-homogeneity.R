@@ -28,20 +28,20 @@ testthat::test_that(
       x <- eCerto:::prepTabH1(x = eCerto:::test_homog()$data)
       o1 <- eCerto:::styleTabH1(x = x)
       testthat::expect_equal(
-        as.character(o1$x$data[,"style_analyte"]),
-        rep("red", each=4)
+        as.character(o1$x$data[, "style_analyte"]),
+        rep("red", each = 4)
       )
-      mt <- data.frame("analyte"="Fe")
+      mt <- data.frame("analyte" = "Fe")
       o2 <- eCerto:::styleTabH1(x = x, mt = mt)
       testthat::expect_equal(
-        as.character(o2$x$data[,"style_analyte"]),
-        rep(c("","red"), each=2)
+        as.character(o2$x$data[, "style_analyte"]),
+        rep(c("", "red"), each = 2)
       )
-      prec <- unlist(list("Fe"=2))
+      prec <- unlist(list("Fe" = 2))
       o3 <- eCerto:::styleTabH1(x = x, prec = prec)
       testthat::expect_equal(
-        o3$x$data[,"mean"],
-        c("0.29","0.29","0.2905","0.2935")
+        o3$x$data[, "mean"],
+        c("0.29", "0.29", "0.2905", "0.2935")
       )
     })
   }
@@ -52,19 +52,19 @@ testthat::test_that(
   code = {
     suppressMessages({
       rv <- eCerto:::test_rv()
-      mt <- isolate(eCerto::getValue(rv, c("General","materialtabelle")))
-      attr(mt, "col_code") <- data.frame("ID"="U","Name"="U")
-      isolate(eCerto::setValue(rv, c("General","materialtabelle"), mt))
+      mt <- isolate(eCerto::getValue(rv, c("General", "materialtabelle")))
+      attr(mt, "col_code") <- data.frame("ID" = "U", "Name" = "U")
+      isolate(eCerto::setValue(rv, c("General", "materialtabelle"), mt))
       isolate(eCerto::setValue(rv, "Homogeneity", eCerto:::test_homog()))
       shiny::testServer(
         app = eCerto:::page_HomogeneityServer,
         args = list(rv = rv),
-        expr =  {
-          testthat::expect_true(all(c("data","h_vals") %in% names(getValue(rv, "Homogeneity"))))
+        expr = {
+          testthat::expect_true(all(c("data", "h_vals") %in% names(getValue(rv, "Homogeneity"))))
           # set input value to trigger calculation of 'h_vals'
           session$setInputs(h_sel_analyt = "Fe.axial")
           session$flushReact()
-          testthat::expect_true(all(sapply(c("data","h_vals"), function(x) {!is.null(getValue(rv, "Homogeneity")[[x]])})))
+          testthat::expect_true(all(sapply(c("data", "h_vals"), function(x) {!is.null(getValue(rv, "Homogeneity")[[x]])})))
         }
       )
     })

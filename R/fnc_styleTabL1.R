@@ -3,8 +3,8 @@
 #' @details tbd.
 #' @param x The LTS data for a material property.
 #' @examples
-#' x <- data.frame("Value"=1, "Date"=Sys.Date(), "File"="XX.smp")
-#' eCerto:::styleTabL1(x=x)
+#' x <- data.frame("Value" = 1, "Date" = Sys.Date(), "File" = "XX.smp")
+#' eCerto:::styleTabL1(x = x)
 #' @return A datatable object.
 #' @keywords internal
 #' @noRd

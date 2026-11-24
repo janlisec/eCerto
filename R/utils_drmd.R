@@ -19,12 +19,12 @@
 #'   f = "v4"
 #' )
 #' flatten_list_to_df(lst)
-#' flatten_list_to_df(lst, sep="|")
-#' #drmc <- xml2::read_xml(x = "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/DRMD/drmc-007.xml")
-#' #drmc <- xml2::as_list(drmc, ns = xml2::xml_ns(drmc))
-#' #head(flatten_list_to_df(drmc))
-#' #df <- flatten_list_to_df(drmc)
-#' #filter_flattened_list(df = df, flt = "^1_2_2_2_1_2")
+#' flatten_list_to_df(lst, sep = "|")
+#' # drmc <- xml2::read_xml(x = "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/DRMD/drmc-007.xml")
+#' # drmc <- xml2::as_list(drmc, ns = xml2::xml_ns(drmc))
+#' # head(flatten_list_to_df(drmc))
+#' # df <- flatten_list_to_df(drmc)
+#' # filter_flattened_list(df = df, flt = "^1_2_2_2_1_2")
 #' @noRd
 #' @keywords internal
 flatten_list_to_df <- function(nested_list, sep = "_") {
@@ -59,8 +59,8 @@ flatten_list_to_df <- function(nested_list, sep = "_") {
 #' @keywords internal
 filter_flattened_list <- function(df, flt = "^1_1") {
   stopifnot("idx" %in% colnames(df))
-  idx <- grep(flt, df[,"idx"])
-  df[idx,]
+  idx <- grep(flt, df[, "idx"])
+  df[idx, ]
 }
 
 #' @title remove_prefix
@@ -122,8 +122,8 @@ remove_prefix <- function(nested_list, pattern = "^[^:]*:") {
 #' @param replace_symbol replace_symbol.
 #' @examples
 #' \dontrun{
-#'   x <- c("1_1_1_1", "1_1_2_1", "1_2_1_1_1", "1_2_1_2_1", "1_3_1_1")
-#'   cbind(x, format_hierarchy(x = x))
+#' x <- c("1_1_1_1", "1_1_2_1", "1_2_1_1_1", "1_2_1_2_1", "1_3_1_1")
+#' cbind(x, format_hierarchy(x = x))
 #' }
 #' @return Character.
 #' @keywords internal
@@ -240,7 +240,7 @@ new_drmd_materials <- function() {
       "drmd:material" = list(
         "drmd:name" = list("dcc:content" = list("material name")),
         "drmd:description" = list("dcc:content" = list("The RM disappears once looked upon.")),
-        #"drmd:materialClass" = list("tbd"),
+        # "drmd:materialClass" = list("tbd"),
         "drmd:minimumSampleSize" = list(
           "dcc:itemQuantity" = list(
             "si:realListXMLList" = list(
@@ -268,12 +268,12 @@ new_drmd_materials <- function() {
 #' mt <- eCerto::CRM001$General$materialtabelle
 #' mt_xml <- lapply(1:nrow(mt), function(i) {
 #'   new_dcc_quantity_result(
-#'     name = mt[i,"analyte"],
-#'     label = mt[i,"analyte"],
-#'     value = mt[i,"cert_val"],
-#'     unit = mt[i,"unit"],
-#'     uncertainty = mt[i,"U_abs"],
-#'     coverageFactor = mt[i,"k"]
+#'     name = mt[i, "analyte"],
+#'     label = mt[i, "analyte"],
+#'     value = mt[i, "cert_val"],
+#'     unit = mt[i, "unit"],
+#'     uncertainty = mt[i, "U_abs"],
+#'     coverageFactor = mt[i, "k"]
 #'   )
 #' })
 #' @noRd
@@ -322,17 +322,17 @@ new_drmd_measurementResult <- function(isCertified = "true", name_drmd = "Certif
 #' @return A named list that can be converted into a full `digitalReferenceMaterialDocument` XML file.
 #' @examples
 #' \dontrun{
-#'  dcc <- new_dcc_quantity_result()
-#'  drmd_result_container <- new_drmd_measurementResult(quantities = dcc)
-#'  drmd_result_container2 <- new_drmd_measurementResult(isCertified = "false", name_drmd = "Fun values only.", quantities = dcc)
-#'  drmd_lst <- new_drmd_document(admin_data = new_drmd_admin_data(), result_data = list(drmd_result_container, drmd_result_container2))
-#'  # flatten_list_to_df(drmd_lst)
-#'  drmd_xml <- xml2::as_xml_document(x = drmd_lst)
-#'  fl <- tempfile(fileext = ".xml")
-#'  str(validate_drmd_xml(drmc = drmd_xml))
-#'  xml2::write_xml(x = drmd_xml, file = fl)
-#'  str(validate_drmd_xml(drmc = xml2::read_xml(x = fl)))
-#'  tmp <- readLines(fl)
+#' dcc <- new_dcc_quantity_result()
+#' drmd_result_container <- new_drmd_measurementResult(quantities = dcc)
+#' drmd_result_container2 <- new_drmd_measurementResult(isCertified = "false", name_drmd = "Fun values only.", quantities = dcc)
+#' drmd_lst <- new_drmd_document(admin_data = new_drmd_admin_data(), result_data = list(drmd_result_container, drmd_result_container2))
+#' # flatten_list_to_df(drmd_lst)
+#' drmd_xml <- xml2::as_xml_document(x = drmd_lst)
+#' fl <- tempfile(fileext = ".xml")
+#' str(validate_drmd_xml(drmc = drmd_xml))
+#' xml2::write_xml(x = drmd_xml, file = fl)
+#' str(validate_drmd_xml(drmc = xml2::read_xml(x = fl)))
+#' tmp <- readLines(fl)
 #' }
 #' @noRd
 #' @keywords internal
@@ -344,7 +344,7 @@ new_drmd_document <- function(admin_data = NULL, result_data = NULL, remove_ns =
       result_data,
       new_drmd_statements()[[1]]
     ), names = c("drmd:administrativeData", "drmd:materials", "drmd:materialPropertiesList", "drmd:statements"),
-    "schemaVersion"="0.3.0", "xmlns:dcc"="https://ptb.de/dcc", "xmlns:drmd"="https://example.org/drmd", "xmlns:si"="https://ptb.de/si")
+    "schemaVersion" = "0.3.0", "xmlns:dcc" = "https://ptb.de/dcc", "xmlns:drmd" = "https://example.org/drmd", "xmlns:si" = "https://ptb.de/si")
   )
   if (remove_ns) lst <- remove_prefix(lst)
   return(lst)

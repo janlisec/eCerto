@@ -43,12 +43,12 @@ table in R.
 
 ```{r, echo=TRUE, eval=FALSE}
 ps <- c(0.01, 0.05)
-ns <- c(3:9, seq(10,20,5))
-ks <- c(2:14, seq(15,30,5))
+ns <- c(3:9, seq(10, 20, 5))
+ks <- c(2:14, seq(15, 30, 5))
 out <- lapply(ps, function(p) {
   sapply(ns, function(n) {
     sapply(ks, function(k) {
-      eCerto:::qcochran(p=p, n=n, k=k)
+      eCerto:::qcochran(p = p, n = n, k = k)
     })
   })
 })
@@ -67,12 +67,12 @@ lapply(out, function(x) {
 
 ```{r, echo=FALSE, eval=TRUE}
 ps <- c(0.01, 0.05)
-ns <- c(3:9, seq(10,20,5))
-ks <- c(2:14, seq(15,30,5))
+ns <- c(3:9, seq(10, 20, 5))
+ks <- c(2:14, seq(15, 30, 5))
 out <- lapply(ps, function(p) {
   sapply(ns, function(n) {
     sapply(ks, function(k) {
-      eCerto:::qcochran(p=p, n=n, k=k)
+      eCerto:::qcochran(p = p, n = n, k = k)
     })
   })
 })
@@ -120,7 +120,7 @@ at the lower and upper end. Critical values are stored in tabulated form interna
   <summary>Show Dixon critical values table</summary>
 
 ```{r, echo=FALSE, eval=TRUE}
-eCerto::cvals_Dixon[,1:8]
+eCerto::cvals_Dixon[, 1:8]
 ```
 
 </details> 
@@ -171,10 +171,10 @@ table in R.
 
 ```{r, echo=TRUE, eval=FALSE}
 ps <- c(0.01, 0.025, 0.05, 0.1)
-ns <- c(3:10, seq(20,100,40))
+ns <- c(3:10, seq(20, 100, 40))
 out <- sapply(ps, function(p) {
   sapply(ns, function(n) {
-    eCerto:::qgrubbs(p=p, n=n)
+    eCerto:::qgrubbs(p = p, n = n)
   })
 })
 colnames(out) <- paste0("a=", ps)
@@ -188,10 +188,10 @@ round(out, 4)
 
 ```{r, echo=FALSE, eval=TRUE}
 ps <- c(0.01, 0.025, 0.05, 0.1)
-ns <- c(3:10, seq(20,100,40))
+ns <- c(3:10, seq(20, 100, 40))
 out <- sapply(ps, function(p) {
   sapply(ns, function(n) {
-    eCerto:::qgrubbs(p=p, n=n)
+    eCerto:::qgrubbs(p = p, n = n)
   })
 })
 colnames(out) <- paste0("a=", ps)
@@ -207,9 +207,9 @@ round(out, 4)
 
 ```{r, echo=FALSE, eval=TRUE}
 ps <- c(0.01, 0.025, 0.05, 0.1)
-ns <- c(4:10, seq(20,100,40))
+ns <- c(4:10, seq(20, 100, 40))
 out <- eCerto::cvals_Grubbs2
-round(out[rownames(out)%in%ns, colnames(out)%in%ps], 4)
+round(out[rownames(out) %in% ns, colnames(out) %in% ps], 4)
 ```
 
 </details> 

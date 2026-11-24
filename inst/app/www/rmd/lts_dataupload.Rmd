@@ -10,7 +10,8 @@ columns should be of numeric and date format respectively).
 ```{r L_upload_example1, echo=FALSE, message=FALSE}
 eCerto:::LTS_upload_example_table() |>
   flextable::set_caption(flextable::as_paragraph(
-  flextable::as_b("Info"), " Excel format for LTS data. Cell alignment indicates cell format as text (left), numeric (right) or date (centered). The `Comment` column is optional. Simply copy/paste this table into Excel and modify according to your needs.")) |>
+    flextable::as_b("Info"), " Excel format for LTS data. Cell alignment indicates cell format as text (left), numeric (right) or date (centered). The `Comment` column is optional. Simply copy/paste this table into Excel and modify according to your needs."
+  )) |>
   flextable::htmltools_value(ft.align = "left")
 ```
 

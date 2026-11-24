@@ -41,7 +41,7 @@ m_analyteUI <- function(id) {
       width = "735px",
       circle = FALSE,
       bslib::layout_column_wrap(
-        width = 1/3,
+        width = 1 / 3,
         gap = "8px",
         heights_equal = "all",
         bslib::card(
@@ -67,7 +67,7 @@ m_analyteUI <- function(id) {
           bslib::card_body(
             style = "padding: 8px;",
             bslib::layout_column_wrap(
-              width = 1/2,
+              width = 1 / 2,
               gap = "8px",
               bslib::card_body(
                 style = "padding:0;",
@@ -99,7 +99,7 @@ m_analyteUI <- function(id) {
           bslib::card_body(
             style = "padding: 8px;",
             bslib::layout_column_wrap(
-              width = 1/2,
+              width = 1 / 2,
               gap = "8px",
               bslib::card_body(
                 style = "padding:0;",
@@ -107,7 +107,7 @@ m_analyteUI <- function(id) {
                   inputId = ns("precision"),
                   label = "Tables",
                   value = 4, min = 0, max = 10, step = 1,
-                  width = "100%"   # <— statt "100px"
+                  width = "100%" # <— statt "100px"
                 )
               ),
               bslib::card_body(
@@ -132,7 +132,6 @@ m_analyteUI <- function(id) {
 #' @keywords internal
 m_analyteServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
-    ns <- shiny::NS(id)
 
     # set up error message system to inform user
     err_msg <- shiny::reactiveVal(NULL)
@@ -142,14 +141,14 @@ m_analyteServer <- function(id, rv) {
     }, ignoreNULL = TRUE)
 
     a <- shiny::reactive({
-      #req(rv$a_p("name"))
+      # req(rv$a_p("name"))
       req(rv$e_present()["Certification"])
       # [JL] it would be nice to remove apm() from this reactive but analyte parameter update fails
       # unfortunately if apm() is not present for the case where rv$cur_an was already set by an upload
       # of S data. It is not initiated by C modul than and parameters get not updated in this case
-      #apm()
+      # apm()
       shiny::validate(shiny::need(expr = rv$cur_an %in% rv$a_p("name"), message = paste("Analyte", rv$cur_an, "is not present in C data.")))
-      #if (rv$a_p("confirmed")[rv$cur_an]) rv$cur_an else NULL
+      # if (rv$a_p("confirmed")[rv$cur_an]) rv$cur_an else NULL
       rv$cur_an
     })
 
@@ -183,13 +182,13 @@ m_analyteServer <- function(id, rv) {
         shiny::updateCheckboxInput(inputId = "pooling", value = ap$pooling)
       }
       # [JL] 20240418 alternatively use the list structure of the select input to group sample IDs by lab in the widget
-      x <- getValue(rv, c("Certification","data"))
+      x <- getValue(rv, c("Certification", "data"))
       f_ui <- input$sample_filter_open
       if (is.null(f_ui) || (is.logical(f_ui) && !f_ui)) {
         e_msg(paste("update parameter input 'S_Flt' for", a))
         shinyWidgets::updatePickerInput(
           inputId = "sample_filter",
-          choices = split(x[x[,"analyte"]==a,"ID"], x[x[,"analyte"]==a,"Lab"]),
+          choices = split(x[x[, "analyte"] == a, "ID"], x[x[, "analyte"] == a, "Lab"]),
           selected = ap$sample_filter
         )
       }

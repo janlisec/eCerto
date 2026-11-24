@@ -153,11 +153,11 @@ m_arrheniusServer <- function(id, rv) {
       shiny::validate(shiny::need(input$analyte %in% as.character(dat[, "analyte"]), message = "How did you manage to specify a non existent analyte name?"))
       tmp <- dat[as.character(dat[, "analyte"]) == input$analyte, ]
       # filtering step according to user selection (Exclude IDs input in Fig.S1 options)
-      tmp <- tmp[!rownames(tmp) %in% s_flt(),]
+      tmp <- tmp[!rownames(tmp) %in% s_flt(), ]
       # normalize data to mean of t=0
       flt <- is.finite(tmp[, "Value"]) & tmp[, "Value"] > 0
       if (!all(flt)) {
-        err_txt(paste("Did filter the following values:", paste(paste("ID_", rownames(tmp)[!flt], ": ", tmp[!flt, "Value"], sep=""), collapse = ", ")))
+        err_txt(paste("Did filter the following values:", paste(paste("ID_", rownames(tmp)[!flt], ": ", tmp[!flt, "Value"], sep = ""), collapse = ", ")))
         tmp <- tmp[flt, ]
       }
       tmp[, "Value"] <- tmp[, "Value"] / mean(tmp[tmp[, "time"] == 0, "Value"], na.rm = TRUE)

@@ -3,11 +3,11 @@ testthat::test_that(
   code = {
     # set up empty eCerto object
     tmp <- eCerto::eCerto$new(rv = eCerto:::init_rv())
-    testthat::expect_null(shiny::isolate(eCerto::getValue(tmp, c("Certification","data"))))
+    testthat::expect_null(shiny::isolate(eCerto::getValue(tmp, c("Certification", "data"))))
 
     # fill a value and check it setValue was successful
-    shiny::isolate(eCerto::setValue(tmp, c("Certification","data"), 5))
-    testthat::expect_equal(shiny::isolate(eCerto::getValue(tmp, c("Certification","data"))), 5)
+    shiny::isolate(eCerto::setValue(tmp, c("Certification", "data"), 5))
+    testthat::expect_equal(shiny::isolate(eCerto::getValue(tmp, c("Certification", "data"))), 5)
 
     # create filled example eCerto object and...
     tmp <- eCerto::eCerto$new()
@@ -25,9 +25,9 @@ testthat::test_that(
     # check if flt_data are returned
     testthat::expect_true(is.data.frame(tmp$c_fltData()))
     # check if flt_data is recalculated based on apm
-    x <- shiny::isolate(eCerto::getValue(tmp, c("General","apm")))
+    x <- shiny::isolate(eCerto::getValue(tmp, c("General", "apm")))
     x[[shiny::isolate(tmp$cur_an)]][["lab_filter"]] <- "L1"
-    shiny::isolate(eCerto::setValue(tmp, c("General","apm"), x))
-    testthat::expect_equal(sum(tmp$c_fltData(recalc = TRUE)[,"L_flt"]), 4)
+    shiny::isolate(eCerto::setValue(tmp, c("General", "apm"), x))
+    testthat::expect_equal(sum(tmp$c_fltData(recalc = TRUE)[, "L_flt"]), 4)
   }
 )
