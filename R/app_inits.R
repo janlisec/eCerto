@@ -206,7 +206,7 @@ init_V2_data <- function(n_p = 12, n_q = 2, n_k = 3:5, seed = 5725, digits = 3:4
     })
   )
 
-  out <- cbind(out, "ID"=1:nrow(out), "Filter"="")
+  out <- cbind(out, "ID"=seq_len(nrow(out)), "Filter"="")
   out[out[,"Lab"]=="Lab05" & out[,"Level"]=="Lev02", "Filter"] <- "removed Lab05 Lev02"
   out[out[,"ID"]==15, "Filter"] <- "removed ID 15"
 

@@ -387,7 +387,7 @@ page_validation32645Server <- function(id, test_data = NULL) {
     shiny::observeEvent(tab(), {
       shinyWidgets::updatePickerInput(
         session = session, inputId = "opt_figV1_anal", choices = levels(tab()$Analyte), selected = levels(tab()$Analyte),
-        choicesOpt = list(subtext = paste0("(",1:length(levels(tab()$Analyte)),")")),
+        choicesOpt = list(subtext = paste0("(",seq_len(length(levels(tab()$Analyte))),")")),
         options = list('container' = "body", 'actions-box' = TRUE, 'deselect-all-text' = "None", 'select-all-text' = "All", 'none-selected-text' = "None selected")
       )
       shinyWidgets::updatePickerInput(
@@ -482,7 +482,7 @@ page_validation32645Server <- function(id, test_data = NULL) {
       req(V2_dat())
       x <- V2_dat()
       df <- matrix(NA, nrow = max(sapply(x, nrow)), ncol = length(x), dimnames = list(1:max(sapply(x, nrow)), names(x)))
-      for (i in 1:length(x)) df[1:length(x[[i]][,"Value"]),i] <- x[[i]][,"Value"]
+      for (i in seq_len(length(x))) df[seq_len(length(x[[i]][,"Value"])),i] <- x[[i]][,"Value"]
       dt <- DT::datatable(
         data = df, rownames = FALSE, extensions = "Buttons",
         options = list(

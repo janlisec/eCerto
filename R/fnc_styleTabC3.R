@@ -22,10 +22,10 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft", "
       x[["precision"]]
     }))
     if (!inherits(prec, "try-error") && is.numeric(prec) && all(is.finite(prec)) && length(prec) == nrow(x)) {
-      x[, "mean"] <- sapply(1:nrow(x), function(i) {
+      x[, "mean"] <- sapply(seq_len(nrow(x)), function(i) {
         round(x[i, "mean"], prec[i])
       })
-      x[, "sd"] <- sapply(1:nrow(x), function(i) {
+      x[, "sd"] <- sapply(seq_len(nrow(x)), function(i) {
         round(x[i, "sd"], prec[i])
       })
     }
@@ -45,7 +45,7 @@ styleTabC3 <- function(x, apm = NULL, selected_row = 1, output = c("DT", "ft", "
   non_edit_cols <- list(columns = which(!(colnames(x) %in% c("k", cc[, "Name"]))) - 1)
   # rename column header for temporary display
   if (nrow(cc) >= 1 && !all(cc[, "Name"] %in% colnames(x))) {
-    for (k in 1:nrow(cc)) {
+    for (k in seq_len(nrow(cc))) {
       colnames(x)[colnames(x) == cc[k, "ID"]] <- cc[k, "Name"]
     }
   }

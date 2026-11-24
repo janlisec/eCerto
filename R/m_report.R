@@ -76,7 +76,7 @@ m_reportServer <- function(id, rv) {
         #flatten_list_to_df(xml2::as_list(xsd))
 
         mt <- styleTabC3(x = getValue(rv, c("General", "materialtabelle")), apm = getValue(rv, c("General", "apm")))$x$data
-        mt_xml <- lapply(1:nrow(mt), function(i) {
+        mt_xml <- lapply(seq_len(nrow(mt)), function(i) {
           new_dcc_quantity_result(
             name = mt[i,"analyte"],
             label = mt[i,"analyte"],

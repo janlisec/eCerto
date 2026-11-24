@@ -99,7 +99,7 @@ assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "n
   # check pos
   if (!is.null(pos)) {
     pos <- as.numeric(pos[1])
-    if (!pos %in% 1:ncol(df)) {
+    if (!pos %in% seq_len(ncol(df))) {
       msg <- c(msg, "Specified column position outside data frame range.")
       pos <- ncol(df) + 1
     }

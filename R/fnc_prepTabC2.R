@@ -13,6 +13,7 @@ prepTabC2 <- function(dat = NULL, excl_labs = FALSE) {
   if (excl_labs) {
     # remove filtered labs and re-factor column 'Lab'
     L_flt <- unique(as.character(dat[dat[, "L_flt"], "Lab"]))
+    message("Excluding labs ", paste(L_flt, collapse=", "), " from TabC2.")
     dat <- dat[!dat[, "L_flt"], ]
     dat[, "Lab"] <- factor(dat[, "Lab"])
   }
@@ -41,7 +42,7 @@ prepTabC2 <- function(dat = NULL, excl_labs = FALSE) {
     "Agostino_p" = try(moments::agostino.test(x = x)$p.value, silent = TRUE),
     "Anscombe_p" = try(moments::anscombe.test(x = x)$p.value, silent = TRUE)
   )
-  for (i in 1:length(tmp)) {
+  for (i in seq_len(length(tmp))) {
     if (!inherits(tmp[[i]], "try-error")) out[, names(tmp)[i]] <- tmp[[i]]
   }
   return(out)

@@ -143,7 +143,7 @@ page_StabilityServer <- function(id, rv) {
         s_pars$s_sel_temp <- NULL
       }
       # does the data contain filtering information and IDs already? if not add column and row.names.
-      if (is.null(rownames(tmp))) rownames(tmp) <- 1:nrow(tmp)
+      if (is.null(rownames(tmp))) rownames(tmp) <- seq_len(nrow(tmp))
       if (!identical(tmp, getValue(rv, c("Stability", "data")))) {
         setValue(rv, c("Stability","data"), tmp)
       }

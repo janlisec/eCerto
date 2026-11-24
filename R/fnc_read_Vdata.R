@@ -50,7 +50,7 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {
     if (fmt == "eCerto") {
       tab_out <- openxlsx::read.xlsx(xlsxFile = file, sheet = 1, colNames = TRUE, rowNames = FALSE)
       shiny::validate(shiny::need(!any(grep("xml:space", colnames(tab_out))), message = "Please re-save your Excel file and try again."))
-      if (!("Name" %in% colnames(tab_out))) tab_out[,"Name"] <- paste0("Sample_", formatC(1:nrow(tab_out), digits=nchar(nrow(tab_out)), flag = "0"))
+      if (!("Name" %in% colnames(tab_out))) tab_out[,"Name"] <- paste0("Sample_", formatC(seq_len(nrow(tab_out)), digits=nchar(nrow(tab_out)), flag = "0"))
       if (!("Type" %in% colnames(tab_out))) tab_out[,"Type"] <- "Cal"
     }
     if (!all(c("Name", "Type", "Level", "Analyte", "Concentration", "Area_Analyte", "Area_IS") %in% colnames(tab_out))) e_msg("Column in input Excel file missing")
@@ -64,10 +64,10 @@ read_Vdata <- function(file = NULL, fmt = c("Agilent", "eCerto")) {
       }
       tab_out[,"Level"] <- factor(tab_out[,"Level"], levels = lev)
     }
-    if (!"ID" %in% colnames(tab_out)) tab_out[,"ID"] <- 1:nrow(tab_out)
+    if (!"ID" %in% colnames(tab_out)) tab_out[,"ID"] <- seq_len(nrow(tab_out))
     if (!"norm" %in% colnames(tab_out)) tab_out[,"norm"] <- tab_out[,"Area_Analyte"]/tab_out[,"Area_IS"]
     gr_mn <- lapply(split(tab_out, tab_out[,"Analyte"]), function(x) { lapply(split(x[,"norm"], x[,"Level"]), mean, na.rm=TRUE) })
-    if (!"rel_norm" %in% colnames(tab_out)) tab_out[,"rel_norm"] <- tab_out[,"norm"]/sapply(1:nrow(tab_out), function(i) {gr_mn[[tab_out[i,"Analyte"]]][[tab_out[i,"Level"]]]})
+    if (!"rel_norm" %in% colnames(tab_out)) tab_out[,"rel_norm"] <- tab_out[,"norm"]/sapply(seq_len(nrow(tab_out)), function(i) {gr_mn[[tab_out[i,"Analyte"]]][[tab_out[i,"Level"]]]})
     if (!"Exclude_Level" %in% colnames(tab_out)) tab_out[,"Exclude_Level"] <- FALSE
     if (!"Exclude_Sample" %in% colnames(tab_out)) tab_out[,"Exclude_Sample"] <- FALSE
     # reorder columns

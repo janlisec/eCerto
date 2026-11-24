@@ -90,7 +90,7 @@ Grubbs <- function(lab_means = NULL, fmt = c("alpha", "pval", "cval", "cval05", 
     if (fmt == "cval01") {
       out$Grubbs1[!is.na(out$Grubbs1)] <- qgrubbs(1 - 0.01 / 2, n)
     }
-    if (n >= 4 && (test_Grubbs1_min | test_Grubbs1_max) && n <= 100) {
+    if (n >= 4 && (test_Grubbs1_min || test_Grubbs1_max) && n <= 100) {
       out$Grubbs2 <- rep(NA, n)
       maxvals <- order(x, decreasing = TRUE)[1:2]
       minvals <- order(x, decreasing = FALSE)[1:2]
@@ -147,7 +147,7 @@ Cochran <- function(data = NULL, fmt = c("alpha", "pval", "cval", "cval05", "cva
     )
   }
   i <- 1
-  while (length(vars) >= 3 & i > 0) {
+  while (length(vars) >= 3 && i > 0) {
     # ctest <- outliers::cochran.test(object=vars, data=ns)
     ctest <- cochran.test(vars = vars, ns = ns)
     j <- which.max(vars)
@@ -456,9 +456,9 @@ dixon.test <- function(x, opposite = FALSE, two.sided = FALSE) {
   n <- length(x)
   if (n <= 7) {
     type <- "10"
-  } else if (n > 7 & n <= 10) {
+  } else if (n > 7 && n <= 10) {
     type <- "11"
-  } else if (n > 10 & n <= 13) {
+  } else if (n > 10 && n <= 13) {
     type <- "21"
   } else {
     type <- "22"
@@ -510,7 +510,7 @@ qtable <- function(p, probs, quants) {
   quants <- quants[order(probs)]
   probs <- sort(probs)
   res <- vector()
-  for (n in 1:length(p)) {
+  for (n in seq_len(length(p))) {
     pp <- p[n]
     if (pp <= probs[1]) {
       q0 <- quants[c(1, 2)]

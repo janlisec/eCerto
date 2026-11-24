@@ -178,7 +178,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
         L2_entries <- unique(sapply(strsplit(D_lst$path, "_"), function(x) { x[2] }))
         L2_props <- grep("materialPropertiesList", L2_entries)
         # this is everything without the "materialPropertiesList" entries
-        D$tab_D1 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_[", paste((1:length(L2_entries))[-L2_props], collapse=""), "]"))
+        D$tab_D1 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_[", paste((seq_len(length(L2_entries)))[-L2_props], collapse=""), "]"))
         D$tab_D1_i <- 1
         # this is only the "materialPropertiesList" entries
         D$tab_D2 <- filter_flattened_list(flatten_list_to_df(D_data()), flt = paste0("^1_", L2_props))

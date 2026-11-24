@@ -131,7 +131,7 @@ to_startPage <- function(session, value = "Certification") {
 #' listNames(test, 3)
 #' listNames(test, 3, TRUE)
 listNames <- function(l, maxDepth = 2, split = FALSE) {
-  if (R6::is.R6(l) | shiny::is.reactivevalues(l)) {
+  if (R6::is.R6(l) || shiny::is.reactivevalues(l)) {
     # decompose first if it is a R6 object
     l <- sapply(l$get(), function(x) {
       if (shiny::is.reactivevalues(x)) shiny::reactiveValuesToList(x)
@@ -139,7 +139,7 @@ listNames <- function(l, maxDepth = 2, split = FALSE) {
   }
   depth <- 0
   listNames_rec <- function(l, depth) {
-    if (!is.list(l) | is.data.frame(l) | depth >= maxDepth) {
+    if (!is.list(l) || is.data.frame(l) || depth >= maxDepth) {
       TRUE
     } else {
       depth <- depth + 1
@@ -1130,7 +1130,7 @@ eCerto_flextable_defaults <- function(ft = NULL, output = "ft", HTML2ft = TRUE, 
       }
     }
     if (!is.null(prec) && is.numeric(prec)) {
-      num_cols <- sapply(1:ncol(ft$body$dataset), function(i) {is.numeric(ft$body$dataset[,i])})
+      num_cols <- sapply(seq_len(ncol(ft$body$dataset)), function(i) {is.numeric(ft$body$dataset[,i])})
       ft <- ft_set_formatter(ft, num_cols, ft_formatter_fixed_digits, prec)
     }
     ft <- flextable::bold(ft, part = "header")
@@ -1576,7 +1576,7 @@ ldply_base <- function(.data, .fun = identity, .progress = "none", .id = NA, ...
 
   # add .id column if .id is NA and list is named; omit id column for .id=NULL in any case
   if (!is.null(.id)) {
-    if (!is.na(.id) | is.na(.id) && !is.null(names(.data))) {
+    if (!is.na(.id) || is.na(.id) && !is.null(names(.data))) {
       if (!is.null(names(.data))) {
         ids <- rep(names(.data), times=sapply(result,nrow))
         if (!is.na(.id)) ids <- factor(ids)

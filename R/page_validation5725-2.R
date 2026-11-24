@@ -320,7 +320,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
       req(nrow(df) > 0)
       k <- length(unique(df[,"Replicate"]))
       h <- paste0(240+20*length(unique(df[,"Lab"])), "px")
-      plots <- lapply(1:length(unique(df[,"Level"])), function(x) {
+      plots <- lapply(seq_len(length(unique(df[,"Level"]))), function(x) {
         local({
           local_x <- x
           plot_output <- shiny::plotOutput(outputId = ns(paste0("plot_v1_", local_x)), height = h)

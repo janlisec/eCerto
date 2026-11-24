@@ -61,7 +61,7 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
   graphics::mtext(text = paste("s =", osd), side = 3, line = 0.25, adj = 1, cex = NULL)
   if (showIDs) {
     h_dat[, "Rep"] <- NA
-    for (l in 1:length(levels(h_dat[, "Flasche"]))) {
+    for (l in seq_len(length(levels(h_dat[, "Flasche"])))) {
       h_dat[h_dat[, "Flasche"] == levels(h_dat[, "Flasche"])[l], "Rep"] <- 1:sum(h_dat[, "Flasche"] == levels(h_dat[, "Flasche"])[l])
     }
     graphics::text(x = as.numeric(h_dat[, "Flasche"]), y = h_dat[, "value"], labels = h_dat[, "Rep"], col = 4, cex = 1.5)

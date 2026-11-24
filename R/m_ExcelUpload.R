@@ -134,7 +134,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       sheetnames <- xlsxSheetNames(input$excel_file$datapath)
       filenames <- input$excel_file$name
       if (length(sheetnames) > 1) {
-        shinyWidgets::updatePickerInput(session = session, inputId = "sheet_number", choices = 1:length(sheetnames))
+        shinyWidgets::updatePickerInput(session = session, inputId = "sheet_number", choices = seq_len(length(sheetnames)))
         shinyjs::showElement(id = "sheet_number")
       } else {
         shiny::updateSelectInput(session = session, inputId = "sheet_number", choices = "1")
@@ -194,7 +194,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       } else if (fmt == "Certification") {
         e_msg("Load Certification data (m_ExcelUpload_Server)")
         # append file info
-        for (i in 1:length(tab_flt)) {
+        for (i in seq_len(length(tab_flt))) {
           tab_flt[[i]][["File"]] <- rep(fn[i], nrow(tab_flt[[i]]))
         }
         # try to convert to data frame
@@ -224,7 +224,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         if (ncol(test_format) < 4) {
           # (1) as simple two column format (Date, Value) with separate tables for each analyte
           sheetnames <- xlsxSheetNames(input$excel_file$datapath[1])
-          s_dat <- ldply_base(1:length(sheetnames), function(x) {
+          s_dat <- ldply_base(seq_len(length(sheetnames)), function(x) {
             cbind("analyte" = sheetnames[x], tab_flt[[x]])
           })
         } else {

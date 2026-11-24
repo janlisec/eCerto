@@ -16,7 +16,7 @@ prepFigV1 <- function(ab = NULL) {
   graphics::par(mar=c(7,5,5,0)+0.1)
   graphics::par(xaxs="i")
   plot(x=c(1,length(ab)), y=range(ab, na.rm=TRUE), xlim=c(0.25,length(ab)+0.75), type="n", axes=F, xlab="", ylab=expression(x[i]/bar(x)~~with~~x==Area[Analyte]/Area[IS]))
-  graphics::abline(v=1:length(ab), lty=2, col=grDevices::grey(0.9))
+  graphics::abline(v=seq_len(length(ab)), lty=2, col=grDevices::grey(0.9))
   graphics::box(); graphics::axis(2)
   graphics::boxplot(ab, add=TRUE, axes=FALSE, col = grDevices::grey((3+as.numeric(attr(ab, "Level")))/(5+max(as.numeric(attr(ab, "Level"))))))
 
@@ -29,9 +29,9 @@ prepFigV1 <- function(ab = NULL) {
   #a_id[duplicated(a_id)] <- "_"
   #mtext(text = a_id[!duplicated(a_id)], side = 3, line = 1.5, at = (1:length(ab))[!duplicated(a_id)])
   #mtext(text = a_id, side = 3, line = 1.5, at = 1:length(ab))
-  graphics::mtext(text = a_id[!duplicated(a_id)], side = 3, line = 1.5, at = sapply(split(1:length(ab), a_id), mean))
+  graphics::mtext(text = a_id[!duplicated(a_id)], side = 3, line = 1.5, at = sapply(split(seq_len(length(ab)), a_id), mean))
   graphics::mtext(text = "Level", side = 3, line = 0.25, at = x_ann, adj = 1)
-  graphics::mtext(text = as.numeric(attr(ab, "Level")), side = 3, line = 0.25, at = 1:length(ab))
+  graphics::mtext(text = as.numeric(attr(ab, "Level")), side = 3, line = 0.25, at = seq_len(length(ab)))
 
   # F test to check for Variance homogeneity
   P_F <- sapply(split(ab, attr(ab, "Analyte"), drop=TRUE), function(x) {
@@ -41,12 +41,12 @@ prepFigV1 <- function(ab = NULL) {
     F_p_text <- sapply(P_F, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
     F_p_col <- sapply(P_F, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
     graphics::mtext(text = expression(P[F-test]), side = 3, line = 2.75, at = x_ann, adj = 1)
-    graphics::mtext(text = F_p_text, side = 3, line = 2.75, at = sapply(split(1:length(ab), a_id), mean), col=F_p_col)
+    graphics::mtext(text = F_p_text, side = 3, line = 2.75, at = sapply(split(seq_len(length(ab)), a_id), mean), col=F_p_col)
   }
 
   # show n
   graphics::mtext(text = expression(n), side = 1, line = 0.25, at = x_ann, adj = 1)
-  graphics::mtext(text = sapply(ab, length), side = 1, line = 0.25, at = 1:length(ab))
+  graphics::mtext(text = sapply(ab, length), side = 1, line = 0.25, at = seq_len(length(ab)))
 
   # normality test
   KS_p <- sapply(ab, function(x) {
@@ -55,7 +55,7 @@ prepFigV1 <- function(ab = NULL) {
   KS_p_text <- sapply(KS_p, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
   KS_p_col <- sapply(KS_p, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
   graphics::mtext(text = expression(P[KS]), side = 1, line = 1.5, at = x_ann, adj = 1)
-  graphics::mtext(text = KS_p_text, side = 1, line = 1.5, at = 1:length(ab), col=KS_p_col)
+  graphics::mtext(text = KS_p_text, side = 1, line = 1.5, at = seq_len(length(ab)), col=KS_p_col)
 
   # outlier test Grubbs_1,2
   out_Grubbs <- lapply(ab, function(x) {
@@ -68,7 +68,7 @@ prepFigV1 <- function(ab = NULL) {
     if (all(sapply(out_Grubbs, function(x) { Gk %in% colnames(x) }))) {
       Grubbs_text <- sapply(out_Grubbs, function(x) { ifelse(any(x[, Gk]==".01"), "**", ifelse(any(x[, Gk]==".05"), "*", "ns")) })
       Grubbs_col <- sapply(out_Grubbs, function(x) { ifelse(any(x[, Gk]==".01"), 2, ifelse(any(x[, Gk]==".05"), "orange", 3)) })
-      graphics::mtext(text = Grubbs_text, side = 1, line = ifelse(k==1, 2.75, 4), at = 1:length(ab), col=Grubbs_col)
+      graphics::mtext(text = Grubbs_text, side = 1, line = ifelse(k==1, 2.75, 4), at = seq_len(length(ab)), col=Grubbs_col)
       if (any(Grubbs_text!="ns")) {
         for (i in which(Grubbs_text!="ns")) {
           y <- out_Grubbs[[i]]
@@ -90,7 +90,7 @@ prepFigV1 <- function(ab = NULL) {
   NM_text <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, "**", ifelse(x<=0.05, "*", "ns")) })
   NM_col <- sapply(out_Neumann, function(x) { ifelse(x<=0.01, 2, ifelse(x<=0.05, "orange", 3)) })
   graphics::mtext(text = expression(P[Neumann]), side = 1, line = 5.25, at = x_ann, adj = 1)
-  graphics::mtext(text = NM_text, side = 1, line = 5.25, at = 1:length(ab), col=NM_col)
+  graphics::mtext(text = NM_text, side = 1, line = 5.25, at = seq_len(length(ab)), col=NM_col)
 
   invisible(NULL)
 

@@ -146,8 +146,8 @@ m_TransferUServer <- function(id, rv, type = c("H", "S")) {
       )
       T_row <- switch(st(),
         "H" = which(dat()[, "H_type"] == input$H_Type),
-        "H_simple" = 1:nrow(dat()),
-        "S" = 1:nrow(dat())
+        "H_simple" = seq_len(nrow(dat())),
+        "S" = seq_len(nrow(dat()))
       )
       for (i in T_row) {
         j <- which(as.character(mt[, "analyte"]) == as.character(dat()[i, "analyte"]))

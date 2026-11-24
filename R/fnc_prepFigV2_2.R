@@ -24,9 +24,9 @@ prepFigV2_2 <- function(mns, type = c("h", "k"), digits = 3) {
   all_levels <- unique(mns[,"Level"])
   mns <- mns[is.finite(mns[,idx]),]
   n_p <- length(unique(mns[,"Lab"]))
-  if (n_p < length(all_labs)) { ann_lab <- (1:length(all_labs))[all_labs %in% unique(mns[,"Lab"])] } else { ann_lab <- 1:n_p }
+  if (n_p < length(all_labs)) { ann_lab <- (seq_len(length(all_labs)))[all_labs %in% unique(mns[,"Lab"])] } else { ann_lab <- seq_len(n_p) }
   n_q <- length(unique(mns[,"Level"]))
-  if (n_p < length(all_labs)) { ann_lev <- (1:length(all_levels))[all_levels %in% unique(mns[,"Level"])] } else { ann_lev <- 1:n_q }
+  if (n_p < length(all_labs)) { ann_lev <- (seq_len(length(all_levels)))[all_levels %in% unique(mns[,"Level"])] } else { ann_lev <- seq_len(n_q) }
   n_k <- floor(stats::median(mns[,"n"]))
   if (type == "h") {
     m_crit <- qmandel_h(p = n_p, alpha = c(0.01, 0.05))

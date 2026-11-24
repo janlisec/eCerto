@@ -31,8 +31,8 @@ prepTabV2_3 <- function(mns) {
         T1 <- sum(x[,"mean"]-80)
         T2 <- sum((x[,"mean"]-80)^2)
         T3 <- sum(x[,"sd"]^2)
-        s_r2 <- T3/(2*np)
-        s_L2 <- (np*T2-T1^2)/(np*(np-1))-s_r2/2
+        s_r2 <- T3 / (2 * np)
+        s_L2 <- (np * T2 - T1^2) / (np * (np - 1)) - s_r2 / 2
       }
     } else {
       # for n>=3

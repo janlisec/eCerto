@@ -38,7 +38,7 @@ fnc_read_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...
     warning("Invalid file; Please upload a .xlsx file")
     return(NULL)
   }
-  if (!sheet %in% 1:length(openxlsx::getSheetNames(filepath))) {
+  if (!sheet %in% seq_len(length(openxlsx::getSheetNames(filepath)))) {
     warning("Invalid sheet; Sheet number does not exist")
     return(NULL)
   }

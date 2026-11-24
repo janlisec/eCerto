@@ -14,7 +14,7 @@
 #' @noRd
 prepFigV2_1 <- function(inp, q = NULL) {
   opar <- graphics::par(no.readonly = TRUE)
-  if (is.null(q)) q <- 1:length(unique(inp[,"Level"]))
+  if (is.null(q)) q <- seq_len(length(unique(inp[,"Level"])))
   n_p <- length(unique(inp[,"Lab"]))
   graphics::par(mfrow=c(1, length(q)))
   graphics::par(mar=c(3.5,1.5,1,0)+0.5)
