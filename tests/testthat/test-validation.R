@@ -7,21 +7,21 @@ testthat::test_that(
     testthat::expect_true(file.exists(inp))
 
     # check if format is recognized
-    testthat::expect_equal(eCerto:::check_fmt_Vdata(inp), "Agilent")
+    testthat::expect_identical(eCerto:::check_fmt_Vdata(inp), "Agilent")
 
     # check Excel file import using example data
     tab <- eCerto:::read_Vdata(file = inp)
     testthat::expect_true(is.data.frame(tab))
     testthat::expect_true(all(c("Analyte", "Level") %in% colnames(tab)))
-    testthat::expect_true(all(sapply(tab[,c("Analyte", "Level")], is.factor)))
+    testthat::expect_true(all(sapply(tab[, c("Analyte", "Level")], is.factor)))
 
     # check if statistics on import data works
-    out <- ldply_base(levels(tab[,"Analyte"]), function(a) {
-        eCerto:::prepTabV1(tab = tab, a = a)
+    out <- ldply_base(levels(tab[, "Analyte"]), function(a) {
+      eCerto:::prepTabV1(tab = tab, a = a)
     })
     testthat::expect_true(is.data.frame(out))
-    testthat::expect_true(nrow(out)==4)
-    testthat::expect_true(all(out[,"Analyte"]==c("PFBA","4-2 FTSA","PFHxA","PFOA")))
+    testthat::expect_true(nrow(out) == 4)
+    testthat::expect_true(all(out[, "Analyte"] == c("PFBA", "4-2 FTSA", "PFHxA", "PFOA")))
 
     # check styling of Tab.V1
     out_styled <- eCerto:::style_tabV1(df = out, selected = NULL)
@@ -31,9 +31,9 @@ testthat::test_that(
     skip_if_not_linux_ci()
 
     ab <- eCerto:::prepDataV1(tab = tab)
-    testthat::expect_true(length(ab)==8)
+    testthat::expect_true(length(ab) == 8)
     ab <- eCerto:::prepDataV1(tab = tab, fmt = "norm")
-    testthat::expect_true(all(names(attributes(ab))==c("names","Analyte","Level","Concentration")))
+    testthat::expect_true(all(names(attributes(ab)) == c("names", "Analyte", "Level", "Concentration")))
     ab <- eCerto:::prepDataV1(tab = tab, a = "PFOA", l = c("2", "7"), fmt = "rel_norm")
     pdf(NULL)
     vdiffr::expect_doppelganger(
@@ -49,7 +49,7 @@ testthat::test_that(
     )
 
     # check generation of Fig.V3 (Working range details)
-    x <- eCerto:::flt_Vdata(x = tab, l = c(2,4), a = "PFBA")
+    x <- eCerto:::flt_Vdata(x = tab, l = c(2, 4), a = "PFBA")
     pdf(NULL)
     vdiffr::expect_doppelganger(
       title = "Fig_V3",

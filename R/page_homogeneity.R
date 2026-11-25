@@ -23,7 +23,7 @@ page_HomogeneityUI <- function(id) {
   ns <- shiny::NS(id)
 
   tab_H1_panel <- bslib::card(
-    #min_height = 500
+    # min_height = 500
     fill = FALSE,
     bslib::card_header(
       class = "d-flex justify-content-between",
@@ -46,7 +46,7 @@ page_HomogeneityUI <- function(id) {
 
   tab_H2_panel <- bslib::card(
     bslib::card_header(
-      shiny::strong(shiny::actionLink(inputId = ns("tab2_link"), label = "Tab.H2 - specimen stats")),
+      shiny::strong(shiny::actionLink(inputId = ns("tab2_link"), label = "Tab.H2 - specimen stats"))
     ),
     bslib::card_body(
       shiny::div(DT::DTOutput(ns("h_tab2")))
@@ -61,8 +61,8 @@ page_HomogeneityUI <- function(id) {
       shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.H1 - boxplot of specimen values")),
       shiny::div(
         shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("h_Report"), label = "Download Report")),
-        shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML"="html", "DOCX"="docx"), width = 70))
-      ),
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML" = "html", "DOCX" = "docx"), width = 70))
+      )
     ),
     bslib::card_body(
       fill = TRUE,
@@ -84,10 +84,10 @@ page_HomogeneityUI <- function(id) {
             shiny::textInput(inputId = ns("FigH1_xlab"), label = "Edit x-axis label", value = "Flasche")
           )
         ),
-        #bslib::card_body(min_height = 400, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH1"))),
+        # bslib::card_body(min_height = 400, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH1"))),
         bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH1_ui"))),
-        bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH2_ui"))),
-        #bslib::card_body(id = ns("h_FigH2_wrap"), min_height = 0, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH2")))
+        bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH2_ui")))
+        # bslib::card_body(id = ns("h_FigH2_wrap"), min_height = 0, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH2")))
       )
     ),
     bslib::card_footer(
@@ -103,7 +103,7 @@ page_HomogeneityUI <- function(id) {
         tab_H2_panel
       ),
       fig_H1_panel,
-      col_widths =  bslib::breakpoints(
+      col_widths = bslib::breakpoints(
         sm = c(12, 12),
         xl = c(5, 7)
       )
@@ -135,8 +135,8 @@ page_HomogeneityServer <- function(id, rv) {
       # was a different analyte selected in one of the other modules
       i <- input$h_tab1_rows_selected
       if (is.null(i) || rv$cur_an != as.character(h_vals()[i, "analyte"])) {
-        cr <- which(as.character(h_vals()[, "analyte"])==rv$cur_an)
-        if (length(cr)>1) {
+        cr <- which(as.character(h_vals()[, "analyte"]) == rv$cur_an)
+        if (length(cr) > 1) {
           # try to match the previously selected H_type
           flt <- h_vals()[cr, "H_type"] == h_vals()[i, "H_type"]
           if (any(flt)) cr <- cr[which(flt)[1]] else cr <- cr[1]
@@ -176,7 +176,7 @@ page_HomogeneityServer <- function(id, rv) {
       validate(need(expr = nrow(h_dat) >= 1, message = "Not enough data."))
       h_dat[, "Flasche"] <- factor(h_dat[, "Flasche"])
       out <- ldply_base(split(h_dat[, "value"], h_dat[, "Flasche"]), function(x) {
-        data.frame("mean" = mean(x, na.rm = T), "sd" = stats::sd(x, na.rm = T), "n" = sum(is.finite(x)))
+        data.frame("mean" = mean(x, na.rm = TRUE), "sd" = stats::sd(x, na.rm = TRUE), "n" = sum(is.finite(x)))
       }, .id = "Flasche")
       rownames(out) <- out[, "Flasche"]
       colnames(out) <- gsub("Flasche", input$FigH1_xlab, colnames(out))
@@ -246,8 +246,8 @@ page_HomogeneityServer <- function(id, rv) {
     })
 
     output$h_FigH1 <- renderPlotHD({
-        prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab, showIDs = "show_repID" %in% input$FigH1_opt)
-      }, width = function() fig_width_d()
+      prepFigH1(x = h_Data(), sa = input$h_sel_analyt, prec = precision(), xlab = input$FigH1_xlab, showIDs = "show_repID" %in% input$FigH1_opt)
+    }, width = function() fig_width_d()
     )
 
     fig_width2 <- shiny::reactive({

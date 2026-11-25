@@ -3,9 +3,8 @@
 Please prepare your data in an Excel file with the same format as shown below.
 
 ```{r V2_upload, echo=FALSE, message=FALSE}
-
-x <- cbind("Property" = "measurand name", "Unit" = "measurand unit", eCerto:::init_V2_data()[1:16,])
-eCerto:::show_upload_example_table(x=x, max_char = 15, optional = c(1,2,7,8)) |>
+x <- cbind("Property" = "measurand name", "Unit" = "measurand unit", eCerto:::init_V2_data()[1:16, ])
+eCerto:::show_upload_example_table(x = x, max_char = 15, optional = c(1, 2, 7, 8)) |>
   flextable::set_caption(flextable::as_paragraph(
     flextable::as_b("Info"), " Example table layout for validation data upload (DIN 5725-2)"
   )) |>

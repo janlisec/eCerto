@@ -41,7 +41,7 @@ modify_FUcols_UI <- function(id) {
         bslib::layout_columns(
           shinyWidgets::pickerInput(
             inputId = ns("selinp"), label = "Create/select column",
-            choices = list("new"=c("F-type", "U-type"))
+            choices = list("new" = c("F-type", "U-type"))
           ),
           shiny::textInput(inputId = ns("txtinp"), label = "Edit/delete column", value = "")
         ),
@@ -67,11 +67,11 @@ modify_FUcols_Server <- function(id, mt = NULL) {
     new_cols <- c("U-type", "F-type")
 
     observeEvent(mt(), {
-      e_cols <- attr(mt(), "col_code")[,"Name"]
+      e_cols <- attr(mt(), "col_code")[, "Name"]
       n <- length(e_cols)
-      if (n==0) choices <- list("create new" = new_cols)
-      if (n==1) choices <- list(e_cols, "create new" = new_cols)
-      if (n>=2) choices <- list("modify" = e_cols,  "create new" = new_cols)
+      if (n == 0) choices <- list("create new" = new_cols)
+      if (n == 1) choices <- list(e_cols, "create new" = new_cols)
+      if (n >= 2) choices <- list("modify" = e_cols, "create new" = new_cols)
       shinyWidgets::updatePickerInput(inputId = "selinp", choices = choices)
     })
 

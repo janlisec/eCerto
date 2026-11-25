@@ -10,14 +10,14 @@
 #'       eCerto:::page_validation57252UI(id = "test")
 #'     ),
 #'     server = function(input, output, session) {
-#'       #fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Validierung/DIN5725-2/testdata.xlsx"
-#'       #td <- openxlsx::read.xlsx(xlsxFile = fl, sheet = 1)
+#'       # fl <- "C:/Users/jlisec/Documents/Projects/BAMTool_Backup/Validierung/DIN5725-2/testdata.xlsx"
+#'       # td <- openxlsx::read.xlsx(xlsxFile = fl, sheet = 1)
 #'       td <- init_V2_data()
 #'       td <- rbind(
 #'         cbind("Property" = "prop1", "Unit" = "kg/m^2^", td),
 #'         cbind("Property" = "prop2", "Unit" = "H~2~O", td)
-#'        )
-#'       #td <- NULL
+#'       )
+#'       # td <- NULL
 #'       eCerto:::page_validation57252Server(id = "test", test_data = td)
 #'     }
 #'   )
@@ -50,7 +50,7 @@ page_validation57252UI <- function(id) {
       bslib::card(
         id = ns("v2_test"),
         fillable = FALSE,
-        #bslib::card_header("DIN 5725-2 output panel"),
+        # bslib::card_header("DIN 5725-2 output panel"),
         bslib::card_body(
           fill = FALSE,
           bslib::layout_sidebar(
@@ -63,7 +63,7 @@ page_validation57252UI <- function(id) {
               ),
               bslib::layout_columns(
                 shiny::uiOutput(ns("TabV0")),
-                #shiny::htmlOutput(ns("TabV0x")),
+                # shiny::htmlOutput(ns("TabV0x")),
                 shiny::uiOutput(ns("filter_tree_ui"))
               )
             ),
@@ -71,7 +71,7 @@ page_validation57252UI <- function(id) {
             shiny::uiOutput(ns("FigV1")),
             shiny::uiOutput(ns("TabV2")),
             shiny::uiOutput(ns("FigV2")),
-            #shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
+            # shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
             shiny::uiOutput(ns("TabV3")),
             shiny::div(
               bslib::layout_column_wrap(
@@ -115,8 +115,8 @@ page_validation57252Server <- function(id, test_data = NULL) {
     # generic input table example
     output$example_table_generic <- renderUI({
       if (is.null(test_data)) {
-        x <- cbind("Property" = "measurand name", "Unit" = "measurand unit", init_V2_data()[1:16,])
-        ft <- show_upload_example_table(x=x, max_char = 15, optional = c(1,2,7,8))
+        x <- cbind("Property" = "measurand name", "Unit" = "measurand unit", init_V2_data()[1:16, ])
+        ft <- show_upload_example_table(x = x, max_char = 15, optional = c(1, 2, 7, 8))
         flextable::htmltools_value(ft, ft.align = "left")
       } else {
         NULL
@@ -152,11 +152,11 @@ page_validation57252Server <- function(id, test_data = NULL) {
           df <- openxlsx::read.xlsx(xlsxFile = x, sheet = 1)
         }
       }
-      if (!"ID" %in% colnames(df) || any(duplicated(df[,"ID"]))) {
-        df[,"ID"] <- seq_len(nrow(df))
+      if (!"ID" %in% colnames(df) || any(duplicated(df[, "ID"]))) {
+        df[, "ID"] <- seq_len(nrow(df))
       }
       if (!"Filter" %in% colnames(df)) {
-        df[,"Filter"] <- ""
+        df[, "Filter"] <- ""
       }
       return(df)
     })
@@ -167,7 +167,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
       if (!"Property" %in% colnames(df)) {
         shinyjs::hide(id = "opt_cur_analyte")
       } else {
-        choices <- unique(df[,"Property"])
+        choices <- unique(df[, "Property"])
         cur <- isolate(V2_pars$opt_cur_analyte)
         shiny::updateSelectInput(
           inputId = "opt_cur_analyte",
@@ -190,13 +190,13 @@ page_validation57252Server <- function(id, test_data = NULL) {
     inp_with_pars_applied <- shiny::reactive({
       req(V2_pars$opt_cur_analyte)
       df <- inp_raw()
-      req(nrow(df)>0)
+      req(nrow(df) > 0)
       if (!"Property" %in% colnames(df)) return(df)
       a <- V2_pars$opt_cur_analyte
-      if (!nzchar(a) || !a %in% df[,"Property"]) {
-        return(df[0,,drop = FALSE])
+      if (!nzchar(a) || !a %in% df[, "Property"]) {
+        return(df[0, , drop = FALSE])
       }
-      df[df[,"Property"] == a,,drop = FALSE]
+      df[df[, "Property"] == a, , drop = FALSE]
     })
 
     # Filtered data for all downstream analysis ====
@@ -204,10 +204,10 @@ page_validation57252Server <- function(id, test_data = NULL) {
       df <- inp_with_pars_applied()
       req(nrow(df) > 0)
       if (length(V2_pars$excl_ids) > 0L) {
-        df[!(df$ID %in% V2_pars$excl_ids),"Filter"] <- ""
-        df[which(df$ID %in% V2_pars$excl_ids)[df[df$ID %in% V2_pars$excl_ids,"Filter"]==""], "Filter"] <- "Removed due to..."
+        df[!(df$ID %in% V2_pars$excl_ids), "Filter"] <- ""
+        df[which(df$ID %in% V2_pars$excl_ids)[df[df$ID %in% V2_pars$excl_ids, "Filter"] == ""], "Filter"] <- "Removed due to..."
       } else {
-        df[,"Filter"] <- ""
+        df[, "Filter"] <- ""
       }
       df
     })
@@ -225,7 +225,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     filter_tree_data <- shiny::reactive({
       req(inp_with_pars_applied())
-      inp_with_pars_applied()[,c("Lab","Level","Replicate","ID","Filter")]
+      inp_with_pars_applied()[, c("Lab", "Level", "Replicate", "ID", "Filter")]
     })
 
     # Tree-based filter UI (Lab -> Level -> ID) ====
@@ -243,9 +243,9 @@ page_validation57252Server <- function(id, test_data = NULL) {
           inputId = ns("f_tree_excl"),
           label = NULL,
           choices = shinyWidgets::create_tree(
-            data = df[,c("Lab","Level","Replicate","ID")]
+            data = df[, c("Lab", "Level", "Replicate", "ID")]
           ),
-          selected = as.character(df[df[,"Filter"] != "","ID"])
+          selected = as.character(df[df[, "Filter"] != "", "ID"])
         )
       )
     })
@@ -256,7 +256,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
       sel <- suppressWarnings(as.integer(input$f_tree_excl))
       sel <- sel[!is.na(sel)]
 
-      cur_ids <- isolate(inp_with_pars_applied()[,"ID"])
+      cur_ids <- isolate(inp_with_pars_applied()[, "ID"])
       old <- V2_pars$excl_ids
 
       keep <- old[!(old %in% cur_ids)]
@@ -297,7 +297,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     output$TabV2 <- shiny::renderUI({
       req(inp(), mns(), V2_pars$opt_tab_precision)
-      n_q <- length(unique(mns()[,"Level"]))
+      n_q <- length(unique(mns()[, "Level"]))
       fts <- lapply(1:n_q, function(q) {
         ft <- prepTabV2_2(inp = inp(), q = q, prec = V2_pars$opt_tab_precision, output = "ftl", id = paste0("Tab.V2", letters[q]), caption = paste("Statistic values for Level", q))
         flextable::htmltools_value(ft, ft.align = "left")
@@ -318,9 +318,9 @@ page_validation57252Server <- function(id, test_data = NULL) {
     output$FigV1 <- shiny::renderUI({
       df <- inp()
       req(nrow(df) > 0)
-      k <- length(unique(df[,"Replicate"]))
-      h <- paste0(240+20*length(unique(df[,"Lab"])), "px")
-      plots <- lapply(seq_len(length(unique(df[,"Level"]))), function(x) {
+      k <- length(unique(df[, "Replicate"]))
+      h <- paste0(240 + 20 * length(unique(df[, "Lab"])), "px")
+      plots <- lapply(seq_along(unique(df[, "Level"])), function(x) {
         local({
           local_x <- x
           plot_output <- shiny::plotOutput(outputId = ns(paste0("plot_v1_", local_x)), height = h)
@@ -332,21 +332,21 @@ page_validation57252Server <- function(id, test_data = NULL) {
       })
       shiny::div(
         do.call(bslib::layout_column_wrap, c(list(width = "520px", fixed_width = TRUE), plots)),
-        shiny::HTML("<p><b>Fig.V1</b> Graphical representation of imported data (Tab.V0). Filtered values are depicted in grey. Replicated values are distinguished by background color (", paste(1:k, c("red", "green", "blue", "lightblue", "purple")[1:k], sep="=", collapse=", "), ").</p>")
+        shiny::HTML("<p><b>Fig.V1</b> Graphical representation of imported data (Tab.V0). Filtered values are depicted in grey. Replicated values are distinguished by background color (", paste(1:k, c("red", "green", "blue", "lightblue", "purple")[1:k], sep = "=", collapse = ", "), ").</p>")
       )
-      #do.call(bslib::layout_column_wrap, c(list(width = "520px", fixed_width = TRUE), plots))
+      # do.call(bslib::layout_column_wrap, c(list(width = "520px", fixed_width = TRUE), plots))
     })
 
     output$FigV2 <- shiny::renderUI({
       req(mns())
-      w <- paste0(120+nrow(mns())*20, "px")
+      w <- paste0(120 + nrow(mns()) * 20, "px")
       shiny::div(
         bslib::layout_column_wrap(
           width = w, fixed_width = TRUE,
           shiny::plotOutput(ns("FigV2a"), width = w, height = "400px"),
           shiny::plotOutput(ns("FigV2b"), width = w, height = "400px")
         ),
-        shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
+        shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>")
       )
     })
 
@@ -362,16 +362,18 @@ page_validation57252Server <- function(id, test_data = NULL) {
 
     output$FigV3a <- renderPlotHD({
       req(res())
-      prepFigV2_3(res()[,c(3,4)])
+      prepFigV2_3(res()[, c(3, 4)])
     })
 
     output$FigV3b <- renderPlotHD({
       req(res())
-      prepFigV2_3(res()[,c(3,5)])
+      prepFigV2_3(res()[, c(3, 5)])
     })
 
     # Help section ====
-    shiny::observeEvent(input$InputHelp, { show_help("v2_dataupload") })
+    shiny::observeEvent(input$InputHelp, {
+      show_help("v2_dataupload")
+    })
 
   })
 }

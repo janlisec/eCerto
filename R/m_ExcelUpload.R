@@ -39,48 +39,47 @@ m_ExcelUpload_UI <- function(id) {
     div(id = ns("welcome_screen"), welcome_screen(id = id)),
     # show upload options
     bslib::card(
-        #style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
-        style = "background-color: var(--_sidebar-bg); min-height: 148px; max-height: 148px;",
+      # style = "background-color: #f5f5f5; border: 1px; border-radius: 4px; border-color: #e3e3e3; border-style: solid; margin: 0px; padding-top: 6px",
+      style = "background-color: var(--_sidebar-bg); min-height: 148px; max-height: 148px;",
+      shiny::div(
         shiny::div(
-          shiny::div(
-            style = "width: 130px; float: left; margin-bottom: -12px; margin-right: var(--bs-card-spacer-y);",
-            shiny::radioButtons(
-              inputId = ns("moduleSelect"),
-              label = "File format",
-              choices = "dummy"
-            )
-          ),
-          shiny::div(
-            style = "width: 300px; float: left; margin-right: var(--bs-card-spacer-y);",
-            shiny::uiOutput(outputId = ns("inp_file"))
-          ),
-          shiny::div(
-            style = "width: 280px; float: left; margin-right: var(--bs-card-spacer-y);",
-            shinyjs::hidden(shinyWidgets::pickerInput(inputId = ns("file_name"), label = "File", choices = "", options = list(container = "body")))
-          ),
-          shiny::div(
-            style = "width: 90px; float: left; margin-right: var(--bs-card-spacer-y);",
-            shinyjs::hidden(shinyWidgets::pickerInput(inputId = ns("sheet_number"), label = "Sheet #", choices = "1", options = list(container = "body")))
-          ),
-          shiny::div(
-            style = "width: 160px; float: left; margin-right: var(--bs-card-spacer-y); margin-top: 31px;",
-            shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range", style = "background-color: rgb(140,180,15)"))
-          ),
-          shiny::div(
-            style = "width: 420px; float: left; color: red; background: rgba(0,0,0,0.04); border: 4px; padding: 16px;",
-            id = ns("info_msg")
-          ),
+          style = "width: 130px; float: left; margin-bottom: -12px; margin-right: var(--bs-card-spacer-y);",
+          shiny::radioButtons(
+            inputId = ns("moduleSelect"),
+            label = "File format",
+            choices = "dummy"
+          )
+        ),
+        shiny::div(
+          style = "width: 300px; float: left; margin-right: var(--bs-card-spacer-y);",
+          shiny::uiOutput(outputId = ns("inp_file"))
+        ),
+        shiny::div(
+          style = "width: 280px; float: left; margin-right: var(--bs-card-spacer-y);",
+          shinyjs::hidden(shinyWidgets::pickerInput(inputId = ns("file_name"), label = "File", choices = "", options = list(container = "body")))
+        ),
+        shiny::div(
+          style = "width: 90px; float: left; margin-right: var(--bs-card-spacer-y);",
+          shinyjs::hidden(shinyWidgets::pickerInput(inputId = ns("sheet_number"), label = "Sheet #", choices = "1", options = list(container = "body")))
+        ),
+        shiny::div(
+          style = "width: 160px; float: left; margin-right: var(--bs-card-spacer-y); margin-top: 31px;",
+          shinyjs::hidden(shiny::actionButton(inputId = ns("btn_load"), label = "Load selected cell range", style = "background-color: rgb(140,180,15)"))
+        ),
+        shiny::div(
+          style = "width: 420px; float: left; color: red; background: rgba(0,0,0,0.04); border: 4px; padding: 16px;",
+          id = ns("info_msg")
         )
+      )
     ),
     # preview Excel table
-    m_xlsx_range_select_UI(ns("rng_select")),
+    m_xlsx_range_select_UI(ns("rng_select"))
   )
 }
 
 #' @noRd
 #' @keywords internal
 m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
-  ns <- shiny::NS(id)
 
   shiny::moduleServer(id, function(input, output, session) {
     # Certification, Homogeneity, Stability -----------------------------------
@@ -134,7 +133,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       sheetnames <- xlsxSheetNames(input$excel_file$datapath)
       filenames <- input$excel_file$name
       if (length(sheetnames) > 1) {
-        shinyWidgets::updatePickerInput(session = session, inputId = "sheet_number", choices = seq_len(length(sheetnames)))
+        shinyWidgets::updatePickerInput(session = session, inputId = "sheet_number", choices = seq_along(sheetnames))
         shinyjs::showElement(id = "sheet_number")
       } else {
         shiny::updateSelectInput(session = session, inputId = "sheet_number", choices = "1")
@@ -194,7 +193,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
       } else if (fmt == "Certification") {
         e_msg("Load Certification data (m_ExcelUpload_Server)")
         # append file info
-        for (i in seq_len(length(tab_flt))) {
+        for (i in seq_along(tab_flt)) {
           tab_flt[[i]][["File"]] <- rep(fn[i], nrow(tab_flt[[i]]))
         }
         # try to convert to data frame
@@ -212,7 +211,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         test_selection <- ncol(rv_xlsx_range_select$tab_upload[[1]]) == ncol(rv_xlsx_range_select$tab[[1]]) & nrow(rv_xlsx_range_select$tab_upload[[1]]) == nrow(rv_xlsx_range_select$tab[[1]])
         if (test_selection) {
           e_msg("Range specification is on default value")
-          #attr(tabC0, "msg") <- "Range specification is on default value"
+          # attr(tabC0, "msg") <- "Range specification is on default value"
         }
         load_result <- tabC0
       } else if (fmt == "Stability") {
@@ -224,7 +223,7 @@ m_ExcelUpload_Server <- function(id, rv = NULL, msession = NULL) {
         if (ncol(test_format) < 4) {
           # (1) as simple two column format (Date, Value) with separate tables for each analyte
           sheetnames <- xlsxSheetNames(input$excel_file$datapath[1])
-          s_dat <- ldply_base(seq_len(length(sheetnames)), function(x) {
+          s_dat <- ldply_base(seq_along(sheetnames), function(x) {
             cbind("analyte" = sheetnames[x], tab_flt[[x]])
           })
         } else {

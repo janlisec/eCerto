@@ -14,20 +14,20 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-testing <- length(params$General)==1L && (is.na(params$General) | params$General=="NA")
+testing <- length(params$General) == 1L && (is.na(params$General) | params$General == "NA")
 if (testing) {
   report_file <- "report_vorlage_material.Rmd"
   logo_file <- "BAMLogo2015.png"
-  fnc_get_local_file <- function(x=NULL) {
+  fnc_get_local_file <- function(x = NULL) {
     pkg_path <- system.file(package = "eCerto")
-    file_path <- list.files(path=pkg_path, pattern = x, recursive = TRUE)[1]
-    return(file.path(pkg_path, file_path, fsep="/"))
+    file_path <- list.files(path = pkg_path, pattern = x, recursive = TRUE)[1]
+    return(file.path(pkg_path, file_path, fsep = "/"))
   }
   res <- eCerto::CRM001
   M <- res$General$materialtabelle
   G <- res$General
   A <- names(G[["apm"]])
-  if (!file.exists(file.path(dirname(fnc_get_local_file(x=report_file)), logo_file))) {
+  if (!file.exists(file.path(dirname(fnc_get_local_file(x = report_file)), logo_file))) {
     warning(paste(logo_file, "is not in same folder as", report_file))
   }
   L <- logo_file
@@ -43,12 +43,12 @@ if (testing) {
 
 ```{r mat_tab, echo=FALSE, message=FALSE, results='asis'}
 cat(paste0(
-  "Date: ", format(Sys.time(), '%d %B, %Y'), "  \n", 
-  "User: ", G$user, "  \n", 
+  "Date: ", format(Sys.time(), "%d %B, %Y"), "  \n",
+  "User: ", G$user, "  \n",
   "Material: ", G$study_id
 ), "\n\n")
 
-#if (FALSE) {
+# if (FALSE) {
 ## testing
 #   M[2,1] <- "This is a very long analyte name"
 #   source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/app_config.R")
@@ -58,7 +58,7 @@ cat(paste0(
 #   source("C:/Users/jlisec/Documents/Rpackages/Rpackage_eCerto/eCerto/R/fnc_styleTabC3.R")
 #   styleTabC3(x = M, apm = G[["apm"]], output = ifelse(knitr::is_html_output(), "DT", "flextable"))
 # } else {
-  eCerto:::styleTabC3(x = M, apm = G[["apm"]], output = ifelse(knitr::is_html_output(), "DT", "ft"))
+eCerto:::styleTabC3(x = M, apm = G[["apm"]], output = ifelse(knitr::is_html_output(), "DT", "ft"))
 # }
 ```
 

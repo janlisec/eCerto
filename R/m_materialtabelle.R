@@ -34,9 +34,9 @@
 #'
 m_materialtabelleUI <- function(id, sidebar_width = 320) {
   ns <- shiny::NS(id)
-  #wb <- "50px"
+  # wb <- "50px"
   bslib::card(
-    #min_height = 500, max_height = 600,
+    # min_height = 500, max_height = 600,
     id = ns("tab_C3_panel"),
     fill = FALSE,
     bslib::card_header(
@@ -91,7 +91,6 @@ m_materialtabelleUI <- function(id, sidebar_width = 320) {
 #' @keywords internal
 m_materialtabelleServer <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
-    ns <- shiny::NS(id)
 
     # FU-col module
     modify_FUcols_Server(id = "FUcols", mt = mater_table)
@@ -194,8 +193,8 @@ m_materialtabelleServer <- function(id, rv) {
       }
       # check if the option to remove F/U columns without effect should be displayed
       if (ncol(mt) != ncol(remove_unused_cols(mt = mt))) {
-        n <- ncol(mt)-ncol(remove_unused_cols(mt = mt))
-        shiny::updateActionButton(inputId = "clear_FU_cols", label = shiny::HTML(paste0("Remove ", n, " column", ifelse(n>1, "s", ""), "<br>without effect")))
+        n <- ncol(mt) - ncol(remove_unused_cols(mt = mt))
+        shiny::updateActionButton(inputId = "clear_FU_cols", label = shiny::HTML(paste0("Remove ", n, " column", ifelse(n > 1, "s", ""), "<br>without effect")))
         shinyjs::showElement(id = "clear_FU_cols")
       } else {
         shinyjs::hideElement(id = "clear_FU_cols")
@@ -213,7 +212,7 @@ m_materialtabelleServer <- function(id, rv) {
         e_msg("recalculate table")
 
         # recalculate all cert_mean values including correction factors
-        mt[, "cert_val"] <- apply(mt[, get_UF_cols(mt, "F"), drop = FALSE], 1, prod, na.rm = T)
+        mt[, "cert_val"] <- apply(mt[, get_UF_cols(mt, "F"), drop = FALSE], 1, prod, na.rm = TRUE)
         update_reactivecell(r = mater_table, colname = "cert_val", value = mt[, "cert_val"])
 
         # update the 'char'acteristic uncertainty
@@ -222,7 +221,7 @@ m_materialtabelleServer <- function(id, rv) {
 
         # update the 'com'bined uncertainty
         mt[, "u_com"] <- apply(mt[, get_UF_cols(mt, "U"), drop = FALSE], 1, function(x) {
-          sqrt(sum(x^2, na.rm = T))
+          sqrt(sum(x^2, na.rm = TRUE))
         })
         update_reactivecell(r = mater_table, colname = "u_com", value = mt[, "u_com"])
 
@@ -264,8 +263,8 @@ m_materialtabelleServer <- function(id, rv) {
       data[, "Lab"] <- factor(data[, "Lab"])
       ifelse(
         pooling(),
-        mean(data[, "value"], na.rm = T),
-        mean(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = T))
+        mean(data[, "value"], na.rm = TRUE),
+        mean(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = TRUE))
       )
     })
 
@@ -281,8 +280,8 @@ m_materialtabelleServer <- function(id, rv) {
       # average per lab
       ifelse(
         pooling(),
-        stats::sd(data[, "value"], na.rm = T),
-        stats::sd(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = T))
+        stats::sd(data[, "value"], na.rm = TRUE),
+        stats::sd(sapply(split(data[, "value"], data[, "Lab"]), mean, na.rm = TRUE))
       )
     })
 
@@ -303,16 +302,16 @@ m_materialtabelleServer <- function(id, rv) {
       shiny::req(c_fltData())
       an <- as.character(c_fltData()[1, "analyte"])
       if (!is.null(mater_table()) && an %in% mater_table()[, "analyte"]) {
-        i <- which(mater_table()[, "analyte"]==an)
-        if (!identical(unname(cert_mean()), mater_table()[i,2])) {
+        i <- which(mater_table()[, "analyte"] == an)
+        if (!identical(unname(cert_mean()), mater_table()[i, 2])) {
           e_msg(paste("update \u00B5_c for", an))
           update_reactivecell(r = mater_table, colname = "mean", analyterow = an, value = cert_mean())
         }
-        if (!identical(unname(cert_sd()), mater_table()[i,4])) {
+        if (!identical(unname(cert_sd()), mater_table()[i, 4])) {
           e_msg(paste("update sd for", an))
           update_reactivecell(r = mater_table, colname = "sd", analyterow = an, value = cert_sd())
         }
-        if (!identical(unname(n()), mater_table()[i,5])) {
+        if (!identical(unname(n()), mater_table()[i, 5])) {
           e_msg(paste("update n for", an))
           update_reactivecell(r = mater_table, colname = "n", analyterow = an, value = n())
         }

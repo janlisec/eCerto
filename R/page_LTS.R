@@ -55,10 +55,10 @@ m_longtermstabilityUI <- function(id) {
       shiny::div(
         shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::pickerInput(inputId = ns("LTS_sel_KW"), label = NULL, choices = "", width = "200px")),
         shiny::div(style = "float: left; margin-left: 15px;", shinyWidgets::dropdownButton(
-          inputId = ns("btn_Comment"), label = "Comment or Filter", circle = FALSE, width = "300px", inline = TRUE, right=FALSE,
+          inputId = ns("btn_Comment"), label = "Comment or Filter", circle = FALSE, width = "300px", inline = TRUE, right = FALSE,
           shinyjs::disabled(shiny::textInput(inputId = ns("datacomment"), label = "Comment text", value = "", placeholder = "enter comment for selected point")),
           shiny::checkboxInput(inputId = ns("dataflt"), label = "Filter datapoint", value = FALSE)
-          #shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment")
+          # shiny::actionButton(inputId = ns("LTS_ApplyNewComment"), label = "Add comment")
         )),
         shiny::div(style = "float: left; margin-left: 15px; text-align: right; width: 132px;", shiny::checkboxInput(inputId = ns("LTS_opt_show_ci"), label = shiny::HTML("Use CI<sub>95</sub> (slope)"), value = TRUE))
       )
@@ -70,12 +70,12 @@ m_longtermstabilityUI <- function(id) {
           DT::dataTableOutput(ns("LTS_def"))
         ),
         bslib::layout_columns(
-          #shiny::div(
-            #style = "position:relative",
-            shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover")),
-            #uiOutput(ns("hover_info")),
-            shiny::plotOutput(ns("LTS_plot1_2"), height = "450px")
-          #)
+          # shiny::div(
+          # style = "position:relative",
+          shiny::plotOutput(ns("LTS_plot1_1"), height = "450px", click = ns("plot1_click"), hover = ns("plot1_hover")),
+          # uiOutput(ns("hover_info")),
+          shiny::plotOutput(ns("LTS_plot1_2"), height = "450px")
+          # )
         )
       )
     ),
@@ -110,7 +110,7 @@ m_longtermstabilityUI <- function(id) {
       bslib::layout_columns(
         tab_L1_card,
         fig_L1_card,
-        col_widths =  bslib::breakpoints(
+        col_widths = bslib::breakpoints(
           sm = c(12, 12),
           xl = c(3, 9)
         )
@@ -125,8 +125,8 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
 
     output$example_table_generic <- renderUI({
-        ft <- LTS_upload_example_table()
-        flextable::htmltools_value(ft, ft.align = "left")
+      ft <- LTS_upload_example_table()
+      flextable::htmltools_value(ft, ft.align = "left")
     })
 
     lts <- shiny::reactiveValues(
@@ -148,7 +148,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
         }
         if (tolower(file.type) == "rdata") {
           tmp_env <- new.env()
-          tryCatch({ load(fl_path, envir = tmp_env )}, error = function(e) { stop(shiny::safeError(e)) })
+          tryCatch({ load(fl_path, envir = tmp_env)}, error = function(e) { stop(shiny::safeError(e)) })
           if (is.null(get0("LTS_dat", tmp_env))) { e_msg("Did load RData file but could not find object 'LTS_dat' inside.") }
           LTS_dat <- get0("LTS_dat", tmp_env)
         } else {
@@ -158,7 +158,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
         check_validity <- TRUE
         i <- 0
         while (!is.null(LTS_dat) && check_validity && i < length(LTS_dat)) {
-          for (i in seq_len(length(LTS_dat))) {
+          for (i in seq_along(LTS_dat)) {
             def_cols <- c("RM", "KW", "KW_Def", "KW_Unit", "CertVal", "U", "U_Def", "Device", "Method", "Coef_of_Var", "acc_Datasets")
             check_def_cols <- def_cols %in% colnames(LTS_dat[[i]][["def"]])
             val_cols <- c("Value", "Date", "File")
@@ -175,7 +175,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
             if (!"Comment" %in% colnames(LTS_dat[[i]][["val"]])) {
               LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Comment" = as.character(rep(NA, nrow(LTS_dat[[i]][["val"]]))))
             } else {
-              LTS_dat[[i]][["val"]][which(LTS_dat[[i]][["val"]][,"Comment"] == ""),"Comment"] <- NA
+              LTS_dat[[i]][["val"]][which(LTS_dat[[i]][["val"]][, "Comment"] == ""), "Comment"] <- NA
             }
             if (!"Filter" %in% colnames(LTS_dat[[i]][["val"]])) {
               LTS_dat[[i]][["val"]] <- cbind(LTS_dat[[i]][["val"]], "Filter" = rep(FALSE, nrow(LTS_dat[[i]][["val"]])))
@@ -244,7 +244,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       # reorder and rename columns according to wish of Carsten Prinz
       out <- out[, c("RM", "KW", "KW_Def", "KW_Unit", "CertVal", "U", "U_Def", "Coef_of_Var", "acc_Datasets", "Device", "Method")]
       colnames(out) <- c("Reference Material", "Property", "Name", "Unit", "Certified value", "Uncertainty", "Uncertainty unit", "Coeff. of Variance", "accepted Datasets", "Device", "Method")
-      rownames(out) <- out[,"Property"]
+      rownames(out) <- out[, "Property"]
       return(t(out))
     }, options = list(paging = FALSE, searching = FALSE, ordering = FALSE, dom = "t"))
 
@@ -260,9 +260,9 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
 
     update_info_div <- function(sr = NULL) {
       if (!is.null(sr)) {
-        if (!is.na(sr[, "Comment"])) txt <- paste("<br>Comment:", sr[,"Comment"]) else txt <- ""
-        txt <- paste0(ifelse(txt=="", "<br>", paste0(txt, "; ")), "Filter: ", ifelse(sr[,"Filter"], "yes", "no"))
-        shinyjs::html(id = "LTS_selected_point", html = paste0("Selected data point: month ", sr[, "mon"], " and value ", round(sr[, "Value"],4), txt))
+        if (!is.na(sr[, "Comment"])) txt <- paste("<br>Comment:", sr[, "Comment"]) else txt <- ""
+        txt <- paste0(ifelse(txt == "", "<br>", paste0(txt, "; ")), "Filter: ", ifelse(sr[, "Filter"], "yes", "no"))
+        shinyjs::html(id = "LTS_selected_point", html = paste0("Selected data point: month ", sr[, "mon"], " and value ", round(sr[, "Value"], 4), txt))
       } else {
         shinyjs::html(id = "LTS_selected_point", html = "Selected data point: none")
       }
@@ -273,7 +273,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       shiny::req(lts$data)
       if (!is.null(input$tab_L1_rows_selected)) {
         # when a row is selected in table or plot change title and value
-        sr <- cbind(lts[["data"]][[i()]][["val"]][input$tab_L1_rows_selected,,drop=FALSE], d()[input$tab_L1_rows_selected,"mon",drop=FALSE]) # selected row
+        sr <- cbind(lts[["data"]][[i()]][["val"]][input$tab_L1_rows_selected, , drop = FALSE], d()[input$tab_L1_rows_selected, "mon", drop = FALSE]) # selected row
         shinyjs::enable(id = "datacomment")
         shinyjs::enable(id = "dataflt")
         shiny::updateTextInput(session = session, inputId = "datacomment", value = sr[, "Comment"])
@@ -299,7 +299,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       plot_lts_data(x = lts$data[[i()]], type = 1)
       ### if a point in data table is selected --> mark in plot 1
       sr <- input$tab_L1_rows_selected
-      if (length(sr)==1) {
+      if (length(sr) == 1) {
         graphics::points(x = rep(d()[sr, "mon"], 2), y = rep(d()[sr, "vals"], 2), pch = c(21, 4), cex = 2.5, col = 5)
       }
     })
@@ -309,9 +309,9 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       input$LTS_newPoint_Apply
       e_msg("Render LTS_plot1_2")
       x <- lts$data[[i()]]
-      #remove filtered Values from Fig.L1-2
-      if (any(x[["val"]][,"Filter"])) {
-        x[["val"]] <- x[["val"]][!x[["val"]][,"Filter"],]
+      # remove filtered Values from Fig.L1-2
+      if (any(x[["val"]][, "Filter"])) {
+        x[["val"]] <- x[["val"]][!x[["val"]][, "Filter"], ]
       }
       plot_lts_data(x = x, type = ifelse(input$LTS_opt_show_ci, 3, 2))
     })
@@ -325,7 +325,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       a <- shiny::nearPoints(d(), input$plot1_click, xvar = "mon", yvar = "vals", addDist = TRUE, threshold = 5)
       # 2/3 index in table
       if (nrow(a) >= 2) {
-        #shinyWidgets::show_alert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
+        # shinyWidgets::show_alert(title = "Warning", text = "More than one data point in proximity to click event. Please cross check with table entry if correct data point is selected.", type = "warning")
         a <- a[which.min(a[, "dist_"])[1], ]
       }
       idx <- which(d()$mon == a$mon & d()$vals == a$vals)
@@ -339,11 +339,11 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
       if (input$LTS_newPoint_Apply >= 1) {
         tmp <- lts$data[[i()]][["val"]]
         nval <- LTS_new_val
-        nval[1,"Value"] <- input$LTS_newPoint_Val
-        nval[1,"Date"] <- input$LTS_newPoint_Date
-        nval[1,"File"] <- input$LTS_newPoint_File
-        nval[1,"Comment"] <- ifelse(input$LTS_newPoint_Comment=="", as.character(NA), input$LTS_newPoint_Comment)
-        nval[1,"Filter"] <- FALSE
+        nval[1, "Value"] <- input$LTS_newPoint_Val
+        nval[1, "Date"] <- input$LTS_newPoint_Date
+        nval[1, "File"] <- input$LTS_newPoint_File
+        nval[1, "Comment"] <- ifelse(input$LTS_newPoint_Comment == "", as.character(NA), input$LTS_newPoint_Comment)
+        nval[1, "Filter"] <- FALSE
         if (nval$Date < max(tmp$Date)) {
           shinyWidgets::show_alert(title = "Warning", text = "You added a data point for an earlier date. Resorting the table accordingly.", type = "warning")
           ord <- order(c(tmp$Date, nval$Date))
@@ -365,7 +365,7 @@ m_longtermstabilityServer <- function(id, test_data = NULL) {
           sr <- input$tab_L1_rows_selected # selected row
           lts[["data"]][[i()]][["val"]][sr, "Comment"] <- ifelse(input$datacomment == "", NA, input$datacomment)
           lts[["data"]][[i()]][["val"]][sr, "Filter"] <- input$dataflt
-          update_info_div(sr = cbind(lts[["data"]][[i()]][["val"]][sr,,drop=FALSE], d()[sr,"mon",drop=FALSE]))
+          update_info_div(sr = cbind(lts[["data"]][[i()]][["val"]][sr, , drop = FALSE], d()[sr, "mon", drop = FALSE]))
         }
       }
     })

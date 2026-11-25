@@ -11,12 +11,12 @@ a date instead of a relative time information is required to calculate shelf tim
 and allows to continue using this data for long term stability monitoring.
 
 ```{r S_upload_format, echo=FALSE, message=FALSE}
-x <- cbind(eCerto:::test_Stability_Arrhenius()[1:12,c(1,2,4,5)], "unit" = "mg/kg")
-eCerto:::show_upload_example_table(x=x, optional=c(4,5)) |>
+x <- cbind(eCerto:::test_Stability_Arrhenius()[1:12, c(1, 2, 4, 5)], "unit" = "mg/kg")
+eCerto:::show_upload_example_table(x = x, optional = c(4, 5)) |>
   flextable::set_caption(flextable::as_paragraph(
-    flextable::as_b("Info"), 
-    " Example table layout for stability data upload, including (optional) temperature information to perform Arrhenius calculations")
-  ) |>
+    flextable::as_b("Info"),
+    " Example table layout for stability data upload, including (optional) temperature information to perform Arrhenius calculations"
+  )) |>
   flextable::htmltools_value(ft.align = "left")
 ```
 

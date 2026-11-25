@@ -44,7 +44,6 @@ m_RDataExport_UI <- function(id) {
 #' @noRd
 m_RDataexport_Server <- function(id, rv) {
   shiny::moduleServer(id, function(input, output, session) {
-    ns <- shiny::NS(id)
 
     shiny::observeEvent(input$user, {
       if (!identical(input$user, getValue(rv, c("General", "user")))) {
@@ -68,7 +67,7 @@ m_RDataexport_Server <- function(id, rv) {
     shiny::observeEvent(getValue(rv, c("General", "study_id")), {
       if (!identical(input$study_id, getValue(rv, c("General", "study_id")))) {
         e_msg(paste("study_id-input updated to ", getValue(rv, c("General", "study_id"))))
-        shiny::updateTextInput(session = session, inputId = "study_id", value =  getValue(rv, c("General", "study_id")))
+        shiny::updateTextInput(session = session, inputId = "study_id", value = getValue(rv, c("General", "study_id")))
       }
     })
 

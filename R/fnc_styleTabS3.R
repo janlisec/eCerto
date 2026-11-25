@@ -19,18 +19,18 @@ styleTabS3 <- function(x, output = c("DT", "ft", "ft_HTML")) {
   colnames(x)[2] <- "sum(x<sup>2</sup>)"
   if (output %in% c("ft", "ft_HTML")) {
     ft <- ft_default(df = x, output = output, HTML2ft = TRUE)
-    for (i in c(1:2,4:7)) ft <- ft_set_formatter(ft, i, ft_formatter_fixed_digits, 6)
+    for (i in c(1:2, 4:7)) ft <- ft_set_formatter(ft, i, ft_formatter_fixed_digits, 6)
     return(ft)
   } else {
     # set up the DT object
-    x[,-3] <- apply(x[,-3], 2, pn, 6)
-    x <- cbind(x, " "="")
+    x[, -3] <- apply(x[, -3], 2, pn, 6)
+    x <- cbind(x, " " = "")
     dt <- DT::datatable(
       data = x,
       options = list(
         dom = "t", paging = FALSE, searching = FALSE, ordering = FALSE,
         columnDefs = list(
-          list("width" = "50px", "targets" = 0:(ncol(x)-2)),
+          list("width" = "50px", "targets" = 0:(ncol(x) - 2)),
           list(className = "dt-right", targets = 0:(ncol(x) - 1))
         )
       ),

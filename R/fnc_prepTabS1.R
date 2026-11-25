@@ -39,13 +39,13 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
       mon_diff <- round(max(x[, "Date"]), 1)
     }
     if (mon_diff == 0) {
-      e_msg(paste("Check", x[1,"analyte"]))
-      x_coef <- rep(0,4)
+      e_msg(paste("Check", x[1, "analyte"]))
+      x_coef <- rep(0, 4)
       x_mean <- 0
     } else {
       x_lm <- stats::lm(Value ~ Date, data = x)
       x_coef <- unname(summary(x_lm)$coefficients["Date", ])
-      x_mean <- mean(x[,"Value"], na.rm=TRUE)
+      x_mean <- mean(x[, "Value"], na.rm = TRUE)
     }
     # according to B.3.4 from ISO Guide 35 which is similar to summary(lm))coef[4]
     # p_val <- 2 * stats::pt(abs(x_coef[1]/x_coef[2]), df = stats::df.residual(x_lm), lower.tail = FALSE)
@@ -64,21 +64,21 @@ prepTabS1 <- function(x, time_fmt = c("mon", "day"), t_cert = 60, slope_of_means
     # s <- sqrt(sum((y-b0-b1*x)^2)/(length(y)-2))
     # SE <- s / sqrt(sum((x - mean(x))^2))
 
-    u_stab <- abs(t_cert * x_coef[2])/x_mean
+    u_stab <- abs(t_cert * x_coef[2]) / x_mean
     if (FALSE && !is.null(mt)) {
       # this can be used to optimize u_stab to reach a maximum allowed U_abs while maximizing shelf life (t_cert)
       # to this end the user can specify different t_cert which will modify u_stab
-      U_abs <- mt[mt[,"analyte"]==x[1,"analyte"],"U_abs"]
-      mu_c <- mt[mt[,"analyte"]==x[1,"analyte"],"cert_val"]
-      k <- mt[mt[,"analyte"]==x[1,"analyte"],"k"]
-      u_com <- U_abs/(mu_c*k)
-      u_crm <- k*mu_c*sqrt(u_stab^2+u_com^2)
-      u_stab <- u_stab*x_mean - u_crm/3
-      u_stab <- ifelse(u_stab<0, 0, u_stab/x_mean)
-      #u_stab <- u_stab^2-u_com^2
-      #u_stab <- ifelse(u_stab<0, 0, sqrt(u_stab))
-      #u_stab <- (abs(t_cert * x_coef[2])-ifelse(is.null(U_abs), 0, U_abs))/mu_c
-      #u_stab <- ifelse(u_stab<0, 0, u_stab)
+      U_abs <- mt[mt[, "analyte"] == x[1, "analyte"], "U_abs"]
+      mu_c <- mt[mt[, "analyte"] == x[1, "analyte"], "cert_val"]
+      k <- mt[mt[, "analyte"] == x[1, "analyte"], "k"]
+      u_com <- U_abs / (mu_c * k)
+      u_crm <- k * mu_c * sqrt(u_stab^2 + u_com^2)
+      u_stab <- u_stab * x_mean - u_crm / 3
+      u_stab <- ifelse(u_stab < 0, 0, u_stab / x_mean)
+      # u_stab <- u_stab^2-u_com^2
+      # u_stab <- ifelse(u_stab<0, 0, sqrt(u_stab))
+      # u_stab <- (abs(t_cert * x_coef[2])-ifelse(is.null(U_abs), 0, U_abs))/mu_c
+      # u_stab <- ifelse(u_stab<0, 0, u_stab)
     }
 
     data.frame(

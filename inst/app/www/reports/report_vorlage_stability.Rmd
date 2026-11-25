@@ -15,7 +15,7 @@ output:
 
 ```{r data, echo=FALSE}
 # get a local representation of all data provided by Shiny
-testing <- length(params$Stability)==1L && (is.na(params$Stability) | params$Stability=="NA")
+testing <- length(params$Stability) == 1L && (is.na(params$Stability) | params$Stability == "NA")
 if (testing) {
   res <- eCerto::CRM001
   S <- res[["Stability"]]
@@ -32,20 +32,20 @@ if (testing) {
   S <- params$Stability
   O <- params$Options
 }
-an <- as.character(S[["s_vals"]][,"analyte"])
+an <- as.character(S[["s_vals"]][, "analyte"])
 ```
 
 ```{r Tab.S1, echo=FALSE, comment=NA, message=FALSE, warning=FALSE, results='asis'}
 cat(paste0(
-  "Date: ", format(Sys.time(), '%d %B, %Y'), "  \n"
-  #"User: ", G$user, "  \n", 
-  #"Material: ", G$study_id
+  "Date: ", format(Sys.time(), "%d %B, %Y"), "  \n"
+  # "User: ", G$user, "  \n",
+  # "Material: ", G$study_id
 ), "\n\n")
 
-eCerto:::styleTabS1(x = S[["s_vals"]], mt = data.frame("analyte"=an), output="ft")
+eCerto:::styleTabS1(x = S[["s_vals"]], mt = data.frame("analyte" = an), output = "ft")
 
 # make individual plots to allow separate inclusion in i.e. Word reports
-for (i in seq_len(length(an))) {
+for (i in seq_along(an)) {
   try(
     eCerto:::plot_lts_data(
       x = eCerto:::prepFigS1(

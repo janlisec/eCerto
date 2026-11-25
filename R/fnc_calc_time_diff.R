@@ -34,7 +34,7 @@ calc_time_diff <- function(x = NULL, d_start = NULL, type = c("mon", "day", "yea
     out <- switch(type,
       "mon" = (lt$year * 12 + lt$mon) - (d_start$year * 12 + d_start$mon),
       "year" = lt$year - d_start$year,
-      "day" = as.numeric((lt - d_start) / (24 * 60 * 60))
+      "day" = as.integer(as.numeric((lt - d_start) / (24 * 60 * 60)))
     )
   }
   return(out)

@@ -45,22 +45,22 @@ styleTabH1 <- function(x, mt = NULL, prec = NULL, output = c("DT", "ft", "ft_HTM
   style_x[, "style_s_bb"] <- c("bold", "normal")[1 + as.numeric(style_x[, "s_bb"] < style_x[, "s_bb_min"])]
   style_x[, "style_s_bb_min"] <- c("bold", "normal")[1 + as.numeric(style_x[, "s_bb"] >= style_x[, "s_bb_min"])]
   if (output %in% c("ft", "ft_HTML")) {
-    x <- style_x[,-grep("^style_", colnames(style_x))]
-    if (length(unique(x[, "H_type"])) == 1) x <- x[,colnames(x)!="H_type"]
+    x <- style_x[, -grep("^style_", colnames(style_x))]
+    if (length(unique(x[, "H_type"])) == 1) x <- x[, colnames(x) != "H_type"]
     eCerto_flextable_defaults(output = output)
     ft <- flextable::flextable(x)
     ft <- flextable::align(ft, j = "analyte", align = "left", part = "all")
     ft <- flextable::align(ft, j = !(colnames(x) %in% "analyte"), align = "right", part = "all")
     if ("H_type" %in% colnames(x)) ft <- flextable::compose(x = ft, j = "H_type", value = flextable::as_paragraph("H", flextable::as_sub("type")), part = "header")
     if ("P_adj" %in% colnames(x)) ft <- flextable::compose(x = ft, j = "P_adj", value = flextable::as_paragraph("P", flextable::as_sub("adj")), part = "header")
-    ft <- flextable::compose(x = ft, j = which(colnames(x)=="M_between"), value = flextable::as_paragraph("M", flextable::as_sub("between")), part = "header")
-    ft <- flextable::compose(x = ft, j = which(colnames(x)=="M_within"), value = flextable::as_paragraph("M", flextable::as_sub("within")), part = "header")
-    ft <- flextable::compose(x = ft, j = which(colnames(x)=="s_bb"), value = flextable::as_paragraph("s", flextable::as_sub("bb")), part = "header")
-    ft <- flextable::compose(x = ft, j = which(colnames(x)=="s_bb_min"), value = flextable::as_paragraph("s", flextable::as_sub("bb,min")), part = "header")
-    for (i in which(style_x$style_s_bb=="bold")) ft <- flextable::bold(ft, i = i, j = "s_bb", part = "body")
-    for (i in which(style_x$style_s_bb_min=="bold")) ft <- flextable::bold(ft, i = i, j = "s_bb_min", part = "body")
-    for (i in which(style_x$style_analyte=="red")) ft <- flextable::color(ft, i = i, j = "analyte", color = "red", part = "body")
-    for (i in which(x[,P_col]<0.05)) ft <- flextable::color(ft, i = i, j = P_col, color = "red", part = "body")
+    ft <- flextable::compose(x = ft, j = which(colnames(x) == "M_between"), value = flextable::as_paragraph("M", flextable::as_sub("between")), part = "header")
+    ft <- flextable::compose(x = ft, j = which(colnames(x) == "M_within"), value = flextable::as_paragraph("M", flextable::as_sub("within")), part = "header")
+    ft <- flextable::compose(x = ft, j = which(colnames(x) == "s_bb"), value = flextable::as_paragraph("s", flextable::as_sub("bb")), part = "header")
+    ft <- flextable::compose(x = ft, j = which(colnames(x) == "s_bb_min"), value = flextable::as_paragraph("s", flextable::as_sub("bb,min")), part = "header")
+    for (i in which(style_x$style_s_bb == "bold")) ft <- flextable::bold(ft, i = i, j = "s_bb", part = "body")
+    for (i in which(style_x$style_s_bb_min == "bold")) ft <- flextable::bold(ft, i = i, j = "s_bb_min", part = "body")
+    for (i in which(style_x$style_analyte == "red")) ft <- flextable::color(ft, i = i, j = "analyte", color = "red", part = "body")
+    for (i in which(x[, P_col] < 0.05)) ft <- flextable::color(ft, i = i, j = P_col, color = "red", part = "body")
     ft <- flextable::bold(ft, part = "header")
     ft <- eCerto_flextable_defaults(ft = ft, output = output)
     ft <- flextable::set_caption(ft, caption = flextable::as_paragraph(flextable::as_b("Tab.H1"), " Analyte homogeneities and accociated uncertainties"))

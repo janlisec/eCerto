@@ -31,7 +31,7 @@
 #'
 #' @noRd
 #' @keywords internal
-plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE, show_legend = FALSE, show_ids = FALSE, k=2) {
+plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE, show_legend = FALSE, show_ids = FALSE, k = 2) {
 
   #
   if (!is.numeric(k) && !is.finite(k)) k <- 2
@@ -76,11 +76,11 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
   # b.ci <- confint(object = foo.lm, parm = 'mon', level = 0.95)
 
   # store direction of slope to adjust plot labelling decisions later on
-  drn <- ifelse(b>=0, 1, -1)
+  drn <- ifelse(b >= 0, 1, -1)
 
   # extract relevant values from definition part
   U <- x[["def"]][, "U"]
-  ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]) | x[["def"]][, "KW"]==x[["def"]][, "KW_Def"], "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
+  ylab <- paste0(x[["def"]][, "KW_Def"], ifelse(is.na(x[["def"]][, "KW"]) | x[["def"]][, "KW"] == x[["def"]][, "KW_Def"], "", paste0(" (", x[["def"]][, "KW"], ")")), " [", x[["def"]][, "KW_Unit"], "]")
   main <- x[["def"]][, "KW"]
   sub <- ifelse(x[["def"]][, "U_Def"] == "U", expression(U[abs]), expression(U))
   sub2 <- ifelse(is.na(x[["def"]][, "CertVal"]), "mean", expression("\u03BC"[c]))
@@ -103,7 +103,7 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     plot(
       vals ~ mon,
       type = "n",
-      ylim = range(c(vals, mn + c(-1, 1) * U), na.rm = T),
+      ylim = range(c(vals, mn + c(-1, 1) * U), na.rm = TRUE),
       xlim = range(c(mon), t_cert),
       xlab = "Month", ylab = ylab, main = main
     )
@@ -134,10 +134,10 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     if (show_legend) {
       xr <- graphics::par("usr")[2] - diff(graphics::par("usr")[1:2]) * 0.005
       xl <- graphics::par("usr")[1] + diff(graphics::par("usr")[1:2]) * 0.005
-      #graphics::text(x = xr, y = mn, labels = sub2, adj = 1)
+      # graphics::text(x = xr, y = mn, labels = sub2, adj = 1)
       graphics::text(x = xl, y = mn, labels = sub2, adj = 0)
-      #graphics::text(x = xr, y = mn + drn*U, labels = sub, adj = 1)
-      graphics::text(x = xl, y = mn + drn*U, labels = sub, adj = 0)
+      # graphics::text(x = xr, y = mn + drn*U, labels = sub, adj = 1)
+      graphics::text(x = xl, y = mn + drn * U, labels = sub, adj = 0)
       graphics::text(x = xr, y = stats::predict(foo.lm, newdata = data.frame("mon" = xr)), labels = expression(b[1]), adj = 1)
       if (t_cert > 0) {
         graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)
@@ -164,41 +164,41 @@ plot_lts_data <- function(x = NULL, type = 1, t_cert = 0, slope_of_means = FALSE
     graphics::axis(side = 3, at = c(0, foo_lts), labels = c(rt[1], rt[1] + foo_lts * days_per_month))
     if (type == 3) {
       # the solution calculating CI for predicted (y_hat) values
-      newx <- seq(x_min, x_max, length.out = ifelse(diff(xlim) > 100, diff(xlim) + 1, 2*diff(xlim) + 1))
+      newx <- seq(x_min, x_max, length.out = ifelse(diff(xlim) > 100, diff(xlim) + 1, 2 * diff(xlim) + 1))
       preds <- stats::predict(adj.lm, newdata = data.frame(mon = newx), interval = "confidence")
       graphics::polygon(c(rev(newx), newx), c(rev(preds[, 3]), preds[, 2]), col = grDevices::grey(0.9), border = NA)
       # the u_LTS as suggested by the ISO Guide 35
-      u_LTS <- newx*SE_b
+      u_LTS <- newx * SE_b
       graphics::lines(x = newx, y = mn + u_LTS, lty = 4, lwd = 2, col = grDevices::grey(0.8))
       graphics::lines(x = newx, y = mn - u_LTS, lty = 4, lwd = 2, col = grDevices::grey(0.8))
       # the u_CRM (dependent on u_LTS) as suggested by the ISO Guide 35
-      u_CRM <- sapply(u_LTS/mn, function(x) {
+      u_CRM <- sapply(u_LTS / mn, function(x) {
         # old version without k
-        #sqrt(x^2 + (U/mn)^2)
+        # sqrt(x^2 + (U/mn)^2)
         # new version as of 20260707 including k
-        mn * k * sqrt(x^2 + (U/(mn*k))^2)
+        mn * k * sqrt(x^2 + (U / (mn * k))^2)
       })
       graphics::lines(x = newx, y = mn + u_CRM, lty = 3, lwd = 2, col = grDevices::grey(0.8))
       graphics::lines(x = newx, y = mn - u_CRM, lty = 3, lwd = 2, col = grDevices::grey(0.8))
       # the suggested U_lim = U_CRM/3 according to the ISO Guide 35
-      graphics::lines(x = range(newx), y = rep(mn + U/3, 2), lty = 4, col = 3)
-      graphics::lines(x = range(newx), y = rep(mn - U/3, 2), lty = 4, col = 3)
-      graphics::lines(x = newx, y = mn + u_CRM/3, lty = 3, lwd = 2, col = grDevices::grey(0.8))
-      graphics::lines(x = newx, y = mn - u_CRM/3, lty = 3, lwd = 2, col = grDevices::grey(0.8))
+      graphics::lines(x = range(newx), y = rep(mn + U / 3, 2), lty = 4, col = 3)
+      graphics::lines(x = range(newx), y = rep(mn - U / 3, 2), lty = 4, col = 3)
+      graphics::lines(x = newx, y = mn + u_CRM / 3, lty = 3, lwd = 2, col = grDevices::grey(0.8))
+      graphics::lines(x = newx, y = mn - u_CRM / 3, lty = 3, lwd = 2, col = grDevices::grey(0.8))
       if (show_legend) {
         graphics::legend(x = "topright", fill = grDevices::grey(0.9), legend = expression(CI[95](b[1])), bty = "n", inset = c(0.04, 0))
-        graphics::text(x = xl, y = mn + drn*U/3, labels = as.expression(bquote(.(sub[[1L]])/3)), adj = 0)
-        #graphics::text(x = xr, y = mn + U/3, labels = expression(U[abs]/3), adj = 1)
-        graphics::text(x = xr, y = mn + drn*max(u_CRM)/3, labels = expression(u[CRM]/3), adj = 1)
-        graphics::text(x = xr, y = mn + drn*max(u_LTS), labels = expression(u[LTS]), adj = 1)
-        graphics::text(x = xr, y = mn + drn*max(u_CRM), labels = expression(u[CRM]), adj = 1)
+        graphics::text(x = xl, y = mn + drn * U / 3, labels = as.expression(bquote(.(sub[[1L]]) / 3)), adj = 0)
+        # graphics::text(x = xr, y = mn + U/3, labels = expression(U[abs]/3), adj = 1)
+        graphics::text(x = xr, y = mn + drn * max(u_CRM) / 3, labels = expression(u[CRM] / 3), adj = 1)
+        graphics::text(x = xr, y = mn + drn * max(u_LTS), labels = expression(u[LTS]), adj = 1)
+        graphics::text(x = xr, y = mn + drn * max(u_CRM), labels = expression(u[CRM]), adj = 1)
       }
     }
     graphics::abline(h = mn + c(-1, 0, 1) * U, lty = c(2, 1, 2), col = c(3, 2, 3))
     graphics::abline(adj.lm, lty = 2, col = 4)
     if (show_legend) {
       graphics::text(x = xl, y = mn, labels = sub2, adj = 0)
-      graphics::text(x = xl, y = mn + drn*U, labels = sub, adj = 0)
+      graphics::text(x = xl, y = mn + drn * U, labels = sub, adj = 0)
       graphics::text(x = xr, y = stats::predict(adj.lm, newdata = data.frame("mon" = xr)), labels = expression(b[1]), adj = 1)
       if (t_cert > 0) {
         graphics::axis(side = 1, at = t_cert, labels = NA, tcl = 0.5)

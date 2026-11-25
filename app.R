@@ -5,6 +5,8 @@
 # renv::update()
 # renv::snapshot()
 # renv::install("janlisec/eCerto")
+# styler::style_pkg(transformers = styler::tidyverse_style(scope = "indention"))
+#
 
 # To deploy to shinyapps.io:
 # options(eCerto.renderHelp = TRUE)

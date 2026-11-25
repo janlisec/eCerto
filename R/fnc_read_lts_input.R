@@ -20,7 +20,7 @@
 read_lts_input <- function(file = NULL, simplify = FALSE) {
   sheets <- openxlsx::getSheetNames(file = file)
   out <- vector("list", length(sheets))
-  for (i in seq_len(length(sheets))) {
+  for (i in seq_along(sheets)) {
     out[[i]][["def"]] <- openxlsx::read.xlsx(xlsxFile = file, sheet = i, startRow = 1, rows = 1:2)
     out[[i]][["val"]] <- openxlsx::read.xlsx(xlsxFile = file, sheet = i, startRow = 4, detectDates = TRUE)
     # fix Date format already here, although it is checked in app as well

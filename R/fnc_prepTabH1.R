@@ -20,7 +20,7 @@ prepTabH1 <- function(x, adjust = FALSE) {
         anm <- stats::anova(stats::lm(value ~ Flasche, data = z))
         M_between <- anm[1, "Mean Sq"]
         M_within <- anm[2, "Mean Sq"]
-        mn <- mean(sapply(split(z[, "value"], z[, "Flasche"]), mean, na.rm = T), na.rm = T)
+        mn <- mean(sapply(split(z[, "value"], z[, "Flasche"]), mean, na.rm = TRUE), na.rm = TRUE)
         n_i <- table(as.character(z[, "Flasche"]))
         N <- length(n_i)
         # n <- round(mean(table(as.character(z[,"Flasche"]))))

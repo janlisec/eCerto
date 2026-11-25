@@ -7,6 +7,6 @@ testthat::test_that(
 
     tmp <- eCerto:::styleTabH2(x = x, precision = 2)
     testthat::expect_true(inherits(tmp, "datatables"))
-    testthat::expect_true(all(tmp$x$data[,"mean"] == c("1.00", "2.00", "3.00")))
+    testthat::expect_true(all(tmp$x$data[, "mean"] == c("1.00", "2.00", "3.00")))
   }
 )

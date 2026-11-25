@@ -26,7 +26,7 @@ prepFigS1 <- function(s, an, apm = NULL, U_Def = c("2s", "U"), mt = NULL) {
   # load SD, CertVal, unit and U from certification if available
   # CertVal <- mean(s[l,"Value"], na.rm=T)
   CertVal <- NA # JL: will be used in plot functions as indicator that µ_c is not provided
-  U <- 2 * stats::sd(s[l, "Value"], na.rm = T)
+  U <- 2 * stats::sd(s[l, "Value"], na.rm = TRUE)
   unit_col <- tolower(colnames(s)) == "unit"
   KW_Unit <- ifelse(any(unit_col), unique(s[l, unit_col])[1], NA)
   if (!is.null(U_Def) && !is.null(mt) && an %in% names(apm) && apm[[an]][["confirmed"]]) {

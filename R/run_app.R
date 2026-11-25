@@ -8,7 +8,7 @@
 #' @importFrom golem with_golem_options
 run_app <- function(onStart = NULL, options = list("port" = 3838), enableBookmarking = NULL, uiPattern = "/", ...) {
 
-  message("DEBUG: .libPaths() = ", paste(.libPaths(), collapse=" | "))
+  message("DEBUG: .libPaths() = ", paste(.libPaths(), collapse = " | "))
   message("DEBUG: eCerto LOCATION = ", find.package("eCerto"))
   message("DEBUG: eCerto NAMESPACE LOADED FROM = ", getNamespaceInfo("eCerto", "path"))
 

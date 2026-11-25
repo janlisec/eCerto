@@ -40,8 +40,8 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
   }
   h_dat <- h_dat[interaction(h_dat[, "analyte"], h_dat[, "H_type"]) == sa, ]
   h_dat[, "Flasche"] <- factor(h_dat[, "Flasche"])
-  omn <- round(mean(h_dat[, "value"], na.rm = T), prec)
-  osd <- round(stats::sd(h_dat[, "value"], na.rm = T), prec)
+  omn <- round(mean(h_dat[, "value"], na.rm = TRUE), prec)
+  osd <- round(stats::sd(h_dat[, "value"], na.rm = TRUE), prec)
   shiny::validate(shiny::need(
     expr = any(is.finite(h_dat[, "value"])),
     message = "Not enough finite values to generate a plot."
@@ -51,8 +51,8 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
   graphics::par(mar = c(4, 4, 2.5, 0) + 0.1)
   graphics::plot(
     x = c(0.6, 0.4 + length(levels(h_dat[, "Flasche"]))),
-    y = range(h_dat[, "value"], na.rm = T),
-    type = "n", axes = F, xlab = xlab, ylab = ylab
+    y = range(h_dat[, "value"], na.rm = TRUE),
+    type = "n", axes = FALSE, xlab = xlab, ylab = ylab
   )
   graphics::abline(h = omn, lty = 2)
   graphics::abline(h = omn + c(-1, 1) * osd, lty = 2, col = grDevices::grey(0.8))
@@ -61,7 +61,7 @@ prepFigH1 <- function(x, sa = NULL, prec = 4, xlab = "Flasche", showIDs = FALSE)
   graphics::mtext(text = paste("s =", osd), side = 3, line = 0.25, adj = 1, cex = NULL)
   if (showIDs) {
     h_dat[, "Rep"] <- NA
-    for (l in seq_len(length(levels(h_dat[, "Flasche"])))) {
+    for (l in seq_along(levels(h_dat[, "Flasche"]))) {
       h_dat[h_dat[, "Flasche"] == levels(h_dat[, "Flasche"])[l], "Rep"] <- 1:sum(h_dat[, "Flasche"] == levels(h_dat[, "Flasche"])[l])
     }
     graphics::text(x = as.numeric(h_dat[, "Flasche"]), y = h_dat[, "value"], labels = h_dat[, "Rep"], col = 4, cex = 1.5)

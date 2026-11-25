@@ -17,43 +17,46 @@ output:
 
 ```{r data_prep, echo=FALSE, message=FALSE}
 # get a local representation of all data provided by Shiny
-testing <- length(params$Homogeneity)==1L && (is.na(params$Homogeneity) | params$Homogeneity=="NA")
+testing <- length(params$Homogeneity) == 1L && (is.na(params$Homogeneity) | params$Homogeneity == "NA")
 if (testing) {
   H <- eCerto::CRM001[["Homogeneity"]]
   xlab <- "Item"
-  an <- unique(as.character(H[["data"]][,"analyte"]))
-  prec <- 5:3; names(prec) <- an
+  an <- unique(as.character(H[["data"]][, "analyte"]))
+  prec <- 5:3
+  names(prec) <- an
   adjust <- TRUE
 } else {
   H <- params$Homogeneity
   xlab <- params$xlab
   prec <- params$precision
-  if (length(prec)==0) {
-    an <- unique(as.character(H[["data"]][,"analyte"]))
+  if (length(prec) == 0) {
+    an <- unique(as.character(H[["data"]][, "analyte"]))
     prec <- rep(4, length(an))
     names(prec) <- an
   }
   adjust <- params$adjust
 }
 H[["data"]] <- eCerto:::checkHdata(x = H[["data"]])
-sa <- interaction(H[["data"]][,"analyte"], H[["data"]][,"H_type"], drop = TRUE)
+sa <- interaction(H[["data"]][, "analyte"], H[["data"]][, "H_type"], drop = TRUE)
 prec2 <- sapply(levels(sa), function(lsa) {
-  unname(prec[sapply(names(prec), function(x) { substr(lsa, 1, nchar(x))==x })])
+  unname(prec[sapply(names(prec), function(x) {
+    substr(lsa, 1, nchar(x)) == x
+  })])
 })
 
 # get figure width in pixel and convert to inch on screen
 figs_w <- sapply(levels(sa), function(a) {
-  eCerto:::calc_bxp_width(n = length(levels(factor(H[["data"]][sa==a,"Flasche"]))), w_axes = 48, w_point = 40)
-})/72
+  eCerto:::calc_bxp_width(n = length(levels(factor(H[["data"]][sa == a, "Flasche"]))), w_axes = 48, w_point = 40)
+}) / 72
 
 # set fig height in inch
 fig_height <- 3.25
 
 plot_specs <- lapply(levels(sa), function(a) {
   list(
-    label   = paste0("auto_plot_", a),
-    width   = figs_w[a],
-    height  = fig_height,
+    label = paste0("auto_plot_", a),
+    width = figs_w[a],
+    height = fig_height,
     caption = NULL,
     fname = "eCerto:::prepFigH1",
     args = list(x = quote(H[["data"]]), sa = a, prec = prec2[a], xlab = xlab)
@@ -84,36 +87,35 @@ P_col <- ifelse("P" %in% colnames(df), "P", "P_adj")
 
 ```{r tab_H1, echo=FALSE, comment=NA, message=FALSE, warning=FALSE, results='asis'}
 cat(paste0(
-  "Date: ", format(Sys.time(), '%d %B, %Y'), "  \n"
-  #"User: ", G$user, "  \n", 
-  #"Material: ", G$study_id
+  "Date: ", format(Sys.time(), "%d %B, %Y"), "  \n"
+  # "User: ", G$user, "  \n",
+  # "Material: ", G$study_id
 ), "\n\n")
 
 # Tab.H1
-eCerto:::styleTabH1(x = df, mt = data.frame("analyte"=unique(as.character(df[,"analyte"]))), prec = prec, output = "ft")
+eCerto:::styleTabH1(x = df, mt = data.frame("analyte" = unique(as.character(df[, "analyte"]))), prec = prec, output = "ft")
 cat(paste0(
-  ifelse(any(df[,P_col]<=0.05), "Not all ", "All "), "analytes are homogenous between bottles."
+  ifelse(any(df[, P_col] <= 0.05), "Not all ", "All "), "analytes are homogenous between bottles."
 ), "\n\n")
 
 for (spec in plot_specs) {
-  
   code_call <- make_code_call(fname = spec$fname, args = spec$args)
   chunk_txt <- knitr::knit_expand(
     text =
-"```{r {{label}}, echo=FALSE, message=FALSE, fig.dpi=72, fig.retina=4, fig.width={{width}}, fig.height={{height}}, fig.cap='{{caption}}'}
+      "```{r {{label}}, echo=FALSE, message=FALSE, fig.dpi=72, fig.retina=4, fig.width={{width}}, fig.height={{height}}, fig.cap='{{caption}}'}
   {{code}}
 ```",
-    label   = spec$label,
-    width   = spec$width,
-    height  = spec$height,
+    label = spec$label,
+    width = spec$width,
+    height = spec$height,
     caption = spec$caption,
-    code    = code_call
+    code = code_call
   )
   cat(knitr::knit_child(text = chunk_txt, quiet = TRUE), sep = "\n")
 }
 
 df <- H[["data"]]
-if (length(unique(df[,"H_type"]))==1) df <- df[,colnames(df) != "H_type"]
-if (xlab != "Flasche" && any(colnames(df)=="Flasche")) colnames(df)[colnames(df)=="Flasche"] <- xlab
+if (length(unique(df[, "H_type"])) == 1) df <- df[, colnames(df) != "H_type"]
+if (xlab != "Flasche" && any(colnames(df) == "Flasche")) colnames(df)[colnames(df) == "Flasche"] <- xlab
 eCerto:::ft_default(df, caption = "Imported homogeneity data", id = "Tab.H0")
 ```

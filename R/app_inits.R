@@ -172,7 +172,7 @@ init_apm <- function(x) {
 init_V2_data <- function(n_p = 12, n_q = 2, n_k = 3:5, seed = 5725, digits = 3:4, mn = c(10, 50), sr = c(0.25, 1), sL = c(0.3, 1.5)) {
   set.seed(seed)
 
-  labs  <- paste0("Lab", sprintf("%02d", 1:n_p))
+  labs <- paste0("Lab", sprintf("%02d", 1:n_p))
   levels <- paste0("Lev", sprintf("%02d", 1:n_q))
 
   # means per Level
@@ -206,9 +206,9 @@ init_V2_data <- function(n_p = 12, n_q = 2, n_k = 3:5, seed = 5725, digits = 3:4
     })
   )
 
-  out <- cbind(out, "ID"=seq_len(nrow(out)), "Filter"="")
-  out[out[,"Lab"]=="Lab05" & out[,"Level"]=="Lev02", "Filter"] <- "removed Lab05 Lev02"
-  out[out[,"ID"]==15, "Filter"] <- "removed ID 15"
+  out <- cbind(out, "ID" = seq_len(nrow(out)), "Filter" = "")
+  out[out[, "Lab"] == "Lab05" & out[, "Level"] == "Lev02", "Filter"] <- "removed Lab05 Lev02"
+  out[out[, "ID"] == 15, "Filter"] <- "removed ID 15"
 
   return(out)
 }

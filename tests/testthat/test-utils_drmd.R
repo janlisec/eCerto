@@ -17,11 +17,11 @@ testthat::test_that(
     )
     out <- eCerto:::flatten_list_to_df(lst)
     testthat::expect_true(is.data.frame(out))
-    testthat::expect_true(all(colnames(out) %in% c("path","idx","value")))
-    testthat::expect_true(nrow(out)==6)
+    testthat::expect_true(all(colnames(out) %in% c("path", "idx", "value")))
+    testthat::expect_true(nrow(out) == 6)
 
-    out <- eCerto:::flatten_list_to_df(lst, sep="|")
-    testthat::expect_equal(grep("[|]", out[,1]), 1:5)
+    out <- eCerto:::flatten_list_to_df(lst, sep = "|")
+    testthat::expect_identical(grep("[|]", out[, 1]), 1:5)
   }
 )
 
@@ -40,7 +40,7 @@ testthat::test_that(
     )
     out <- eCerto:::remove_prefix(example_list)
     testthat::expect_true(is.list(out))
-    testthat::expect_equal(names(out), c("N1","N2"))
+    testthat::expect_identical(names(out), c("N1", "N2"))
   }
 )
 
@@ -64,9 +64,8 @@ testthat::test_that(
     # write to temp file
     fl <- tempfile(fileext = ".xml")
     xml2::write_xml(x = drmd_xml_valid, file = fl)
-    testthat::expect_error(testthat::expect_message(drmd_xml_from_file <- eCerto:::validate_drmd_xml(drmc = xml2::read_xml(x = fl))))  # validation of external xml does not (!) result in message
+    testthat::expect_error(testthat::expect_message(drmd_xml_from_file <- eCerto:::validate_drmd_xml(drmc = xml2::read_xml(x = fl)))) # validation of external xml does not (!) result in message
     testthat::expect_true(inherits(drmd_xml_from_file, "xml_document"))
 
   }
 )
-

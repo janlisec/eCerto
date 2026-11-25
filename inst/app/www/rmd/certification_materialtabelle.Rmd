@@ -8,8 +8,10 @@ material the certified mean $\mu_c$ and the certified uncertainty $U_{abs}$.
 res <- eCerto::CRM001
 M <- res$General$materialtabelle
 G <- res$General
-flt <- sapply(G[["apm"]], function(x) { x$confirmed })
-eCerto:::styleTabC3(x = M[flt,], apm = G[["apm"]][flt], output = "ft_HTML")
+flt <- sapply(G[["apm"]], function(x) {
+  x$confirmed
+})
+eCerto:::styleTabC3(x = M[flt, ], apm = G[["apm"]][flt], output = "ft_HTML")
 ```
 
 ***Note!*** 

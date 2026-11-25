@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' if (interactive()) {
-#'  test_nav_panel_app(
+#'   test_nav_panel_app(
 #'     panel = app_panels()$S,
 #'     server = function(input, output, session) {
 #'       rv <- eCerto:::test_rv(type = "SR3")
@@ -36,7 +36,7 @@ page_StabilityUI <- function(id) {
         ),
         shiny::div(
           style = "float: left; margin-left: 15px;",
-          shiny::checkboxInput(inputId = ns("optimize_u_stab"), width = 90, value = FALSE, label = shiny::HTML("t<sub>max</sub>")) |> bslib::tooltip("Include a column calculating the maximum possible shelf life in Tab.S1"),
+          shiny::checkboxInput(inputId = ns("optimize_u_stab"), width = 90, value = FALSE, label = shiny::HTML("t<sub>max</sub>")) |> bslib::tooltip("Include a column calculating the maximum possible shelf life in Tab.S1")
         )
       )
     ),
@@ -56,8 +56,8 @@ page_StabilityUI <- function(id) {
       shiny::strong(shiny::actionLink(inputId = ns("fig1_link"), label = "Fig.S1 - linear model plot")),
       shiny::div(
         shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("s_Report"), label = "Download Report")),
-        shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML"="html", "DOCX"="docx"), width = 70))
-      ),
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML" = "html", "DOCX" = "docx"), width = 70))
+      )
     ),
     bslib::card_body(
       bslib::layout_sidebar(
@@ -145,7 +145,7 @@ page_StabilityServer <- function(id, rv) {
       # does the data contain filtering information and IDs already? if not add column and row.names.
       if (is.null(rownames(tmp))) rownames(tmp) <- seq_len(nrow(tmp))
       if (!identical(tmp, getValue(rv, c("Stability", "data")))) {
-        setValue(rv, c("Stability","data"), tmp)
+        setValue(rv, c("Stability", "data"), tmp)
       }
       if (is.null(getValue(rv, c("Stability", "s_pars")))) {
         # if no s_pars entry exists in 'rv' object create a default one
@@ -173,7 +173,7 @@ page_StabilityServer <- function(id, rv) {
     shiny::observeEvent(input$s_samples_filtered_open, {
       # the *_open input of a picker allows to trigger only after the multiple select is closed thus avoiding too frequent updates
       if (!isTRUE(input$s_samples_filtered_open)) {
-        choices <- rownames(s_Data())[as.character(s_Data()[,"analyte"])==S_analyte()]
+        choices <- rownames(s_Data())[as.character(s_Data()[, "analyte"]) == S_analyte()]
         selected <- input$s_samples_filtered
         tmp <- s_pars$s_samples_filtered
         # remove ID subset
@@ -186,7 +186,7 @@ page_StabilityServer <- function(id, rv) {
 
     shiny::observeEvent(s_pars$s_sel_temp, {
       if (any(s_pars$s_sel_temp != "")) {
-        shinyjs::html(id = "temp_level_info", html = paste0("Temperature levels used for calculations in Tab.S1: ", paste(s_pars$s_sel_temp, collapse="\u00B0C, "), "\u00B0C"))
+        shinyjs::html(id = "temp_level_info", html = paste0("Temperature levels used for calculations in Tab.S1: ", paste(s_pars$s_sel_temp, collapse = "\u00B0C, "), "\u00B0C"))
         if (!identical(s_pars$s_sel_temp, input$s_sel_temp)) shinyWidgets::updatePickerInput(inputId = "s_sel_temp", selected = s_pars$s_sel_temp)
       } else {
         shinyjs::html(id = "temp_level_info", html = "")
@@ -228,8 +228,8 @@ page_StabilityServer <- function(id, rv) {
         shiny::validate(shiny::need(expr = length(s_pars$s_sel_temp) >= 1, message = "Please select a Temp level."))
         s_dat <- s_dat[as.character(s_dat[, "Temp"]) %in% s_pars$s_sel_temp, ]
         shiny::validate(shiny::need(expr = diff(range(s_dat[, "time"])) > 0, message = "Please select Temp levels such that independent time points exist."))
-        test_number_of_values <- sapply(split(s_dat, s_dat[,"analyte"]), nrow) > 0
-        shiny::validate(shiny::need(expr = all(test_number_of_values), message = paste("These analytes do not contain data points:", paste(names(which(test_number_of_values==0)), collapse=", "))))
+        test_number_of_values <- sapply(split(s_dat, s_dat[, "analyte"]), nrow) > 0
+        shiny::validate(shiny::need(expr = all(test_number_of_values), message = paste("These analytes do not contain data points:", paste(names(which(test_number_of_values == 0)), collapse = ", "))))
       }
       tmp <- shiny::isolate(getValue(rv, c("Stability", "s_vals")))
       if (!is.null(tmp)) {
@@ -245,7 +245,7 @@ page_StabilityServer <- function(id, rv) {
     # the summary of linear models per analyte to estimate u_stab
     s_vals <- shiny::reactive({
       shiny::req(s_Data(), input$s_shelf_life)
-      s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
+      s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered), ]
       out <- prepTabS1(x = s_dat, time_fmt = input$time_fmt, t_cert = input$s_shelf_life, slope_of_means = s_pars$slope_of_means, mt = getValue(rv, c("General", "materialtabelle")), adjust = input$s_adjust)
       setValue(rv, c("Stability", "s_vals"), out)
       return(out)
@@ -279,7 +279,7 @@ page_StabilityServer <- function(id, rv) {
     }, ignoreNULL = FALSE, ignoreInit = TRUE)
 
     observeEvent(S_analyte(), {
-      #req(s_vals(), rv$cur_an != S_analyte())
+      # req(s_vals(), rv$cur_an != S_analyte())
       req(s_vals())
       s_a <- S_analyte()
       # update view for currently selected analyte (trigger coming from C module or Arrhenius module)
@@ -292,7 +292,7 @@ page_StabilityServer <- function(id, rv) {
         if (rv$e_present()["Certification"]) shinyjs::enable(id = "s_sel_dev") else shinyjs::disable(id = "s_sel_dev")
       }
       # update sample filter
-      choices <- rownames(s_Data())[as.character(s_Data()[,"analyte"])==s_a]
+      choices <- rownames(s_Data())[as.character(s_Data()[, "analyte"]) == s_a]
       selected <- intersect(s_pars$s_samples_filtered, choices)
       shinyWidgets::updatePickerInput(session = session, inputId = "s_samples_filtered", choices = choices, selected = selected)
     }, ignoreNULL = TRUE, ignoreInit = FALSE)
@@ -300,7 +300,7 @@ page_StabilityServer <- function(id, rv) {
     # Fig.S1
     output$s_plot <- renderPlotHD({
       shiny::req(s_Data(), S_analyte())
-      s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered),]
+      s_dat <- s_Data()[!(rownames(s_Data()) %in% s_pars$s_samples_filtered), ]
       mt <- getValue(rv, c("General", "materialtabelle"))
       plot_lts_data(
         x = prepFigS1(
@@ -315,7 +315,7 @@ page_StabilityServer <- function(id, rv) {
         slope_of_means = s_pars$slope_of_means,
         show_legend = s_pars$show_legend,
         show_ids = s_pars$show_ids,
-        k = mt[mt$analyte==S_analyte(),"k"]
+        k = mt[mt$analyte == S_analyte(), "k"]
       )
     })
 

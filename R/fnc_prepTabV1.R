@@ -15,9 +15,9 @@
 #' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
 #' tab <- eCerto:::read_Vdata(file = inp)
 #' eCerto:::prepTabV1(tab = tab, a = "PFOA", alpha = 0.01)
-#' ldply_base(levels(tab[,"Analyte"]), function(a) {
-#'     eCerto:::prepTabV1(tab = tab, a = a)
-#' }, .id=NULL)
+#' ldply_base(levels(tab[, "Analyte"]), function(a) {
+#'   eCerto:::prepTabV1(tab = tab, a = a)
+#' }, .id = NULL)
 #' @return A data frame with attributes.
 #' @keywords internal
 #' @noRd
@@ -25,8 +25,8 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
 
   e_msg("Preparing Tab.V1 (statistics) from imported data")
 
-  if (is.null(a)) a <- levels(factor(tab[,"Analyte"]))
-  stopifnot(all(a %in% levels(factor(tab[,"Analyte"]))))
+  if (is.null(a)) a <- levels(factor(tab[, "Analyte"]))
+  stopifnot(all(a %in% levels(factor(tab[, "Analyte"]))))
 
   alpha <- as.numeric(alpha)
   k <- as.numeric(k)
@@ -34,10 +34,10 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
   ldply_base(a, function(a) {
 
     # extract the data
-    l <- levels(tab[,"Level"])
-    flt <- tab[,"Analyte"]==a & tab[,"Level"] %in% l
-    df <- do.call(rbind, unname(lapply(split(tab[flt,], factor(tab[flt,"Level"])), function(x) {
-      data.frame("Conc" = mean(x[, "Concentration"]), "Area_norm" = mean(x[, "norm"], na.rm=TRUE), "n" = sum(is.finite(x[, "norm"])), row.names = unique(as.character(x[,"Level"])))
+    l <- levels(tab[, "Level"])
+    flt <- tab[, "Analyte"] == a & tab[, "Level"] %in% l
+    df <- do.call(rbind, unname(lapply(split(tab[flt, ], factor(tab[flt, "Level"])), function(x) {
+      data.frame("Conc" = mean(x[, "Concentration"]), "Area_norm" = mean(x[, "norm"], na.rm = TRUE), "n" = sum(is.finite(x[, "norm"])), row.names = unique(as.character(x[, "Level"])))
     })))
 
     # fit the linear model
@@ -52,10 +52,10 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
         # not always intuitive from the detailed linearity plot showing the full model
         # why some levels are removed as outliers (they can have a low residual in the
         # full model but become outlier in reduced models)
-        new_F_Test <- F_test_outlier(stats::lm(Area_norm ~ Conc, data=df[-idx, ]), alpha = alpha)
+        new_F_Test <- F_test_outlier(stats::lm(Area_norm ~ Conc, data = df[-idx, ]), alpha = alpha)
         if (!is.na(new_F_Test)) {
-          idx <- c(idx, which(rownames(df)==names(new_F_Test)))
-          if (length(idx)>=(nrow(df)-3)) check_more <- FALSE
+          idx <- c(idx, which(rownames(df) == names(new_F_Test)))
+          if (length(idx) >= (nrow(df) - 3)) check_more <- FALSE
         } else {
           check_more <- FALSE
         }
@@ -71,30 +71,30 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
     }
 
     e <- stats::residuals(df.lm)
-    #write.table(data.frame(e), file = "clipboard", sep = "\t", row.names = FALSE, col.names = FALSE)
+    # write.table(data.frame(e), file = "clipboard", sep = "\t", row.names = FALSE, col.names = FALSE)
 
     # number of calibration levels
     N <- length(e)
-    s_yx <- sqrt(sum(e^2)/(N-2))
-    s_x0 <- s_yx/stats::coef(df.lm)[2]
-    V_x0 <- 100*(s_x0/mean(df[,1], na.rm=T))
+    s_yx <- sqrt(sum(e^2) / (N - 2))
+    s_x0 <- s_yx / stats::coef(df.lm)[2]
+    V_x0 <- 100 * (s_x0 / mean(df[, 1], na.rm = TRUE))
 
     # Residuals of quadratic model (for Mandel test)
     df2 <- cbind(df, "Conc2" = df$Conc^2)
-    df.qm <- stats::lm(Area_norm ~ Conc + Conc2, data=df2)
+    df.qm <- stats::lm(Area_norm ~ Conc + Conc2, data = df2)
     e.qm <- stats::residuals(df.qm)
 
     # number of replicates
-    n <- min(df[,"n"])
-    c_min <- min(df[,"Conc"])
-    c_max <- max(df[,"Conc"])
+    n <- min(df[, "n"])
+    c_min <- min(df[, "Conc"])
+    c_max <- max(df[, "Conc"])
     out <- data.frame(
-      "ID" = which(levels(tab[,"Analyte"]) == a),
+      "ID" = which(levels(tab[, "Analyte"]) == a),
       "Analyte" = a,
       "N" = N,
       "n" = n,
       "alpha" = alpha,
-      "k" = round(1/k, 2),
+      "k" = round(1 / k, 2),
       "b0" = stats::coef(df.lm)[1],
       "b1" = stats::coef(df.lm)[2],
       "r" = stats::cor(df.lm$fitted.values, df$Area_norm),
@@ -102,7 +102,7 @@ prepTabV1 <- function(tab = NULL, a = NULL, alpha = 0.05, k = 3, flt_outliers = 
       "s_x0" = s_x0,
       "V_x0" = V_x0,
       "P_Mandel" = MandelTest(res_lm = e, res_qm = e.qm),
-      "P_KS_Res" = stats::ks.test(x = e, y="pnorm", mean=mean(e), sd=stats::sd(e))$p.val,
+      "P_KS_Res" = stats::ks.test(x = e, y = "pnorm", mean = mean(e), sd = stats::sd(e))$p.val,
       "P_Neu_Res" = VonNeumannTest(e, unbiased = FALSE)$p.val,
       "F_Test" = F_Test,
       "LOD" = calc_LOD(x = df$Conc, y = df$Area_norm, alpha = alpha, n = n),

@@ -28,15 +28,15 @@ styleTabS2 <- function(x, num_coef = NULL, output = c("DT", "ft", "ft_HTML")) {
     return(ft)
   } else {
     # set up the DT object
-    x[,4:9] <- apply(x[,4:9], 2, pn, 6)
-    x <- cbind(x, " "="")
+    x[, 4:9] <- apply(x[, 4:9], 2, pn, 6)
+    x <- cbind(x, " " = "")
     dt <- DT::datatable(
       data = x,
       options = list(
         dom = "t", paging = FALSE, searching = FALSE, ordering = FALSE,
         columnDefs = list(
-          list("width" = "50px", "targets" = c(0,3:8)),
-          list("width" = "30px", "targets" = c(1,2,9)),
+          list("width" = "50px", "targets" = c(0, 3:8)),
+          list("width" = "30px", "targets" = c(1, 2, 9)),
           list(className = "dt-right", targets = 0:(ncol(x) - 1))
         )
       ),

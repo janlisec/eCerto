@@ -128,7 +128,7 @@ Grubbs <- function(lab_means = NULL, fmt = c("alpha", "pval", "cval", "cval05", 
 #' cbind(Cochran(data = test, fmt = "cval"), Cochran(data = test, fmt = "cval05"))
 Cochran <- function(data = NULL, fmt = c("alpha", "pval", "cval", "cval05", "cval01")) {
   fmt <- match.arg(fmt)
-  vars <- sapply(split(data[, "value"], data[, "Lab"]), stats::var, na.rm = T)
+  vars <- sapply(split(data[, "value"], data[, "Lab"]), stats::var, na.rm = TRUE)
   ns <- sapply(split(data[, "value"], data[, "Lab"]), function(x) {
     sum(is.finite(x))
   })
@@ -510,7 +510,7 @@ qtable <- function(p, probs, quants) {
   quants <- quants[order(probs)]
   probs <- sort(probs)
   res <- vector()
-  for (n in seq_len(length(p))) {
+  for (n in seq_along(p)) {
     pp <- p[n]
     if (pp <= probs[1]) {
       q0 <- quants[c(1, 2)]
@@ -578,7 +578,7 @@ pval2level <- function(p, fmt = c("eCerto")) {
 #' This is a copy from the DescTools package function of the same name (copied to avoid another package dependency).
 #' @noRd
 #' @keywords internal
-VonNeumannTest <- function (x, alternative = c("two.sided", "less", "greater"), unbiased = TRUE) {
+VonNeumannTest <- function(x, alternative = c("two.sided", "less", "greater"), unbiased = TRUE) {
   #
   alternative <- match.arg(alternative)
   dname <- deparse(substitute(x))
@@ -587,14 +587,14 @@ VonNeumannTest <- function (x, alternative = c("two.sided", "less", "greater"), 
   n <- length(x)
   mx <- mean(x)
   if (unbiased) {
-    VN <- sum(d^2)/sum((x - mx)^2) * n/(n - 1)
-    Ex <- 2 * n/(n - 1)
-    Vx <- 4 * n^2 * (n - 2)/((n + 1) * (n - 1)^3)
-    z <- (VN - Ex)/sqrt(Vx)
+    VN <- sum(d^2) / sum((x - mx)^2) * n / (n - 1)
+    Ex <- 2 * n / (n - 1)
+    Vx <- 4 * n^2 * (n - 2) / ((n + 1) * (n - 1)^3)
+    z <- (VN - Ex) / sqrt(Vx)
   }
   else {
-    VN <- sum(d^2)/sum((x - mx)^2)
-    z <- (1 - (VN/2))/sqrt((n - 2)/(n^2 - 1))
+    VN <- sum(d^2) / sum((x - mx)^2)
+    z <- (1 - (VN / 2)) / sqrt((n - 2) / (n^2 - 1))
   }
   if (alternative == "less") {
     pval <- stats::pnorm(z)
@@ -608,7 +608,7 @@ VonNeumannTest <- function (x, alternative = c("two.sided", "less", "greater"), 
   names(VN) <- "VN"
   method <- "Von Neumann Successive Difference Test"
   rval <- list(statistic = c(VN, z = z), p.value = pval, method = method,
-               alternative = alternative, data.name = dname, z = z)
+    alternative = alternative, data.name = dname, z = z)
   class(rval) <- "htest"
   return(rval)
 }
@@ -626,10 +626,10 @@ calc_LOD <- function(x, y, alpha = 0.05, n = 1) {
   y.lm <- stats::lm(y ~ x)
   b <- stats::coef(y.lm)[2]
   e <- stats::residuals(y.lm)
-  s_xy <- sqrt(sum(e^2)/(N-2))
-  t_quant <- stats::qt(1-alpha, df = N-2)
-  fac <- sqrt(1/n + 1/N + mean(x)^2/sum((x-mean(x))^2))
-  return(s_xy/b * t_quant * fac)
+  s_xy <- sqrt(sum(e^2) / (N - 2))
+  t_quant <- stats::qt(1 - alpha, df = N - 2)
+  fac <- sqrt(1 / n + 1 / N + mean(x)^2 / sum((x - mean(x))^2))
+  return(s_xy / b * t_quant * fac)
 }
 
 #' @title calc_LOQ.
@@ -647,10 +647,10 @@ calc_LOQ <- function(x, y, alpha = 0.05, n = 1, k = 3) {
   y.lm <- stats::lm(y ~ x)
   a <- stats::coef(y.lm)[2]
   e <- stats::residuals(y.lm)
-  s_xy <- sqrt(sum(e^2)/(N-2))
-  t_quant <- stats::qt(1-alpha/2, df = N-2)
-  fac <- sqrt(1/n + 1/N + (k*ng - mean(x))^2/sum((x-mean(x))^2))
-  return(k * s_xy/a * t_quant * fac)
+  s_xy <- sqrt(sum(e^2) / (N - 2))
+  t_quant <- stats::qt(1 - alpha / 2, df = N - 2)
+  fac <- sqrt(1 / n + 1 / N + (k * ng - mean(x))^2 / sum((x - mean(x))^2))
+  return(k * s_xy / a * t_quant * fac)
 }
 
 #' @title MandelTest.
@@ -665,20 +665,20 @@ calc_LOQ <- function(x, y, alpha = 0.05, n = 1, k = 3) {
 MandelTest <- function(res_lm, res_qm, prec = 8, alpha = 0.05) {
   N_lm <- length(res_lm)
   N_qm <- length(res_qm)
-  if (N_lm!=N_qm) warning("Residuals of linear and quadratic model have different length.")
-  s_yx <- sqrt(sum(res_lm^2)/(N_lm-2))
-  s_y2x <- sqrt(sum(res_qm^2)/(N_qm-3))
-  DS2 <- (N_lm-2)*s_yx^2 - (N_qm-3)*s_y2x^2
-  PW <- DS2/s_y2x^2
-  KW <- stats::qf(p = 1-alpha, df1 = 1, df2 = N_qm-3)
+  if (N_lm != N_qm) warning("Residuals of linear and quadratic model have different length.")
+  s_yx <- sqrt(sum(res_lm^2) / (N_lm - 2))
+  s_y2x <- sqrt(sum(res_qm^2) / (N_qm - 3))
+  DS2 <- (N_lm - 2) * s_yx^2 - (N_qm - 3) * s_y2x^2
+  PW <- DS2 / s_y2x^2
+  KW <- stats::qf(p = 1 - alpha, df1 = 1, df2 = N_qm - 3)
   P_Mandel <- "0."
   for (i in 1:prec) {
     P_min <- as.numeric(paste0(P_Mandel, 0))
     P_max <- as.numeric(paste0(P_Mandel, 9))
-    j <- c(0:9)[max(which(stats::qf(p = seq(P_min, P_max, length.out=10), df1 = 1, df2 = N_qm-3)<PW))]
+    j <- c(0:9)[max(which(stats::qf(p = seq(P_min, P_max, length.out = 10), df1 = 1, df2 = N_qm - 3) < PW))]
     P_Mandel <- paste0(P_Mandel, j)
   }
-  P_Mandel <- 1-as.numeric(P_Mandel)
+  P_Mandel <- 1 - as.numeric(P_Mandel)
   attr(P_Mandel, "PW") <- PW
   attr(P_Mandel, "KW") <- KW
   return(P_Mandel)
@@ -695,14 +695,14 @@ F_test_outlier <- function(x, alpha = 0.05) {
   stopifnot(inherits(x, "lm"))
   e <- stats::residuals(x)
   N <- length(e)
-  s_yx <- sqrt(sum(e^2)/(N-2))
+  s_yx <- sqrt(sum(e^2) / (N - 2))
   idx_e_max <- which.max(abs(e))[1]
-  x2 <- stats::update(x, data = x$model[-idx_e_max,])
+  x2 <- stats::update(x, data = x$model[-idx_e_max, ])
   e_x2 <- stats::residuals(x2)
   N_x2 <- length(e_x2)
-  s_yx2 <- sqrt(sum(e_x2^2)/(N_x2-2))
-  PW <- ((N-2)*s_yx^2 - (N-3)*s_yx2^2) / s_yx2^2
-  KW <- stats::qf(p = 1-alpha, df1 = 1, df2 = N-3)
+  s_yx2 <- sqrt(sum(e_x2^2) / (N_x2 - 2))
+  PW <- ((N - 2) * s_yx^2 - (N - 3) * s_yx2^2) / s_yx2^2
+  KW <- stats::qf(p = 1 - alpha, df1 = 1, df2 = N - 3)
   F_Test <- ifelse(PW < KW, NA, idx_e_max)
   names(F_Test) <- names(e)[idx_e_max]
   attr(F_Test, "PW") <- PW
@@ -722,14 +722,14 @@ mandel_h <- function(x, w = NULL) {
   # weighted grand mean
   grand_mean <- sum(w * x) / sum(w)
   # between-lab SD (DIN 5725-2)
-  #sL <- sqrt(sum(w * (x - grand_mean)^2) / (length(x) - 1))
+  # sL <- sqrt(sum(w * (x - grand_mean)^2) / (length(x) - 1))
   sL <- sqrt(sum((x - grand_mean)^2) / (length(x) - 1))
   h <- (x - grand_mean) / sL
   return(h)
 }
 #' @noRd
 qmandel_h <- function(p, alpha = 0.05) {
-  ((p - 1)/sqrt(p)) * (2 * stats::qbeta((1-alpha/2), (p - 2)/2, (p - 2)/2, lower.tail = TRUE, log.p = FALSE) - 1)
+  ((p - 1) / sqrt(p)) * (2 * stats::qbeta((1 - alpha / 2), (p - 2) / 2, (p - 2) / 2, lower.tail = TRUE, log.p = FALSE) - 1)
 }
 
 #' @title mandel_k
@@ -752,7 +752,7 @@ mandel_k <- function(s, n) {
 }
 #' @noRd
 qmandel_k <- function(k, p, alpha = 0.05) {
-  sqrt(p * stats::qbeta((1-alpha), (k - 1)/2, (p - 1) * (k - 1)/2, lower.tail = TRUE, log.p = FALSE))
+  sqrt(p * stats::qbeta((1 - alpha), (k - 1) / 2, (p - 1) * (k - 1) / 2, lower.tail = TRUE, log.p = FALSE))
 }
 
 #' @title is.removed.
@@ -763,8 +763,8 @@ qmandel_k <- function(k, p, alpha = 0.05) {
 #' @keywords internal
 is.removed <- function(x) {
   stopifnot(is.data.frame(x))
-  if ("Filter" %in% colnames(x) && is.character(x[,"Filter"])) {
-    return(x[,"Filter"]!="")
+  if ("Filter" %in% colnames(x) && is.character(x[, "Filter"])) {
+    return(x[, "Filter"] != "")
   } else {
     return(rep(FALSE, nrow(x)))
   }
@@ -779,23 +779,23 @@ is.removed <- function(x) {
 #' @noRd
 #' @keywords internal
 V2_calc_stats <- function(inp) {
-  mns <- ldply_base(unique(sort(inp[,"Lab"])), function(p) {
-    ldply_base(unique(sort(inp[,"Level"])), function(q) {
-      x <- inp[inp[,"Lab"]==p & inp[,"Level"]==q & !is.removed(inp), "Value"]
+  mns <- ldply_base(unique(sort(inp[, "Lab"])), function(p) {
+    ldply_base(unique(sort(inp[, "Level"])), function(q) {
+      x <- inp[inp[, "Lab"] == p & inp[, "Level"] == q & !is.removed(inp), "Value"]
       x <- x[is.finite(x)]
       n <- length(x)
-      m <- ifelse(n>=1, mean(x), NA)
-      s <- ifelse(n>=3, stats::sd(x), ifelse(n==2, abs(diff(x)), NA))
-      data.frame("Lab"=p, "Level"=q, "mean"=m, "sd"=s, "n"=n)
+      m <- ifelse(n >= 1, mean(x), NA)
+      s <- ifelse(n >= 3, stats::sd(x), ifelse(n == 2, abs(diff(x)), NA))
+      data.frame("Lab" = p, "Level" = q, "mean" = m, "sd" = s, "n" = n)
     })
   })
-  mns[,"Mandel_h"] <- NA
-  mns[,"Mandel_k"] <- NA
-  for (q in unique(sort(mns[,"Level"]))) {
-    flt1 <- mns[,"Level"]==q & is.finite(mns[,"mean"])
-    flt2 <- mns[,"Level"]==q & is.finite(mns[,"sd"])
-    mns[flt1,"Mandel_h"] <- mandel_h(x = mns[flt1,"mean"], w = mns[flt1,"n"])
-    mns[flt2,"Mandel_k"] <- mandel_k(s = mns[flt2,"sd"], n = mns[flt2,"n"])
+  mns[, "Mandel_h"] <- NA
+  mns[, "Mandel_k"] <- NA
+  for (q in unique(sort(mns[, "Level"]))) {
+    flt1 <- mns[, "Level"] == q & is.finite(mns[, "mean"])
+    flt2 <- mns[, "Level"] == q & is.finite(mns[, "sd"])
+    mns[flt1, "Mandel_h"] <- mandel_h(x = mns[flt1, "mean"], w = mns[flt1, "n"])
+    mns[flt2, "Mandel_k"] <- mandel_k(s = mns[flt2, "sd"], n = mns[flt2, "n"])
   }
   return(mns)
 }

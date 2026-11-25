@@ -37,7 +37,7 @@ testthat::test_that(
             x[8:16, 1:5, drop = FALSE]
           })
           session$setInputs(btn_load = "click")
-          testthat::expect_equal("File" %in% names(out$data), TRUE)
+          testthat::expect_true("File" %in% names(out$data))
         }
       )
     )
@@ -49,7 +49,7 @@ testthat::test_that(
   desc = "Successful Homogeneity Upload test",
   code = {
     rv <- eCerto::eCerto$new(eCerto:::init_rv())
-    #rv <- eCerto:::test_rv()
+    # rv <- eCerto:::test_rv()
     suppressMessages(
       shiny::testServer(
         app = eCerto:::m_ExcelUpload_Server,
@@ -108,9 +108,9 @@ testthat::test_that(
           # $$JL$$ upload module was changed to respect analyte order from Excel file and to incorporate column time
           # original test data have to be modified to reflect this change
           comp <- eCerto:::test_Stability_Excel()
-          comp[,"analyte"] <- factor(comp[,"analyte"], levels=c("Si","Mn"))
-          comp[,"time"] <- as.numeric(comp[,"Date"]-min(comp[,"Date"]))
-          testthat::expect_equal(out$data, comp)
+          comp[, "analyte"] <- factor(comp[, "analyte"], levels = c("Si", "Mn"))
+          comp[, "time"] <- as.numeric(comp[, "Date"] - min(comp[, "Date"]))
+          testthat::expect_identical(out$data, comp)
         }
       )
     )

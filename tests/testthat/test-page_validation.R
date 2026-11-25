@@ -21,14 +21,14 @@ testthat::test_that(
         current_analyte$name <- "PFBA"
         x <- V2_dat()
         testthat::expect_true(is.list(x))
-        testthat::expect_true(length(x)==1L)
+        testthat::expect_true(length(x) == 1L)
         testthat::expect_true(all(c("Level", "Analyte") %in% colnames(x[[1]])))
 
         V_pars$opt_tabV1_useLevels <- FALSE
         x <- tab_V1()
         testthat::expect_true(is.data.frame(x))
-        testthat::expect_true(nrow(x)==4L)
+        testthat::expect_true(nrow(x) == 4L)
 
       }
     )
-  })
+})

@@ -38,8 +38,8 @@ markdown2expression("*italic text*")
 markdown2expression("x^2^")
 markdown2expression("H~2~O")
 markdown2expression("**H~2~O**")
-plot(1,1, main = markdown2expression("R^2^ = 0.99"), pch=".")
-text(1,1, markdown2expression("Water = **H~2~O**"))
+plot(1, 1, main = markdown2expression("R^2^ = 0.99"), pch = ".")
+text(1, 1, markdown2expression("Water = **H~2~O**"))
 
 }
 \seealso{

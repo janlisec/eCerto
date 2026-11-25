@@ -10,8 +10,8 @@
 #' @examples
 #' inp <- system.file(package = "eCerto", "extdata", "eCerto_Testdata_VModule.xlsx")
 #' tab <- eCerto:::read_Vdata(file = inp)
-#' out <- plyr::ldply(levels(tab[,"Analyte"]), function(a) {
-#'     eCerto:::prepTabV1(tab = tab, a = a)
+#' out <- plyr::ldply(levels(tab[, "Analyte"]), function(a) {
+#'   eCerto:::prepTabV1(tab = tab, a = a)
 #' })
 #' out_dt <- eCerto:::style_tabV1(df = out, selected = NULL)
 #' out_dt
@@ -25,20 +25,20 @@ style_tabV1 <- function(df, precision = 3, selected = 1, interact_ele = TRUE, fo
   tab_cap <- NULL
   if ("lm" %in% show_colgroups) {
     for (unique_val_col in c("alpha", "k", "N", "n")) {
-      if (length(unique(df[,unique_val_col]))==1) {
-        tab_cap <- c(tab_cap, paste(unique_val_col, "=", unique(df[,unique_val_col])))
-        df <- df[,!(colnames(df) %in% unique_val_col)]
+      if (length(unique(df[, unique_val_col])) == 1) {
+        tab_cap <- c(tab_cap, paste(unique_val_col, "=", unique(df[, unique_val_col])))
+        df <- df[, !(colnames(df) %in% unique_val_col)]
       }
     }
   } else {
-    df <- df[,!colnames(df) %in% c("alpha", "k", "N", "n")]
+    df <- df[, !colnames(df) %in% c("alpha", "k", "N", "n")]
     tab_cap <- rep("", 4)
   }
 
   # filter columns from display
-  if (!("lm" %in% show_colgroups)) df <- df[,!colnames(df) %in% c("b0", "b1", "r", "s_yx", "s_x0", "V_x0", "P_KS_Res", "P_Neu_Res", "P_Mandel", "F_Test")]
-  if (!("wr" %in% show_colgroups)) df <- df[,!colnames(df) %in% c("c_WR_min", "c_WR_max", "c_WR_min2", "c_WR_max2", "unit_cali", "unit_smpl", "conv_fac")]
-  if (!("lo" %in% show_colgroups)) df <- df[,!colnames(df) %in% c("LOD", "LOQ")]
+  if (!("lm" %in% show_colgroups)) df <- df[, !colnames(df) %in% c("b0", "b1", "r", "s_yx", "s_x0", "V_x0", "P_KS_Res", "P_Neu_Res", "P_Mandel", "F_Test")]
+  if (!("wr" %in% show_colgroups)) df <- df[, !colnames(df) %in% c("c_WR_min", "c_WR_max", "c_WR_min2", "c_WR_max2", "unit_cali", "unit_smpl", "conv_fac")]
+  if (!("lo" %in% show_colgroups)) df <- df[, !colnames(df) %in% c("LOD", "LOQ")]
 
   # modify column names, using HTML formatting
   colnames(df) <- gsub("^P_KS_Res$", "P<sub>KS,e</sub>", colnames(df))
@@ -63,10 +63,10 @@ style_tabV1 <- function(df, precision = 3, selected = 1, interact_ele = TRUE, fo
     class = 'display',
     shiny::tags$thead(
       shiny::tags$tr(
-        shiny::tags$th(colspan = 6-length(tab_cap), ''),
-        if ("lm" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; border:2px solid white; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
+        shiny::tags$th(colspan = 6 - length(tab_cap), ''),
+        if ("lm" %in% show_colgroups) shiny::tags$th(style = "background-color:#D8D8D8; border:2px solid white; text-align:center; font-style:italic", colspan = 10, 'Linear model parameters and residuals evaluation'),
         if ("lo" %in% show_colgroups) shiny::tags$th(colspan = 2, ''),
-        if ("wr" %in% show_colgroups) shiny::tags$th(style="background-color:#D8D8D8; border:2px solid white; text-align:center; font-style:italic", colspan = 7, 'Working range')
+        if ("wr" %in% show_colgroups) shiny::tags$th(style = "background-color:#D8D8D8; border:2px solid white; text-align:center; font-style:italic", colspan = 7, 'Working range')
       ),
       shiny::tags$tr(
         lapply(colnames(df), function(x) { shiny::tags$th(shiny::HTML(x)) })
@@ -76,10 +76,10 @@ style_tabV1 <- function(df, precision = 3, selected = 1, interact_ele = TRUE, fo
 
   # create DT object
   dt <- DT::datatable(
-    data = df, rownames = FALSE, extensions = "Buttons", escape = FALSE, width = min(960, c(820,640,280)[c("lm", "wr", "lo") %in% show_colgroups]),
+    data = df, rownames = FALSE, extensions = "Buttons", escape = FALSE, width = min(960, c(820, 640, 280)[c("lm", "wr", "lo") %in% show_colgroups]),
     options = list(
       dom = ifelse(interact_ele, "Bt", "t"), pageLength = -1, ordering = interact_ele,
-      buttons = if (interact_ele)  { list(list(extend = "excel", text = "Excel", title = NULL)) },
+      buttons = if (interact_ele) { list(list(extend = "excel", text = "Excel", title = NULL)) },
       initComplete = if (!is.na(font.size)) {DT::JS(
         "function(settings, json) {",
         paste0("$(this.api().table().container()).css({'font-size': '", font.size, "'});"),
@@ -87,9 +87,9 @@ style_tabV1 <- function(df, precision = 3, selected = 1, interact_ele = TRUE, fo
       )}
     ),
     selection = list(mode = "single", selected = selected, target = 'row'),
-    caption = if ("lm" %in% show_colgroups && length(tab_cap)>=1) { shiny::tags$caption(
+    caption = if ("lm" %in% show_colgroups && length(tab_cap) >= 1) { shiny::tags$caption(
       style = 'caption-side: bottom; text-align: left;',
-      'Tab.V1 These values are consistent for all rows of the table: ', paste(tab_cap, collapse=", "), "."
+      'Tab.V1 These values are consistent for all rows of the table: ', paste(tab_cap, collapse = ", "), "."
     )},
     container = second_header_row
   )

@@ -10,7 +10,7 @@
 #' eCerto:::styleTabV2_3(x = df)
 #' @keywords internal
 #' @noRd
-styleTabV2_3 <- function(x, prec=3, ...) {
+styleTabV2_3 <- function(x, prec = 3, ...) {
   colnames(x)[1] <- endmod(colnames(x)[1], type = "*", fmt = "html", spacer = " ")
   colnames(x)[2:5] <- endmod(colnames(x)[2:5], type = "~", fmt = "html")
   ft <- ft_default(df = x, ...)
@@ -23,6 +23,6 @@ styleTabV2_3 <- function(x, prec=3, ...) {
   ft <- flextable::italic(x = ft, part = "footer", i = 1, j = 1:3)
   ft <- flextable::bold(x = ft, part = "footer", i = 1, j = 4:5)
   ft <- flextable::bg(ft, bg = grDevices::grey(0.85), part = "footer")
-  ft <- flextable::hline_bottom(ft, border = list("width"=2, "color"="black", "style"="double"), part = "footer")
+  ft <- flextable::hline_bottom(ft, border = list("width" = 2, "color" = "black", "style" = "double"), part = "footer")
   return(ft)
 }

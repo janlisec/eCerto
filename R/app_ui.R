@@ -16,7 +16,7 @@ app_shell <- function(..., request = NULL) {
       navbar_options = bslib::navbar_options(bg = "black", position = "fixed-top"),
       fillable = TRUE,
       footer = app_footer(),
-      #selected = "tP_help",
+      # selected = "tP_help",
       ...
     )
   )
@@ -24,7 +24,7 @@ app_shell <- function(..., request = NULL) {
 
 app_header <- function() {
   list(
-    shiny::img(src = "www/bam_logo_200px_transparent.png", height = "40px", position = "absolute", margin = "auto", alt = "BAM Logo"),
+    shiny::img(src = file.path("www", "bam_logo_200px_transparent.png"), height = "40px", position = "absolute", margin = "auto", alt = "BAM Logo"),
     shiny::strong("BAM", style = "color: rgb(210,0,30);"),
     shiny::em(get_golem_config("golem_name"), style = "color: rgb(0,175,240);")
   )
@@ -128,7 +128,7 @@ golem_add_external_resources <- function() {
   # permission is only granted in a temp dir
   www_tmp <- fs::path(tempdir(), "www")
   if (!base::dir.exists(www_tmp)) {
-    base::file.copy(from = app_sys("app/www"), to = tempdir(), recursive = TRUE)
+    base::file.copy(from = app_sys(file.path("app", "www")), to = tempdir(), recursive = TRUE)
   }
   rps <- shiny::resourcePaths()
   if (!("www" %in% names(rps))) {
@@ -142,7 +142,7 @@ golem_add_external_resources <- function() {
   # add further resources to the <head> of the HTML page
   shiny::tags$head(
     golem::bundle_resources(
-      path = app_sys("app/www"),
+      path = app_sys(file.path("app", "www")),
       app_title = get_golem_config("golem_name")
     ),
     golem::favicon(ico = "BAMLogo")
@@ -154,10 +154,10 @@ golem_add_external_resources <- function() {
     shiny::tags$head(
       shiny::HTML('<noscript><p><img src="https://agw1.bam.de/piwik/matomo.php?idsite=24&amp;rec=1" style="border:0;" alt="" /></p></noscript>'),
       shiny::HTML('<script type="text/javascript" src="https://agw1.bam.de/piwik/piwik.js" async defer></script>'),
-      shiny::includeScript(app_sys("app/www/js/tracking-live.js")),
-      shiny::includeScript(app_sys("app/www/js/re-render-help-page.js")),
-      shiny::includeCSS(app_sys("app/www/app.css"))
-      #tags$link(rel = "stylesheet", type = "text/css", href = "ecerto/app.css")
+      shiny::includeScript(app_sys(file.path("app", "www", "js", "tracking-live.js"))),
+      shiny::includeScript(app_sys(file.path("app", "www", "js", "re-render-help-page.js"))),
+      shiny::includeCSS(app_sys(file.path("app", "www", "app.css")))
+      # tags$link(rel = "stylesheet", type = "text/css", href = "ecerto/app.css")
     )
   }
 }

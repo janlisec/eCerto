@@ -29,7 +29,7 @@ check_RData_with_res_object <- function(x = NULL) {
   # check if 'res' is contained in loaded workspace
   out <- base::get0(x = "res", envir = load_envir, inherits = FALSE, ifnotfound = NULL)
   shiny::validate(
-    shiny::need(!is.null(out), "No object of name 'res' found. Please select a single RData file containing an object 'res'."),
+    shiny::need(!is.null(out), "No object of name 'res' found. Please select a single RData file containing an object 'res'.")
   )
   return(out)
 }

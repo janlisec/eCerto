@@ -32,11 +32,11 @@ check_stability_UI <- function(id) {
       inputId = ns("dropdown_postcert"),
       width = "440px", right = TRUE,
       label = "Post Certification Test",
-      #options = list(container = "body"),
+      # options = list(container = "body"),
       circle = FALSE,
       shiny::tagList(
         bslib::layout_columns(
-          col_widths = c(5,7),
+          col_widths = c(5, 7),
           shiny::div(
             shiny::textAreaInput(
               inputId = ns("txt_textAreaInput"), label = NULL, rows = 7,
@@ -46,8 +46,8 @@ check_stability_UI <- function(id) {
           shiny::div(
             shiny::uiOutput(outputId = ns("res_output")),
             bslib::layout_columns(
-              col_widths = c(8,4),
-              #shiny::actionButton(inputId = ns("btn_textAreaInput"), label = "Calculate", style = "margin-top: 16px"),
+              col_widths = c(8, 4),
+              # shiny::actionButton(inputId = ns("btn_textAreaInput"), label = "Calculate", style = "margin-top: 16px"),
               shiny::actionButton(inputId = ns("btn_textAreaInput"), label = "Calculate"),
               shiny::actionLink(inputId = ns("tabC3postcert"), label = shiny::HTML("Show<br>Help"))
             )
@@ -99,7 +99,7 @@ check_stability_Server <- function(id, rv = NULL) {
       shiny::tagList(
         HTML("<strong>", mt()$analyte, "</strong>"),
         bslib::layout_columns(
-          #col_widths = 2,
+          # col_widths = 2,
           shiny::div(
             shiny::HTML("<var>&micro;</var><sub>c</sub> = ", round(m_c(), ra())), br(),
             shiny::HTML("<var>u</var><sub>c</sub> = ", round(u_c(), ra())), br(),
@@ -127,7 +127,7 @@ check_stability_Server <- function(id, rv = NULL) {
         Err_Msg(test = length(unique(sapply(tmp, length))) == 1, message = "The clipboard content appears to have differing number of columns")
         tmp <- sapply(tmp, function(x) {
           y <- try(as.numeric(x))
-          if (!inherits(y, "try-error") && length(y)==1) {
+          if (!inherits(y, "try-error") && length(y) == 1) {
             return(y)
           } else {
             return(NA)

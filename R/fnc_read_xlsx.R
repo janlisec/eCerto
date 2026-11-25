@@ -38,7 +38,7 @@ fnc_read_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...
     warning("Invalid file; Please upload a .xlsx file")
     return(NULL)
   }
-  if (!sheet %in% seq_len(length(openxlsx::getSheetNames(filepath)))) {
+  if (!sheet %in% seq_along(openxlsx::getSheetNames(filepath))) {
     warning("Invalid sheet; Sheet number does not exist")
     return(NULL)
   }
@@ -47,7 +47,7 @@ fnc_read_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...
   a <- switch(method,
     "tidyxl" = tidyxl::xlsx_cells(path = filepath, sheets = sheet, include_blank_cells = FALSE, ...),
     # detectDates = TRUE caused crashes in version 4.2.7 of openxlsx
-    #"openxlsx" = openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = TRUE, ...)
+    # "openxlsx" = openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = TRUE, ...)
     "openxlsx" = openxlsx::read.xlsx(xlsxFile = filepath, sheet = sheet, detectDates = FALSE, ...)
   )
 
@@ -78,7 +78,7 @@ fnc_read_xlsx <- function(filepath, sheet, method = c("tidyxl", "openxlsx"), ...
     # ensure Date format if Date column is present
     if ("Date" %in% colnames(a)) {
       if (!inherits(a[, "Date"], "Date")) {
-        if (is.numeric(a[, "Date"])) a[, "Date"] <- openxlsx::convertToDate(a[,"Date"])
+        if (is.numeric(a[, "Date"])) a[, "Date"] <- openxlsx::convertToDate(a[, "Date"])
         if (is.character(a[, "Date"])) a[, "Date"] <- as.Date.character(a[, "Date"], tryFormats = c("%Y-%m-%d", "%d.%m.%Y", "%Y/%m/%d"))
       }
     }

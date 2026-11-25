@@ -25,17 +25,17 @@ always_allow_html: true
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-#knitr::opts_chunk$set(out.width = '100%', dpi=300)
+# knitr::opts_chunk$set(out.width = '100%', dpi=300)
 word_tabs_as_fig <- !knitr::is_html_output() && requireNamespace("webshot2", quietly = TRUE)
 if (word_tabs_as_fig) library(webshot2)
 fs_tab <- "175%"
 prec <- params$V_pars$opt_tabV1_precision
-ab <- eCerto:::prepDataV1(tab=params$inp_data, a = params$V_pars$opt_figV1_anal, l = params$V_pars$opt_figV1_level, fmt = "rel_norm")
-fig_V1_width <- eCerto:::calc_bxp_width(n = length(params$V_pars$opt_figV1_anal)*length(params$V_pars$opt_figV1_level), w_point = 28, w_axes = 120)
+ab <- eCerto:::prepDataV1(tab = params$inp_data, a = params$V_pars$opt_figV1_anal, l = params$V_pars$opt_figV1_level, fmt = "rel_norm")
+fig_V1_width <- eCerto:::calc_bxp_width(n = length(params$V_pars$opt_figV1_anal) * length(params$V_pars$opt_figV1_level), w_point = 28, w_axes = 120)
 tab_v1 <- eCerto:::prepTabV1(
   tab = eCerto:::flt_Vdata(
-    x = params$inp_data, 
-    l = if (params$V_pars$opt_tabV1_useLevels) params$V_pars$opt_figV1_level else NULL, 
+    x = params$inp_data,
+    l = if (params$V_pars$opt_tabV1_useLevels) params$V_pars$opt_figV1_level else NULL,
     a = if (params$V_pars$opt_tabV1_useAnalytes) params$V_pars$opt_figV1_anal else NULL
   ),
   alpha = params$V_pars$opt_tabV1_alpha,
@@ -49,7 +49,7 @@ tab_v1 <- eCerto:::prepTabV1(
 
 <!-- In HTML the logo is right aligned. Unfortunately the option fig.align is not supported in Word -->
 ```{r Logo, echo=FALSE, out.width="20%", fig.align="right"}
-  knitr::include_graphics(params$logo_file)
+knitr::include_graphics(params$logo_file)
 ```
 
 # ***eCerto*** Report
@@ -59,11 +59,11 @@ tab_v1 <- eCerto:::prepTabV1(
 ## Modul: Method validation
 
 ```{r helptext_v_fig_V1, results='asis'}
-  cat(params$helptext_v_fig_V1, sep = "\n")
+cat(params$helptext_v_fig_V1, sep = "\n")
 ```
 
 ```{r fig_V1, echo=FALSE, fig.width=fig_V1_width/96, fig.dpi=96, fig.retina=4}
-  eCerto:::prepFigV1(ab = ab)
+eCerto:::prepFigV1(ab = ab)
 ```
 
 The working range concentrations within the solutions and samples, respectively, 
@@ -74,9 +74,9 @@ tab_V1_wr <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL
 if (knitr::is_html_output()) {
   tab_V1_wr
 } else {
-  #colnames(tab_V1_wr$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_wr$x$data))
+  # colnames(tab_V1_wr$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_wr$x$data))
   # knitr::kable(tab_V1_wr$x$data, digits = prec)
-  #eCerto:::eCerto_flextable_defaults(flextable::flextable(tab_V1_wr$x$data), digits = prec)
+  # eCerto:::eCerto_flextable_defaults(flextable::flextable(tab_V1_wr$x$data), digits = prec)
   eCerto:::ft_default(df = tab_V1_wr$x$data, caption = "Working range results", id = "Tab.V1", output = "ft", HTML2ft = TRUE)
 }
 ```
@@ -89,18 +89,18 @@ In the following, detailed plots for the levels determining the working range fo
 each analyte are presented.
 
 ```{r fig_V1_details, echo=FALSE, fig.height=880/96, fig.width=640/96}
-  inp <- params$inp_data
-  tab <- tab_v1
-  as <- tab$Analyte
-  for (a in as) {
-    L_min <- tab[tab$Analyte==a,"c_WR_min"]
-    L_max <- tab[tab$Analyte==a,"c_WR_max"]
-    Ls <- sapply(c(L_min, L_max), function(x) {
-      unique(inp[inp[,"Analyte"]==a & abs(inp[,"Concentration"]-as.numeric(x))<0.001,"Level"])[1]
-    })
-    flt <- inp[,"Analyte"] %in% a & inp[,"Level"] %in% Ls
-    eCerto:::prepFigV3(x = inp[flt,,drop=FALSE], cex = 1)
-  }
+inp <- params$inp_data
+tab <- tab_v1
+as <- tab$Analyte
+for (a in as) {
+  L_min <- tab[tab$Analyte == a, "c_WR_min"]
+  L_max <- tab[tab$Analyte == a, "c_WR_max"]
+  Ls <- sapply(c(L_min, L_max), function(x) {
+    unique(inp[inp[, "Analyte"] == a & abs(inp[, "Concentration"] - as.numeric(x)) < 0.001, "Level"])[1]
+  })
+  flt <- inp[, "Analyte"] %in% a & inp[, "Level"] %in% Ls
+  eCerto:::prepFigV3(x = inp[flt, , drop = FALSE], cex = 1)
+}
 ```
 
 <!-- Yihui suggested the \newpage command here https://bookdown.org/yihui/rmarkdown-cookbook/pagebreaks.html to achieve a page break -->
@@ -109,7 +109,7 @@ each analyte are presented.
 \newpage
 
 ```{r helptext_v_tab_V1, results='asis'}
-  cat(params$helptext_v_tab_V1, sep = "\n")
+cat(params$helptext_v_tab_V1, sep = "\n")
 ```
 
 Linear model parameters for all analytes are provided in the following table.
@@ -119,8 +119,8 @@ tab_V1_lm <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL
 if (knitr::is_html_output()) {
   tab_V1_lm
 } else {
-  #colnames(tab_V1_lm$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_lm$x$data))
-  #knitr::kable(tab_V1_lm$x$data, digits = prec, caption = tab_V1_lm$x$caption)
+  # colnames(tab_V1_lm$x$data) <- eCerto:::HTML2markdown(colnames(tab_V1_lm$x$data))
+  # knitr::kable(tab_V1_lm$x$data, digits = prec, caption = tab_V1_lm$x$caption)
   # ft <- eCerto:::eCerto_flextable_defaults(flextable::flextable(tab_V1_lm$x$data))
   # flextable::set_caption(x = ft, caption = tab_V1_lm$x$caption)
   capt <- gsub("<.+>", "", strsplit(tab_V1_lm$x$caption, "Tab.V1 ")[[1]][2])
@@ -136,22 +136,22 @@ In the following, detailed plots comparing linear and quadratic model fits for
 each analyte are presented.
 
 ```{r tab_V1_details, echo=FALSE, message=FALSE, fig.height=880/96, fig.width=640/96}
-  inp <- params$inp_data
-  tab <- tab_v1
-  flt_outliers <- length(grep("^[(]", tab[,"F_Test"]))>=1
-  as <- tab$Analyte
-  for (a in as) {
-    L_min <- tab[tab$Analyte==a,"c_WR_min"]
-    L_max <- tab[tab$Analyte==a,"c_WR_max"]
-    Ls <- sapply(c(L_min, L_max), function(x) {
-      unique(inp[inp[,"Analyte"]==a & abs(inp[,"Concentration"]-as.numeric(x))<0.001,"Level"])[1]
-    })
-    #idx <- as.numeric(levels(inp[,"Level"])[which(levels(inp[,"Level"]) %in% Ls)])
-    idx <- which(levels(inp[,"Level"]) %in% Ls)
-    Ls <- levels(inp[,"Level"])[idx[1]:idx[2]]
-    flt <- inp[,"Analyte"] %in% a & inp[,"Level"] %in% Ls
-    eCerto:::prepFigV2(tab = inp[flt,,drop=FALSE], a = a, flt_outliers = flt_outliers, cex = 1)
-  }
+inp <- params$inp_data
+tab <- tab_v1
+flt_outliers <- length(grep("^[(]", tab[, "F_Test"])) >= 1
+as <- tab$Analyte
+for (a in as) {
+  L_min <- tab[tab$Analyte == a, "c_WR_min"]
+  L_max <- tab[tab$Analyte == a, "c_WR_max"]
+  Ls <- sapply(c(L_min, L_max), function(x) {
+    unique(inp[inp[, "Analyte"] == a & abs(inp[, "Concentration"] - as.numeric(x)) < 0.001, "Level"])[1]
+  })
+  # idx <- as.numeric(levels(inp[,"Level"])[which(levels(inp[,"Level"]) %in% Ls)])
+  idx <- which(levels(inp[, "Level"]) %in% Ls)
+  Ls <- levels(inp[, "Level"])[idx[1]:idx[2]]
+  flt <- inp[, "Analyte"] %in% a & inp[, "Level"] %in% Ls
+  eCerto:::prepFigV2(tab = inp[flt, , drop = FALSE], a = a, flt_outliers = flt_outliers, cex = 1)
+}
 ```
 
 \newpage
@@ -162,14 +162,14 @@ Based on the linear models specified above the following LOD and LOQ values were
 determined for all analytes.
 
 ```{r tab_V1_lox, message=FALSE, resize.width="100%"}
-  tab_V1_lox <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, show_colgroups = "lo")
-  if (knitr::is_html_output()) {
-    tab_V1_lox
-  } else {
-    #knitr::kable(tab_V1_lox$x$data, digits = prec)
-    eCerto:::ft_default(df = tab_V1_lox$x$data, digits = prec)
-    eCerto:::ft_default(df = tab_V1_lox$x$data, caption = "Method LOD/LOQ", id = "Tab.V3", output = "ft", HTML2ft = TRUE, prec = prec)
-  }
+tab_V1_lox <- eCerto:::style_tabV1(df = tab_v1, precision = prec, selected = NULL, interact_ele = FALSE, show_colgroups = "lo")
+if (knitr::is_html_output()) {
+  tab_V1_lox
+} else {
+  # knitr::kable(tab_V1_lox$x$data, digits = prec)
+  eCerto:::ft_default(df = tab_V1_lox$x$data, digits = prec)
+  eCerto:::ft_default(df = tab_V1_lox$x$data, caption = "Method LOD/LOQ", id = "Tab.V3", output = "ft", HTML2ft = TRUE, prec = prec)
+}
 ```
 
 ```{r tab_V1_lox_word, echo=FALSE, message=FALSE, fig.width=1440/96, fig.dpi=96, fig.retina=4}
@@ -181,7 +181,7 @@ if (word_tabs_as_fig) eCerto:::style_tabV1(df = tab_v1, precision = prec, select
 ### Trueness
 
 ```{r txt_trueness, results='asis'}
-  cat(params$V_pars$txt_trueness, sep = "\n")
+cat(params$V_pars$txt_trueness, sep = "\n")
 ```
 
 \newpage
@@ -189,7 +189,7 @@ if (word_tabs_as_fig) eCerto:::style_tabV1(df = tab_v1, precision = prec, select
 ### Precision
 
 ```{r txt_precision, results='asis'}
-  cat(params$V_pars$txt_precision, sep = "\n")
+cat(params$V_pars$txt_precision, sep = "\n")
 ```
 
 \newpage
@@ -197,13 +197,13 @@ if (word_tabs_as_fig) eCerto:::style_tabV1(df = tab_v1, precision = prec, select
 ### Measurement Uncertainty
 
 ```{r txt_uncertainty, results='asis'}
-  cat(params$V_pars$txt_uncertainty, sep = "\n")
+cat(params$V_pars$txt_uncertainty, sep = "\n")
 ```
 
 \newpage
 
 ```{r helptext_v_formula_collection, results='asis'}
-  cat(params$helptext_v_formula_collection, sep = "\n")
+cat(params$helptext_v_formula_collection, sep = "\n")
 ```
 
 \newpage
@@ -214,15 +214,15 @@ Finally, this is the input data table as used internally for all calculations.
 
 ```{r inp_tab, echo=FALSE, resize.width="100%"}
 inp <- params$inp_data
-inp <- inp[inp[,"Analyte"] %in% tab_v1$Analyte,]
+inp <- inp[inp[, "Analyte"] %in% tab_v1$Analyte, ]
 inp <- inp[, !(colnames(inp) %in% c("Type", "Exclude_Level", "Exclude_Sample", "norm", "rel_norm"))]
 if (knitr::is_html_output()) {
   DT::datatable(
-    data = inp, rownames = FALSE, extensions = "Buttons", 
+    data = inp, rownames = FALSE, extensions = "Buttons",
     options = list(dom = "Bt", pageLength = -1, buttons = list(list(extend = "excel", text = "Excel", title = NULL)))
   )
 } else {
-  #knitr::kable(inp, row.names = FALSE, digits = prec+1)
-  eCerto:::eCerto_flextable_defaults(flextable::flextable(inp), digits = prec+1)
+  # knitr::kable(inp, row.names = FALSE, digits = prec+1)
+  eCerto:::eCerto_flextable_defaults(flextable::flextable(inp), digits = prec + 1)
 }
 ```

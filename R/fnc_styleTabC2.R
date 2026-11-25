@@ -17,7 +17,7 @@
 styleTabC2 <- function(x, n = 3, precision = 4, output = c("DT", "ft", "ft_HTML")) {
   output <- match.arg(output)
   p_cols <- grep("_p", colnames(x))
-  p_cols_sign <- p_cols[which(x[,p_cols]<0.05)]
+  p_cols_sign <- p_cols[which(x[, p_cols] < 0.05)]
   colnames(x)[p_cols] <- gsub("_p", "<sub>p</sub>", colnames(x)[p_cols])
   fmt_p_cols <- p_cols[which(x[, p_cols] < 10^-precision)]
   if (length(fmt_p_cols) >= 1) {
@@ -29,9 +29,9 @@ styleTabC2 <- function(x, n = 3, precision = 4, output = c("DT", "ft", "ft_HTML"
   if (output %in% c("ft", "ft_HTML")) {
     ft <- ft_default(df = x, caption = "Statistics regarding overall mean distribution and variance testing", id = "Tab.C2", output = output, HTML2ft = TRUE)
     ft <- ft_set_formatter(ft, 1:4, ft_formatter_fixed_digits, n)
-    ft <- ft_set_formatter(ft, c(8,10), ft_formatter_fixed_digits, 2)
+    ft <- ft_set_formatter(ft, c(8, 10), ft_formatter_fixed_digits, 2)
     ft <- ft_set_formatter(ft, p_cols, ft_formatter_fixed_digits, precision)
-    if (length(p_cols_sign)>=1) for (j in p_cols_sign) ft <- flextable::color(ft, i = 1, j = j, color = "red", part = "body")
+    if (length(p_cols_sign) >= 1) for (j in p_cols_sign) ft <- flextable::color(ft, i = 1, j = j, color = "red", part = "body")
     return(ft)
   } else {
     dt <- DT::datatable(
