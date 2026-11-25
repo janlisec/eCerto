@@ -36,7 +36,7 @@ page_StabilityUI <- function(id) {
         ),
         shiny::div(
           style = "float: left; margin-left: 15px;",
-          shiny::checkboxInput(inputId = ns("optimize_u_stab"), width = 90, value = FALSE, label = shiny::HTML("t<sub>max</sub>")) |> bslib::tooltip("Include a column calculating the maximum possible shelf life in Tab.S1"),
+          shiny::checkboxInput(inputId = ns("optimize_u_stab"), width = 90, value = FALSE, label = shiny::HTML("t<sub>max</sub>")) |> bslib::tooltip("Include a column calculating the maximum possible shelf life in Tab.S1")
         )
       )
     ),
@@ -57,7 +57,7 @@ page_StabilityUI <- function(id) {
       shiny::div(
         shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("s_Report"), label = "Download Report")),
         shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML" = "html", "DOCX" = "docx"), width = 70))
-      ),
+      )
     ),
     bslib::card_body(
       bslib::layout_sidebar(

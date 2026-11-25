@@ -12,7 +12,7 @@ testthat::test_that(
       "L_flt" = c(TRUE, FALSE)
     )
     out <- eCerto:::init_apm(x = x)
-    testthat::expect_equal(out[["A1"]][["sample_filter"]], 1)
-    testthat::expect_equal(out[["A1"]][["lab_filter"]], "1")
+    testthat::expect_identical(out[["A1"]][["sample_filter"]], 1L)
+    testthat::expect_identical(out[["A1"]][["lab_filter"]], "1")
   }
 )

@@ -37,7 +37,7 @@ testthat::test_that(
             x[8:16, 1:5, drop = FALSE]
           })
           session$setInputs(btn_load = "click")
-          testthat::expect_equal("File" %in% names(out$data), TRUE)
+          testthat::expect_true("File" %in% names(out$data))
         }
       )
     )
@@ -110,7 +110,7 @@ testthat::test_that(
           comp <- eCerto:::test_Stability_Excel()
           comp[, "analyte"] <- factor(comp[, "analyte"], levels = c("Si", "Mn"))
           comp[, "time"] <- as.numeric(comp[, "Date"] - min(comp[, "Date"]))
-          testthat::expect_equal(out$data, comp)
+          testthat::expect_identical(out$data, comp)
         }
       )
     )

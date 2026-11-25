@@ -19,11 +19,11 @@ testthat::test_that(
           analyte = "a1",
           rbtn_storage = "rt"
         )
-        testthat::expect_equal(an(), "a1")
+        testthat::expect_identical(an(), "a1")
         x <- tab1exp()
         testthat::expect_true(is.data.frame(x))
-        testthat::expect_equal(nrow(x), 3)
-        testthat::expect_equal(ncol(x), 9)
+        testthat::expect_identical(nrow(x), 3L)
+        testthat::expect_identical(ncol(x), 9L)
 
         if (FALSE) {
           # this part should test for a missing value in input data but reactivity is not working

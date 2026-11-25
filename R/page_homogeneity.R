@@ -46,7 +46,7 @@ page_HomogeneityUI <- function(id) {
 
   tab_H2_panel <- bslib::card(
     bslib::card_header(
-      shiny::strong(shiny::actionLink(inputId = ns("tab2_link"), label = "Tab.H2 - specimen stats")),
+      shiny::strong(shiny::actionLink(inputId = ns("tab2_link"), label = "Tab.H2 - specimen stats"))
     ),
     bslib::card_body(
       shiny::div(DT::DTOutput(ns("h_tab2")))
@@ -62,7 +62,7 @@ page_HomogeneityUI <- function(id) {
       shiny::div(
         shiny::div(style = "float: left; margin-left: 15px;", shiny::downloadButton(ns("h_Report"), label = "Download Report")),
         shiny::div(style = "float: left; margin-left: 15px;", shiny::radioButtons(inputId = ns("ReportFormat"), label = NULL, choices = list("HTML" = "html", "DOCX" = "docx"), width = 70))
-      ),
+      )
     ),
     bslib::card_body(
       fill = TRUE,
@@ -86,7 +86,7 @@ page_HomogeneityUI <- function(id) {
         ),
         # bslib::card_body(min_height = 400, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH1"))),
         bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH1_ui"))),
-        bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH2_ui"))),
+        bslib::card_body(padding = 0, gap = 0, shiny::uiOutput(ns("h_FigH2_ui")))
         # bslib::card_body(id = ns("h_FigH2_wrap"), min_height = 0, padding = 0, gap = 0, shiny::plotOutput(ns("h_FigH2")))
       )
     ),

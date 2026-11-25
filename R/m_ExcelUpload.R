@@ -69,11 +69,11 @@ m_ExcelUpload_UI <- function(id) {
         shiny::div(
           style = "width: 420px; float: left; color: red; background: rgba(0,0,0,0.04); border: 4px; padding: 16px;",
           id = ns("info_msg")
-        ),
+        )
       )
     ),
     # preview Excel table
-    m_xlsx_range_select_UI(ns("rng_select")),
+    m_xlsx_range_select_UI(ns("rng_select"))
   )
 }
 

@@ -346,7 +346,7 @@ page_validation57252Server <- function(id, test_data = NULL) {
           shiny::plotOutput(ns("FigV2a"), width = w, height = "400px"),
           shiny::plotOutput(ns("FigV2b"), width = w, height = "400px")
         ),
-        shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>"),
+        shiny::HTML("<p><b>Fig.V2</b> Mandel's statistc (<i>h</i> and <i>k</i>) including critical values at alpha = 0.01 and 0.05.</p>")
       )
     })
 

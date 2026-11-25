@@ -12,12 +12,12 @@ testthat::test_that(
     path_xlsx <- tempfile(fileext = ".XlSX")
     openxlsx::write.xlsx(dfs, path_xlsx)
     # check that correct sheet names are returned
-    testthat::expect_equal(eCerto:::xlsxSheetNames(path_xlsx), c("S1", "S2"))
+    testthat::expect_identical(eCerto:::xlsxSheetNames(path_xlsx), c("S1", "S2"))
     # Create a second sample data file with identical sheet names
     path_xlsx2 <- tempfile(fileext = ".XlSX")
     openxlsx::write.xlsx(dfs, path_xlsx2)
     # check that correct sheet names are returned if multiple files contain identical names
-    testthat::expect_equal(eCerto:::xlsxSheetNames(c(path_xlsx, path_xlsx2)), c("S1", "S2"))
+    testthat::expect_identical(eCerto:::xlsxSheetNames(c(path_xlsx, path_xlsx2)), c("S1", "S2"))
     # Create a second sample data file with differing sheet names
     names(dfs)[2] <- "S_Err"
     openxlsx::write.xlsx(dfs, path_xlsx2)
@@ -31,8 +31,8 @@ testthat::test_that(
   code = {
     lz <- list(a1 = list(b1 = "Streusalz", b2 = "Andreas Scheuer"), a2 = "Wurst")
     lz_e <- eCerto::eCerto$new(do.call(shiny::reactiveValues, lz))
-    testthat::expect_equal(class(eCerto::getValue(lz_e, NULL)), "reactivevalues")
-    testthat::expect_equal(eCerto::getValue(lz, "a2"), "Wurst")
+    testthat::expect_identical(class(eCerto::getValue(lz_e, NULL)), "reactivevalues")
+    testthat::expect_identical(eCerto::getValue(lz, "a2"), "Wurst")
     testthat::expect_error(eCerto::getValue("x"))
     testthat::expect_error(eCerto::setValue(value = 1, key = "x"))
   }
@@ -44,7 +44,7 @@ testthat::test_that(
     rv <- eCerto$new(eCerto:::init_rv()) # initiate persistent variables
     nms = shiny::isolate(eCerto:::listNames(l = rv))
     testthat::expect_gte(length(nms), 2)
-    testthat::expect_equal(class(nms), "character")
+    testthat::expect_identical(class(nms), "character")
   }
 )
 
@@ -53,7 +53,7 @@ testthat::test_that(
   code = {
     rv <- eCerto$new(eCerto:::init_rv()) # initiate persistent variables
     shiny::isolate({setValue(rv, c("Certification_processing", "CertValPlot", "show"), TRUE) })
-    testthat::expect_equal(eCerto:::show_view(rv), "CertValPlot")
+    testthat::expect_identical(eCerto:::show_view(rv), "CertValPlot")
   }
 )
 

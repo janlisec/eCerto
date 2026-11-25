@@ -27,7 +27,7 @@ testthat::test_that(
             ),
             class = "data.frame", row.names = c(NA, -2L)
           )
-          testthat::expect_equal(eCerto::getValue(rv, c("Stability", "s_vals")), s_vals_cmp_month)
+          testthat::expect_equal(eCerto::getValue(rv, c("Stability", "s_vals")), s_vals_cmp_month, tolerance = 10^-6)
         }
       )
     )

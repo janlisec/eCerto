@@ -21,7 +21,7 @@ testthat::test_that(
     testthat::expect_true(nrow(out) == 6)
 
     out <- eCerto:::flatten_list_to_df(lst, sep = "|")
-    testthat::expect_equal(grep("[|]", out[, 1]), 1:5)
+    testthat::expect_identical(grep("[|]", out[, 1]), 1:5)
   }
 )
 
@@ -40,7 +40,7 @@ testthat::test_that(
     )
     out <- eCerto:::remove_prefix(example_list)
     testthat::expect_true(is.list(out))
-    testthat::expect_equal(names(out), c("N1", "N2"))
+    testthat::expect_identical(names(out), c("N1", "N2"))
   }
 )
 

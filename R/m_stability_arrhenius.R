@@ -66,7 +66,7 @@ m_arrheniusUI <- function(id) {
 
   tab_S2_panel <- bslib::card(
     bslib::card_header(
-      shiny::strong(shiny::actionLink(inputId = ns("ArrheniusTab_link"), label = "Tab.S2 - calculation of possible storage time")),
+      shiny::strong(shiny::actionLink(inputId = ns("ArrheniusTab_link"), label = "Tab.S2 - calculation of possible storage time"))
     ),
     bslib::card_body(
       bslib::layout_sidebar(

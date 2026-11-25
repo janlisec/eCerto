@@ -12,7 +12,7 @@ testthat::test_that(
 
         # passing of arguments from inputs to pars list works
         session$setInputs("LTS_sel_KW" = "KW2")
-        testthat::expect_equal(i(), 2)
+        testthat::expect_identical(i(), 2L)
 
     })
 })

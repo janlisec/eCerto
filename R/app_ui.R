@@ -128,7 +128,7 @@ golem_add_external_resources <- function() {
   # permission is only granted in a temp dir
   www_tmp <- fs::path(tempdir(), "www")
   if (!base::dir.exists(www_tmp)) {
-    base::file.copy(from = app_sys(file.path("app","www")), to = tempdir(), recursive = TRUE)
+    base::file.copy(from = app_sys(file.path("app", "www")), to = tempdir(), recursive = TRUE)
   }
   rps <- shiny::resourcePaths()
   if (!("www" %in% names(rps))) {

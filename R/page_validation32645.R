@@ -106,7 +106,7 @@ page_validation32645UI <- function(id) {
             shiny::checkboxInput(inputId = ns("opt_tabV1_useAnalytes"), label = "Analyte selection", value = FALSE),
             shiny::checkboxInput(inputId = ns("opt_tabV1_useLevels"), label = "Level range", value = FALSE),
             label = "Synchronize filters with Fig.V1", circle = FALSE, width = "100%", inline = TRUE
-          ),
+          )
         ),
         shiny::div(
           DT::DTOutput(outputId = ns("tab_V1"))
@@ -138,7 +138,7 @@ page_validation32645UI <- function(id) {
       ),
       shiny::div(
         shiny::div(style = "float: left;", shiny::downloadButton(outputId = ns("v_backup_save"), label = "Save Rdata backup")),
-        shiny::div(style = "float: left; margin-left: 15px;", shiny::fileInput(inputId = ns("v_backup_load"), label = NULL, multiple = FALSE, placeholder = "Load Rdata backup", accept = c("RData", "rda"))),
+        shiny::div(style = "float: left; margin-left: 15px;", shiny::fileInput(inputId = ns("v_backup_load"), label = NULL, multiple = FALSE, placeholder = "Load Rdata backup", accept = c("RData", "rda")))
       ),
       shiny::div(id = ns("inp_file_name"), "This div will show the original Excel File name used upon import.")
     )

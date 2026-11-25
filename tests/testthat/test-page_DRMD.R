@@ -12,7 +12,7 @@ testthat::test_that(
 
         # passing of arguments from inputs to pars list works
         session$setInputs(tab_D1_rows_selected = 3)
-        testthat::expect_equal(D$tab_D1_i, 3)
+        testthat::expect_identical(D$tab_D1_i, 3)
 
     })
 })

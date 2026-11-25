@@ -6,32 +6,32 @@ test_that("input validation works", {
 
 test_that("plain text returns correct expression", {
   result <- markdown2expression("hello")
-  expect_equal(deparse(result), "\"hello\"")
+  expect_identical(deparse(result), "\"hello\"")
 })
 
 test_that("single letter returns symbol expression", {
   result <- markdown2expression("x")
-  expect_equal(deparse(result), "x")
+  expect_identical(deparse(result), "x")
 })
 
 test_that("bold formatting is converted correctly", {
   result <- markdown2expression("**bold**")
-  expect_equal(deparse(result), "bold(\"bold\")")
+  expect_identical(deparse(result), "bold(\"bold\")")
 })
 
 test_that("italic formatting is converted correctly", {
   result <- markdown2expression("*italic*")
-  expect_equal(deparse(result), "italic(\"italic\")")
+  expect_identical(deparse(result), "italic(\"italic\")")
 })
 
 test_that("superscript is converted correctly", {
   result <- markdown2expression("x^2^")
-  expect_equal(deparse(result), "x^2")
+  expect_identical(deparse(result), "x^2")
 })
 
 test_that("subscript is converted correctly", {
   result <- markdown2expression("H~2~")
-  expect_equal(deparse(result), "H[2]")
+  expect_identical(deparse(result), "H[2]")
 })
 
 test_that("superscript without base throws error", {
@@ -45,7 +45,7 @@ test_that("subscript without base throws error", {
 test_that("only first element of vector is used", {
   result1 <- suppressWarnings(markdown2expression(c("**bold**", "*italic*")))
   result2 <- markdown2expression("**bold**")
-  expect_equal(deparse(result1), deparse(result2))
+  expect_identical(deparse(result1), deparse(result2))
 })
 
 test_that("nested bold and subscript works", {
@@ -115,12 +115,12 @@ test_that("escaped caret is treated as literal text", {
 # --- Greek letters ---
 test_that("greek letter alpha is converted", {
   result <- markdown2expression("{alpha}")
-  expect_equal(deparse(result), "alpha")
+  expect_identical(deparse(result), "alpha")
 })
 
 test_that("greek letter Omega is converted", {
   result <- markdown2expression("{Omega}")
-  expect_equal(deparse(result), "Omega")
+  expect_identical(deparse(result), "Omega")
 })
 
 test_that("unknown curly brace content is treated as text", {

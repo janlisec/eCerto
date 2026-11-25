@@ -2,7 +2,7 @@ testthat::test_that(
   desc = "round_DIN1333 works",
   code = {
     # perfect correlation
-    testthat::expect_equal(eCerto::steyx(x = 1:3, y = 2:4), 0)
+    testthat::expect_identical(eCerto::steyx(x = 1:3, y = 2:4), 0)
     # reasonable test
     testthat::expect_equal(eCerto::steyx(x = 1:3, y = c(2, 3.1, 3.9)), 0.122474487)
     # catch errors for wrong inputs

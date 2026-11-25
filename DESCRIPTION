@@ -58,4 +58,4 @@ Suggests:
 biocViews:
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

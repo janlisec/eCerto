@@ -111,7 +111,7 @@ assert_col <- function(df, name, pos = NULL, type = c("character", "integer", "n
   if (is.null(cp)) {
     new_vals <- rep(default_value, nrow(df))
   } else {
-    if (class(df[, cp]) != type) {
+    if (!inherits(df[, cp], type)) {
       new_vals <- try(convert_type(x = df[, cp], type = type), silent = TRUE)
       if (inherits(new_vals, "try-error")) {
         msg <- c(msg, paste0("Could not convert column '", name, "' to specified type."))

@@ -140,7 +140,7 @@ page_DRMDServer <- function(id, test_data = NULL) {
         }
         D_dat <- read_drmd_xml(fl_path)
         # perform checks
-        check_validity <- TRUE
+        #check_validity <- TRUE
         # while (!is.null(D_dat) && check_validity) {
         # check that DRMD format is correct
         # e_msg("Sorry, could not...")

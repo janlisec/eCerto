@@ -8,11 +8,11 @@ testthat::test_that(
     x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm = apm)
     out <- eCerto:::plot_lts_data(x = x_prep, type = 0)
     testthat::expect_true(is.numeric(out))
-    testthat::expect_equal(names(out), "2184-02-22")
-    testthat::expect_equal(unname(out), 2076)
+    testthat::expect_identical(names(out), "2184-02-22")
+    testthat::expect_identical(unname(out), 2076)
 
     out <- eCerto:::plot_lts_data(x = x_prep, type = 0, slope_of_means = TRUE)
-    testthat::expect_equal(unname(out), 2076)
+    testthat::expect_identical(unname(out), 2076)
 
     skip_if_not_linux_ci()
 
@@ -22,7 +22,7 @@ testthat::test_that(
       fig = function() eCerto:::plot_lts_data(x = x_prep, type = 1)
     )
     out2 <- eCerto:::plot_lts_data(x = x_prep, type = 2)
-    testthat::expect_equal(names(out2), "2135-01-04")
+    testthat::expect_identical(names(out2), "2135-01-04")
     vdiffr::expect_doppelganger(
       title = "FigS1 type2",
       fig = function() eCerto:::plot_lts_data(x = x_prep, type = 2)
@@ -41,7 +41,7 @@ testthat::test_that(
   code = {
     x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm = apm, U_Def = "U", mt = mt)
     out2 <- eCerto:::plot_lts_data(x = x_prep, type = 2)
-    testthat::expect_equal(names(out2), "2135-01-04")
+    testthat::expect_identical(names(out2), "2135-01-04")
   }
 )
 
@@ -51,7 +51,7 @@ testthat::test_that(
     x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm = apm, U_Def = "U", mt = mt)
     x_prep[["val"]][, "Comment"] <- c(rep(NA, 51), "test_text")
     out3 <- eCerto:::plot_lts_data(x = x_prep, type = 0)
-    testthat::expect_equal(names(out3), "2135-01-04")
+    testthat::expect_identical(names(out3), "2135-01-04")
   }
 )
 
@@ -60,7 +60,7 @@ testthat::test_that(
   code = {
     x_prep <- eCerto:::prepFigS1(s = s, an = "Mn", apm = apm, U_Def = "U", mt = mt)
     out4 <- eCerto:::plot_lts_data(x = x_prep, type = 3)
-    testthat::expect_equal(names(out4), "2024-07-01")
+    testthat::expect_identical(names(out4), "2024-07-01")
   }
 )
 

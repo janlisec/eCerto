@@ -7,7 +7,7 @@ testthat::test_that(
     # check that function returns warning if 'www' does not exist as resourcePath
     if ("www" %in% names(shiny::resourcePaths())) shiny::removeResourcePath("www")
     testthat::expect_warning(
-      testthat::expect_equal(eCerto:::get_local_file(x = ""), NA)
+      testthat::expect_true(is.na(eCerto:::get_local_file(x = "")))
     )
 
     # check that function returns warning if 'file' does not exist at resourcePath
@@ -19,7 +19,7 @@ testthat::test_that(
     cat(file = x, append = FALSE)
 
     # normalizePath() is required for GitHub actions to work
-    testthat::expect_equal(normalizePath(x), normalizePath(eCerto:::get_local_file(x = basename(x))))
+    testthat::expect_identical(normalizePath(x), normalizePath(eCerto:::get_local_file(x = basename(x))))
 
     # check that function returns warning if 'file' specification is ambiguous at resourcePath
     x <- as.character(fs::file_temp())

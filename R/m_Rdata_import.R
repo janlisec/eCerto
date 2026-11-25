@@ -112,7 +112,7 @@ m_RDataImport_Server <- function(id, rv) {
             style = "display: block; margin-left: auto; margin-right: auto; width: 220px;",
             shiny::textInput(inputId = session$ns("z_id"), label = "Enter Zenodo Record ID", value = "8380870")
           )
-        ),
+        )
       )
     })
     shiny::observeEvent(input$confirm_load_zenodo_data, {
@@ -136,7 +136,7 @@ m_RDataImport_Server <- function(id, rv) {
         shinyWidgets::ask_confirmation(
           inputId = "confirm_load_rdata",
           title = "RData Import", btn_labels = c("Cancel", "Load"), size = "xs", html = TRUE,
-          text = shiny::tagList(div_check_present()),
+          text = shiny::tagList(div_check_present())
         )
       }
     })

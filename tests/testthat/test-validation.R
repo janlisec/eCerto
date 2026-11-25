@@ -7,7 +7,7 @@ testthat::test_that(
     testthat::expect_true(file.exists(inp))
 
     # check if format is recognized
-    testthat::expect_equal(eCerto:::check_fmt_Vdata(inp), "Agilent")
+    testthat::expect_identical(eCerto:::check_fmt_Vdata(inp), "Agilent")
 
     # check Excel file import using example data
     tab <- eCerto:::read_Vdata(file = inp)

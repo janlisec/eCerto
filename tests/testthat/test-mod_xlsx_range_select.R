@@ -17,11 +17,11 @@ testthat::test_that(
           # set rows and columns selection
           # suppressMessages(session$setInputs(uitab_cells_selected = cells_selected))
           session$setInputs(uitab_range_selected = range_selected)
-          testthat::expect_equal(tab_param$rng, "A1:B1")
-          testthat::expect_equal(length(tab_param$tab), 3) # contains three lists
+          testthat::expect_identical(tab_param$rng, "A1:B1")
+          testthat::expect_identical(length(tab_param$tab), 3L) # contains three lists
           # [JL] this test needed to be rewritten because range selection was changed
           # to use the AutoFill pluin of DataTables instead of cell selection
-          testthat::expect_equal(tab_param$end_col, 2)
+          testthat::expect_identical(tab_param$end_col, 2)
         }
       )
     )
@@ -127,7 +127,7 @@ testthat::test_that(
         args = list(current_file_input = fn1, sheet = sheetNo), {
           suppressWarnings(suppressMessages(session$flushReact()))
           session$setInputs(uitab_range_selected = range_selected)
-          testthat::expect_equal(tab_param$rng, "A1:B1")
+          testthat::expect_identical(tab_param$rng, "A1:B1")
         }
       )
     )

@@ -50,7 +50,7 @@ styleTabC0 <- function(x, ap, type = c("compact", "standard"), output = c("DT", 
             list(className = "dt-left", targets = ncol(x) - 1)
           )
         ),
-        rownames = NULL,
+        rownames = NULL
       )
       if (!is.null(ap[["sample_filter"]])) {
         for (s_idx in ap[["sample_filter"]]) {

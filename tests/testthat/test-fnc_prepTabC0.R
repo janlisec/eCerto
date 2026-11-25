@@ -19,7 +19,7 @@ testthat::test_that(
     )
     suppressMessages({ out <- eCerto:::prepTabC0(x) })
     testthat::expect_true(is.data.frame(out))
-    testthat::expect_equal(out[1, "unit"], "U")
-    testthat::expect_equal(colnames(out), c("ID", "Lab", "analyte", "replicate", "value", "unit", "File", "S_flt", "L_flt"))
+    testthat::expect_identical(out[1, "unit"], "U")
+    testthat::expect_identical(colnames(out), c("ID", "Lab", "analyte", "replicate", "value", "unit", "File", "S_flt", "L_flt"))
   }
 )

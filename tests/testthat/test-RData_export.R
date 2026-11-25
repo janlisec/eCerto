@@ -10,8 +10,8 @@ testthat::test_that(
         ),
         expr = {
           session$setInputs(study_id = "S", user = "U")
-          testthat::expect_equal(input$user, getValue(rv_test, c("General", "user")))
-          testthat::expect_equal(input$study_id, getValue(rv_test, c("General", "study_id")))
+          testthat::expect_identical(input$user, getValue(rv_test, c("General", "user")))
+          testthat::expect_identical(input$study_id, getValue(rv_test, c("General", "study_id")))
           # ToDo: because we have only access to the server part in testthat
           # we can not (!) test if the update function for the text input works as well
           # we would need a shinytest miniapp for this purpose as described in:

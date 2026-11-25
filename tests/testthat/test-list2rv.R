@@ -14,7 +14,7 @@ testthat::test_that(
     testthat::expect_warning(eCerto:::list2rv(x = tmp))
     # warn if expected elements are missing in source list
     tmp <- eCerto::CRM001
-    testthat::expect_equal(isolate(getValue(eCerto:::list2rv(x = tmp), c("General", "user"))), "Jan Lisec")
+    testthat::expect_identical(isolate(getValue(eCerto:::list2rv(x = tmp), c("General", "user"))), "Jan Lisec")
     tmp[["General"]][["user"]] <- NULL
     testthat::expect_null(isolate(getValue(eCerto:::list2rv(x = tmp), c("General", "user"))))
 })

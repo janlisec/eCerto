@@ -17,15 +17,15 @@ testthat::test_that(
         session$setInputs(in_file_ecerto_backup = rdat)
         session$flushReact()
         tmp_rv <- eCerto:::list2rv(x = rdata())
-        testthat::expect_equal(sort(eCerto::getValue(tmp_rv, "modules")), c("Certification", "Homogeneity", "Stability"))
-        testthat::expect_equal(eCerto::getValue(tmp_rv, c("General", "user")), "JL")
+        testthat::expect_identical(sort(eCerto::getValue(tmp_rv, "modules")), c("Certification", "Homogeneity", "Stability"))
+        testthat::expect_identical(eCerto::getValue(tmp_rv, c("General", "user")), "JL")
         # because time_stamp changes every runtime, exclude it for testing as follows
         general <- eCerto::getValue(tmp_rv, "General")
-        testthat::expect_equal(is.null(general$apm), FALSE)
-        testthat::expect_equal(is.null(general$dataformat_version), FALSE)
-        testthat::expect_equal(is.null(eCerto::getValue(tmp_rv, c("Certification", "data"))), FALSE)
-        testthat::expect_equal(is.null(eCerto::getValue(tmp_rv, c("Homogeneity", "data"))), FALSE)
-        testthat::expect_equal(is.null(eCerto::getValue(tmp_rv, c("Stability", "data"))), FALSE)
+        testthat::expect_false(is.null(general$apm))
+        testthat::expect_false(is.null(general$dataformat_version))
+        testthat::expect_false(is.null(eCerto::getValue(tmp_rv, c("Certification", "data"))))
+        testthat::expect_false(is.null(eCerto::getValue(tmp_rv, c("Homogeneity", "data"))))
+        testthat::expect_false(is.null(eCerto::getValue(tmp_rv, c("Stability", "data"))))
       }
     )
   }
@@ -71,11 +71,11 @@ testthat::test_that(
       app = eCerto:::m_RDataImport_Server,
       args = list(rv = rv),
       expr = {
-        testthat::expect_equal(unname(rv$e_present()), c(FALSE, FALSE, FALSE))
+        testthat::expect_identical(unname(rv$e_present()), c(FALSE, FALSE, FALSE))
         testthat::expect_true(all(nchar(div_check_present()) == 0))
         session$setInputs(in_file_ecerto_backup = rdat)
         session$flushReact()
-        testthat::expect_equal(unname(rv$e_present()), c(TRUE, TRUE, TRUE))
+        testthat::expect_identical(unname(rv$e_present()), c(TRUE, TRUE, TRUE))
         testthat::expect_true(all(nchar(div_check_present()) > 0))
       }
     )
