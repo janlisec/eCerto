@@ -1,4 +1,13 @@
-linters: lintr::linters_with_defaults(
-    line_length_linter = lintr::line_length_linter(120),
-    commented_code_linter = NULL
+linters: list(
+    #line_length_linter = lintr::line_length_linter(120),
+    #commented_code_linter = NULL
+    commas_linter = lintr::commas_linter(),
+    T_and_F_symbol_linter = lintr::T_and_F_symbol_linter(),
+    seq_linter = lintr::seq_linter(),
+    missing_argument_linter = lintr::missing_argument_linter(),
+    #nonportable_path_linter = lintr::nonportable_path_linter(),
+    equals_na_linter = lintr::equals_na_linter(),
+    object_usage_linter = lintr::object_usage_linter(),
+    object_length_linter = lintr::object_length_linter(),
+    expect_identical_linter = lintr::expect_identical_linter()
   )

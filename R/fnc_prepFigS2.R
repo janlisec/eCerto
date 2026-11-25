@@ -85,7 +85,15 @@ prepFigS2 <- function(tmp, show_reference_point = TRUE, plot_nominal_scale = TRU
     }
     if (plot_ln_relative && plot_in_month) {
       flt_lm <- tmp[, "Temp"] == k | tmp[, "Temp"] == levels(tf)[1]
-      lm_res <- stats::coef(stats::lm(val[flt_lm] ~ as.numeric(as.character(time[flt_lm]))))
+      lm_res <- stats::coef(
+        stats::lm(
+          y ~ x,
+          data = data.frame(
+            y = val[flt_lm],
+            x = as.numeric(as.character(time[flt_lm]))
+          )
+        )
+      )
       graphics::mtext(text = bquote(k[eff] == .(round(lm_res[2], 6))), side = 3, line = -1.8 * cex_plot, adj = 0.98, col = ifelse(lm_res[2] < 0, 3, 2), cex = cex_plot)
     }
   }

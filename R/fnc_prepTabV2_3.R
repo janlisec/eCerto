@@ -26,14 +26,14 @@ prepTabV2_3 <- function(mns) {
       s_r2 <- (1 / (2 * np)) * sum(x[, "sd"]^2)
       s_L2 <- (1 / (np - 1)) * sum((x[, "mean"] - m_hat)^2) - s_r2 / 2
       if (s_L2 < 0) s_L2 <- 0
-      # this is the T1-T3 based calculation as described in B2 example of 5725-2
-      if (FALSE) {
-        T1 <- sum(x[, "mean"] - 80)
-        T2 <- sum((x[, "mean"] - 80)^2)
-        T3 <- sum(x[, "sd"]^2)
-        s_r2 <- T3 / (2 * np)
-        s_L2 <- (np * T2 - T1^2) / (np * (np - 1)) - s_r2 / 2
-      }
+      # if (FALSE) {
+      #   # this is the t1-t3 based calculation as described in B2 example of 5725-2 for reference
+      #   t1 <- sum(x[, "mean"] - 80)
+      #   t2 <- sum((x[, "mean"] - 80)^2)
+      #   t3 <- sum(x[, "sd"]^2)
+      #   s_r2 <- t3 / (2 * np)
+      #   s_L2 <- (np * t2 - t1^2) / (np * (np - 1)) - s_r2 / 2
+      # }
     } else {
       # for n>=3
       # this is the formula based calculation
@@ -41,15 +41,15 @@ prepTabV2_3 <- function(mns) {
       s_d2 <- (1 / (np - 1)) * sum(x[, "n"] * (x[, "mean"] - m_hat)^2)
       n_bar <- (1 / (np - 1)) * (sum(x[, "n"]) - sum(x[, "n"]^2) / sum(x[, "n"]))
       s_L2 <- (s_d2 - s_r2) / n_bar
-      # this is the T1-T4 based calculation as described in B2 example of 5725-2
-      if (FALSE) {
-        T1 <- sum(x[, "n"] * x[, "mean"])
-        T2 <- sum(x[, "n"] * x[, "mean"]^2)
-        T3 <- sum(x[, "n"])
-        T4 <- sum(x[, "n"]^2)
-        s_r2 <- sum((x[, "n"] - 1) * x[, "sd"]^2) / sum(x[, "n"] - 1)
-        s_L2 <- ((T2 * T3 - T1^2) / (T3 * (np - 1)) - s_r2) * ((T3 * (np - 1)) / (T3^2 - T4))
-      }
+      # if (FALSE) {
+      #   # this is the t1-t4 based calculation as described in B2 example of 5725-2 for reference
+      #   t1 <- sum(x[, "n"] * x[, "mean"])
+      #   t2 <- sum(x[, "n"] * x[, "mean"]^2)
+      #   t3 <- sum(x[, "n"])
+      #   t4 <- sum(x[, "n"]^2)
+      #   s_r2 <- sum((x[, "n"] - 1) * x[, "sd"]^2) / sum(x[, "n"] - 1)
+      #   s_L2 <- ((t2 * t3 - t1^2) / (t3 * (np - 1)) - s_r2) * ((t3 * (np - 1)) / (t3^2 - t4))
+      # }
     }
 
     return(data.frame(

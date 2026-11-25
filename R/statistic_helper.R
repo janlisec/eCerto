@@ -515,11 +515,11 @@ qtable <- function(p, probs, quants) {
     if (pp <= probs[1]) {
       q0 <- quants[c(1, 2)]
       p0 <- probs[c(1, 2)]
-      fit <- stats::lm(q0 ~ p0)
+      fit <- stats::lm(q0 ~ p0, data = data.frame(q0 = q0, p0 = p0))
     } else if (pp >= probs[length(probs)]) {
       q0 <- quants[c(length(quants) - 1, length(quants))]
       p0 <- probs[c(length(probs) - 1, length(probs))]
-      fit <- stats::lm(q0 ~ p0)
+      fit <- stats::lm(q0 ~ p0, data = data.frame(q0 = q0, p0 = p0))
     } else {
       x0 <- which(abs(pp - probs) == min(abs(pp - probs)))
       x1 <- which(abs(pp - probs) == sort(abs(pp - probs))[2])
@@ -533,7 +533,7 @@ qtable <- function(p, probs, quants) {
       i <- c(x - 1, x, x + 1, x + 2)
       q0 <- quants[i]
       p0 <- probs[i]
-      fit <- stats::lm(q0 ~ poly(p0, 3))
+      fit <- stats::lm(q0 ~ poly(p0, 3), data = data.frame(q0 = q0, p0 = p0))
     }
     res <- c(res, stats::predict(fit, newdata = list(p0 = pp)))
   }
