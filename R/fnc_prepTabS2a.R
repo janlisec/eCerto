@@ -25,7 +25,15 @@ prepTabS2a <- function(x, s_opt_FigS2 = TRUE) {
   out <- ldply_base(levels(tf)[-1], function(k) {
     # the linear model shall include the reference data
     flt <- tmp[, "Temp"] == k | tmp[, "Temp"] == levels(tf)[1]
-    a <- stats::coef(stats::lm(val[flt] ~ time[flt]))[2]
+    a <- stats::coef(
+      stats::lm(
+        y ~ x,
+        data = data.frame(
+          y = val,
+          x = time
+        )[flt, ]
+      )
+    )[2]
     # Rec and RSD are calculated without reference data
     flt <- tmp[, "Temp"] == k
     return(data.frame(
